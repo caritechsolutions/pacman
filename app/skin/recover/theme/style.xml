@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<interface>
+	<style class="prompt" name="usb_inout_prompt">
+		<property>
+			<rect>[0,0,30,41]</rect>
+            <backcolor>[#ff00ff,#ff00ff,#ff00ff]</backcolor>
+		</property>
+		<children>
+			<widget class="image" style="default" name="usb_inout_image">
+				<property>
+					<rect>[0,0,30,41]</rect>
+                    <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                    <backcolor>[#ff00ff,#ff00ff,#ff00ff]</backcolor>
+					<mode>single</mode>
+					<img></img>
+				</property>
+			</widget>
+		</children>
+	</style>
+</interface>

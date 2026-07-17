@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_cg_full_subtitle">
+    <property>
+        <rect>[102,68,820,440]</rect>
+        <forecolor>[#000000,#000000,#000000]</forecolor>
+        <backcolor>[#00FF00,#00FF00,#00FF00]</backcolor>
+    </property>
+    <signal>
+        <keypress>app_cg_full_subtitle_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="notepad" style="default" name="notepad_cg_full_subtitle">
+            <property>
+                <rect>[0,0,820,440]</rect>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#010101,#010101,#010101]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <font>font_24</font>
+                <vertical_margin>0</vertical_margin>
+                <horizontal_margin>0</horizontal_margin>
+            </property>
+            <children>
+                <widget class="scrollbar" style="default" name="scrollbar_cg_full_subtitle">
+                    <property>
+                        <rect>[810,0,0,440]</rect>
+                        <forecolor>[#109dd4,#109dd4,#109dd4]</forecolor>
+                        <backcolor>[#373737,#373737,#373737]</backcolor>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+            </children>
+        </widget>
+    </children>
+</widget>

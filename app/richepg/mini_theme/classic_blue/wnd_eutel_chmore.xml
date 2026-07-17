@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget class="window" style="default" name="wnd_eutel_chmore">
+	<property>
+		<rect>[208,40,864,424]</rect>
+		<forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+		<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+	</property>
+	<signal>
+		<create>app_eutel_chmore_create</create>
+		<destroy>app_eutel_chmore_destroy</destroy>
+		<got_focus>app_eutel_chmore_got_focus</got_focus>
+		<lost_focus>app_eutel_chmore_lost_focus</lost_focus>
+		<keypress>app_eutel_chmore_keypress</keypress>
+	</signal>
+	<children>
+		<widget class="text" style="default" name="text_eutel_chmore_title">
+			<property>
+				<rect>[0,0,864,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_top_color,window_top_color,window_top_color]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<string>More Information</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chmore_strength">
+			<property>
+				<rect>[44,30,112,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string>Strength</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="progbar" style="default" name="progbar_eutel_chmore_strength">
+			<property>
+				<rect>[156,35,600,16]</rect>
+				<forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<min>0</min>
+				<max>100</max>
+				<back_image>s_progress_m</back_image>
+				<back_image_l>s_progress_l</back_image_l>
+				<back_image_m>s_progress_m</back_image_m>
+				<back_image_r>s_progress_r</back_image_r>
+				<fore_image>s_progress_blue</fore_image>
+				<fore_image_l>s_progress3_l</fore_image_l>
+				<fore_image_m>s_progress3_m</fore_image_m>
+				<fore_image_r>s_progress3_r</fore_image_r>
+				<format>water</format>
+				<text_format>percentage</text_format>
+				<alignment>hcentre|vcentre</alignment>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chmore_strength_value">
+			<property>
+				<rect>[756,30,64,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>right|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+
+		<widget class="text" style="default" name="text_eutel_chmore_quality">
+			<property>
+				<rect>[44,62,112,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string>Quality</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="progbar" style="default" name="progbar_eutel_chmore_quality">
+			<property>
+				<rect>[156,67,600,16]</rect>
+				<forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<min>0</min>
+				<max>100</max>
+				<back_image>s_progress_m</back_image>
+				<back_image_l>s_progress_l</back_image_l>
+				<back_image_m>s_progress_m</back_image_m>
+				<back_image_r>s_progress_r</back_image_r>
+				<fore_image>s_progress_blue</fore_image>
+				<fore_image_l>s_progress3_l</fore_image_l>
+				<fore_image_m>s_progress3_m</fore_image_m>
+				<fore_image_r>s_progress3_r</fore_image_r>
+				<format>water</format>
+				<text_format>percentage</text_format>
+				<alignment>hcentre|vcentre</alignment>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chmore_quality_value">
+			<property>
+				<rect>[756,62,64,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>right|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+
+		<widget class="button" style="default" name="btn_eutel_chmore_cur_event">
+			<property>
+				<rect>[252,88,180,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[main_bg1_color,#ba5da5,main_bg1_color]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<string>Current Event</string>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_eutel_chmore_next_event">
+			<property>
+				<rect>[432,88,180,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[main_bg1_color,#ba5da5,main_bg1_color]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<string>Next Event</string>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chmore_event_date">
+			<property>
+				<rect>[4,118,120,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+				<font></font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chmore_event_duration">
+			<property>
+				<rect>[124,118,172,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+				<font></font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chmore_event_title">
+			<property>
+				<rect>[300,118,560,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+				<font></font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chmore_event_parent">
+			<property>
+				<rect>[4,148,50,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+				<font></font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chmore_event_genres">
+			<property>
+				<rect>[54,148,242,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+				<font></font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_chmore_event_logo">
+			<property>
+				<rect>[4,178,292,164]</rect>
+				<forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+				<backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="notepad" style="default" name="notepad_eutel_chmore_event_details">
+			<property>
+				<rect>[300,148,560,194]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+				<alignment>left|top</alignment>
+				<font>Arial</font>
+				<vertical_margin>0</vertical_margin>
+				<horizontal_margin>20</horizontal_margin>
+			</property>
+			<children>
+				<widget class="scrollbar" style="default" name="scrollbar_eutel_chmore_event_details">
+					<property>
+						<rect>[550,0,13,194]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+						<back_img>s_roll_m</back_img>
+						<arrow_up>s_roll_t</arrow_up>
+						<arrow_down>s_roll_d</arrow_down>
+						<fore_img>s_roll_button</fore_img>
+						<format>scroll_show</format>
+					</property>
+				</widget>
+			</children>
+		</widget>
+
+		<widget class="text" style="default" name="text_eutel_chmore_module_title">
+			<property>
+				<rect>[4,354,120,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string>Modulation:</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chmore_module_value">
+			<property>
+				<rect>[124,354,308,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chmore_tp_title">
+			<property>
+				<rect>[432,354,120,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string>Transport:</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chmore_tp_value">
+			<property>
+				<rect>[552,354,308,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chmore_format_title">
+			<property>
+				<rect>[4,386,120,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string>Format:</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chmore_format_value">
+			<property>
+				<rect>[124,386,308,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chmore_pid_title">
+			<property>
+				<rect>[432,386,120,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string>AV PID:</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chmore_pid_value">
+			<property>
+				<rect>[552,386,308,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chmore_smartcard">
+			<property>
+				<rect>[622,90,200,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>right|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+	</children>
+</widget>

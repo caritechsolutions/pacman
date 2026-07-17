@@ -1,0 +1,12 @@
+{
+"APP_ID":"subttrans",
+"MENUCONFIG_ID":"BR2_MOD_APP_SUBTTRANS",
+"MENUCONFIG_NAME":"Subttrans Support",
+"MACRO_DEFINE":"SUBTTRANS_SUPPORT",
+"MENU_EXEC":"app_subttrans_setting_menu_exec",
+"MENU_TITLE_STR":"Subtitle Translation",
+"MENU_ATTR":"MENU_NETWORK_CHECK",
+"APPUI_ENTRY":"APPUI_ENTRY_SUBTTRANS_SETTING",
+"MENU_CHECK_FUNC":"NULL",
+"DEFAULT_CLOSE":"yes"
+}

@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<list>
+  <name>dark</name>
+  <uiid>3001</uiid>
+  <!-- 预览图片不需要设置，放到image目录下，最多2张，默认名字preview0.xxx,preview1.xxx。后缀名自动检测，支持bmp,jpg,png-->
+</list>
+

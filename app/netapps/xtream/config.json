@@ -1,0 +1,18 @@
+{
+"APP_ID":"xtream",
+"MENUCONFIG_ID":"BR2_MOD_APP_XTREAM",
+"MENUCONFIG_NAME":"Xtream Support",
+"MACRO_DEFINE":"XTREAM_SUPPORT",
+"MENU_EXEC":"app_create_xtream_menu",
+"MENU_TITLE_STR":"Xtream",
+"MENU_ATTR":"MENU_NETWORK_CHECK",
+"APPUI_ENTRY":"APPUI_ENTRY_XTREAM",
+"MENU_CHECK_FUNC":"NULL",
+"SUB_DEFINES":[
+        {
+            "MACRO_DEFINE":"XTREAM_SERIES_SUPPORT",
+            "MENUCONFIG_ID":"BR2_MOD_APP_XTREAM_SERIES",
+            "MENUCONFIG_NAME":"Xtream Series Support"
+        }
+    ]
+}

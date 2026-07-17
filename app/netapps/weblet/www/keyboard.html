@@ -1,0 +1,92 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Web Edit</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="css/style.css" rel="stylesheet" type="text/css">
+        <link href="css/framework.css" rel="stylesheet" type="text/css">
+        <script type="text/javascript" src="js/keyboard.js"></script>
+    </head>
+    <body onLoad="reflashinput()">
+        <div class="top-deco"></div>
+        <div class="content">
+            <div style="margin:0 auto; width:300px; height:46px; line-height:46px; text-align:center">
+                <h2>Keyboard</h2>
+            </div>
+            <div style="margin:0 auto; width:300px; margin-bottom:20px">
+                <div style="background-image:url(img/input_bg.png); background-size:270px 32px; height:32px; width:270px; float:left; margin-left:14px">
+                    <div style="float:left; width:242px; height:28px; margin-top:4px; margin-left:4px">
+                        <input style="height:24px; width:242px" type="text" id="keyword">
+                    </div>
+                    <div style="float:left; height:26px; margin-top:4px">
+                    <a href="###" onClick="document.getElementById('keyword').value=''">
+                        <img src="img/clear.png" height="26px">
+                    </a>
+                    </div>
+                </div>
+                <div></div>
+            </div>
+
+            <div style="margin:0 auto; width:300px; height:1px; margin-bottom:14px"> </div>
+
+            <!-- page info start -->
+            <div style="margin:0 auto; width:300px; height:25px; margin-bottom:20px; margin-top:30px">
+                <div style="float:left; width:33%">
+                    <div style="text-align:center; margin:0 auto; height:25">
+
+                    <a href="###" onClick="reflashinput()" ><img src="img/flush.png" alt="" style="height:24px">
+                    </a>
+                    </div>
+                </div>
+                <div style="float:left; width:33%">
+                    <div style="text-align:center; margin:0 auto; height:25">
+                    <a href="###" onClick="confirm()"><img src="img/confirm.png" alt="" style="height:24px"></a>
+                    </div>
+                </div>
+                <div style="float:left; width:34%">
+                    <div style="text-align:center; margin:0 auto; height:25">
+                    <a href="###" onClick="push()"><img src="img/send.png" alt="" style="height:24px"></a>
+                    </div>
+                </div>
+            </div>
+            <!-- page info end -->
+            <div class="container">
+                <div align="center">
+                    <img src="img/remote/ok.png" width="200" height="200" usemap="#Map" border="0">
+                    <map name="Map" id="Map">
+                      <area shape="circle" coords="99,100,46" href="###" target="_self" alt="ok" id="ok" onClick="keyboardremote(this.id)">
+                      <area shape="poly" coords="4,190,56,134,47,98,64,60,3,8" href="###" target="_self" alt="left" id="left" onClick="keyboardremote(this.id)">
+                      <area shape="poly" coords="12,3,70,59,101,47,134,61,190,3" href="###" target="_self" alt="up" id="up" onClick="keyboardremote(this.id)">
+                      <area shape="poly" coords="140,65,150,100,140,127,198,190,197,10" href="###" target="_self" alt="right" id="right" onClick="keyboardremote(this.id)">
+                      <area shape="poly" coords="62,137,102,152,137,136,190,196,9,195" href="###" target="_self" alt="down" id="down" onClick="keyboardremote(this.id)">
+                    </map>
+              </div>
+            </div>
+
+            <div class="colors">
+                <a href="###" class="red-icon" id="red" onClick="keyboardremote(this.id)"></a>
+                <a href="###" class="green-icon" id="green" onClick="keyboardremote(this.id)"></a>
+                <a href="###" class="yellow-icon" id="yellow" onClick="keyboardremote(this.id)"></a>
+                <a href="###" class="blue-icon" id="blue" onClick="keyboardremote(this.id)"></a>
+            </div>
+
+            <div style="margin:0 auto; width:300px; height:40px"> </div>
+
+        </div>
+        <div class="footer">
+            <div>
+                <div class="socials">
+                <a href="###" class="point-icon"></a>
+                <a href="keyboard.html" class="keyboard-icon"></a>
+                <a href="programmes.html" class="prog-icon"></a>
+                <a href="index.html" class="remote-icon"></a>
+                </div>
+                <div class="clear"></div>
+                <p class="copyright">
+                    Copyright © 2017.<br>
+                    <a href="http://www.nationalchip.com/">Hangzhou Nationalchip Science&amp;Technology Co, Ltd.</a> All rights reserved.
+                </p>
+            </div>
+        </div>
+    </body>
+</html>

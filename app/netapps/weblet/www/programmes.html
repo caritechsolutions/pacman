@@ -1,0 +1,122 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Web Finder</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="css/style.css" rel="stylesheet" type="text/css">
+        <link href="css/framework.css" rel="stylesheet" type="text/css">
+        <script type="text/javascript" src="js/program.js"></script>
+    </head>
+    <body onLoad="getprogrammes()">
+        <div class="top-deco"></div>
+        <div class="content">
+          <div style="margin:0 auto; width:300px; height:46px; line-height:46px; text-align:center">
+                <h2>Program List</h2>
+            </div>
+            <div style="margin:0 auto; width:300px;">
+                <div style="background-image:url(img/input_bg.png); background-size:240px 32px; height:32px; width:240px; float:left">
+                    <div style="float:left; width:213px; height:28px; margin-top:4px; margin-left:4px">
+                        <input style="height:24px; width:213px;" type="text" id="keyword">
+                    </div>
+                    <div style="float:left; width:20px">
+                    <div style="height:26; margin-top:3px;">
+                    <a href="###" onClick="document.getElementById('keyword').value=''">
+                    <img src="img/clear.png" style="height:26px">
+                    </a>
+                    </div>
+                    </div>
+                </div>
+                <div style="float:left; margin-left:10px; width:50px; height:32px">
+                    <a href="###"><img src="img/search.png" onClick="search()"></a>
+                </div>
+
+            </div>
+            <div style="margin:0 auto; width:300px; height:20px"> </div>
+            <div style="margin:0 auto; width:300px; margin-top:20px">
+              <ul id="programmes"></ul>
+            </div>
+
+            <!-- page info start -->
+            <div style="margin:0 auto; width:300px; height:44px">
+                <div style="float:left; width:25%">
+                    <div style="text-align:right; margin:0 auto; margin-right:10px">
+                        <a href="###"><img src="img/prev3.png" width="25" height="25" id="previous" onClick="changepage(this.id)"></a>
+                    </div>
+                </div>
+                <div style="float:left; width:50%">
+                    <div style="text-align:center; margin:0 auto; height:30">
+                        <label id="pageinfo">1/1</label>
+                    </div>
+                </div>
+                <div style="float:left; width:25%">
+                    <div style="text-align:left; margin:0 auto; margin-left:10px;">
+                        <a href="###"><img src="img/next3.png"  width="25" height="25" id="next" onClick="changepage(this.id)"></a>
+                    </div>
+                </div>
+            </div>
+            <!-- page info end -->
+
+            <!-- group info start -->
+            <div style="margin:0 auto; width:300px; height:44px">
+                <div style="float:left; width:25%">
+                    <div style="text-align:right; margin:0 auto; margin-right:10px">
+                        <a href="###"><img src="img/prev3.png" width="25" height="25" id="prev" onClick="changegroup(this.id)"></a>
+                    </div>
+                </div>
+                <div style="float:left; width:50%">
+                    <div style="text-align:center; margin:0 auto; height:30; word-break:break-all">
+                        <label id="groupinfo">ALL</label>
+                    </div>
+                </div>
+                <div style="float:left; width:25%">
+                    <div style="text-align:left; margin:0 auto; margin-left:10px;">
+                        <a href="###"><img src="img/next3.png"  width="25" height="25" id="next" onClick="changegroup(this.id)"></a>
+                    </div>
+                </div>
+            </div>
+            <!-- group info end -->
+
+            <!-- yellow button info start -->
+            <div style="margin:0 auto; width:300px; height:44px">
+                <div style="float:left; width:25%">
+                    <div style="text-align:center; margin:0 auto">
+                        <a href="###"><img src="img/vol-_y.png" width="60" id="voldown" onClick="remote(this.id)"></a>
+                    </div>
+                </div>
+                <div style="float:left; width:25%">
+                    <div style="text-align:center; margin:0 auto">
+                         <a href="###"><img src="img/vol+_y.png" width="60" id="volup" onClick="remote(this.id)"></a>
+                    </div>
+                </div>
+                <div style="float:left; width:25%">
+                    <div style="text-align:center; margin:0 auto">
+                        <a href="###"><img src="img/exit_y.png" width="60" id="exit" onClick="remote(this.id)"></a>
+                    </div>
+                </div>
+                <div style="float:left; width:25%">
+                    <div style="text-align:center; margin:0 auto">
+                    <a href="###" onClick="reflashlist()" ><img src="img/flush.png" style="width:60px"></a>
+                    </div>
+                </div>
+            </div>
+            <!-- yellow button info end -->
+
+
+        </div>
+        <div class="footer">
+            <div>
+                <div class="socials">
+                <a href="###" class="point-icon"></a>
+            	<a href="keyboard.html" class="keyboard-icon"></a>
+            	<a href="programmes.html" class="prog-icon"></a>
+            	<a href="index.html" class="remote-icon"></a>
+                </div>
+                <div class="clear"></div>
+                <p class="copyright">
+                    Copyright © 2017.<br>
+                    Hangzhou Nationalchip Science&amp;Technology Co, Ltd. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </body>
+</html>

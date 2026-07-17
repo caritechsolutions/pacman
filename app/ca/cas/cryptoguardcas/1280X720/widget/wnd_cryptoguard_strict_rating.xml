@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_cryptoguard_strict_rating">
+    <property>
+        <rect>[0,0,1280,720]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <destroy>On_wnd_cg_strict_rating_destroy</destroy>
+        <got_focus>On_wnd_cg_strict_rating_got_focus</got_focus>
+        <lost_focus>On_wnd_cg_strict_rating_lost_focus</lost_focus>
+        <keypress>On_wnd_cg_strict_rating_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_cg_strict_rating_back">
+            <property>
+                <rect>[180,150,920,380]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_cg_strict_rating_title">
+            <property>
+                <rect>[100,40,80,80]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_title_left_utility</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cg_strict_rating_title">
+            <property>
+                <rect>[195,70,600,48]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_sub</font>
+                <alignment>left|bottom</alignment>
+                <string>Strict Parental Control</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_cg_strict_rating_bot">
+            <property>
+                <rect>[0,646,1280,74]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>signal</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_cg_strict_rating_exit">
+            <property>
+                <rect>[246,667,42,24]</rect>
+                <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_exit</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_cg_strict_rating_exit">
+            <property>
+                <rect>[297,664,150,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Exit</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_cg_strict_rating_menu">
+            <property>
+                <rect>[852,667,42,24]</rect>
+                <state>hide</state>
+                <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_menu</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_cg_strict_rating_menu">
+            <property>
+                <rect>[905,664,180,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,#f4f4f4]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Return</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_cg_strict_rating_ok">
+            <property>
+                <rect>[536,667,42,24]</rect>
+                <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_ok</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_cg_strict_rating_ok">
+            <property>
+                <rect>[588,664,180,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Save</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="box" style="default" name="box_cg_strict_rating">
+            <property>
+                <rect>[205,210,870,80]</rect>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <format>vertical</format>
+            </property>
+            <children>
+                <widget class="boxitem" style="default" name="bxi_cg_strict_rating_1">
+                    <property>
+                        <rect>[0,0,870,40]</rect>
+                        <forecolor>[#000000,#000000,#000000]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[ca_button_menu_l,ca_button_menu_m,ca_button_menu_r]</focus_image>
+                        <item_active_image>[ca_button_menu_l,ca_button_menu_m,ca_button_menu_r]</item_active_image>
+                        <item_active_color>text_focus_color</item_active_color>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="txt_cg_strict_rating_level">
+                            <property>
+                                <rect>[50,0,340,40]</rect>
+                                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Strict Parental Control</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmb_cg_strict_rating_level">
+                            <property>
+                                <rect>[460,0,340,40]</rect>
+                                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                                <content>[Off, On]</content>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="bxi_cg_strict_rating_2">
+                    <property>
+                        <rect>[0,40,870,40]</rect>
+                        <forecolor>[#000000,#000000,#000000]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[ca_button_menu_l,ca_button_menu_m,ca_button_menu_r]</focus_image>
+                        <item_active_image>[ca_button_menu_l,ca_button_menu_m,ca_button_menu_r]</item_active_image>
+                        <item_active_color>text_focus_color</item_active_color>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="txt_cg_strict_rating_pin">
+                            <property>
+                                <rect>[50,0,340,40]</rect>
+                                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Input Password</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="edit" style="default" name="edit_cg_strict_rating_pin">
+                            <property>
+                                <rect>[460,0,340,40]</rect>
+                                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <i18n>false</i18n>
+                                <maxlen>4</maxlen>
+                                <format>edit_digit</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+    </children>
+</widget>

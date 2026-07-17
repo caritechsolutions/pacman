@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget class="window" style="default" name="wnd_eutel_chlist">
+	<property>
+		<rect>[60,20,400,528]</rect>
+		<forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+		<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+	</property>
+	<signal>
+		<create>app_eutel_chlist_create</create>
+		<destroy>app_eutel_chlist_destroy</destroy>
+		<got_focus>app_eutel_chlist_got_focus</got_focus>
+		<lost_focus>app_eutel_chlist_lost_focus</lost_focus>
+		<keypress>app_eutel_chlist_keypress</keypress>
+	</signal>
+	<children>
+		<widget class="text" style="default" name="text_eutel_chlist_arrow_left">
+            <property>
+                <rect>[4,2,20,40]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[black,black,black]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+		<widget class="image" style="default" name="img_eutel_chlist_arrow_left">
+			<property>
+				<rect>[4,16,15,13]</rect>
+				<forecolor>[black,black,black]</forecolor>
+				<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<mode>single</mode>
+				<img>s_arrow_l</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chlist_title">
+			<property>
+				<rect>[20,2,290,40]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[black,black,black]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<string>All</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chlist_company_bg">
+			<property>
+				<rect>[310,2,86,40]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[black,black,black]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_chlist_company_logo">
+			<property>
+				<rect>[314,2,64,40]</rect>
+				<forecolor>[black,black,black]</forecolor>
+				<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<mode>single</mode>
+				<img>richepg_company</img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_chlist_arrow_right">
+			<property>
+				<rect>[381,16,15,13]</rect>
+				<forecolor>[black,black,black]</forecolor>
+				<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<mode>single</mode>
+				<img>s_arrow_r</img>
+			</property>
+		</widget>
+		<widget class="listview" style="default" name="listview_eutel_chlist_logo">
+			<property>
+				<rect>[4,44,66,420]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<i18n>false</i18n>
+				<item_rect>[0,0,64,40]</item_rect>
+				<interval>2</interval>
+				<item_active_color>#bbe00b</item_active_color>
+				<item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+				<item_back_color>[bk_item_color,key_red,bk_item_color]</item_back_color>
+			</property>
+			<signal>
+				<keypress>app_eutel_chlist_logo_list_keypress</keypress>
+				<get_total>app_eutel_chlist_logo_list_get_total</get_total>
+				<get_data>app_eutel_chlist_logo_list_get_data</get_data>
+				<change>app_eutel_chlist_logo_list_change</change>
+			</signal>
+			<children>
+				<widget class="header" style="default" name="header_eutel_chlist_logo">
+					<property>
+						<rect>[0,0,64,0]</rect>
+						<forecolor>[text_color,text_color,text_color]</forecolor>
+						<backcolor>[default_color,default_color,default_color]</backcolor>
+						<colum_number>1</colum_number>
+					</property>
+					<children>
+						<widget class="text" style="default" name="header_eutel_chlist_logo1">
+							<property>
+								<rect>[0,0,64,0]</rect>
+								<forecolor>[text_color,text_color,text_color]</forecolor>
+								<backcolor>[default_color,default_color,default_color]</backcolor>
+								<alignment>left|vcentre</alignment>
+								<string></string>
+								<format>static</format>
+							</property>
+						</widget>
+					</children>
+				</widget>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist_logo1"/>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist_logo2"/>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist_logo3"/>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist_logo4"/>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist_logo5"/>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist_logo6"/>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist_logo7"/>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist_logo8"/>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist_logo9"/>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist_logo10"/>
+				<widget class="scrollbar" style="default" name="scrollbar_eutel_chlist_logo">
+					<property>
+						<rect>[64,0,2,420]</rect>
+						<forecolor>[window_bg_color,window_bg_color,window_bg_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						<back_img>s_roll_m</back_img>
+						<arrow_up>s_roll_t</arrow_up>
+						<arrow_down>s_roll_d</arrow_down>
+						<fore_img>s_roll_button</fore_img>
+						<format>scroll_hide</format>
+					</property>
+				</widget>
+			</children>
+		</widget>
+
+		<widget class="listview" style="default" name="listview_eutel_chlist">
+			<property>
+				<rect>[70,44,326,420]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<accelerate>enable</accelerate>
+				<i18n>false</i18n>
+				<item_rect>[0,0,316,40]</item_rect>
+				<interval>2</interval>
+				<item_active_color>#bbe00b</item_active_color>
+				<item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+				<item_back_color>[bk_item_color,key_red,bk_item_color]</item_back_color>
+			</property>
+			<signal>
+				<keypress>app_eutel_chlist_list_keypress</keypress>
+				<get_total>app_eutel_chlist_list_get_total</get_total>
+				<get_data>app_eutel_chlist_list_get_data</get_data>
+				<change>app_eutel_chlist_list_change</change>
+			</signal>
+			<children>
+				<widget class="header" style="default" name="header_eutel_chlist">
+					<property>
+						<rect>[0,0,316,0]</rect>
+						<forecolor>[text_color,text_color,text_color]</forecolor>
+						<backcolor>[default_color,default_color,default_color]</backcolor>
+						<colum_number>5</colum_number>
+					</property>
+					<children>
+						<widget class="text" style="default" name="header_eutel_chlist1">
+							<property>
+								<rect>[4,0,64,0]</rect>
+								<forecolor>[text_color,text_color,text_color]</forecolor>
+								<backcolor>[default_color,default_color,default_color]</backcolor>
+								<alignment>left|vcentre</alignment>
+								<string></string>
+								<format>static</format>
+							</property>
+						</widget>
+						<widget class="text" style="default" name="header_eutel_chlist2">
+							<property>
+								<rect>[68,0,204,0]</rect>
+								<forecolor>[text_color,text_color,text_color]</forecolor>
+								<backcolor>[default_color,default_color,default_color]</backcolor>
+								<alignment>left|vcentre</alignment>
+								<string></string>
+								<format>static</format>
+							</property>
+						</widget>
+						<widget class="text" style="default" name="header_eutel_chlist3">
+							<property>
+								<rect>[272,0,20,0]</rect>
+								<forecolor>[text_color,text_color,text_color]</forecolor>
+								<backcolor>[default_color,default_color,default_color]</backcolor>
+								<alignment>left|vcentre</alignment>
+								<string></string>
+								<format>static</format>
+							</property>
+						</widget>
+						<widget class="text" style="default" name="header_eutel_chlist4">
+							<property>
+								<rect>[292,0,24,0]</rect>
+								<forecolor>[text_color,text_color,text_color]</forecolor>
+								<backcolor>[default_color,default_color,default_color]</backcolor>
+								<alignment>left|vcentre</alignment>
+								<string></string>
+								<format>static</format>
+							</property>
+						</widget>
+					</children>
+				</widget>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist1"/>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist2"/>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist3"/>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist4"/>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist5"/>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist6"/>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist7"/>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist8"/>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist9"/>
+				<widget class="listitem" style="default" name="listitem_eutel_chlist10"/>
+				<widget class="scrollbar" style="default" name="scrollbar_eutel_chlist">
+					<property>
+						<rect>[316,0,9,420]</rect>
+						<forecolor>[window_bg_color,window_bg_color,window_bg_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						<back_img>s_roll_m</back_img>
+						<arrow_up>s_roll_t</arrow_up>
+						<arrow_down>s_roll_d</arrow_down>
+						<fore_img>s_roll_button</fore_img>
+						<format>scroll_show</format>
+					</property>
+				</widget>
+			</children>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_chlist_tip_back">
+			<property>
+				<rect>[4,466,392,60]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[black,black,black]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_chlist_red_tip">
+			<property>
+				<rect>[10,472,16,16]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_red</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chlist_red_tip">
+			<property>
+				<rect>[35,466,140,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>Mark+/Mark-</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_chlist_green_tip">
+			<property>
+				<rect>[185,472,16,16]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_green</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chlist_green_tip">
+			<property>
+				<rect>[210,466,140,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>Mark List</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_chlist_yellow_tip">
+			<property>
+				<rect>[10,502,16,16]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_yellow</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chlist_yellow_tip">
+			<property>
+				<rect>[35,496,140,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>Channel Filter</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_chlist_blue_tip">
+			<property>
+				<rect>[185,502,16,16]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_blue</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_chlist_blue_tip">
+			<property>
+				<rect>[210,496,140,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>Search</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_chlist_lock_tip">
+			<property>
+				<rect>[350,475,41,19]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_0</img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_chlist_lock_var">
+			<property>
+				<rect>[361,496,17,20]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<mode>single</mode>
+				<img>s_icon_lock</img>
+			</property>
+		</widget>
+	</children>
+</widget>

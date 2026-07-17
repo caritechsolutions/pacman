@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_eutel_information">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+    </property>
+    <signal>
+        <create>app_table_info_create</create>
+        <destroy>app_table_info_destroy</destroy>
+        <keypress>app_table_info_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_table_info_back">
+            <property>
+                <rect>[144,64,736,386]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_m</lt_img>
+                <rt_img>s_win_m</rt_img>
+                <lb_img>s_win_m</lb_img>
+                <rb_img>s_win_m</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_table_info_title">
+            <property>
+                <rect>[160,72,48,48]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_title_left_utility</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_title">
+            <property>
+                <rect>[224,74,560,52]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_main</font>
+                <alignment>left|bottom</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_eutel_information_company_logo">
+            <property>
+                <rect>[800,72,72,48]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>richepg_sattv_logo_b</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_page">
+            <property>
+                <rect>[720,96,80,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+
+        <widget class="text" style="default" name="text_table_info_title0">
+            <property>
+                <rect>[162,140,220,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_colon0">
+            <property>
+                <rect>[382,140,10,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_value0">
+            <property>
+                <rect>[392,140,470,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_title1">
+            <property>
+                <rect>[162,170,220,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_colon1">
+            <property>
+                <rect>[382,170,10,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_value1">
+            <property>
+                <rect>[392,170,470,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_title2">
+            <property>
+                <rect>[162,200,220,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_colon2">
+            <property>
+                <rect>[382,200,10,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_value2">
+            <property>
+                <rect>[392,200,470,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_title3">
+            <property>
+                <rect>[162,230,220,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_colon3">
+            <property>
+                <rect>[382,230,10,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_value3">
+            <property>
+                <rect>[392,230,470,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_title4">
+            <property>
+                <rect>[162,260,220,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_colon4">
+            <property>
+                <rect>[382,260,10,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_value4">
+            <property>
+                <rect>[392,260,470,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_title5">
+            <property>
+                <rect>[162,290,220,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_colon5">
+            <property>
+                <rect>[382,290,10,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_value5">
+            <property>
+                <rect>[392,290,470,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_title6">
+            <property>
+                <rect>[162,320,220,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_colon6">
+            <property>
+                <rect>[382,320,10,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_value6">
+            <property>
+                <rect>[392,320,470,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_title7">
+            <property>
+                <rect>[162,350,220,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_colon7">
+            <property>
+                <rect>[382,350,10,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_value7">
+            <property>
+                <rect>[392,350,470,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_title8">
+            <property>
+                <rect>[162,380,220,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_colon8">
+            <property>
+                <rect>[382,380,10,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_value8">
+            <property>
+                <rect>[392,380,470,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_title9">
+            <property>
+                <rect>[162,410,220,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_colon9">
+            <property>
+                <rect>[382,410,10,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_table_info_value9">
+            <property>
+                <rect>[392,410,470,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>
+

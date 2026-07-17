@@ -1,0 +1,116 @@
+From a5da15ed41f7cd4b710e25db058ac4eec21c5bed Mon Sep 17 00:00:00 2001
+From: luyong <luyong@nationalchip.com>
+Date: Tue, 9 Jun 2020 12:46:08 +0800
+Subject: [PATCH] test: desc api test
+
+Change-Id: Iaef904eb7927d79a4781f7ed9b0e6f6ef644acf9
+---
+ app/app_full_screen.c         | 46 ++++++++++++++++++++++++++++++++++-
+ app/module/app_play_control.c |  4 ++-
+ 2 files changed, 48 insertions(+), 2 deletions(-)
+
+diff --git a/app/app_full_screen.c b/app/app_full_screen.c
+index fcd0e0fcc..d7734e2b7 100755
+--- a/app/app_full_screen.c
++++ b/app/app_full_screen.c
+@@ -44,6 +44,15 @@ extern  void app_atsc_close_sub(void);
+ extern void app_create_media_centre_fullsreeen(void);
+ #endif
+ 
++#include "module/app_descrambler_api.h"
++static int32_t ca_test_flag = 0;
++static bool ca_test_parity_mode = true;
++extern void CATest_Init(void);
++extern void CATest_SetCW(int flag, bool parity_key);
++extern void CATest_OldApi_SetCw(int32_t flag, bool parity_key);
++extern void CATest_m2m(int32_t flag);
++extern void CATest_SelectRootKey(void);
++
+ void full_arbitrate(uint32_t key);
+ 
+ #if (DEMOD_DTMB > 0)
+@@ -720,6 +729,9 @@ void app_prog_play_resume_exec(void)
+ 
+ SIGNAL_HANDLER int app_full_screen_create(GuiWidget *widget, void *usrdata)
+ {
++#if (defined TAURUS || defined SIRIUS || defined CYGNUS || defined CANOPUS || defined VEGA || defined SCORPIO)
++    CATest_Init();
++#endif
+     g_AppFullArb.init(&g_AppFullArb);
+     g_AppChOps.update_prog_num();
+     return EVENT_TRANSFER_STOP;
+@@ -1185,16 +1197,48 @@ SIGNAL_HANDLER int app_full_screen_keypress(GuiWidget *widget, void *usrdata)
+ 						}
+                         break;
+ 
++                    case STBK_0:
++                        ca_test_flag = 0;
++                        printf("\033[32m set desc test flag = %d\033[0m\n", ca_test_flag);
++                        break;
+                     case STBK_1:
++                        ca_test_flag = 1;
++                        printf("\033[32m set desc test flag = %d\033[0m\n", ca_test_flag);
++                        break;
+                     case STBK_2:
++                        ca_test_flag = 2;
++                        printf("\033[32m set desc test flag = %d\033[0m\n", ca_test_flag);
++                        break;
+                     case STBK_3:
++                        ca_test_flag = 3;
++                        printf("\033[32m set desc test flag = %d\033[0m\n", ca_test_flag);
++                        break;
+                     case STBK_4:
++                        ca_test_flag = 4;
++                        printf("\033[32m set desc test flag = %d\033[0m\n", ca_test_flag);
++                        break;
+                     case STBK_5:
++                        if(true == ca_test_parity_mode)
++                            ca_test_parity_mode = false;
++                        else
++                            ca_test_parity_mode = true;
++                        printf("\033[32m set parity mode flag = %d\033[0m\n", ca_test_parity_mode);
++                        break;
+                     case STBK_6:
++                        printf("\033[31m new desc api test\033[0m\n");
++                        CATest_SetCW(ca_test_flag, ca_test_parity_mode);
++                        break;
+                     case STBK_7:
++                        printf("\033[31m old desc api test\033[0m\n");
++                        CATest_OldApi_SetCw(ca_test_flag, ca_test_parity_mode);
++                        break;
+                     case STBK_8:
++                        printf("\033[33m M2M test\033[0m\n");
++                        CATest_m2m(ca_test_flag);
++                        break;
+                     case STBK_9:
+-                    case STBK_0:
++                        CATest_SelectRootKey();
++                        break;
+ 					    if(g_AppChOps.get_list_total() == 0)
+                         {
+                             break;
+diff --git a/app/module/app_play_control.c b/app/module/app_play_control.c
+index 4b189e278..4e8e6202a 100755
+--- a/app/module/app_play_control.c
++++ b/app/module/app_play_control.c
+@@ -2045,6 +2045,8 @@ static void app_program_play(AppPlayMode play_mode, int32_t play_count)
+ #endif
+ }
+ 
++extern void CATest_DescClose(void);
++
+ static void app_program_stop(void)
+ {
+     g_AppPlayOps.running = false;
+@@ -2101,7 +2103,7 @@ static void app_program_stop(void)
+ #if PRESET_PROG_INFO_CORRECT_SUPPORT
+     app_preset_prog_info_correct_stop();
+ #endif
+-
++    CATest_DescClose();
+ }
+ 
+ static int app_play_pwd_cb(PopPwdRet *ret, void *usr_data)
+-- 
+2.25.1
+

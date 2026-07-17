@@ -1,0 +1,15 @@
+#include "app_config.h"
+char *g_LangName[] = { 
+LANG_ENGLISH
+OSD_LANG_ARABIC
+OSD_LANG_RUSSIAN
+OSD_LANG_TURKISH
+};
+
+char *g_KB_LangName[] = { 
+KB_LANG_ENGLISH
+KB_LANG_ARABIC
+KB_LANG_RUSSIAN
+KB_LANG_TURKISH
+};
+

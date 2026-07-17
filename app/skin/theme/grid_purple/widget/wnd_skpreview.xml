@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_skpreview">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <back_ground>bg</back_ground>
+    </property>
+    <signal>
+        <create>app_skpreview_create</create>
+        <destroy>app_skpreview_destroy</destroy>
+        <keypress>app_skpreview_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_skpreview_bg">
+            <property>
+                <rect>[72,26,880,470]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skpreview_bottom_bg">
+            <property>
+                <rect>[0,510,1024,66]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skpreview_title">
+            <property>
+                <rect>[156,35,208,52]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <font>font_main</font>
+                <alignment>left|bottom</alignment>
+                <string>Preview</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skpreview_logo">
+            <property>
+                <rect>[89,35,48,48]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_title_left_utility</img>
+            </property>
+        </widget>
+		<widget class="text" style="default" name="text_skpreview_pageinfo">
+            <property>
+                <rect>[890,45,100,29]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|bottom</alignment>
+                <string>0/0</string>
+                <format>static</format>
+            </property>
+        </widget>
+		<widget class="text" style="default" name="text_skin_uiid">
+            <property>
+                <rect>[700,45,150,29]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>right|bottom</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+		<widget class="image" style="default" name="img_skpreview_arrow_left">
+            <property>
+                <rect>[76,260,10,20]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_arrow_l</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skpreview_arrow_right">
+            <property>
+                <rect>[930,260,10,20]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_arrow_r</img>
+            </property>
+        </widget>
+		<widget class="text" style="default" name="text_skpreview_tip_empty">
+            <property>
+                <rect>[410,200,190,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_prog</font>
+                <alignment>left|vcentre</alignment>
+                <string>no preview info</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skpreview_item_view">
+            <property>
+                <rect>[98,98,824,390]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skprview_tip_left">
+            <property>
+                <rect>[420,528,10,20]</rect>
+				<state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_arrow_l</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skpreview_tip_right">
+            <property>
+                <rect>[436,528,10,20]</rect>
+				<state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_arrow_r</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skpreview_tip_switch">
+            <property>
+                <rect>[454,525,120,28]</rect>
+				<state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Left / Right</string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

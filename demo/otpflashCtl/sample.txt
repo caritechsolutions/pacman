@@ -1,0 +1,83 @@
+extern int spi_otp_open(void);
+extern int spi_otp_close(int fd);
+extern void spi_otp_read(int fd, unsigned int addr, char *buf, int len);
+extern void spi_otp_write(int fd, unsigned int addr, char *buf, int len);
+extern void spi_otp_erase(int fd, unsigned int addr);
+extern int  spi_otp_get_lock_status(int fd, int block);
+extern void spi_otp_lock(int fd, int block);
+extern void spi_otp_get_id(int fd);
+
+void sample(void)
+{
+	int OTPFD = -1;
+	char buffer[256] = {0};
+	int status = 0;
+	int BlockNum = 1;
+
+	// open the device
+	OTPFD = spi_otp_open();
+	if(OTPFD > 0)
+		app_log_min("\nOTP, open successfully\n");
+
+	// read the otp block, bolck1~block3
+	//block1
+	spi_otp_read(OTPFD, 0x1000, buffer, 256);//0x1000~0x10ff
+	//block2
+	spi_otp_read(OTPFD, 0x2000, buffer, 256);//0x2000~0x20ff
+	//block3
+	spi_otp_read(OTPFD, 0x3000, buffer, 256);//0x3000~0x30ff
+	app_log_min("\nOTP, read successfully\n");
+
+	// write
+	buffer[0] = 0x01;
+	buffer[1] = 0x02;
+	buffer[2] = 0x03;
+	buffer[3] = 0x04;
+	spi_otp_write(OTPFD, 0x1000, buffer, 4);//0x1000~0x10ff
+	buffer[0] = 0x05;
+	buffer[1] = 0x06;
+	buffer[2] = 0x07;
+	buffer[3] = 0x08;
+	spi_otp_write(OTPFD, 0x2022, buffer, 4);//0x2000~0x20ff
+	buffer[0] = 0x09;
+	buffer[1] = 0x0a;
+	buffer[2] = 0x0b;
+	buffer[3] = 0x0c;
+	spi_otp_write(OTPFD, 0x3033, buffer, 4);//0x3000~0x30ff
+	app_log_min("\nOTP, write successfully\n");
+
+	// erase
+	spi_otp_erase(OTPFD, 0x1000);//erase 256bytes
+	spi_otp_erase(OTPFD, 0x2000);
+	spi_otp_erase(OTPFD, 0x3000);
+	app_log_min("\nOTP, erase successfully\n");
+
+	//get lock status,
+	status = spi_otp_get_lock_status(OTPFD, BlockNum);
+	app_log_min("\nOTP, block%d lock status = %d\n",BlockNum,status);
+	BlockNum++;
+	status = spi_otp_get_lock_status(OTPFD, BlockNum);
+	app_log_min("\nOTP, block%d lock status = %d\n",BlockNum,status);
+	BlockNum++;
+	status = spi_otp_get_lock_status(OTPFD, BlockNum);
+	app_log_min("\nOTP, block%d lock status = %d\n",BlockNum,status);
+	app_log_min("\nOTP, get lock status successfully\n");
+
+	// set lock
+	BlockNum = 1;// block1
+	spi_otp_lock(OTPFD, BlockNum);
+	BlockNum++;//block2
+	spi_otp_lock(OTPFD, BlockNum);
+	BlockNum++;//block3
+	spi_otp_lock(OTPFD, BlockNum);
+	app_log_min("\nOTP, set block lock successfully\n");
+
+	//get flash id
+	spi_otp_get_id();
+	app_log_min("\nOTP, get flash id successfully\n");
+
+	// close the device
+	spi_otp_close(OTPFD);
+	OTPFD = -1;
+	app_log_min("\nOTP, close successfully\n");
+}

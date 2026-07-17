@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_cryptoguard_long_message">
+    <property>
+        <rect>[360,140,560,380]</rect>
+        <forecolor>[#000000,#000000,#000000]</forecolor>
+        <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+    </property>
+    <signal>
+        <create>app_cg_long_message_create</create>
+        <destroy>app_cg_long_message_destroy</destroy>
+        <keypress>app_cg_long_message_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="image_long_message_bg">
+            <property>
+                <rect>[0,0,560,380]</rect>
+                <forecolor>[black,pop_text_color,black]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="notepad" style="default" name="notepad_long_message_detail">
+            <property>
+                <rect>[15,46,530,276]</rect>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <alignment>left|top</alignment>
+                <vertical_margin>0</vertical_margin>
+                <horizontal_margin>10</horizontal_margin>
+            </property>
+            <children>
+                <widget class="scrollbar" style="default" name="scrollbar_long_message">
+                    <property>
+                        <rect>[517,0,13,276]</rect>
+                        <forecolor>[#109dd4,#109dd4,#109dd4]</forecolor>
+                        <backcolor>[#373737,#373737,#373737]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+            </children>
+        </widget>
+        <widget class="button" style="default" name="btn_long_message_exit">
+            <property>
+                <rect>[150,330,260,40]</rect>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>Exit</string>
+                <focus_img>[ca_button_menu_l,ca_button_menu_m,ca_button_menu_r]</focus_img>
+                <unfocus_img>[ca_button_menu_l,ca_button_menu_m,ca_button_menu_r]</unfocus_img>
+            </property>
+        </widget>
+    </children>
+</widget>

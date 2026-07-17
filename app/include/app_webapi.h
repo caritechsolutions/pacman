@@ -1,0 +1,43 @@
+#ifndef __APP_WEBAPI_H__
+#define __APP_WEBAPI_H__
+
+typedef enum webapi_ret_e
+{
+	WEBAPI_SUCCESS = 0,
+	WEBAPI_INTERNAL_ERR,
+	WEBAPI_FUNCTION_NOT_EXIST,
+	WEBAPI_DEVICE_BUSY,
+	WEBAPI_FUNCTION_PARAM_ERR,
+	WEBAPI_VERSION_ERR,
+	WEBAPI_METHOD_NOT_SUPPORT,
+	WEBAPI_SATELLITE_LIMIT_ERR,
+	WEBAPI_SATELLITE_NOT_EXIST,
+	WEBAPI_TP_INVALID,
+	WEBAPI_TP_LIMIT_ERR,
+	WEBAPI_TP_EXIST,
+	WEBAPI_TP_NOT_EXIST,
+	WEBAPI_OPERATION_INVALID,
+	WEBAPI_DISK_NOT_EXIST,
+	WEBAPI_SATELLITE_EXIST,
+	WEBAPI_RET_MAX,
+}webapi_ret_t;
+
+enum WEBAPI_MSG_TYPE{
+	WEBAPI_MSG_SET_VOLUME,
+	WEBAPI_MSG_REMOTE,
+	WEBAPI_MSG_NETPLAY,
+};
+
+typedef struct _WebapiUIMsg{
+	int type;
+	int result;
+}WebapiUIMsg;
+
+typedef WebapiUIMsg AppMsg_WebapiUIControl;
+
+void app_webapi_start(char *device_name);
+void app_webapi_stop(void);
+#define SUPERCAST_SERVER_NAME_LEN 17
+
+#endif
+

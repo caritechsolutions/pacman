@@ -1,0 +1,140 @@
+[
+	{
+		"Params": {
+			"Tuner": 0,
+			"LNB1": 9750,
+			"LNB2": 10600,
+			"Sat12v": 0,
+			"Sat22k": 1,
+			"Diseqc10": 0,
+			"Diseqc12Pos": 0,
+			"Longitude": 76,
+			"Direction": 1,
+			"Name": "Nilesat"
+		},
+		"BIDs": [
+			14522,
+			14523,
+			14524
+		],
+		"NID": 3105,
+		"TPs": [
+			{
+				"Freq": 11430,
+				"Polar": "V",
+				"Symbol": 27500
+			},
+			{
+				"Freq": 11137,
+				"Polar": "H",
+				"Symbol": 27500
+			},
+			{
+				"Freq": 11487,
+				"Polar": "H",
+				"Symbol": 27500
+			}
+		]
+	},
+	{
+		"Params": {
+			"Tuner": 0,
+			"LNB1": 9750,
+			"LNB2": 10600,
+			"Sat12v": 0,
+			"Sat22k": 1,
+			"Diseqc10": 0,
+			"Diseqc12Pos": 0,
+			"Longitude": 130,
+			"Direction": 0,
+			"Name": "Hotbird 13E"
+		},
+		"BIDs": [
+			14516,
+			14517,
+			14518
+		],
+		"NID": 318,
+		"TPs": [
+			{
+				"Freq": 12577,
+				"Polar": "H",
+				"Symbol": 27500
+			},
+			{
+				"Freq": 10930,
+				"Polar": "H",
+				"Symbol": 30000
+			}
+		]
+	},
+	{
+		"Params": {
+			"Tuner": 0,
+			"LNB1": 9750,
+			"LNB2": 10600,
+			"Sat12v": 0,
+			"Sat22k": 1,
+			"Diseqc10": 0,
+			"Diseqc12Pos": 0,
+			"Longitude": 160,
+			"Direction": 0,
+			"Name": "Africa 16E"
+		},
+		"BIDs": [
+			14519,
+			14520,
+			14521
+		],
+		"NID": 367,
+		"TPs": [
+			{
+				"Freq": 10804,
+				"Polar": "H",
+				"Symbol": 30000
+			},
+			{
+				"Freq": 12687,
+				"Polar": "H",
+				"Symbol": 30000
+			}
+		]
+	},
+	{
+		"Params": {
+			"Tuner": 0,
+			"LNB1": 9750,
+			"LNB2": 10600,
+			"Sat12v": 0,
+			"Sat22k": 1,
+			"Diseqc10": 0,
+			"Diseqc12Pos": 0,
+			"Longitude": 0,
+			"Direction": 0,
+			"Name": "Certification"
+		},
+		"BIDs": [
+			14525,
+			14526,
+			14527
+		],
+		"NID": 76,
+		"TPs": [
+			{
+				"Freq": 10754,
+				"Polar": "V",
+				"Symbol": 27500
+			},
+			{
+				"Freq": 11095,
+				"Polar": "H",
+				"Symbol": 30000
+			},
+			{
+				"Freq": 12692,
+				"Polar": "H",
+				"Symbol": 27500
+			}
+		]
+	}
+]

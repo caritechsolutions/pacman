@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_cryptoguard_pin">
+    <property>
+        <rect>[0,0,1280,720]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <destroy>On_wnd_cg_pin_destroy</destroy>
+        <got_focus>On_wnd_cg_pin_got_focus</got_focus>
+        <lost_focus>On_wnd_cg_pin_lost_focus</lost_focus>
+        <keypress>On_wnd_cg_pin_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_cg_pin_back">
+            <property>
+                <rect>[180,150,920,380]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_cg_pin_title">
+            <property>
+                <rect>[100,40,80,80]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_title_left_utility</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cg_pin_title">
+            <property>
+                <rect>[195,70,600,48]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_sub</font>
+                <alignment>left|bottom</alignment>
+                <string>PIN Setting</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_cg_pin_bot">
+            <property>
+                <rect>[0,646,1280,74]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>signal</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_cg_pin_exit">
+            <property>
+                <rect>[246,667,42,24]</rect>
+                <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_exit</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_cg_pin_exit">
+            <property>
+                <rect>[297,664,150,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Exit</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_cg_pin_menu">
+            <property>
+                <rect>[852,667,42,24]</rect>
+                <state>hide</state>
+                <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_menu</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_cg_pin_menu">
+            <property>
+                <rect>[905,664,180,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,#f4f4f4]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Return</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_cg_pin_ok">
+            <property>
+                <rect>[536,667,42,24]</rect>
+                <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_ok</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_cg_pin_ok">
+            <property>
+                <rect>[588,664,180,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Save</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="box" style="default" name="box_cg_pin">
+            <property>
+                <rect>[205,210,870,120]</rect>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <format>vertical</format>
+            </property>
+            <children>
+                <widget class="boxitem" style="default" name="bxi_cg_pin_1">
+                    <property>
+                        <rect>[0,0,870,40]</rect>
+                        <forecolor>[#000000,#000000,#000000]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[ca_button_menu_l,ca_button_menu_m,ca_button_menu_r]</focus_image>
+                        <item_active_image>[ca_button_menu_l,ca_button_menu_m,ca_button_menu_r]</item_active_image>
+                        <item_active_color>text_focus_color</item_active_color>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="txt_cg_pin_old">
+                            <property>
+                                <rect>[50,0,340,40]</rect>
+                                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Old Password</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="edit" style="default" name="edit_cg_pin_old">
+                            <property>
+                                <rect>[460,0,340,40]</rect>
+                                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <i18n>false</i18n>
+                                <maxlen>4</maxlen>
+                                <format>edit_digit</format>
+                            </property>
+                            <signal>
+                                <reach_end>On_wnd_cg_pin_old_reach_end</reach_end>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="bxi_cg_pin_2">
+                    <property>
+                        <rect>[0,40,870,40]</rect>
+                        <forecolor>[#000000,#000000,#000000]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[ca_button_menu_l,ca_button_menu_m,ca_button_menu_r]</focus_image>
+						<item_active_image>[ca_button_menu_l,ca_button_menu_m,ca_button_menu_r]</item_active_image>
+                        <item_active_color>text_focus_color</item_active_color>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="txt_cg_pin_new">
+                            <property>
+                                <rect>[50,0,340,40]</rect>
+                                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>New Password</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="edit" style="default" name="edit_cg_pin_new">
+                            <property>
+                                <rect>[460,0,340,40]</rect>
+                                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <i18n>false</i18n>
+                                <maxlen>4</maxlen>
+                                <format>edit_digit</format>
+                            </property>
+                            <signal>
+                                <reach_end>On_wnd_cg_pin_new_reach_end</reach_end>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="bxi_cg_pin_3">
+                    <property>
+                        <rect>[0,80,870,40]</rect>
+                        <forecolor>[#000000,#000000,#000000]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[ca_button_menu_l,ca_button_menu_m,ca_button_menu_r]</focus_image>
+                        <item_active_image>[ca_button_menu_l,ca_button_menu_m,ca_button_menu_r]</item_active_image>
+                        <item_active_color>text_focus_color</item_active_color>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="txt_cg_pin_confirm">
+                            <property>
+                                <rect>[50,0,340,40]</rect>
+                                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Confirm Password</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="edit" style="default" name="edit_cg_pin_confirm">
+                            <property>
+                                <rect>[460,0,340,40]</rect>
+                                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <i18n>false</i18n>
+                                <maxlen>4</maxlen>
+                                <format>edit_digit</format>
+                            </property>
+                            <signal>
+                                <keypress>On_wnd_cg_pin_confirmpasswd_keypress</keypress>
+                                <reach_end>On_wnd_cg_pin_confirmpasswd_reach_end</reach_end>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+    </children>
+</widget>

@@ -1,0 +1,903 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget class="window" style="default" name="wnd_eutel_show">
+	<property>
+		<rect>[0,0,1024,576]</rect>
+		<forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+		<backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+	</property>
+	<signal>
+		<create>app_eutel_show_create</create>
+		<destroy>app_eutel_show_destroy</destroy>
+		<got_focus>app_eutel_show_got_focus</got_focus>
+		<lost_focus>app_eutel_show_lost_focus</lost_focus>
+		<keypress>app_eutel_show_keypress</keypress>
+	</signal>
+	<children>
+		<widget class="image" style="default" name="img_eutel_show_back">
+			<property>
+				<rect>[30,22,964,524]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_company_logo">
+			<property>
+				<rect>[40,22,64,40]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>richepg_company</img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_title">
+			<property>
+				<rect>[110,34,58,23]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>richepg_epg_title</img>
+			</property>
+		</widget>
+
+		<widget class="image" style="default" name="img_eutel_show_sys_date">
+			<property>
+				<rect>[712,31,24,28]</rect>
+				<state>hide</state>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>s_icon_calendar</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_sys_date">
+			<property>
+				<rect>[744,30,120,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_sys_time">
+			<property>
+				<rect>[868,32,24,26]</rect>
+				<state>hide</state>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>s_icon_clock</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_sys_time">
+			<property>
+				<rect>[900,30,80,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+
+		<widget class="image" style="default" name="img_eutel_show_line1">
+			<property>
+				<rect>[755,90,1,390]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[line_bg_color2,line_bg_color2,line_bg_color2]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+
+		<widget class="text" style="default" name="text_eutel_show_page">
+			<property>
+				<rect>[287,450,210,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_arrow_left">
+			<property>
+				<rect>[40,252,15,40]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>richepg_epg_arrow_l</img>
+				<mirror>disable</mirror>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_arrow_right">
+			<property>
+				<rect>[730,252,15,40]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>richepg_epg_arrow_r</img>
+				<mirror>disable</mirror>
+			</property>
+		</widget>
+
+		<widget class="button" style="default" name="btn_eutel_show_group1">
+			<property>
+				<rect>[32,62,160,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<focus_img>richepg_group_focus</focus_img>
+				<unfocus_img>richepg_group_unfocus</unfocus_img>
+				<alignment>hcentre|vcentre</alignment>
+				<string>All</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_eutel_show_group2">
+			<property>
+				<rect>[192,62,160,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<focus_img>richepg_group_focus</focus_img>
+				<unfocus_img>richepg_group_unfocus</unfocus_img>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_eutel_show_group3">
+			<property>
+				<rect>[352,62,160,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<focus_img>richepg_group_focus</focus_img>
+				<unfocus_img>richepg_group_unfocus</unfocus_img>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_eutel_show_group4">
+			<property>
+				<rect>[512,62,160,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<focus_img>richepg_group_focus</focus_img>
+				<unfocus_img>richepg_group_unfocus</unfocus_img>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_eutel_show_group5">
+			<property>
+				<rect>[672,62,160,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<focus_img>richepg_group_focus</focus_img>
+				<unfocus_img>richepg_group_unfocus</unfocus_img>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_eutel_show_group6">
+			<property>
+				<rect>[832,62,160,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<focus_img>richepg_group_focus</focus_img>
+				<unfocus_img>richepg_group_unfocus2</unfocus_img>
+				<alignment>hcentre|vcentre</alignment>
+				<string>More...</string>
+				<format>static</format>
+			</property>
+		</widget>
+
+		<widget class="button" style="default" name="btn_eutel_show_class1">
+			<property>
+				<rect>[32,480,160,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<focus_img>richepg_group_focus</focus_img>
+				<unfocus_img>richepg_group_unfocus</unfocus_img>
+				<alignment>hcentre|vcentre</alignment>
+				<string>All</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_eutel_show_class2">
+			<property>
+				<rect>[192,480,160,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<focus_img>richepg_group_focus</focus_img>
+				<unfocus_img>richepg_group_unfocus</unfocus_img>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_eutel_show_class3">
+			<property>
+				<rect>[352,480,160,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<focus_img>richepg_group_focus</focus_img>
+				<unfocus_img>richepg_group_unfocus</unfocus_img>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_eutel_show_class4">
+			<property>
+				<rect>[512,480,160,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<focus_img>richepg_group_focus</focus_img>
+				<unfocus_img>richepg_group_unfocus</unfocus_img>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_eutel_show_class5">
+			<property>
+				<rect>[672,480,160,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<focus_img>richepg_group_focus</focus_img>
+				<unfocus_img>richepg_group_unfocus</unfocus_img>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_eutel_show_class6">
+			<property>
+				<rect>[832,480,160,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<focus_img>richepg_group_focus</focus_img>
+				<unfocus_img>richepg_group_unfocus2</unfocus_img>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+
+		<widget class="image" style="default" name="img_eutel_show_back1">
+			<property>
+				<rect>[65,96,214,116]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>richepg_epg_unfocus</img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_back2">
+			<property>
+				<rect>[285,96,214,116]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>richepg_epg_unfocus</img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_back3">
+			<property>
+				<rect>[505,96,214,116]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>richepg_epg_unfocus</img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_back4">
+			<property>
+				<rect>[65,272,214,116]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>richepg_epg_unfocus</img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_back5">
+			<property>
+				<rect>[285,272,214,116]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>richepg_epg_unfocus</img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_back6">
+			<property>
+				<rect>[505,272,214,116]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>richepg_epg_unfocus</img>
+			</property>
+		</widget>
+
+		<widget class="image" style="default" name="img_eutel_show_logo1">
+			<property>
+				<rect>[69,100,206,108]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_logo2">
+			<property>
+				<rect>[289,100,206,108]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_logo3">
+			<property>
+				<rect>[509,100,206,108]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_logo4">
+			<property>
+				<rect>[69,276,206,108]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_logo5">
+			<property>
+				<rect>[289,276,206,108]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_logo6">
+			<property>
+				<rect>[509,276,206,108]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+
+		<widget class="text" style="default" name="text_eutel_show_title1">
+			<property>
+				<rect>[67,214,210,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_title2">
+			<property>
+				<rect>[287,214,210,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_title3">
+			<property>
+				<rect>[507,214,210,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_title4">
+			<property>
+				<rect>[67,390,210,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_title5">
+			<property>
+				<rect>[287,390,210,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_title6">
+			<property>
+				<rect>[507,390,210,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+
+		<widget class="text" style="default" name="text_eutel_show_time1">
+			<property>
+				<rect>[67,242,100,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_ch1">
+			<property>
+				<rect>[167,242,110,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_time2">
+			<property>
+				<rect>[287,242,100,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_ch2">
+			<property>
+				<rect>[387,242,110,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_time3">
+			<property>
+				<rect>[507,242,100,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_ch3">
+			<property>
+				<rect>[607,242,110,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_time4">
+			<property>
+				<rect>[67,418,100,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_ch4">
+			<property>
+				<rect>[167,418,110,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_time5">
+			<property>
+				<rect>[287,418,100,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_ch5">
+			<property>
+				<rect>[387,418,110,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_time6">
+			<property>
+				<rect>[507,418,100,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_ch6">
+			<property>
+				<rect>[607,418,110,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+
+		<widget class="text" style="default" name="text_eutel_show_duration">
+			<property>
+				<rect>[762,97,228,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[default_color,default_color,default_color]</backcolor>
+				<font>font_22</font>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_name">
+			<property>
+				<rect>[762,125,228,25]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_parent">
+			<property>
+				<rect>[762,150,32,25]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_genres">
+			<property>
+				<rect>[794,150,196,25]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_brief">
+			<property>
+				<rect>[762,178,228,220]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|top</alignment>
+				<string></string>
+				<format>automatic</format>
+			</property>
+		</widget>
+
+		<widget class="image" style="default" name="img_eutel_content_separate_line2">
+			<property>
+				<rect>[762,400,228,1]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[line_bg_color2,line_bg_color2,line_bg_color2]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_ch_logo">
+			<property>
+				<rect>[844,406,64,40]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_ch_logo">
+			<property>
+				<rect>[844,406,64,40]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_ch_name">
+			<property>
+				<rect>[762,450,228,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+
+		<widget class="image" style="default" name="img_eutel_show_details_back">
+			<property>
+				<rect>[140,94,500,328]</rect>
+				<state>hide</state>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+				<mode>multiple</mode>
+				<img></img>
+				<lt_img>s_win_m</lt_img>
+				<rt_img>s_win_m</rt_img>
+				<lb_img>s_win_m</lb_img>
+				<rb_img>s_win_m</rb_img>
+				<l_img>s_win_m</l_img>
+				<r_img>s_win_m</r_img>
+				<t_img>s_win_m</t_img>
+				<b_img>s_win_m</b_img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_details_duration">
+			<property>
+				<rect>[160,96,460,28]</rect>
+				<state>hide</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_details_title">
+			<property>
+				<rect>[160,124,460,28]</rect>
+				<state>hide</state>
+				<forecolor>[pop_title_color,pop_title_color,pop_title_color]</forecolor>
+				<backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="notepad" style="default" name="notepad_eutel_show_details">
+			<property>
+				<rect>[145,156,490,236]</rect>
+				<state>hide</state>
+				<forecolor>[pop_title_color,pop_title_color,pop_title_color]</forecolor>
+				<backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+				<alignment>left|top</alignment>
+				<font>Arial</font>
+				<vertical_margin>0</vertical_margin>
+				<horizontal_margin>20</horizontal_margin>
+			</property>
+			<children>
+				<widget class="scrollbar" style="default" name="scrollbar_eutel_show_details">
+					<property>
+						<rect>[480,0,9,236]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+						<back_img>s_roll_m</back_img>
+						<arrow_up>s_roll_t</arrow_up>
+						<arrow_down>s_roll_d</arrow_down>
+						<fore_img>s_roll_button</fore_img>
+						<format>scroll_show</format>
+					</property>
+				</widget>
+			</children>
+		</widget>
+		<widget class="button" style="default" name="btn_eutel_show_details_exit">
+			<property>
+				<rect>[376,395,38,19]</rect>
+				<state>hide</state>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[default_color,default_color,default_color]</backcolor>
+				<focus_img>s_ts_exit</focus_img>
+				<unfocus_img>s_ts_exit</unfocus_img>
+			</property>
+		</widget>
+
+		<widget class="image" style="default" name="img_eutel_show_ok_tip">
+			<property>
+				<rect>[36,521,38,19]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_ok</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_ok_tip">
+			<property>
+				<rect>[80,516,90,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>Play</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_red_tip">
+			<property>
+				<rect>[175,520,20,20]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_red</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_red_tip">
+			<property>
+				<rect>[198,516,80,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>Day</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_green_tip">
+			<property>
+				<rect>[285,520,20,20]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_green</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_green_tip">
+			<property>
+				<rect>[308,516,80,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>Page</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_yellow_tip">
+			<property>
+				<rect>[395,520,20,20]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_yellow</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_yellow_tip">
+			<property>
+				<rect>[418,516,136,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>Content Filter</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_blue_tip">
+			<property>
+				<rect>[560,520,20,20]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_blue</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_blue_tip">
+			<property>
+				<rect>[582,516,136,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>Refresh</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_info_tip">
+			<property>
+				<rect>[724,520,38,19]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_info</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_info_tip">
+			<property>
+				<rect>[768,516,90,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>Detail</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_eutel_show_fav_tip">
+			<property>
+				<rect>[862,520,38,19]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_fav</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_eutel_show_fav_tip">
+			<property>
+				<rect>[904,516,90,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>Book</string>
+				<format>static</format>
+			</property>
+		</widget>
+
+	</children>
+</widget>

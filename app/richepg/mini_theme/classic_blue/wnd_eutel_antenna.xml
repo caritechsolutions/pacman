@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget class="window" style="default" name="wnd_eutel_antenna">
+    <property>
+        <rect>[0,0,1280,720]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_eutel_ant_create</create>
+        <destroy>app_eutel_ant_destroy</destroy>
+        <got_focus>app_eutel_ant_got_focus</got_focus>
+        <lost_focus>app_eutel_ant_lost_focus</lost_focus>
+        <keypress>app_eutel_ant_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_eutel_antenna_bg_jpg">
+            <property>
+                <rect>[0,0,1280,720]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>bg</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_eutel_antenna_back">
+            <property>
+                <rect>[190,100,900,518]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_eutel_antenna_title">
+            <property>
+                <rect>[146,18,80,80]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_title_left_installation</img>
+                <lt_img>s_title_left_installation</lt_img>
+                <rt_img>s_title_right</rt_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_eutel_antenna_title">
+            <property>
+                <rect>[241,38,600,52]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_sub</font>
+                <string>Sat.tv Antenna</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_eutel_antenna_company_logo">
+            <property>
+                <rect>[200,100,72,48]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>richepg_sattv_logo_b</img>
+            </property>
+        </widget>
+        <widget class="box" style="default" name="box_eutel_antenna_options">
+            <property>
+                <rect>[206,154,874,384]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <format>vertical</format>
+            </property>
+            <signal>
+                <keypress>app_eutel_ant_box_keypress</keypress>
+            </signal>
+            <children>
+                <widget class="boxitem" style="default" name="boxitem_eutel_antenna_sat">
+                    <property>
+                        <rect>[0,0,870,38]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>s_bar_long_focus</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_eutel_antenna_sat_l">
+                            <property>
+                                <rect>[48,4,208,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Satellite</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmb_eutel_antenna_sat_choice">
+                            <property>
+                                <rect>[288,7,42,24]</rect>
+                                <forecolor>[default_color,default_color,default_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_img>s_ts_ok</focus_img>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmbox_eutel_antenna_sat">
+                            <property>
+                                <rect>[360,4,510,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                            </property>
+                            <signal>
+                                <change>app_eutel_ant_cmb_sat_change</change>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_eutel_antenna_lnb_power">
+                    <property>
+                        <rect>[0,38,870,38]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>s_bar_long_focus</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_eutel_antenna_lnb_power_l">
+                            <property>
+                                <rect>[48,4,208,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>LNB Power</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmb_eutel_antenna_lnb_power_choice">
+                            <property>
+                                <rect>[288,7,42,24]</rect>
+                                <forecolor>[default_color,default_color,default_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_img>s_ts_ok</focus_img>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmbox_eutel_antenna_lnb_power">
+                            <property>
+                                <rect>[360,4,510,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                            </property>
+                            <signal>
+                                <change>app_eutel_ant_cmb_lnb_power_change</change>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_eutel_antenna_lnb_freq">
+                    <property>
+                        <rect>[0,76,870,38]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>s_bar_long_focus</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_eutel_antenna_lnb_freq_l">
+                            <property>
+                                <rect>[48,4,208,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>LNB Frequency</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmb_eutel_antenna_lnb_freq_choice">
+                            <property>
+                                <rect>[288,7,42,24]</rect>
+                                <forecolor>[default_color,default_color,default_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_img>s_ts_ok</focus_img>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmbox_eutel_antenna_lnb_freq">
+                            <property>
+                                <rect>[360,4,510,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                            </property>
+                            <signal>
+                                <change>app_eutel_ant_cmb_lnb_freq_change</change>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_eutel_antenna_22k">
+                    <property>
+                        <rect>[0,114,870,38]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>s_bar_long_focus</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_eutel_antenna_22k_l">
+                            <property>
+                                <rect>[48,4,208,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>22K</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmb_eutel_antenna_22k_choice">
+                            <property>
+                                <rect>[288,7,42,24]</rect>
+                                <forecolor>[default_color,default_color,default_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_img>s_ts_ok</focus_img>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmbox_eutel_antenna_22k">
+                            <property>
+                                <rect>[360,4,510,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                            </property>
+                            <signal>
+                                <change>app_eutel_ant_cmb_22k_change</change>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_eutel_antenna_diseqc10">
+                    <property>
+                        <rect>[0,152,870,38]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>s_bar_long_focus</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_eutel_antenna_diseqc10_l">
+                            <property>
+                                <rect>[48,4,208,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>DiSEqC 1.0</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmb_eutel_antenna_diseqc10_choice">
+                            <property>
+                                <rect>[288,7,42,24]</rect>
+                                <forecolor>[default_color,default_color,default_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_img>s_ts_ok</focus_img>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmbox_eutel_antenna_diseqc10">
+                            <property>
+                                <rect>[360,4,510,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                            </property>
+                            <signal>
+                                <change>app_eutel_ant_cmb_diseqc10_change</change>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_eutel_antenna_diseqc11">
+                    <property>
+                        <rect>[0,190,870,38]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>s_bar_long_focus</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_eutel_antenna_diseqc11_l">
+                            <property>
+                                <rect>[48,4,208,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>DiSEqC 1.1</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmb_eutel_antenna_diseqc11_choice">
+                            <property>
+                                <rect>[288,7,42,24]</rect>
+                                <forecolor>[default_color,default_color,default_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_img>s_ts_ok</focus_img>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmbox_eutel_antenna_diseqc11">
+                            <property>
+                                <rect>[360,4,510,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                            </property>
+                            <signal>
+                                <change>app_eutel_ant_cmb_diseqc11_change</change>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_eutel_antenna_tp_freq">
+                    <property>
+                        <rect>[0,228,870,38]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>s_bar_long_focus</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_eutel_antenna_tp_freq_l">
+                            <property>
+                                <rect>[48,4,208,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>TP Frequency</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="edit" style="default" name="edit_eutel_antenna_tp_freq">
+                            <property>
+                                <rect>[360,4,500,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,window_bg_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <maxlen>5</maxlen>
+                                <format>edit_digit</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_eutel_antenna_tp_freq2">
+                            <property>
+                                <rect>[360,4,500,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,window_bg_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="image" style="default" name="img_eutel_antenna_tp_freq_l">
+                            <property>
+                                <rect>[364,5,10,30]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <mode>single</mode>
+                                <img>s_arrow_l</img>
+                                <mirror>disable</mirror>
+                            </property>
+                        </widget>
+                        <widget class="image" style="default" name="img_eutel_antenna_tp_freq_r">
+                            <property>
+                                <rect>[856,5,10,30]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <mode>single</mode>
+                                <img>s_arrow_r</img>
+                                <mirror>disable</mirror>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_eutel_antenna_tp_polar">
+                    <property>
+                        <rect>[0,266,870,38]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>s_bar_long_focus</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_eutel_antenna_tp_polar_l">
+                            <property>
+                                <rect>[48,4,208,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>TP Polar</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmbox_eutel_antenna_tp_polar">
+                            <property>
+                                <rect>[360,4,510,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                                <content>[H,V]</content>
+                            </property>
+                            <signal>
+                                <change>app_eutel_ant_cmb_tp_polar_change</change>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_eutel_antenna_tp_symbol">
+                    <property>
+                        <rect>[0,304,870,38]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>s_bar_long_focus</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_eutel_antenna_tp_symbol_l">
+                            <property>
+                                <rect>[48,4,208,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>TP Symbol</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="edit" style="default" name="edit_eutel_antenna_tp_symbol">
+                            <property>
+                                <rect>[360,4,500,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,window_bg_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <maxlen>5</maxlen>
+                                <format>edit_digit</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_eutel_antenna_tp_symbol2">
+                            <property>
+                                <rect>[360,4,500,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,window_bg_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="image" style="default" name="img_eutel_antenna_tp_symbol_l">
+                            <property>
+                                <rect>[364,5,10,30]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <mode>single</mode>
+                                <img>s_arrow_l</img>
+                                <mirror>disable</mirror>
+                            </property>
+                        </widget>
+                        <widget class="image" style="default" name="img_eutel_antenna_tp_symbol_r">
+                            <property>
+                                <rect>[856,5,10,30]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <mode>single</mode>
+                                <img>s_arrow_r</img>
+                                <mirror>disable</mirror>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_eutel_antenna_search">
+                    <property>
+                        <rect>[0,342,870,38]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>s_bar_long_focus</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_eutel_antenna_search_l">
+                            <property>
+                                <rect>[48,4,208,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Start Search</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_eutel_antenna_search">
+                            <property>
+                                <rect>[360,4,510,30]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <string>Press OK</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+
+        <widget class="image" style="default" name="img_eutel_antenna_box_line">
+            <property>
+                <rect>[193,540,896,2]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_eutel_antenna_strength">
+            <property>
+                <rect>[268,546,108,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Strength</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="progbar" style="default" name="progbar_eutel_antenna_strength">
+            <property>
+                <rect>[378,554,544,16]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <back_image>s_progress_m</back_image>
+                <back_image_l>s_progress_l</back_image_l>
+                <back_image_m>s_progress_m</back_image_m>
+                <back_image_r>s_progress_r</back_image_r>
+                <fore_image>s_progress_blue</fore_image>
+                <fore_image_l>s_progress3_l</fore_image_l>
+                <fore_image_m>s_progress3_m</fore_image_m>
+                <fore_image_r>s_progress3_r</fore_image_r>
+                <format>water</format>
+                <text_format>percentage</text_format>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_eutel_antenna_strength_value">
+            <property>
+                <rect>[924,546,64,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_eutel_antenna_quality">
+            <property>
+                <rect>[268,582,108,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Quality</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="progbar" style="default" name="progbar_eutel_antenna_quality">
+            <property>
+                <rect>[378,590,544,16]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <back_image>s_progress_m</back_image>
+                <back_image_l>s_progress_l</back_image_l>
+                <back_image_m>s_progress_m</back_image_m>
+                <back_image_r>s_progress_r</back_image_r>
+                <fore_image>s_progress_blue</fore_image>
+                <fore_image_l>s_progress3_l</fore_image_l>
+                <fore_image_m>s_progress3_m</fore_image_m>
+                <fore_image_r>s_progress3_r</fore_image_r>
+                <format>water</format>
+                <text_format>percentage</text_format>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_eutel_antenna_quality_value">
+            <property>
+                <rect>[924,582,64,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_eutel_antenna_tip_back">
+            <property>
+                <rect>[0,620,1280,100]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bot_color,window_bot_color,window_bot_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <t_img>s_bar_bg</t_img>
+            </property>
+        </widget>
+    </children>
+</widget>

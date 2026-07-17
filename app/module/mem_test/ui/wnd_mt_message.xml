@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_mt_message">
+    <property>
+        <rect>[490,0,512,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+    </property>
+    <signal>
+        <create>app_mt_message_create</create>
+        <service>app_mt_message_service</service>
+        <keypress>app_mt_message_keypress</keypress>
+        <destroy>app_mt_message_destroy</destroy>
+    </signal>
+    <children>
+        <widget class="text" style="default" name="text_mt_message_1">
+            <property>
+                <rect>[20,30,472,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <alignment>left|bottom</alignment>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mt_message_2">
+            <property>
+                <rect>[20,60,472,30]</rect>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|bottom</alignment>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mt_message_3">
+            <property>
+                <rect>[20,90,472,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|bottom</alignment>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mt_message_4">
+            <property>
+                <rect>[20,120,472,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|bottom</alignment>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mt_message_5">
+            <property>
+                <rect>[20,150,472,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|bottom</alignment>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mt_message_6">
+            <property>
+                <rect>[20,180,472,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|bottom</alignment>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mt_message_7">
+            <property>
+                <rect>[20,210,472,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|bottom</alignment>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mt_message_8">
+            <property>
+                <rect>[20,240,472,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|bottom</alignment>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mt_message_9">
+            <property>
+                <rect>[20,270,472,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|bottom</alignment>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mt_message_10">
+            <property>
+                <rect>[20,300,472,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|bottom</alignment>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mt_message_11">
+            <property>
+                <rect>[20,330,472,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|bottom</alignment>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mt_message_12">
+            <property>
+                <rect>[20,360,472,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|bottom</alignment>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_mt_message_line">
+            <property>
+                <rect>[10,400,494,2]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>signal</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mt_message_err_1">
+            <property>
+                <rect>[20,410,472,30]</rect>
+                <forecolor>[#22a3a5,#22a3a5,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|bottom</alignment>
+                <string>test err1</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mt_message_err_2">
+            <property>
+                <rect>[20,440,472,30]</rect>
+                <forecolor>[#22a3a5,#22a3a5,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|bottom</alignment>
+                <string>test err2</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mt_message_err_3">
+            <property>
+                <rect>[20,470,472,30]</rect>
+                <forecolor>[#22a3a5,#22a3a5,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|bottom</alignment>
+                <string>test err3</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mt_message_err_4">
+            <property>
+                <rect>[20,500,472,30]</rect>
+                <forecolor>[#22a3a5,#22a3a5,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|bottom</alignment>
+                <string>test err4</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mt_message_err_5">
+            <property>
+                <rect>[20,530,472,30]</rect>
+                <forecolor>[key_red,key_red,key_red]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>right|bottom</alignment>
+                <string>test err5</string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

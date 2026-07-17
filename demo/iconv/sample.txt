@@ -1,0 +1,116 @@
+#include "app_wnd_search.h"
+#include "app_module.h"
+#include "app_send_msg.h"
+#include "app_utility.h"
+#include "app_frontend.h"
+#include "app_epg.h"
+#include "app_default_params.h"
+
+static void _search_show_tv_channel(uint32_t channel_num, GxMsgProperty_NewProgGet* pNewProgGet)
+{
+#define CHANNEL_NUM_ONE_PAGE	6
+#define TV_NAME_BUFFER_LENGTH	(MAX_PROG_NAME+10)
+	static char s_TvName[6][TV_NAME_BUFFER_LENGTH];
+	char* s_TextName[6] = {"text_search_tv_name1", "text_search_tv_name2",
+					"text_search_tv_name3", "text_search_tv_name4",
+					"text_search_tv_name5", "text_search_tv_name6"};
+
+	char* s_ImgName[6] = {"text_search_scrambler1", "text_search_scrambler2",
+					"text_search_scrambler3", "text_search_scrambler4",
+					"text_search_scrambler5", "text_search_scrambler6"};
+
+	static char s_ImgState[6][20];
+	uint8_t CurLine=0;
+	uint8_t i=0;
+
+	CurLine = channel_num%CHANNEL_NUM_ONE_PAGE;
+
+    if(pNewProgGet->scramble_flag)
+		sprintf(s_ImgState[CurLine],"%s","$");
+	else
+		sprintf(s_ImgState[CurLine],"%s"," ");
+
+#if 0
+	static char s_TvNum[6][10];
+	char* s_TextNum[6] = {"text_search_num_left_1", "text_search_num_left_2",
+					"text_search_num_left_3", "text_search_num_left_4",
+					"text_search_num_left_5", "text_search_num_left_6"};
+
+	if(pNewProgGet->scramble_flag)
+		sprintf(s_ImgState[CurLine],"%s","$");
+	else
+		//memset(s_ImgState[CurLine],0,20);
+		sprintf(s_ImgState[CurLine],"%s"," ");
+
+	app_log_min("------%d    %s------\n",channel_num+1,pNewProgGet->name);
+
+	sprintf(s_TvNum[CurLine],"%d",channel_num+1);
+	memcpy(s_TvName[CurLine],pNewProgGet->name,MAX_PROG_NAME);
+	//to roll
+	if(channel_num<CHANNEL_NUM_ONE_PAGE)
+	{
+		GUI_SetProperty(s_TextNum[CurLine], "string", s_TvNum[CurLine]);
+		GUI_SetProperty(s_TextName[CurLine], "string", s_TvName[CurLine]);
+		GUI_SetProperty(s_ImgName[CurLine], "string", s_ImgState[CurLine]);
+	}
+	else
+	{
+		for(i=0; i<CHANNEL_NUM_ONE_PAGE; i++)
+		{
+			if((CurLine+i)<5)
+			{
+				GUI_SetProperty(s_TextNum[i], "string", s_TvNum[CurLine+i+1]);
+				GUI_SetProperty(s_TextName[i], "string", s_TvName[CurLine+i+1]);
+				GUI_SetProperty(s_ImgName[i], "string", s_ImgState[CurLine+i+1]);
+			}
+			else if((CurLine+i)>=5)
+			{
+				GUI_SetProperty(s_TextNum[i], "string", s_TvNum[CurLine+i-5]);
+				GUI_SetProperty(s_TextName[i], "string", s_TvName[CurLine+i-5]);
+				GUI_SetProperty(s_ImgName[i], "string", s_ImgState[CurLine+i-5]);
+			}
+		}
+	}
+#else
+	char Buffer[TV_NAME_BUFFER_LENGTH] = {0};
+	char NewProgName[MAX_PROG_NAME] = {0};
+
+	memset(Buffer, 0, TV_NAME_BUFFER_LENGTH);
+	extern uint16_t MApi_CharTable_MappingDVBTextToUTF8(uint8_t *pu8Str, uint8_t *pu8DestStr, uint16_t srcByteLen, uint16_t dstCharLen,uint8_t *pu8ISO639);
+	MApi_CharTable_MappingDVBTextToUTF8(pNewProgGet->name,NewProgName,MAX_PROG_NAME,MAX_PROG_NAME,NULL);
+//	sprintf((char*)Buffer,"%d    %s",channel_num+1,pNewProgGet->name);
+	sprintf((char*)Buffer,"%d    %s",channel_num+1,NewProgName);
+	app_log_min("------%d    %s------\n",channel_num+1,pNewProgGet->name);
+	for(i = 0; (pNewProgGet->name)[i] != '\0'; i++)
+	{
+		app_log_min("%2X ",(pNewProgGet->name)[i]);
+	}
+	app_log_min("\n");
+	strcpy(s_TvName[CurLine], Buffer);
+
+	//to roll
+	if(channel_num<CHANNEL_NUM_ONE_PAGE)
+	{
+		GUI_SetProperty(s_TextName[CurLine], "string", s_TvName[CurLine]);
+        GUI_SetProperty(s_ImgName[CurLine], "string", s_ImgState[CurLine]);
+	}
+	else
+	{
+		for(i=0; i<CHANNEL_NUM_ONE_PAGE; i++)
+		{
+			if((CurLine+i)<5)
+            {
+				GUI_SetProperty(s_TextName[i], "string", s_TvName[CurLine+i+1]);
+                GUI_SetProperty(s_ImgName[i], "string", s_ImgState[CurLine+i+1]);
+            }
+			else if((CurLine+i)>=5)
+            {
+				GUI_SetProperty(s_TextName[i], "string", s_TvName[CurLine+i-5]);
+                GUI_SetProperty(s_ImgName[i], "string", s_ImgState[CurLine+i-5]);
+            }
+		}
+	}
+#endif
+	return;
+}
+

@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_cryptoguard_baseinfo">
+    <property>
+        <rect>[0,0,1280,720]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <keypress>app_cryptoguard_baseinfo_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_cryptoguard_baseinfo_back">
+            <property>
+                <rect>[180,150,920,480]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_cryptoguard_baseinfo_title">
+            <property>
+                <rect>[100,40,80,80]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_title_left_utility</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_title">
+            <property>
+                <rect>[195,70,600,48]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_sub</font>
+                <alignment>left|bottom</alignment>
+                <string>Base Info</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item1_l">
+            <property>
+                <rect>[220,200,340,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item2_l">
+            <property>
+                <rect>[220,240,340,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item3_l">
+            <property>
+                <rect>[220,280,340,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item4_l">
+            <property>
+                <rect>[220,330,340,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item5_l">
+            <property>
+                <rect>[220,370,340,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item6_l">
+            <property>
+                <rect>[220,410,340,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item7_l">
+            <property>
+                <rect>[220,450,340,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item8_l">
+            <property>
+                <rect>[220,490,340,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item9_l">
+            <property>
+                <rect>[220,530,340,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item10_l">
+            <property>
+                <rect>[220,570,340,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item1_r">
+            <property>
+                <rect>[620,200,440,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item2_r">
+            <property>
+                <rect>[620,240,440,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item3_r">
+            <property>
+                <rect>[620,280,440,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item4_r">
+            <property>
+                <rect>[620,330,440,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item5_r">
+            <property>
+                <rect>[620,370,440,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item6_r">
+            <property>
+                <rect>[620,410,440,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item7_r">
+            <property>
+                <rect>[620,450,440,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item8_r">
+            <property>
+                <rect>[620,490,440,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item9_r">
+            <property>
+                <rect>[620,530,440,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_cryptoguard_baseinfo_item10_r">
+            <property>
+                <rect>[620,570,440,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

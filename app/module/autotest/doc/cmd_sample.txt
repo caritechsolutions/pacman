@@ -1,0 +1,334 @@
+command:【type类型后续需要在软件添加，命令和软件匹配】
+	set_demod_type type=dvbs crc32=4ff9597\r\n
+	set_demod_type type=dvbt2 crc32=fab85061\r\n
+	set_demod_type type=dvbc crc32=4e3d87c6\r\n
+	set_demod_type type=dvbdtmb crc32=9c2c4448\r\n
+reply:
+	code:0 message: reply set_demod_type successful crc32:cff314b\r\n
+	code:2 message: reply set_demod_type failed: the demod type is wrong or not register! crc32:2ff966af\r\n
+
+command:
+	// FOR S OR S2
+	dmx：使用的DEMUX设备，默认这个字段可以不填；tsmode：0，TS并行连接，1，TS串行连接；tssource：TS输入源；tsselect：tuner号。关键字的先后顺序无所谓；tsid：配置ts_id范围0≤tsid≤255。
+	set_tp fre=1030000 sym=27500000 dmx=0 tsmode=0 tssource=0 tsselect=0 pol=0 tsid=255 crc32=d43399f2\r\n
+	set_tp fre=1030000 sym=27500000 crc32=7ee6a7df\r\n【其他参数不配置，使用默认值，如上所示】
+ 
+	// FOR T OR T2
+	dmx：使用的DEMUX设备，默认这个字段可以不填；tsmode：0，TS并行连接，1，TS串行连接；tssource：TS输入源；tsselect：tuner号;workmode: 针对DVBT2的芯片
+	的工作模式，2：DVBT_AUTO_MODE，3：DVBT_NORMAL，4：DVBT2_BASE， 5：DVBT2_LITE， 6：DVBT2_BASE_LITE；dataplpid：0~255；commonplpid：0~255；
+	commonplpexite：0 or 1; bandwidth: 8000khz，7000khz，6000khz，5000khz，1700khz。
+	set_tp fre=850000 bandwidth=8000 workmode=2 dataplpid=0 commonplpid=0 commonplpexite=0 dmx=0 tsmode=0 tssource=1 tsselect=0 pol=0 crc32=73172ae6\r\n
+	set_tp fre=850000 bandwidth=8000 workmode=2 crc32=eb4d0c11\r\n
+
+	// FOR DTMB gx3113h
+	set_tp fre=850000 bandwidth=8000 tssource=1 crc32=ae785df0\r\n
+
+	// FOR DTMB taurus
+	set_tp fre=714000 bandwidth=8000 tssource=1 crc32=855979e\r\n
+
+	// FOR C
+	dmx：使用的DEMUX设备，默认这个字段可以不填；tsmode：0，TS并行连接，1，TS串行连接；tssource：TS输入源；tsselect：tuner号。关键字的先后顺序无所谓。
+	qam: 1-qam16 2-qam32 3-qam64 4-qam128 5-qam256
+	set_tp fre=299000000 sym=6875000 qam=3 dmx=0 tsmode=1 tssource=1 tsselect=2 crc32=80715308\r\n
+	set_tp fre=299000000 sym=6875000 qam=3 crc32=b18488f6\r\n【其他参数不配置，使用默认值，如上所示】
+reply:
+	code:0 message: reply set_tp successful crc32:3a3372c0\r\n
+	code:2 message: reply set_tp failed: do not select a vaild demod mode! set mode first! crc32:1750071d\r\n
+
+command:
+	get_tp_status crc32=400ed46\r\n
+reply:
+	code:0 data: (1) message: reply get_tp_status successful: locked lock_time[1000] crc32=fff77263\r\n
+	code:0 data: (0) message: reply get_tp_status successful: unlocked crc32=675d12fe\r\n
+	code:1 message: reply get_tp_status failed: get lock status failed! crc32=991b15ad\r\n
+
+command:
+	clear_tp_lock crc32=3a6956d5\r\n
+reply:
+	code:0 message: reply clear_tp_lock successful crc32:a130d56c\r\n
+	code:1 message: reply clear_tp_lock failed: destroy frontend failed! crc32:b814ea8b\r\n
+	code:2 message: reply clear_tp_lock failed: do not select a vaild demod mode! set mode first! crc32:439ce911\r\n
+
+command:
+    //vformat【视频的编码类型】：0-mpeg2, 1-avs, 2-h.264, 3-h265, 4-mpeg4, 5-h263, 6-real
+    //aformat【音频的编码类型】：0-mpeg1，1-mpeg2, 2-AAC LATM, 3-dobly, 4-AAC ATDS, 5,8,9,12-DOLBY-PLUS, 6-LPCM, 7-DTS, 10,11,13-DTS-HD, 14-DRA1
+	play vpid=36 apid=35 ppid=36 vformat=2 aformat=0 crc32=bd95af53\r\n
+reply:
+	code:0 message: reply play successful crc32:d9bb61a9\r\n
+	code:2 message: reply play failed: do not select a vaild demod mode! set mode first! crc32:536f0828\r\n
+
+command:
+	stop crc32=cbd78fea\r\n
+reply:
+	code:0 message: reply stop successful crc32:3796d9fb\r\n
+	code:2 message: reply stop failed: do not select a vaild demod mode! set mode first! crc32:dffa9cf\r\n
+
+command:
+	set_ts_compare tspid=36 crc32=bc21379c\r\n
+reply:
+	code:0 message: reply set_ts_compare successful crc32:66416229\r\n
+	code:2 message: reply set_ts_compare failed: do not select a vaild demod mode! set mode first! crc32:4084602\r\n
+
+command:
+	get_ts_compare_result crc32=a3aa74ab\r\n
+reply:
+	code:0 data: (1,280644,278299) message: reply get_ts_compare_result successful: locked(lock status) 280644(receive packages) 278299(error packages) crc32:90d8ed37\r\n
+	code:0 data: (0,380302,377126) message: reply get_ts_compare_result successful: unlocked(lock status) 380302(receive packages) 377126(error packages) crc32:fcebf12f\r\n
+	code:1 data:  message: reply get_ts_compare_result failed: get ts compare result failed! maybe the function is not work crc32:daf97b19\r\n
+	code:2 data:  message: reply get_ts_compare_result failed: do not select a vaild demod mode! set mode first! crc32:20f51fd7\r\n
+
+command:
+	clear_ts_compare crc32=e4985fdd\r\n
+reply:
+	code:0 message: reply clear_ts_compare successful crc32:fef7f733\r\n
+	code:2 message: reply clear_ts_compare failed: do not select a vaild demod mode! set mode first! crc32:770f200\r\n
+
+command:
+	exit crc32:e40ebc6\r\n
+reply:
+	code:0 message: reply exit successful crc32:ffae0645\r\n
+
+command:
+	reset crc32=e1516fd7\r\n
+reply:
+	code:0 message: reply reset successful\r\n
+	code:2 message: reply reset failed: parameter is wrong!\r\n
+
+############################### test mode for pcdemo ###################################
+
+command:
+	set_demod_type type=pcdemo\r\n
+reply:
+	code:0 message: reply set_demod_type successful\r\n
+	code:2 message: reply set_demod_type failed: the demod type is wrong or not register!\r\n
+
+
+command:
+	//base default is f2
+	read_demod_reg base=f2 register=31\r\n
+reply:
+	code:0 data: ff message: reply read_demod_register successful\r\n
+	code:1 data: 0  message: reply read_demod_register failed\r\n
+
+command:
+	//base default is f2
+	write_demod_reg base=f2 register=0d value=04\r\n
+reply:
+	code:0 message: reply write_demod_register successful\r\n
+	code:1 message: reply write_demod_register failed\r\n
+
+command:
+	//type 0:tuner repeat mode,  1:tuner master mode,  default:0
+	read_tuner_reg base=0 register=0f type=0\r\n
+	read_tuner_reg register=0f\r\n
+reply:
+	code:0 data: 6a message: reply read_tuner_register successful\r\n
+	code:1 data: 0  message: reply read_tuner_register failed\r\n
+
+command:
+	//type 0:tuner repeat mode,  1:tuner master mode,  default:0
+	write_tuner_reg base=0 register=0d value=04 type=0\r\n
+	write_tuner_reg register=0d value=04\r\n
+reply:
+	code:0 message: reply write_tuner_register successful\r\n
+	code:1 message: reply write_tuner_register failed\r\n
+
+command:
+	//read SOC register  count:读取字节数(count*4)
+	read_other_reg register=04e00140 count=1\r\n
+reply:
+	code:0 data: 12345678 message: reply read_tuner_register successful\r\n
+	code:1 data: 0  message: reply read_tuner_register failed\r\n
+
+command:
+	//write SOC register
+	write_other_reg register=04e00140 value=12345678\r\n
+reply:
+	code:0 message: reply write_tuner_register successful\r\n
+	code:1 message: reply write_tuner_register failed\r\n
+
+// CRC support 
+command：
+    enable_crccheck crc32=d6be5d4e\r\n
+reply:
+    code:0 message: reply enable_crccheck successful crc32:be93a54a\r\n
+    code:2 data: enablecrccheck crc32=d6be5d4e message: reply find_cmd failed: the cmd is not support!\r\n
+    code:4 data: enablecrccheck crc32=d6be5d4e message: reply CRC32 Check failed: crc32 error! crc32:b62d160c\r\n
+
+// for CVBS
+// start or stop
+command:
+   // start (PAL)
+   set_cvbs on crc32=52f03791\r\n
+reply:
+   code:0 message: reply set_cvbs on successful crc32:a904ceaa\r\n
+   code:2 message: reply set_cvbs on failed: Have been start test! crc32:5d973f41\r\n
+   code:2 message: reply set_cvbs o failed: Parameter is wrong! crc32:5cc5752c\r\n
+   code:2 data: setcvbs on crc32=9ffdeb36 message: reply find_cmd failed: the cmd is not support! crc32:f8da3e8e\r\n
+   code:4 data: set_cvbs on crc32=52f0379 message: reply CRC32 Check failed: crc32 error! crc32:31ca2a4c\r\n
+
+command:
+   // start (NTSC)
+   set_cvbs 480ION crc32=c7ee2581\r\n
+reply:
+   code:0 message: reply set_cvbs 480ION successful crc32:ab1fc853\r\n
+   code:2 message: reply set_cvbs 480ION failed: Have been start test! crc32:39f21121\r\n
+   code:2 message: reply set_cvbs o failed: Parameter is wrong! crc32:5cc5752c\r\n
+   code:2 data: setcvbs on crc32=9ffdeb36 message: reply find_cmd failed: the cmd is not support! crc32:f8da3e8e\r\n
+   code:4 data: set_cvbs 480ION crc32=52f0379 message: reply CRC32 Check failed: crc32 error! crc32:b370c28b\r\n
+
+command:
+   // exit
+   set_cvbs off crc32=c606259b\r\n
+reply:
+   code:0 message: reply set_cvbs off successful crc32:1fe1ba2b\r\n
+   code:2 message: reply set_cvbs off failed: No start, please start first! crc32:eee66f7f\r\n
+   code:2 message: reply set_cvbs of failed: Parameter is wrong! crc32:0a28e901\r\n
+   code:2 data: setcvbs off crc32=8e791e0c message: reply find_cmd failed: the cmd is not support! crc32:be7e907a\r\n
+   code:4 data: set_cvbs off crc32=c606259 message: reply CRC32 Check failed: crc32 error! crc32:1f2c6a10\r\n
+
+// indicator 
+command:
+   // config sync_level
+   set_indicator sync_level 10 crc32=7ffe93d\r\n
+reply:
+   code:0 message: reply set_indicator sync_level 10 successful crc32:dc64f801\r\n
+   code:2 message: reply set_indicator sync_level 10 failed: Overstep! error_step=5! crc32:6380cb5b\r\n
+   code:2 message: reply set_indicator sync_leve 10 failed: CVBS parameter is wrong! crc32:054240ad\r\n
+   code:2 data: set_indicatr sync_level 10 crc32=eac6a208 message: reply find_cmd failed: the cmd is not support! crc32:a4259dde\r\n
+   code:2 message: reply set_indicator sync_level 10 failed: No start, please start first! crc32:9ae62198\r\n
+   code:4 data: set_indicator sync_level 10 crc32=7ffe93 message: reply CRC32 Check failed: crc32 error! crc32:401e2ba1\r\n
+
+command:
+   // config bar_level
+   set_indicator bar_level 1 crc32=ed6fbfc8\r\n
+   set_indicator bar_level -1 crc32=3adb937c\r\n
+reply:
+   code:0 message: reply set_indicator bar_level 1 successful crc32:ff542265\r\n
+   code:2 message: reply set_indicator bar_level 1 failed: Overstep! error_step=1! crc32:05e6fd76\r\n
+   code:2 message: reply set_indicator bar_leve 1 failed: CVBS parameter is wrong! crc32:e1069ed7\r\n
+   code:2 message: reply set_indicator bar_level 1 failed: No start, please start first! crc32:004e3417\r\n
+   code:2 data: set_indicatr bar_level 1 crc32=9b6cf21c message: reply find_cmd failed: the cmd is not support! crc32:e36d0145\r\n
+   code:4 data: set_indicator bar_leve 1 crc32=ed6fbfc8 message: reply CRC32 Check failed: crc32 error! crc32:d141809f\r\n
+
+command:
+   // config chroma_gain
+   set_indicator chroma_gain 1 crc32=6f7cef47\r\n
+   set_indicator chroma_gain 2 crc32=4451bc84\r\n
+reply:
+   code:0 message: reply set_indicator chroma_gain 1 successful crc32:912105b5\r\n
+   code:2 message: reply set_indicator chroma_gai 1 failed: CVBS parameter is wrong! crc32:a559c2c1\r\n
+   code:2 message: reply set_indicator chroma_gain 1 failed: Overstep! error_step=1! crc32:b0290e0b\r\n
+   code:2 message: reply set_indicator chroma_gain 1 failed: No start, please start first! crc32:55ddc22e\r\n
+   code:2 data: set_indicatr chroma_gain 1 crc32=8245a472 message: reply find_cmd failed: the cmd is not support! crc32:e36d0145\r\n
+   code:4 data: set_indicator chroma_gain 1 crc32=6f7cef4 message: reply CRC32 Check failed: crc32 error! crc32:4631109f\r\n
+
+command:
+   // config cb gain (VectorUGain)
+   set_indicator vectoru_gain 1 crc32=8e86d6a\r\n
+   set_indicator vectoru_gain -2 crc32=29cb85a9\r\n
+reply:
+   code:0 message: reply set_indicator vectoru_gain 1 successful crc32:ef733569\r\n
+   code:2 message: reply set_indicator vectorugain 1 failed: CVBS parameter is wrong! crc32:24c21cb2\r\n
+   code:2 message: reply set_indicator vectoru_gain 1 failed: Overstep! error_step=1! crc32:728dff3a\r\n
+   code:2 message: reply set_indicator vectoru_gain 1 failed: No start, please start first! crc32:bf8da3b7\r\n
+   code:2 data: setindicator vectoru_gain 1 crc32=6ed042f message: reply find_cmd failed: the cmd is not support! crc32:8c4c62a8\r\n
+   code:4 data: set_indicator vectorugain 1 crc32=12345 message: reply CRC32 Check failed: crc32 error! crc32:d002d461\r\n
+
+command:
+   // config cr gain (VectorVGain)
+   set_indicator vectorv_gain 1 crc32=316551af\r\n
+   set_indicator vectorv_gain -2 crc32=c2fc3eaa\r\n
+reply:
+   code:0 message: reply set_indicator vectorv_gain 1 successful crc32:40da78a3\r\n
+   code:2 message: reply set_indicator vectorvgain 1 failed: CVBS parameter is wrong! crc32:c78bab10\r\n
+   code:2 message: reply set_indicator vectorv_gain 1 failed: Overstep! error_step=1! crc32:91c44898\r\n
+   code:2 message: reply set_indicator vectorv_gain 1 failed: No start, please start first! crc32:406be18\r\n
+   code:2 data: setindicator vectorv_gain 1 crc32=3f6038ea message: reply find_cmd failed: the cmd is not support! crc32:3f119b43\r\n
+   code:4 data: set_indicator vectorvgain 1 crc32=123456 message: reply CRC32 Check failed: crc32 error! crc32:242c2ad2\r\n
+
+command:
+   // config chroma_sync
+   set_indicator chroma_sync 1 crc32=5322d3a1\r\n
+   set_indicator chroma_sync -2 crc32=2526542f\r\n
+reply:
+   code:0 message: reply set_indicator chroma_sync 1 successful crc32:449cd231\r\n
+   code:2 message: reply set_indicator chroma_sync 1 failed: Overstep! error_step=1! crc32:89abd4f0\r\n
+   code:2 message: reply set_indicator chroma_ 1 failed: CVBS parameter is wrong! crc32:c3b1a908\r\n
+   code:2 message: reply set_indicator chroma_sync 1 failed: No start, please start first! crc32:8527eca3\r\n
+   code:2 data: set_indicato chroma_sync 1 crc32=5176e453 message: reply find_cmd failed: the cmd is not support! crc32:f47f1441\r\n
+   code:4 data: set_indicator chroma_sync 1 crc32=5322d3a message: reply CRC32 Check failed: crc32 error! crc32:c9a909d4\r\n
+
+command:
+   // config frequence_response
+   set_indicator fre_response 1 crc32=4a072a1f\r\n
+   set_indicator fre_response -3 crc32=10fdde1c\r\n
+reply:
+   code:0 message: reply set_indicator fre_response 1 successful crc32:92575cab\r\n
+   code:2 message: reply set_indicator fre_response 1 failed: Overstep! error_step=1! crc32:728c13a9\r\n
+   code:2 message: reply set_indicator freresponse 1 failed: CVBS parameter is wrong! crc32:227a33e3\r\n
+   code:2 message: reply set_indicator fre_response 1 failed: No start, please start first! crc32:71e78ae1\r\n
+   code:2 data: setindicator fre_response 1 crc32=4402435a message: reply find_cmd failed: the cmd is not support! crc32:e6136628\r\n
+   code:4 data: set_indicator fre_response 1 crc32=4a072a1 message: reply CRC32 Check failed: crc32 error! crc32:e86a1901\r\n
+
+// volume
+command:
+   // set volume to max
+   set_volume maximum crc32=cea9ef21\r\n
+reply:
+   code:0 message: reply set_volume maximum successful crc32:b63f2884\r\n
+   code:2 message: reply set_volume maximu failed: Parameter is wrong! crc32:0de60c9c\r\n
+   code:2 message: reply set_volume maximum failed: No start, please start first! crc32:07a1f5ad\r\n
+   code:2 data: setvolume maximum crc32=55ee2cff message: reply find_cmd failed: the cmd is not support! crc32:795cffd9\r\n
+   code:4 data: set_volume maximum crc32=cea9ef2 message: reply CRC32 Check failed: crc32 error! crc32:3cc67fb1\r\n
+
+command:
+   // set volume to min
+   set_volume minimum crc32=28c940c0\r\n
+reply:
+   code:0 message: reply set_volume minimum successful crc32:110ba8fd\r\n
+   code:2 message: reply set_volume minimu failed: Parameter is wrong! crc32:9d61e2f5\r\n
+   code:2 message: reply set_volume minimum failed: No start, please start first! crc32:28a7b9a5\r\n
+   code:2 data: setvolume minimum crc32=b38e831e message: reply find_cmd failed: the cmd is not support! crc32:4c1cf231\r\n
+   code:4 data: set_volume minimum crc3=28c940c0 message: reply CRC32 Check failed: crc32 error! crc32:a52180ce\r\n
+
+command:
+   // set volume to mute
+   set_volume mute crc32=17b202a8\r\n
+reply:
+   code:0 message: reply set_volume mute successful crc32:6934a5d6\r\n
+   code:2 message: reply set_volume mut failed: Parameter is wrong! crc32:705294d7\r\n
+   code:2 message: reply set_volume mute failed: No start, please start first! crc32:781a3734\r\n
+   code:2 data: setvolume mute crc32=13e62f00 message: reply find_cmd failed: the cmd is not support! crc32:24e2f401\r\n
+   code:4 data: set_volume mut crc32=17b202a8 message: reply CRC32 Check failed: crc32 error! crc32:8b40be1c\r\n
+
+command:
+   // set volume to unmute
+   set_volume unmute crc32=8191e95b\r\n
+reply:
+   code:0 message: reply set_volume unmute successful crc32:fed33431\r\n
+   code:2 message: reply set_volume nmute failed: Parameter is wrong! crc32:f18693d6\r\n
+   code:2 message: reply set_volume unmute failed: No start, please start first! crc32:0561495c\r\n
+   code:2 data: setvolume unmute crc32=a290879b message: reply find_cmd failed: the cmd is not support! crc32:0a5b8d7c\r\n
+   code:4 data: setvolume unmute crc32=8191e95b message: reply CRC32 Check failed: crc32 error! crc32:fe1153cb\r\n
+
+// all data
+command:
+   // get all indicator data
+   get_all_data crc32=4c2b3ac1\r\n
+reply:
+   code:0 data: (160,0,0,0,0,142,214,106,150,7692,549491732,638093639,577014138,590901355) message: reply get_all_data successful crc32:aac8c4dc\r\n
+   code:2 message: reply get_all_data failed: No start, please start first! crc32:459f9bf0\r\n
+   code:2 data: getall_data crc32=7ff41b99 message: reply find_cmd failed: the cmd is not support! crc32:89e00b29\r\n
+   code:4 data: get_all_data crc32=4c2b3ac message: reply CRC32 Check failed: crc32 error! crc32:979a443f\r\n
+
+command:
+   // set all indicator data
+   set_all_data 160,-19,-19,-19,-19,150,212,106,150,7692,549491732,638093639,577014138,590901355 crc32=c81a9304\r\n
+reply:
+   code:0 message: reply set_all_data successful crc32:f47df86a\r\n
+   code:2 message: reply set_all_data failed: No start, please start first! crc32:ce7258c5\r\n
+   code:2 data: set_alldata 160,-19,-19,-19,-19,150,212,106,150,7692,549491732,638093639,577014138,590901355 crc32=4ce27ba2 message: reply find_cmd failed: the cmd is not support! crc32:c8fb5260\r\n
+   code:4 data: set_alldata 160,-19,-19,-19,-19,150,212,106,150,7692,549491732,638093639,577014138,590901355 crc32=c81a9304 message: reply CRC32 Check failed: crc32 error! crc32:876edfd0\r\n
+
+

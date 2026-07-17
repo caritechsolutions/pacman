@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<interface>
+  <width>1024</width>
+  <height>576</height>
+  <bpp>16</bpp>
+  <osd_trans>#00FF00</osd_trans>
+  <gui_trans>#FF00FF</gui_trans>
+  <cache_widgets>disable</cache_widgets>
+  <osd_alpha_global>#0000ff</osd_alpha_global>
+  <osd_alpha_color color="#515151">#00009F</osd_alpha_color>
+  <osd_alpha_color color="#080808">#0000BF</osd_alpha_color>
+  <osd_alpha_color color="#181818">#0000FF</osd_alpha_color>
+  <osd_alpha_color color="#1870F3">#0000FF</osd_alpha_color>
+  <widget class="window" style="default" name="wnd_keyboard_language"/>
+  <widget class="window" style="default" name="wnd_skrecovery"/>
+</interface>

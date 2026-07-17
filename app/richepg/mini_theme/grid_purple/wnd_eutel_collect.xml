@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget class="window" style="default" name="wnd_eutel_collect">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+    </property>
+    <signal>
+        <create>app_eutel_collect_create</create>
+        <destroy>app_eutel_collect_destroy</destroy>
+        <keypress>app_eutel_collect_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_eutel_collect_back">
+            <property>
+                <rect>[144,60,736,320]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_m</lt_img>
+                <rt_img>s_win_m</rt_img>
+                <lb_img>s_win_m</lb_img>
+                <rb_img>s_win_m</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+
+        <widget class="text" style="default" name="text_collect_title">
+            <property>
+                <rect>[262,72,500,50]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <font>font_main</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_eutel_collect_company_logo">
+            <property>
+                <rect>[800,64,72,48]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>richepg_sattv_logo_b</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_collect_page">
+            <property>
+                <rect>[154,94,80,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_collect_time">
+            <property>
+                <rect>[728,94,80,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+
+        <widget class="listview" style="default" name="listview_collect">
+            <property>
+                <rect>[154,130,716,210]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <roll_time>0</roll_time>
+                <interval>2</interval>
+				<focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <item_active_color></item_active_color>
+                <i18n>true</i18n>
+                <item_rect>[0,0,706,28]</item_rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+            </property>
+            <signal>
+                <keypress>app_eutel_collect_list_keypress</keypress>
+                <get_total>app_eutel_collect_list_get_total</get_total>
+                <get_data>app_eutel_collect_list_get_data</get_data>
+                <change>app_eutel_collect_list_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="header_collect">
+                    <property>
+                        <rect>[0,0,706,0]</rect>
+                        <forecolor>[text_color,text_color,text_color]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <colum_number>4</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="header_collect_1">
+                            <property>
+                                <rect>[0,0,60,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>right|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="header_collect_2">
+                            <property>
+                                <rect>[70,0,220,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="header_collect_3">
+                            <property>
+                                <rect>[295,0,190,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="header_collect_4">
+                            <property>
+                                <rect>[490,0,215,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_collect_1"/>
+                <widget class="listitem" style="default" name="listitem_collect_2"/>
+                <widget class="listitem" style="default" name="listitem_collect_3"/>
+                <widget class="listitem" style="default" name="listitem_collect_4"/>
+                <widget class="listitem" style="default" name="listitem_collect_5"/>
+                <widget class="listitem" style="default" name="listitem_collect_6"/>
+                <widget class="listitem" style="default" name="listitem_collect_7"/>
+                <widget class="scrollbar" style="default" name="scrollbar_collect">
+                    <property>
+                        <rect>[707,0,9,210]</rect>
+                        <forecolor>[window_bg_color,window_bg_color,window_bg_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+            </children>
+        </widget>
+
+        <widget class="text" style="default" name="text_collect_tip">
+            <property>
+                <rect>[154,342,716,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>USB Storage</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_collect_storage">
+            <property>
+                <rect>[154,342,180,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>USB Storage</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_collect_used_title">
+            <property>
+                <rect>[344,342,100,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string>Used</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_collect_used_value">
+            <property>
+                <rect>[454,342,120,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_collect_free_title">
+            <property>
+                <rect>[590,342,100,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string>Free</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_collect_free_value">
+            <property>
+                <rect>[700,342,120,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+   </children>
+</widget>

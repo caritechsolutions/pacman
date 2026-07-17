@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget class="window" name="wnd_eutel_lineup" style="default">
+    <property>
+        <rect>[190,314,1090,290]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <back_ground>bg</back_ground>
+    </property>
+    <signal>
+        <create>app_eutel_lineup_create</create>
+        <destroy>app_eutel_lineup_destroy</destroy>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_eutel_lineup_back">
+            <property>
+                <rect>[0,0,900,290]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+
+        <widget class="combobox" name="cmb_lineup_group" style="default">
+            <property>
+                <rect>[98,0,694,50]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                <focus_left_img>s_arrow_l</focus_left_img>
+                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                <focus_right_img>s_arrow_r</focus_right_img>
+            </property>
+            <signal>
+                <change>app_eutel_lineup_group_change</change>
+            </signal>
+        </widget>
+        <widget class="text" name="text_lineup_title" style="default">
+            <property>
+                <rect>[98,0,694,52]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <font>font_sub</font>
+                <string>Lineup Select</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="listview" name="listview_lineup_list" style="default">
+            <property>
+                <rect>[4,70,880,210]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <roll_time>0</roll_time>
+                <interval>2</interval>
+				<focus_img>s_bar_long_focus</focus_img>
+                <item_active_color>#bbe00b</item_active_color>
+                <i18n>true</i18n>
+                <item_rect>[0,0,870,38]</item_rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[window_bg_color,key_red,window_bg_color]</item_back_color>
+            </property>
+            <signal>
+                <keypress>app_eutel_lineup_list_keypress</keypress>
+                <get_total>app_eutel_lineup_list_get_total</get_total>
+                <get_data>app_eutel_lineup_list_get_data</get_data>
+            </signal>
+            <children>
+                <widget class="header" name="header_lineup_list" style="default">
+                    <property>
+                        <rect>[0,0,870,0]</rect>
+                        <forecolor>[text_color,text_color,text_color]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <colum_number>3</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" name="header_lineup_logo" style="default">
+                            <property>
+                                <rect>[0,0,64,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" name="header_lineup_name" style="default">
+                            <property>
+                                <rect>[70,0,386,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" name="header_lineup_url" style="default">
+                            <property>
+                                <rect>[462,0,408,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="listitem" name="listitem_lineup_1" style="default"/>
+                <widget class="listitem" name="listitem_lineup_2" style="default"/>
+                <widget class="listitem" name="listitem_lineup_3" style="default"/>
+                <widget class="listitem" name="listitem_lineup_4" style="default"/>
+                <widget class="listitem" name="listitem_lineup_5" style="default"/>
+                <widget class="scrollbar" name="scrollbar_lineup_list" style="default">
+                    <property>
+                        <rect>[874,0,13,210]</rect>
+                        <forecolor>[window_bg_color,window_bg_color,window_bg_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+            </children>
+        </widget>
+    </children>
+</widget>

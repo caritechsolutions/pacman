@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+  <widget class="window" style="default_widget" name="wnd_ci_pwd">
+    <property>
+      <rect>[294,275,313,94]</rect>
+      <forecolor>[#000000,#000000,#000000]</forecolor>
+      <backcolor>[#000000,#000000,#000000]</backcolor>
+    </property>
+    <signal>
+      <keypress>app_ci_pwd_dlg_keypress</keypress>
+    </signal>
+    <children>
+      <widget class="image" style="default" name="img_ci_pwd_back">
+        <property>
+          <rect>[0,0,313,94]</rect>
+          <forecolor>[#000000,#000000,#000000]</forecolor>
+          <backcolor>[#A8B8C8,#A8B8C8,#A8B8C8]</backcolor>
+          <mode>multiple</mode>
+          <img></img>
+          <lt_img>ProgramBarIcon1</lt_img>
+          <rt_img>ProgramBarIcon3</rt_img>
+          <lb_img>ProgramBarIcon5</lb_img>
+          <rb_img>ProgramBarIcon8</rb_img>
+          <l_img>ProgramBarIcon7</l_img>
+          <r_img>ProgramBarIcon4</r_img>
+          <t_img>ProgramBarIcon2</t_img>
+          <b_img>ProgramBarIcon6</b_img>
+        </property>
+      </widget>
+      <widget class="text" style="default" name="txt_ci_pwd_title">
+        <property>
+          <rect>[13,10,288,31]</rect>
+          <forecolor>[#360930,#360930,#360930]</forecolor>
+          <backcolor>[#ff00ff,#ff00ff,#ff00ff]</backcolor>
+          <alignment>left|vcentre</alignment>
+          <string></string>
+          <format>static</format>
+        </property>
+      </widget>
+      <widget class="edit" style="default_widget" name="edit_ci_pwd_input">
+        <property>
+          <rect>[63,45,188,35]</rect>
+          <forecolor>[#360930,#360930,#360930]</forecolor>
+          <backcolor>[#E6F8F8,#E6F8F8,#E6F8F8]</backcolor>
+          <font>Arial</font>
+          <alignment>left|vcentre</alignment>
+          <maxlen>10</maxlen>
+          <format>edit_digit</format>
+        </property>
+      </widget>
+    </children>
+  </widget>

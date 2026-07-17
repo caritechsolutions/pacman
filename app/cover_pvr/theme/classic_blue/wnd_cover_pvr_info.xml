@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget class="window" style="default" name="wnd_cover_pvr_info">
+	<property>
+		<rect>[202,156,874,264]</rect>
+		<forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+		<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+	</property>
+	<signal>
+		<create>app_cover_pvr_info_create</create>
+		<destroy>app_cover_pvr_info_destroy</destroy>
+		<keypress>app_cover_pvr_info_keypress</keypress>
+		<service>app_cover_pvr_info_service</service>
+	</signal>
+	<children>
+		<widget class="text" style="default" name="text_cover_pvr_info_title">
+			<property>
+				<rect>[0,0,874,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_top_color,window_top_color,window_top_color]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<string>Event Information</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_info_event_date">
+			<property>
+				<rect>[4,34,130,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+				<font></font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_info_event_duration">
+			<property>
+				<rect>[144,34,162,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+				<font></font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_info_event_title">
+			<property>
+				<rect>[310,34,560,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+				<font></font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_info_event_parent">
+			<property>
+				<rect>[4,64,50,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+				<font></font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_info_event_genres">
+			<property>
+				<rect>[54,64,242,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+				<font></font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_info_event_logo">
+			<property>
+				<rect>[4,94,292,164]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="notepad" style="default" name="notepad_cover_pvr_info_event_details">
+			<property>
+				<rect>[310,64,560,196]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+				<alignment>left|top</alignment>
+				<font>Arial</font>
+				<vertical_margin>0</vertical_margin>
+				<horizontal_margin>20</horizontal_margin>
+			</property>
+			<children>
+				<widget class="scrollbar" style="default" name="scrollbar_cover_pvr_info_event_details">
+					<property>
+						<rect>[550,0,13,196]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+						<back_img>s_roll_m</back_img>
+						<arrow_up>s_roll_t</arrow_up>
+						<arrow_down>s_roll_d</arrow_down>
+						<fore_img>s_roll_button</fore_img>
+						<format>scroll_show</format>
+					</property>
+				</widget>
+			</children>
+		</widget>
+	</children>
+</widget>

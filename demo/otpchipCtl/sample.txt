@@ -1,0 +1,15 @@
+/***************************************************************************************
+该功能在linux下需要脚本的支持，见附件中"disp_chipsn.sh"。
+目前提供的buildroot编译生成的rootfs.bin没有包含该脚本，编译应用之前，先做如下操作：
+    1，在"buildroot_svn/buildroot/template/durian/home/gx/"目录下，间立文件夹"sbin"，将
+脚本拷贝到"buildroot_svn/buildroot/template/durian/home/gx/sbin"目录下，重新编译buildroot，
+可以在"buildroot/profile/durian/test/rootfs/home/gx/sbin/"目录下，看到该脚本。
+    2，附件中的C文件拷贝到solution/app目录下。
+***************************************************************************************/
+extern int chip_sn_get(unsigned char *SnData, int BufferLen);
+
+void sample(void)
+{
+    unsigned char buffer[8] = {0};
+    chip_sn_get(buffer,8);
+}

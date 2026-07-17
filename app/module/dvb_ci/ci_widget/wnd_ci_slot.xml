@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+  	<widget class="window" style="default" name="wnd_ci_slot">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+        <backcolor>[#00FF00,#00FF00,#00FF00]</backcolor>
+        <back_ground>bg</back_ground>
+    </property>
+    <signal>
+      <create>app_ci_slot_create</create>
+      <destroy>app_ci_slot_destroy</destroy>
+      <keypress>app_ci_slot_keypress</keypress>
+      <got_focus>app_ci_slot_got_focus</got_focus>
+      <lost_focus>app_ci_slot_lost_focus</lost_focus>
+    </signal>
+    <children>
+      <widget class="button" style="default_widget" name="btn_ci_slot1">
+        <property>
+          <rect>[80,170,274,30]</rect>
+          <state>hide</state>
+          <forecolor>[text_color,text_color,text_color]</forecolor>
+          <backcolor>[default_color,default_color,default_color]</backcolor>
+          <alignment>hcentre|vcentre</alignment>
+          <focus_img>[s_bar_l,s_bar_m,s_bar_r]</focus_img>
+        </property>
+      </widget>
+      <widget class="button" style="default" name="btn_ci_slot2">
+        <property>
+          <rect>[80,205,274,30]</rect>
+          <state>hide</state>
+          <forecolor>[text_color,text_color,text_color]</forecolor>
+          <backcolor>[default_color,default_color,default_color]</backcolor>
+          <alignment>hcentre|vcentre</alignment>
+          <focus_img>[s_bar_l,s_bar_m,s_bar_r]</focus_img>
+        </property>
+      </widget>
+      <widget class="button" style="default" name="btn_ci_slot3">
+        <property>
+          <rect>[80,240,274,30]</rect>
+          <state>hide</state>
+          <forecolor>[text_color,text_color,text_color]</forecolor>
+          <backcolor>[default_color,default_color,default_color]</backcolor>
+          <alignment>hcentre|vcentre</alignment>
+          <focus_img>[s_bar_l,s_bar_m,s_bar_r]</focus_img>
+        </property>
+      </widget>
+      <widget class="button" style="default" name="btn_ci_slot4">
+        <property>
+          <rect>[80,275,274,30]</rect>
+          <state>hide</state>
+          <forecolor>[text_color,text_color,text_color]</forecolor>
+          <backcolor>[default_color,default_color,default_color]</backcolor>
+          <alignment>hcentre|vcentre</alignment>
+          <focus_img>[s_bar_l,s_bar_m,s_bar_r]</focus_img>
+        </property>
+      </widget>
+    </children>
+  	</widget>

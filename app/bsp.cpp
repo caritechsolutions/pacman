@@ -1,0 +1,360 @@
+#ifdef ECOS_OS
+#include "app_config.h"
+#include "gxcore_bsp.h"
+#include "app_bsp.h"
+/* ------------------------- Main Chip ----------------------------------- */
+#ifdef GX3201
+CHIP_GX3201
+#define CHIP gx3201
+#endif
+
+#ifdef GX3211
+CHIP_GX3211
+#define CHIP gx3211
+#endif
+
+#ifdef GEMINI
+CHIP_GEMINI
+#define CHIP gemini
+#endif
+
+#ifdef CYGNUS
+CHIP_CYGNUS
+#define CHIP cygnus
+#endif
+
+#ifdef GX6605S
+CHIP_GX6605S
+#define CHIP gx6605s
+#endif
+
+#ifdef TAURUS
+CHIP_TAURUS
+#define CHIP taurus
+#endif
+
+#ifdef SCORPIO
+CHIP_SCORPIO
+#define CHIP scorpio
+#endif
+
+#ifdef SCORPIO_TAURUS
+CHIP_SCORPIO
+CHIP_TAURUS
+#define CHIP taurus
+#define CHIP1 scorpio
+#endif
+
+#ifdef SIRIUS
+CHIP_SIRIUS
+#define CHIP sirius
+#endif
+
+#ifdef CANOPUS
+CHIP_CANOPUS
+#define CHIP canopus
+#endif
+
+#ifdef VEGA
+CHIP_VEGA
+#define CHIP vega
+#endif
+
+#if !MINI_MEM_SUPPORT || DLNADMP_SUPPORT || DLNASAT2IP_SUPPORT || SAT2IP_SERVER_SUPPORT || DVB2IP_SERVER_SUPPORT || VPN_SUPPORT || (defined ASSOCIATIONLIBRE_URL_SUPPORT)
+	#if (WEBAPI_SUPPORT || VPN_SUPPORT)
+	#define NETSIZE  688128
+	#else
+	#define NETSIZE  557056
+	#endif
+#else
+#define NETSIZE 294912
+#endif
+#if SAT2IP_SERVER_SUPPORT || DVB2IP_SERVER_SUPPORT
+#define MAXSOCKNUM 48
+#else
+#define MAXSOCKNUM 32
+#endif
+
+#define NET_ALLOC_F 1
+#define NET_TX_SIZE 0
+#define NET_RX_SIZE 0
+
+#define SQUASHFS_SUPPER 1
+#define CAMFSFS_SUPPER 0
+
+/* ------------------------- Board support device ------------------------ */
+#if (defined DYNAMIC_DRIVER_CONTROL)
+extern "C" void ecos_startup_config(void);
+ECOS_INIT(ecos_startup_config)
+#endif
+MOD_WDT
+MOD_IRR
+//MOD_MMC
+MOD_AV(NULL)
+MOD_UART
+//MOD_NORFLASH
+#if NAND_FLASH_SUPPORT
+MOD_SPINANDFLASH(CHIP)
+#else
+MOD_SPINORFLASH(CHIP)
+#endif
+#if NAND_YAFS_SUPPORT
+MOD_YAFFS
+#else
+MOD_MINIFS
+#endif
+
+MOD_FLASHIO
+//MOD_NANDFLASH
+MOD_USB
+#if USB_TO_SERIAL_SUPPORT
+MOD_USBSERIAL
+#endif
+#if USB_MICROPHONE_SUPPORT
+MOD_USBAUDIO
+#endif
+MOD_LOWPOWER
+#if SECURE_FULL_SUPPORT
+MOD_SECURE_CHIP(CHIP)
+#else
+#if (SECURE_IRDETO_SUPPORT && SECURE_ACPU_SUPPORT && SECURE_SCPU_SUPPORT)
+MOD_SECURE_DEV(CHIP,klm)
+#else
+#if SECURE_IRDETO_SUPPORT
+MOD_SECURE_MODULE(CHIP,klm,irdeto)
+#endif
+#if SECURE_ACPU_SUPPORT
+MOD_SECURE_MODULE(CHIP,klm,generic)
+#endif
+#if SECURE_SCPU_SUPPORT
+MOD_SECURE_MODULE(CHIP,klm,scpu)
+#endif
+#endif
+#if ((SECURE_DMA_SUPPORT) || (CA_SUPPORT))
+MOD_SECURE_MODULE(CHIP,crypto,dma)
+#endif
+MOD_SECURE_MODULE(CHIP,misc,chip)
+MOD_SECURE_MODULE(CHIP,misc,otp)
+#if SECURE_RNG_SUPPORT
+MOD_SECURE_MODULE(CHIP,misc,rng)
+#endif
+#if SECURE_FIREWALL_SUPPORT
+MOD_SECURE_MODULE(CHIP,misc,firewall)
+#endif
+#if SECURE_DGST_SUPPORT
+MOD_SECURE_MODULE(CHIP,misc,dgst)
+#endif
+#if SECURE_SCI_SUPPORT
+MOD_SECURE_MODULE(CHIP,misc,sci)
+#endif
+#if SECURE_TEE_SUPPORT
+MOD_SECURE_MODULE(CHIP,misc,tee)
+#endif
+#endif
+#if (defined(SCORPIO_TAURUS))
+#if SECURE_FULL_SUPPORT
+MOD_SECURE_CHIP(CHIP1)
+#else
+#if (SECURE_IRDETO_SUPPORT && SECURE_ACPU_SUPPORT && SECURE_SCPU_SUPPORT)
+MOD_SECURE_DEV(CHIP1,klm)
+#else
+#if SECURE_IRDETO_SUPPORT
+MOD_SECURE_MODULE(CHIP1,klm,irdeto)
+#endif
+#if SECURE_ACPU_SUPPORT
+MOD_SECURE_MODULE(CHIP1,klm,generic)
+#endif
+#if SECURE_SCPU_SUPPORT
+MOD_SECURE_MODULE(CHIP1,klm,scpu)
+#endif
+#endif
+#if ((SECURE_DMA_SUPPORT) || (CA_SUPPORT))
+MOD_SECURE_MODULE(CHIP1,crypto,dma)
+#endif
+MOD_SECURE_MODULE(CHIP1,misc,chip)
+MOD_SECURE_MODULE(CHIP1,misc,otp)
+#if SECURE_RNG_SUPPORT
+MOD_SECURE_MODULE(CHIP1,misc,rng)
+#endif
+#if SECURE_FIREWALL_SUPPORT
+MOD_SECURE_MODULE(CHIP1,misc,firewall)
+#endif
+#if SECURE_DGST_SUPPORT
+MOD_SECURE_MODULE(CHIP1,misc,dgst)
+#endif
+#if SECURE_SCI_SUPPORT
+MOD_SECURE_MODULE(CHIP1,misc,sci)
+#endif
+#if SECURE_TEE_SUPPORT
+MOD_SECURE_MODULE(CHIP1,misc,tee)
+#endif
+#endif
+#endif
+#if NETWORK_SUPPORT
+MOD_NETS(NETSIZE,MAXSOCKNUM)
+#if WIFI_SUPPORT
+#if WIFI_DOUBLE_SUPPORT
+MOD_WIFI
+#else
+#if WIFI_RTL8188FU_SUPPORT
+MOD_WIFI_RTL8188FU
+#endif
+#if WIFI_RTL8188EU_SUPPORT
+MOD_WIFI_RTL8188EU
+#endif
+#if WIFI_ATBM6032_SUPPORT
+MOD_WIFI_ATBM6032
+#endif
+#if WIFI_RT5370_SUPPORT
+MOD_WIFI_RT5370
+#endif
+#if WIFI_MT7601_SUPPORT
+MOD_WIFI_MT7601
+#endif
+#if WIFI_MT7603_SUPPORT
+MOD_WIFI_MT7603
+#endif
+#if WIFI_RTL8192_SUPPORT
+MOD_WIFI_RTL8192
+#endif
+#if WIFI_RTL88X1CU_SUPPORT
+MOD_WIFI_RTL88X1CU
+#endif
+#if WIFI_RTL88X2BU_SUPPORT
+MOD_WIFI_RTL88X2BU
+#endif
+#if WIFI_RTL8733_SUPPORT
+MOD_WIFI_RTL8733BU
+#endif
+MOD_WIFI_COMMON
+#endif
+#endif
+#if ETH_SUPPORT
+MOD_ETH(NET_ALLOC_F,NET_TX_SIZE,NET_RX_SIZE)
+#endif
+#if USB_ETH_SUPPORT
+MOD_USBNET
+#endif
+#if MOD_3G_SUPPORT
+MOD_USB3G
+#endif
+#if RNDIS_SUPPORT
+MOD_RNDIS
+#endif
+#if VPN_SUPPORT
+MOD_VPN
+MOD_TUN
+#endif
+#if MTP_SUPPORT
+MOD_MTP
+MOD_GXMTPFS
+#endif
+#if BLUETOOTH_SUPPORT
+MOD_USBBT
+#if BT_RTL8761A_SUPPORT
+MOD_USBBT_FW(rtl8761a)
+#endif
+#if BT_RTL8761BU_SUPPORT
+MOD_USBBT_FW(rtl8761bu)
+#endif
+#if BT_RTL8733BU_SUPPORT
+MOD_USBBT_FW(rtl8733bu)
+#endif
+#if BT_BCM20702A1_SUPPORT
+MOD_USBBT_FW(bcm20702a1_0a5c_21e8)
+#endif
+#endif
+
+#endif
+//MOD_HDMI
+MOD_PANEL
+MOD_I2C
+MOD_GPIO
+/* ------------------------------ Video & Audio Codec -------------------- */
+#if !defined(SCORPIO_TAURUS)
+#if (defined(ENCRYPTION_CHIP))
+    CODEC_AUDIO(CHIP)
+    CODEC_VIDEO(CHIP)
+#else
+    CODEC_H264(CHIP)
+    #if !defined(GX6605S) && !defined(SCORPIO)
+        CODEC_H265(CHIP)
+        CODEC_AVSV(CHIP)
+    #endif
+    CODEC_MPEG2V(CHIP)
+    CODEC_MPEG4V(CHIP)
+    #if (defined TAURUS || defined GX6605S || defined GEMINI || defined CYGNUS || defined SCORPIO || (defined CANOPUS && MINI_MEM_SUPPORT))
+        #if (AUDIO_DESCRIPTOR_SUPPORT < 1 && PLAYBACK_SPEED_SUPPORT < 1)
+            CODEC_MPEGA_MINI(CHIP)
+        #else
+            CODEC_MPEGA(CHIP)
+        #endif
+    #else
+        CODEC_MPEGA(CHIP)
+    #endif
+    #if (FLAC_SUPPORT && OGG_SUPPORT)
+        CODEC_FOV(CHIP)
+    #else
+        #if FLAC_SUPPORT
+        CODEC_FLAC(CHIP)
+        #endif
+        #if OGG_SUPPORT
+        CODEC_VORBIS(CHIP)
+        CODEC_OPUS(CHIP)
+        #endif
+    #endif
+    //CODEC_DOLBY(CHIP)
+    //CODEC_OGG
+    //CODEC_RA_AAC
+    //CODEC_RA_RA8LBR
+    //CODEC_RV
+    //CODEC_DRA(CHIP)
+#endif
+#if BLUETOOTH_SUPPORT
+CODEC_SBC(CHIP)
+#endif
+#endif
+
+/* ------------------------- Support filesystem -------------------------- */
+MOD_FAT
+MOD_NTFS
+//MOD_JFFS2
+#if CAMFSFS_SUPPER
+MOD_CAMFS
+#endif
+MOD_ROMFS
+MOD_RAMFS
+#if SQUASHFS_SUPPER
+MOD_SQUASHFS
+#endif
+
+
+
+/* -------------------------- Language Package --------------------------- */
+LANG_US
+LANG_UTF8
+//LANG_SIMP_CHINESE
+//LANG_TRAD_CHINESE
+//LANG_KOREAN
+//LANG_JAPANESE
+//LANG_ARABIC_O
+//LANG_ARABIC_W
+//LANG_GREEK_O
+//LANG_GREEK_W
+//LANG_CENT_EUR
+//LANG_BALTIC_O
+//LANG_BALTIC_W
+//LANG_MULTI_LANTIN1
+//LANG_LATIN2_O
+//LANG_LATIN1_W
+//LANG_CYRILLIC_O
+//LANG_CYRILLIC_W
+//LANG_RUSSIAN_O
+//LANG_TURKISH_O
+//LANG_TURKISH_W
+//LANG_MULTI_LATIN1_EUR
+//LANG_HEBREW_O
+//LANG_HEBREW_W
+//LANG_THAI
+//LANG_VIETNAM
+#endif

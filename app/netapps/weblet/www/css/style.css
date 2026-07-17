@@ -1,0 +1,150 @@
+@charset "utf-8";
+/* CSS Document */
+
+
+body{
+	background-image:url(../img/bg.png);
+	background-repeat:repeat-y;
+	background-size:100% 100%;
+}
+
+.homepage-logo img{
+	width:110px;
+	margin-left:0px;
+}
+
+.top-deco{
+	background-color:#e5e71f;
+	height:4px;
+	width:100%;
+	display:block;
+	margin-bottom:5px;
+}
+
+.bottom-deco{
+	background-color:#e5e71f;
+	height:4px;
+	display:block;
+	width:100%;
+	margin-top:6px;
+}
+
+.red-icon{
+	background-image:url(../img/remote/button-red.png);
+	background-size:40px 20px;
+	height:20px;
+	width:40px;
+	float:left;
+	margin-left:16px;
+	margin-right:16px;
+}
+
+.green-icon{
+	background-image:url(../img/remote/button-green.png);
+	background-size:40px 20px;
+	height:20px;
+	width:40px;
+	float:left;
+	margin-left:16px;
+	margin-right:16px;
+}
+
+.yellow-icon{
+	background-image:url(../img/remote/button-orange.png);
+	background-size:40px 20px;
+	height:20px;
+	width:40px;
+	float:left;
+	margin-left:16px;
+	margin-right:16px;
+}
+
+.blue-icon{
+	background-image:url(../img/remote/button-blue.png);
+	background-size:40px 20px;
+	height:20px;
+	width:40px;
+	float:left;
+	margin-left:16px;
+	margin-right:16px;
+}
+
+.colors{
+	width:288px;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+.point-icon{
+	background-image:url(../img/bottomicon/point.png);
+	background-size:32px 32px;
+	height:32px;
+	width:32px;
+	float:right;
+	margin-left:10px;
+	margin-right:10px;
+    background-repeat: no-repeat;
+}
+
+.prog-icon{
+	background-image:url(../img/bottomicon/prog.png);
+	background-size:32px 32px;
+	height:32px;
+	width:32px;
+	float:right;
+	margin-left:10px;
+	margin-right:10px;
+}
+
+.remote-icon{
+	background-image:url(../img/bottomicon/remote.png);
+	background-size:32px 32px;
+	height:32px;
+	width:32px;
+	float:right;
+	margin-left:10px;
+	margin-right:10px;
+}
+
+.keyboard-icon{
+	background-image:url(../img/bottomicon/kb.png);
+	background-size:32px 32px;
+	height:32px;
+	width:32px;
+	float:right;
+	margin-left:10px;
+	margin-right:10px;
+}
+
+.socials{
+	width:220px;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+.input-icon{
+	background-image:url(../img/input_bg.png);
+	background-size:200px 40px;
+	height:40px;
+	width:300px;
+	float:right;
+	margin-left:10px;
+	margin-right:10px;
+    background-repeat: no-repeat;
+}
+
+.copyright{
+	font-family:'Dosis', sans-serif!important;
+	text-align:center;
+	font-size:14px;
+	margin-top:20px;
+	margin-bottom:20px;
+    color:#6E7374;
+}
+
+.header{
+	margin-bottom:20px;
+}
+	
+
+

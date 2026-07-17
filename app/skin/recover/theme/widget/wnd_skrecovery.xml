@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_skrecovery">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <back_ground>bg</back_ground>
+    </property>
+    <signal>
+        <create>app_skrecovery_create</create>
+        <destroy>app_skrecovery_destroy</destroy>
+        <keypress>app_skrecovery_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_skrecovery_bg">
+            <property>
+                <rect>[144,24,736,456]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skrecovery_bottom_bg">
+            <property>
+                <rect>[0,510,1024,66]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+		<widget class="text" name="text_skrecovery_title" style="default">
+            <property>
+				<rect>[150,28,128,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Skin Recovery</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="combobox" name="cmb_skrecovery_mode" style="default">
+            <property>
+                <rect>[260,60,492,30]</rect>
+                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+		<widget class="text" name="text_skrecovery_status" style="default">
+            <property>
+				<rect>[770,60,108,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>invalid</string>
+                <format>static</format>
+            </property>
+        </widget>
+		<widget class="listview" name="listview_skrecovery_list" style="default">
+            <property>
+                <rect>[260,100,522,312]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <interval>2</interval>
+                <item_active_color>#bbe00b</item_active_color>
+                <i18n>false</i18n>
+                <item_rect>[0,0,508,30]</item_rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[#303030,key_red,#303030]</item_back_color>
+            </property>
+            <signal>
+                <keypress>app_skrecovery_list_keypress</keypress>
+                <get_total>app_skrecovery_list_get_total</get_total>
+                <get_data>app_skrecovery_list_get_data</get_data>
+                <change>app_skrecovery_list_change</change>
+            </signal>
+            <children>
+                <widget class="header" name="header_skrecovery_list" style="default">
+                    <property>
+                        <rect>[0,0,512,0]</rect>
+                        <forecolor>[text_color,text_color,text_color]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <colum_number>2</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" name="header_text_skrecovery_num" style="default">
+                            <property>
+                                <rect>[12,0,56,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" name="header_text_skrecovery_name" style="default">
+                            <property>
+                                <rect>[72,0,440,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="listitem" name="listview_skrecovery_list_1" style="default"/>
+                <widget class="listitem" name="listview_skrecovery_list_2" style="default"/>
+                <widget class="listitem" name="listview_skrecovery_list_3" style="default"/>
+                <widget class="listitem" name="listview_skrecovery_list_4" style="default"/>
+                <widget class="listitem" name="listview_skrecovery_list_5" style="default"/>
+                <widget class="listitem" name="listview_skrecovery_list_6" style="default"/>
+            </children>
+        </widget>
+		<widget class="text" name="text_skrecovery_img_url" style="default">
+            <property>
+				<rect>[160,300,720,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+		<widget class="text" name="text_skrecovery_main_tips" style="default">
+            <property>
+				<rect>[160,350,100,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Last path:</string>
+                <format>static</format>
+            </property>
+        </widget>
+		<widget class="text" name="text_skrecovery_main_url" style="default">
+            <property>
+				<rect>[260,350,620,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+		<widget class="text" name="text_skrecovery_back_info" style="default">
+            <property>
+				<rect>[160,400,300,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+		<widget class="text" name="text_skrecovery_update_img_tips" style="default">
+            <property>
+				<rect>[560,400,320,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+		<widget class="text" name="text_skrecovery_all_tips" style="default">
+            <property>
+                <rect>[160,440,500,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Tips:Press Green will install skin and reboot!</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" name="text_skrecovery_key_green1" style="default">
+            <property>
+                <rect>[144,530,100,28]</rect>
+                <forecolor>[key_green,key_green,key_green]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Key Green</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" name="text_skrecovery_key_green2" style="default">
+            <property>
+                <rect>[246,530,120,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string> : Install</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" name="text_skrecovery_key_left_right" style="default">
+            <property>
+                <rect>[390,530,300,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Key Left/Right : USB/Online</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" name="text_skrecovery_key_blue1" style="default">
+            <property>
+                <rect>[714,530,100,28]</rect>
+                <forecolor>[key_blue,key_blue,key_blue]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Key Blue</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" name="text_skrecovery_key_blue2" style="default">
+            <property>
+                <rect>[798,530,100,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string> : Update</string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

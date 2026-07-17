@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_flexible_passwd">
+    <property>
+        <rect>[320,152,384,192]</rect>
+        <forecolor>[gui_trans,gui_trans,gui_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_flexible_passwd_create</create>
+        <destroy>app_flexible_passwd_destroy</destroy>
+        <keypress>app_flexible_passwd_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_flexible_passwd_back">
+            <property>
+                <rect>[0,0,384,192]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_t2</lt_img>
+                <rt_img>s_win2_r_t2</rt_img>
+                <lb_img>s_win2_l_b2</lb_img>
+                <rb_img>s_win2_r_b2</rb_img>
+                <l_img>s_win2_l_m</l_img>
+                <r_img>s_win2_r_m</r_img>
+                <t_img>s_win2_m_t2</t_img>
+                <b_img>s_win2_m_b2</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_flexible_passwd_title">
+            <property>
+                <rect>[12,1,360,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Password</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_flexible_passwd_tip">
+            <property>
+                <rect>[12,35,360,60]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="edit" style="default" name="edit_flexible_passwd_input">
+            <property>
+                <rect>[96,100,200,30]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <default_intaglio>-</default_intaglio>
+                <intaglio>*</intaglio>
+                <maxlen>32</maxlen>
+                <format>edit_digit</format>
+            </property>
+            <signal>
+                <keypress>app_flexible_passwd_input_keypress</keypress>
+                <change>app_flexible_passwd_input_change</change>
+                <reach_end>app_flexible_passwd_input_reach_end</reach_end>
+            </signal>
+        </widget>
+        <!--widget class="image" style="default" name="img_flexible_passwd_confirm">
+            <property>
+                <rect>[24,157,42,24]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_ok</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_flexible_passwd_confirm">
+            <property>
+                <rect>[68,152,90,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Confirm</string>
+                <format>static</format>
+            </property>
+        </widget-->
+        <widget class="image" style="default" name="img_flexible_passwd_clear">
+            <property>
+                <rect>[255,159,22,22]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_blue</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_flexible_passwd_clear">
+            <property>
+                <rect>[279,152,90,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Clear</string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

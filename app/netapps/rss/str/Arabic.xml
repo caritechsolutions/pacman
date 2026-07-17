@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+    <language name="Arabic">
+        <font>font_prog</font>
+        <tran id="Rss Reader"                >قارئ RSS</tran>
+    </language>

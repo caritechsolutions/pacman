@@ -1,0 +1,548 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_skin">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <back_ground>bg</back_ground>
+    </property>
+    <signal>
+        <create>app_skin_create</create>
+        <destroy>app_skin_destroy</destroy>
+        <got_focus>app_skin_got_focus</got_focus>
+        <lost_focus>app_skin_lost_focus</lost_focus>
+        <keypress>app_skin_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_skin_bg">
+            <property>
+                <rect>[72,26,884,470]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skin_bottom_bg">
+            <property>
+                <rect>[0,510,1024,66]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skin_line_split">
+            <property>
+                <rect>[310,80,4,416]</rect>
+                <forecolor>[line_bg_color,line_bg_color,line_bg_color]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_title">
+            <property>
+                <rect>[156,35,208,52]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <font>font_main</font>
+                <alignment>left|bottom</alignment>
+                <string>Skin</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_page_info">
+            <property>
+                <rect>[820,94,110,29]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skin_logo">
+            <property>
+                <rect>[89,35,48,48]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_title_left_utility</img>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="list_skin_group">
+            <property>
+                <rect>[81,150,220,336]</rect>
+                <state>focus</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <roll_time>100</roll_time>
+                <interval>6</interval>
+	    	    <item_active_color>#bbe00b</item_active_color>
+                <i18n>false</i18n>
+                <item_rect>[0,0,211,30]</item_rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[bk_item_color,key_red,bk_item_color]</item_back_color>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>app_skin_group_list_keypress</keypress>
+                <get_total>app_skin_group_list_get_total</get_total>
+                <get_data>app_skin_group_list_get_data</get_data>
+                <change>app_skin_group_list_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="header_skin_feeds">
+                    <property>
+                        <rect>[0,0,200,0]</rect>
+                        <forecolor>[text_color,text_color,text_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <colum_number>1</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="headertext_skin_feeds">
+                            <property>
+                                <rect>[10,0,190,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="scrollbar_skin_feeds">
+                    <property>
+                        <rect>[211,0,9,336]</rect>
+                        <forecolor>[window_bg_color,window_bg_color,window_bg_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_skin_feeds0"/>
+                <widget class="listitem" style="default" name="item_skin_feeds1"/>
+                <widget class="listitem" style="default" name="item_skin_feeds2"/>
+                <widget class="listitem" style="default" name="item_skin_feeds3"/>
+                <widget class="listitem" style="default" name="item_skin_feeds4"/>
+                <widget class="listitem" style="default" name="item_skin_feeds5"/>
+                <widget class="listitem" style="default" name="item_skin_feeds6"/>
+                <widget class="listitem" style="default" name="item_skin_feeds7"/>
+            </children>
+        </widget>
+        <widget class="text" style="default" name="text_skin_item_bg0">
+            <property>
+                <rect>[360,147,128,98]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skin_item_preview0">
+            <property>
+                <rect>[364,151,120,90]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_item_title0">
+            <property>
+                <rect>[364,248,120,26]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+		<widget class="image" style="default" name="img_skin_active_id0">
+            <property>
+                <rect>[490,220,25,25]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_choice</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_item_bg1">
+            <property>
+                <rect>[572,147,128,98]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skin_item_preview1">
+            <property>
+                <rect>[576,151,120,90]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_item_title1">
+            <property>
+                <rect>[576,248,120,26]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+		<widget class="image" style="default" name="img_skin_active_id1">
+            <property>
+                <rect>[704,220,25,25]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_choice</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_item_bg2">
+            <property>
+                <rect>[784,147,128,98]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skin_item_preview2">
+            <property>
+                <rect>[788,151,120,90]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_item_title2">
+            <property>
+                <rect>[788,248,120,26]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+		<widget class="image" style="default" name="img_skin_active_id2">
+            <property>
+                <rect>[914,220,25,25]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_choice</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_item_bg3">
+            <property>
+                <rect>[360,324,128,98]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skin_item_preview3">
+            <property>
+                <rect>[364,328,120,90]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_item_title3">
+            <property>
+                <rect>[364,424,120,26]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+		<widget class="image" style="default" name="img_skin_active_id3">
+            <property>
+                <rect>[490,397,25,25]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_choice</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_item_bg4">
+            <property>
+                <rect>[572,324,128,98]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skin_item_preview4">
+            <property>
+                <rect>[576,328,120,90]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_item_title4">
+            <property>
+                <rect>[576,424,120,26]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+		<widget class="image" style="default" name="img_skin_active_id4">
+            <property>
+                <rect>[704,397,25,25]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_choice</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_item_bg5">
+            <property>
+                <rect>[784,324,128,98]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skin_item_preview5">
+            <property>
+                <rect>[788,328,120,90]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_item_title5">
+            <property>
+                <rect>[788,424,120,26]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+		<widget class="image" style="default" name="img_skin_active_id5">
+            <property>
+                <rect>[914,397,25,25]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_choice</img>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_skin_gif">
+            <property>
+                <rect>[580,104,38,38]</rect>
+                <state>hide</state>
+                <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skin_red">
+            <property>
+                <rect>[356,526,16,16]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_red</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_red">
+            <property>
+                <rect>[376,520,90,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Setting</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skin_green">
+            <property>
+                <rect>[480,526,16,16]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_green</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_green">
+            <property>
+                <rect>[500,520,90,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Install</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skin_yellow">
+            <property>
+                <rect>[604,526,16,16]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_yellow</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_yellow">
+            <property>
+                <rect>[624,520,90,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Fav</string>
+                <format>static</format>
+            </property>
+        </widget>
+		<widget class="image" style="default" name="img_skin_blue">
+            <property>
+                <rect>[726,526,16,16]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_blue</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_blue">
+            <property>
+                <rect>[746,520,90,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Update</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skin_info">
+            <property>
+                <rect>[844,522,46,25]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_info</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_info">
+            <property>
+                <rect>[894,520,110,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Preview</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_item_shortdesc">
+            <property>
+                <rect>[0,510,349,64]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_skin_line_top2">
+            <property>
+                <rect>[81,140,220,4]</rect>
+                <forecolor>[line_bg_color,line_bg_color,line_bg_color]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_skin_listview">
+            <property>
+                <rect>[81,96,220,38]</rect>
+                <forecolor>[#E78818,#E78818,#E78818]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_prog</font>
+                <string>Categories</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_skin_right">
+            <property>
+                <rect>[392,104,60,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+    </children>
+</widget>

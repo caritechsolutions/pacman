@@ -1,0 +1,921 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget class="window" style="default" name="wnd_cover_pvr">
+	<property>
+		<rect>[0,0,1024,576]</rect>
+		<forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+		<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+	</property>
+	<signal>
+		<create>app_cover_pvr_create</create>
+		<destroy>app_cover_pvr_destroy</destroy>
+		<got_focus>app_cover_pvr_got_focus</got_focus>
+		<lost_focus>app_cover_pvr_lost_focus</lost_focus>
+		<keypress>app_cover_pvr_keypress</keypress>
+	</signal>
+	<children>
+		<widget class="image" style="default" name="img_cover_pvr_bg_jpg">
+            <property>
+                <rect>[0,0,1024,576]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+		<widget class="image" style="default" name="img_cover_pvr_back">
+			<property>
+				<rect>[30,22,964,524]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_company_logo">
+			<property>
+				<rect>[40,22,64,40]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_title">
+			<property>
+				<rect>[110,32,58,23]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>cover_pvr_pvr</img>
+			</property>
+		</widget>
+
+		<widget class="image" style="default" name="img_cover_pvr_sys_date">
+			<property>
+				<rect>[712,31,24,28]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>s_icon_calendar</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_sys_date">
+			<property>
+				<rect>[744,30,120,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_sys_time">
+			<property>
+				<rect>[868,32,24,26]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>s_icon_clock</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_sys_time">
+			<property>
+				<rect>[900,30,80,30]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+
+		<widget class="image" style="default" name="img_cover_pvr_line1">
+			<property>
+				<rect>[755,90,1,390]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[line_bg_color2,line_bg_color2,line_bg_color2]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_line2">
+			<property>
+				<rect>[30,480,964,1]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[line_bg_color2,line_bg_color2,line_bg_color2]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_line3">
+			<property>
+				<rect>[30,510,964,1]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[line_bg_color2,line_bg_color2,line_bg_color2]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+
+		<widget class="text" style="default" name="text_cover_pvr_page">
+			<property>
+				<rect>[287,450,210,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_arrow_left">
+			<property>
+				<rect>[40,252,15,40]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>cover_pvr_arrow_l</img>
+				<mirror>disable</mirror>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_arrow_right">
+			<property>
+				<rect>[730,252,15,40]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>cover_pvr_arrow_r</img>
+				<mirror>disable</mirror>
+			</property>
+		</widget>
+
+		<widget class="button" style="default" name="btn_cover_pvr_group1">
+			<property>
+				<rect>[32,62,160,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<focus_img>cover_pvr_group_focus</focus_img>
+				<unfocus_img>cover_pvr_group_unfocus</unfocus_img>
+				<alignment>hcentre|vcentre</alignment>
+				<string>All</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_cover_pvr_group2">
+			<property>
+				<rect>[192,62,160,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<focus_img>cover_pvr_group_focus</focus_img>
+				<unfocus_img>cover_pvr_group_unfocus</unfocus_img>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_cover_pvr_group3">
+			<property>
+				<rect>[352,62,160,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<focus_img>cover_pvr_group_focus</focus_img>
+				<unfocus_img>cover_pvr_group_unfocus</unfocus_img>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_cover_pvr_group4">
+			<property>
+				<rect>[512,62,160,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<focus_img>cover_pvr_group_focus</focus_img>
+				<unfocus_img>cover_pvr_group_unfocus</unfocus_img>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_cover_pvr_group5">
+			<property>
+				<rect>[672,62,160,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<focus_img>cover_pvr_group_focus</focus_img>
+				<unfocus_img>cover_pvr_group_unfocus</unfocus_img>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_cover_pvr_group6">
+			<property>
+				<rect>[832,62,160,30]</rect>
+				<state>show</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<focus_img>cover_pvr_group_focus</focus_img>
+				<unfocus_img>cover_pvr_group_unfocus2</unfocus_img>
+				<alignment>hcentre|vcentre</alignment>
+				<string>More...</string>
+				<format>static</format>
+			</property>
+		</widget>
+
+
+		<widget class="image" style="default" name="img_cover_pvr_back1">
+			<property>
+				<rect>[65,96,214,116]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>cover_pvr_epg_unfocus</img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_back2">
+			<property>
+				<rect>[285,96,214,116]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>cover_pvr_epg_unfocus</img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_back3">
+			<property>
+				<rect>[505,96,214,116]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>cover_pvr_epg_unfocus</img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_back4">
+			<property>
+				<rect>[65,272,214,116]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>cover_pvr_epg_unfocus</img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_back5">
+			<property>
+				<rect>[285,272,214,116]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>cover_pvr_epg_unfocus</img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_back6">
+			<property>
+				<rect>[505,272,214,116]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>cover_pvr_epg_unfocus</img>
+			</property>
+		</widget>
+    <widget class="text" style="default" name="text_cover_pvr_pp_ch1">
+      <property>
+        <rect>[69,100,206,108]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <string></string>
+        <state>hide</state>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_cover_pvr_pp_ch2">
+      <property>
+        <rect>[289,100,206,108]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <string></string>
+        <state>hide</state>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_cover_pvr_pp_ch3">
+      <property>
+        <rect>[509,100,206,108]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <string></string>
+        <state>hide</state>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_cover_pvr_pp_ch4">
+      <property>
+        <rect>[69,276,206,108]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <string></string>
+        <state>hide</state>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_cover_pvr_pp_ch5">
+      <property>
+        <rect>[289,276,206,108]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <string></string>
+        <state>hide</state>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_cover_pvr_pp_ch6">
+      <property>
+        <rect>[509,276,206,108]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <string></string>
+        <state>hide</state>
+        <format>static</format>
+      </property>
+    </widget>
+
+		<widget class="image" style="default" name="img_cover_pvr_logo1">
+			<property>
+				<rect>[69,100,206,108]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_logo2">
+			<property>
+				<rect>[289,100,206,108]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_logo3">
+			<property>
+				<rect>[509,100,206,108]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_logo4">
+			<property>
+				<rect>[69,276,206,108]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_logo5">
+			<property>
+				<rect>[289,276,206,108]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_logo6">
+			<property>
+				<rect>[509,276,206,108]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+
+		<widget class="text" style="default" name="text_cover_pvr_title1">
+			<property>
+				<rect>[67,214,210,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_title2">
+			<property>
+				<rect>[287,214,210,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_title3">
+			<property>
+				<rect>[507,214,210,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_title4">
+			<property>
+				<rect>[67,390,210,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_title5">
+			<property>
+				<rect>[287,390,210,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_title6">
+			<property>
+				<rect>[507,390,210,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+
+		<widget class="text" style="default" name="text_cover_pvr_time1">
+			<property>
+				<rect>[67,242,100,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_ch1">
+			<property>
+				<rect>[167,242,110,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_time2">
+			<property>
+				<rect>[287,242,100,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_ch2">
+			<property>
+				<rect>[387,242,110,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_time3">
+			<property>
+				<rect>[507,242,100,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_ch3">
+			<property>
+				<rect>[607,242,110,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_time4">
+			<property>
+				<rect>[67,418,100,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_ch4">
+			<property>
+				<rect>[167,418,110,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_time5">
+			<property>
+				<rect>[287,418,100,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_ch5">
+			<property>
+				<rect>[387,418,110,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_time6">
+			<property>
+				<rect>[507,418,100,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_ch6">
+			<property>
+				<rect>[607,418,110,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_duration">
+			<property>
+				<rect>[762,97,228,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[default_color,default_color,default_color]</backcolor>
+				<font>font_22</font>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_name">
+			<property>
+				<rect>[762,125,228,25]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_parent">
+			<property>
+				<rect>[762,150,32,25]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_genres">
+			<property>
+				<rect>[794,150,196,25]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_brief">
+			<property>
+				<rect>[762,178,228,220]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|top</alignment>
+				<string></string>
+				<format>automatic</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_content_separate_line2">
+			<property>
+				<rect>[762,400,228,1]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[line_bg_color2,line_bg_color2,line_bg_color2]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_ch_logo">
+			<property>
+				<rect>[844,406,64,40]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_ch_logo">
+			<property>
+				<rect>[844,406,64,40]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_ch_name">
+			<property>
+				<rect>[762,450,228,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_size">
+			<property>
+				<rect>[67,482,100,25]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_dir">
+			<property>
+				<rect>[180,482,160,25]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_file">
+			<property>
+				<rect>[350,482,640,25]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<font>font_22</font>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+
+		<widget class="image" style="default" name="img_cover_pvr_details_back">
+			<property>
+				<rect>[140,94,500,328]</rect>
+				<state>hide</state>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+				<mode>multiple</mode>
+				<img></img>
+				<lt_img>s_win_m</lt_img>
+				<rt_img>s_win_m</rt_img>
+				<lb_img>s_win_m</lb_img>
+				<rb_img>s_win_m</rb_img>
+				<l_img>s_win_m</l_img>
+				<r_img>s_win_m</r_img>
+				<t_img>s_win_m</t_img>
+				<b_img>s_win_m</b_img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_details_duration">
+			<property>
+				<rect>[160,96,460,28]</rect>
+				<state>hide</state>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_details_title">
+			<property>
+				<rect>[160,124,460,28]</rect>
+				<state>hide</state>
+				<forecolor>[pop_title_color,pop_title_color,pop_title_color]</forecolor>
+				<backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="notepad" style="default" name="notepad_cover_pvr_details">
+			<property>
+				<rect>[145,156,490,236]</rect>
+				<state>hide</state>
+				<forecolor>[pop_title_color,pop_title_color,pop_title_color]</forecolor>
+				<backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+				<alignment>left|top</alignment>
+				<font>Arial</font>
+				<vertical_margin>0</vertical_margin>
+				<horizontal_margin>20</horizontal_margin>
+			</property>
+			<children>
+				<widget class="scrollbar" style="default" name="scrollbar_cover_pvr_details">
+					<property>
+						<rect>[480,0,9,236]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+						<back_img>s_roll_m</back_img>
+						<arrow_up>s_roll_t</arrow_up>
+						<arrow_down>s_roll_d</arrow_down>
+						<fore_img>s_roll_button</fore_img>
+						<format>scroll_show</format>
+					</property>
+				</widget>
+			</children>
+		</widget>
+		<widget class="button" style="default" name="btn_cover_pvr_details_exit">
+			<property>
+				<rect>[376,395,38,19]</rect>
+				<state>hide</state>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[default_color,default_color,default_color]</backcolor>
+				<focus_img>s_ts_exit</focus_img>
+				<unfocus_img>s_ts_exit</unfocus_img>
+			</property>
+		</widget>
+
+		<widget class="image" style="default" name="img_cover_pvr_ok_tip">
+			<property>
+				<rect>[52,521,38,19]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_ok</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_ok_tip">
+			<property>
+				<rect>[100,516,80,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>Play</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_red_tip">
+			<property>
+				<rect>[196,520,20,20]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_red</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_red_tip">
+			<property>
+				<rect>[220,516,80,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>Delete</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_green_tip">
+			<property>
+				<rect>[314,520,20,20]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_green</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_green_tip">
+			<property>
+				<rect>[338,516,140,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>Delete All</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_yellow_tip">
+			<property>
+				<rect>[490,520,20,20]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_yellow</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_yellow_tip">
+			<property>
+				<rect>[514,516,180,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>Record Filter</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_blue_tip">
+			<property>
+				<rect>[706,520,20,20]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_blue</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_blue_tip">
+			<property>
+				<rect>[730,516,100,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>Refresh</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_cover_pvr_info_tip">
+			<property>
+				<rect>[846,521,38,19]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_info</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_cover_pvr_info_tip">
+			<property>
+				<rect>[894,516,80,28]</rect>
+				<forecolor>[text_color,text_color,text_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>Detail</string>
+				<format>static</format>
+			</property>
+		</widget>
+	</children>
+</widget>

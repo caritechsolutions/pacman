@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_miracast">
+  <property>
+    <rect>[0,0,1280,720]</rect>
+    <forecolor>[#000000,#000000,#000000]</forecolor>
+    <backcolor>[#00ff00,#00ff00,#000000]</backcolor>
+    <back_ground>null</back_ground>
+  </property>
+  <signal>
+    <create>miracast_init</create>
+    <destroy>miracast_destroy</destroy>
+    <keypress>miracast_keypress</keypress>
+  </signal>
+  <children>
+    <!--widget class="image" style="default" name="img_miracast_title">
+      <property>
+        <rect>[0,0,1280,110]</rect>
+        <forecolor>[#808080,#808080,#808080]</forecolor>
+        <backcolor>[#808080,#808080,#808080]</backcolor>
+        <mode>single</mode>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_miracast_title">
+      <property>
+        <rect>[40,30,208,73]</rect>
+        <forecolor>[#808080,#808080,#808080]</forecolor>
+        <backcolor>[#808080,#808080,#808080]</backcolor>
+        <mode>single</mode>
+        <img>dlna.bmp</img>
+      </property>
+    </widget-->
+    <widget class="text" style="default" name="txt_miracast_name">
+      <property>
+        <rect>[260,60,1020,50]</rect>
+        <forecolor>[#d6d2d6,#d6d2d6,#d6d2d6]</forecolor>
+        <backcolor>[#ff00ff,#ff00ff,#ff00ff]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+  </children>
+</widget>

@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_eutel_chinfo">
+    <property>
+        <rect>[120,408,784,148]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+    </property>
+    <signal>
+        <create>app_eutel_chinfo_create</create>
+        <destroy>app_eutel_chinfo_destroy</destroy>
+        <got_focus>app_eutel_chinfo_got_focus</got_focus>
+        <lost_focus>app_eutel_chinfo_lost_focus</lost_focus>
+        <keypress>app_eutel_chinfo_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_eutel_chinfo_back">
+            <property>
+                <rect>[0,0,784,148]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_m</lt_img>
+                <rt_img>s_win_m</rt_img>
+                <lb_img>s_win_m</lb_img>
+                <rb_img>s_win_m</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_eutel_chinfo_date">
+            <property>
+                <rect>[504,6,120,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font></font>
+                <string>12:00</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_eutel_chinfo_time">
+            <property>
+                <rect>[630,6,70,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>12:00</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_eutel_chinfo_company_logo">
+            <property>
+                <rect>[704,14,72,48]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>richepg_sattv_logo_b</img>
+            </property>
+        </widget>
+
+        <widget class="image" style="default" name="img_eutel_chinfo_logo_back">
+            <property>
+                <rect>[16,18,68,44]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_eutel_chinfo_logo_back2">
+            <property>
+                <rect>[18,20,64,40]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_eutel_chinfo_logo">
+            <property>
+                <rect>[18,20,64,40]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_eutel_chinfo_name">
+            <property>
+                <rect>[94,10,400,52]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_main</font>
+                <alignment>left|bottom</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_eutel_chinfo_num">
+            <property>
+                <rect>[16,80,120,52]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_main</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_eutel_chinfo_cur_time">
+            <property>
+                <rect>[140,92,140,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_22</font>
+                <string>No Information</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_eutel_chinfo_cur_event">
+            <property>
+                <rect>[280,92,260,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_22</font>
+                <string>No Information</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_eutel_chinfo_next_time">
+            <property>
+                <rect>[140,118,140,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_22</font>
+                <string>No Information</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_eutel_chinfo_next_event">
+            <property>
+                <rect>[280,118,260,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_22</font>
+                <string>No Information</string>
+                <format>static</format>
+            </property>
+        </widget>
+
+        <widget class="image" style="default" name="img_eutel_chinfo_lineup_back">
+            <property>
+                <rect>[544,60,68,44]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_eutel_chinfo_lineup_back2">
+            <property>
+                <rect>[546,62,64,40]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_eutel_chinfo_lineup">
+            <property>
+                <rect>[546,62,64,40]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_eutel_chinfo_lineup_title">
+            <property>
+                <rect>[620,60,150,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_22</font>
+                <string>Lineup:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_eutel_chinfo_lineup">
+            <property>
+                <rect>[620,82,150,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_eutel_chinfo_genres_title">
+            <property>
+                <rect>[140,66,140,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_22</font>
+                <string>Channel Genres:</string>
+                <format>static</format>
+            </property>
+        </widget>
+       <widget class="text" style="default" name="text_eutel_chinfo_genres">
+            <property>
+                <rect>[280,66,260,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+
+        <widget class="image" style="default" name="img_eutel_chinfo_ttx">
+            <property>
+                <rect>[544,108,30,24]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_ttx</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_eutel_chinfo_subt">
+            <property>
+                <rect>[590,108,30,24]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_subt</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_eutel_chinfo_hd">
+            <property>
+                <rect>[636,108,30,24]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_hd</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_eutel_chinfo_lock">
+            <property>
+                <rect>[684,108,30,24]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_lock</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_eutel_chinfo_scramble">
+            <property>
+                <rect>[729,108,30,24]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_money</img>
+            </property>
+        </widget>
+    </children>
+</widget>

@@ -1,0 +1,18 @@
+{
+"APP_ID":"stalker",
+"MENUCONFIG_ID":"BR2_MOD_APP_STALKER",
+"MENUCONFIG_NAME":"Stalker Support",
+"MACRO_DEFINE":"STALKER_SUPPORT",
+"MENU_EXEC":"app_create_stalker_menu",
+"MENU_TITLE_STR":"Stalker",
+"MENU_ATTR":"MENU_NETWORK_CHECK",
+"APPUI_ENTRY":"APPUI_ENTRY_STALKER",
+"MENU_CHECK_FUNC":"NULL",
+"SUB_DEFINES":[
+        {
+            "MACRO_DEFINE":"STALKER_SERIES_SUPPORT",
+            "MENUCONFIG_ID":"BR2_MOD_APP_STALKER_SERIES",
+            "MENUCONFIG_NAME":"Stalker Series Support"
+        }
+    ]
+}
