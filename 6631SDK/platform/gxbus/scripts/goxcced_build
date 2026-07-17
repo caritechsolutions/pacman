@@ -1,0 +1,369 @@
+#! /bin/bash
+
+J=-j`cat /proc/cpuinfo| grep processor | wc -l`
+
+_OPTIMIZE=O2
+_LOGLEVEL=2
+
+GXROOT_PATH=$(cd `dirname $0`; pwd)/../../..
+export GX_PREFIX=$GXROOT_PATH/library/goxceed
+GXPLATFORM_PATH=$GXROOT_PATH/platform
+GXKERNEL_PATH=$GXROOT_PATH/buildroot/kernel
+
+build_lib() {
+	if [ $# -eq 0 ]; then
+		echo "error !!!"
+		exit 1
+	fi
+
+	echo "bulid $1"
+	cd $GXPLATFORM_PATH/$1
+
+	if [ $# -eq 1 ]; then
+		optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build csky nos   || exit 1
+		optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build csky ecos  || exit 1
+		optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build csky linux || exit 1
+		optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build arm  linux || exit 1
+		optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build arm  nos   || exit 1
+	elif [ $# -eq 3 ]; then
+		optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build $2 $3 || exit 1
+	elif [ $# -eq 4 ]; then
+		optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build $2 $3 $4 || exit 1
+	fi
+
+	cd $GXPLATFORM_PATH
+}
+
+build_drv() {
+	if [ $# -eq 0 ]; then
+		echo "error !!!"
+		exit 1
+	fi
+
+	cd $GXPLATFORM_PATH/$1
+
+	if [ $# -eq 1 ]; then
+		optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build csky nos   || exit 1
+		optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build csky ecos  || exit 1
+		optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build arm  nos   || exit 1
+		optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build arm  ecos  || exit 1
+	elif [ $# -eq 3 ]; then
+		optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build $2 $3 || exit 1
+	fi
+
+	if [ $3 == 'linux' ];then
+		find -name "*.ko" -exec cp -f {} $MOD_PATH \;
+	fi
+
+	cd $GXPLATFORM_PATH
+}
+
+build_kernel_nos() {
+	echo "bulid nos"
+	cd $GXPLATFORM_PATH/gxloader
+	optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build clean
+	optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build $1 generic lib || exit 1
+	cd $GXPLATFORM_PATH
+}
+
+build_kernel_ecos() {
+	SMP=$1
+	if [ "$1" == "arm" ]; then
+		SMP=arm_smp
+	fi
+
+	cd $GXPLATFORM_PATH/ecos3.0
+	optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build $SMP || exit 1
+	cd $GXPLATFORM_PATH
+}
+
+build_kernel_linux() {
+	GX_KERNEL_VERSION=4.9.y
+	cd $GXKERNEL_PATH/$GX_KERNEL_VERSION
+
+	./build $1
+	MOD_PATH=$GX_PREFIX/$1/rootfs/lib/modules/$GX_KERNEL_VERSION
+	mkdir -p $MOD_PATH
+}
+
+build_gxlowpower() {
+	echo "bulid gxlowpower"
+	cd gxlowpower/ck610
+	optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build scorpio || exit 1
+	cd $GXPLATFORM_PATH
+}
+
+build_ota() {
+	echo "bulid gxota"
+	cd $GXPLATFORM_PATH/gxdownloader
+	optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build csky nos scorpio || exit 1
+	optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build clean
+	optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build arm nos sirius || exit 1
+	optimize=$_OPTIMIZE loglevel=$_LOGLEVEL ./build clean
+	cd $GXPLATFORM_PATH
+}
+
+build_secure_fw() {
+	echo "bulid secure fw"
+	build_drv gxosal csky seos
+	build_lib gxsecure firmware release
+
+}
+
+build_linux_platform() {
+	echo "********************************************************************************"
+	echo "Bulid $2 $1 linux platform"
+	echo "********************************************************************************"
+	build_kernel_linux $2
+
+	build_drv gxosal     $1 linux
+	build_drv gxsecure   $1 linux
+	build_drv gxavdev    $1 linux
+	build_drv gxfrontend $1 linux
+
+
+	build_lib gxapi $1 linux
+	build_lib thirdparty $1 linux
+	build_lib gxbus $1 linux
+}
+
+build_ecos_platform() {
+	echo "********************************************************************************"
+	echo "Bulid $2 $1 ecos platform"
+	echo "********************************************************************************"
+
+	build_kernel_ecos $1
+
+	build_drv gxosal $1 ecos
+	build_drv gxavdev $1 ecos
+	build_drv gxsecure $1 ecos
+	build_drv gxfrontend $1 ecos
+
+	build_lib gxapi $1 ecos
+	build_lib thirdparty $1 ecos
+	build_lib gxbus $1 ecos
+}
+
+build_nos_platform() {
+	echo "********************************************************************************"
+	echo "Bulid $2 $1 nos platform"
+	echo "********************************************************************************"
+
+	build_kernel_nos $2
+
+	build_drv gxosal $1 nos
+	build_drv gxavdev $1 nos
+	build_drv gxsecure $1 nos
+	build_drv gxfrontend $1 nos
+
+	build_lib gxapi $1 nos
+	build_lib thirdparty $1 nos
+	build_lib gxbus $1 nos
+}
+
+build_teeos_platform() {
+	echo "********************************************************************************"
+	echo "Bulid $2 $1 teeos platform"
+	echo "********************************************************************************"
+
+	cd $GXPLATFORM_PATH/optee/3.22.0
+        ./build $1 $2 $3
+	cd $GXPLATFORM_PATH
+}
+
+build_release() {
+	rm -rf $GX_PREFIX
+
+	build_linux_platform arm sirius
+	build_teeos_platform sirius linux
+
+	build_ecos_platform arm sirius
+	build_teeos_platform sirius ecos
+
+	build_nos_platform arm sirius
+
+	build_linux_platform csky scorpio
+	build_ecos_platform csky scorpio
+	build_nos_platform csky scorpio
+
+	build_gxlowpower
+
+	build_secure_fw
+
+	build_ota
+
+	cp -arf $GX_PREFIX .
+	rm -rf goxceed/kernel-*
+	tar -cjf goxceed-v3.x.0.tar.bz2 goxceed
+}
+
+build_prj_clean() {
+	if [ "$1" = '4.9.y' ];then
+		cd $GXKERNEL_PATH/$1
+	else
+		cd $GXPLATFORM_PATH/$1
+	fi
+	./build clean
+}
+
+build_clean() {
+	echo "********************************************************************************"
+	echo "Bulid Clean platform"
+	echo "********************************************************************************"
+	rm -rf .buildtarget*
+	rm -rf $GX_PREFIX
+	build_prj_clean gxosal
+	build_prj_clean gxavdev
+	build_prj_clean gxsecure
+	build_prj_clean gxfrontend
+
+	build_prj_clean gxapi
+	build_prj_clean thirdparty
+	build_prj_clean gxbus
+	build_prj_clean optee/3.22.0
+	build_prj_clean ecos3.0
+	build_prj_clean 4.9.y
+}
+
+usage() {
+	echo "./make_all [all|clean]"
+	echo "    eg: ./make_all all"
+	echo "        ./make_all clean"
+	echo "./make_all <scorpio|taurus|gx6605s|pegasus|gemini|cygnus> <ecos|linux|nos>"
+	echo "./make_all <sirius|canopus|vega> <ecos|linux|nos|ecos-tee|linux-tee>"
+	echo "    eg: ./make_all taurus ecos"
+	echo "        ./make_all taurus linux"
+	echo "        ./make_all taurus nos"
+	echo "        ./make_all sirius ecos"
+	echo "        ./make_all sirius linux"
+	echo "        ./make_all sirius nos"
+	echo "        ./make_all sirius linux-tee"
+	echo "        ./make_all sirius ecos-tee"
+	echo "./make_all <sirius|canopus|vega> <ecos-tee|linux-tee> [vmx|tvos]"
+	echo "        ./make_all sirius linux-tee"
+	echo "        ./make_all canopus ecos-tee"
+	echo "        ./make_all sirius linux-tee vmx"
+	echo "./make_all <gxosal|gxsecure|gxavdev|gxfrontend|gxapi|gxbus|thirdparty> <csky|arm> <ecos|linux>"
+	echo "        ./make_all gxosal arm ecos"
+	echo "        ./make_all gxosal arm linux"
+	echo "        ./make_all gxapi arm ecos"
+	echo "        ./make_all gxapi arm linux"
+}
+
+domake_usage() {
+    domaketmp=/tmp/domake_help_msg
+    usage > "$domaketmp" 2>&1
+    sed -i 's/make_all/make.sh release/g' "$domaketmp"
+    MSG=$(cat "$domaketmp")
+    rm -f "$domaketmp"
+    echo "$MSG"
+}
+
+build_help() {
+    if [ $SHLVL -gt 2 ]; then
+        domake_usage
+    else
+        usage
+    fi
+}
+
+BUILD_TARGET=.buildtarget_$1$2$3${loglevel}${optimize}
+
+if [ -f .buildtarget* ] && [ ! -f $BUILD_TARGET ]; then
+	build_clean
+fi
+touch $BUILD_TARGET
+
+if [ $# -eq 0 ]; then
+	build_help
+elif [ $# -eq 1 ]; then
+	case $1 in
+		all)
+			build_release
+			;;
+		clean)
+			build_clean
+			;;
+		*)
+			build_help
+	esac
+elif [ $# -eq 2 ]; then
+	echo $1 $2
+	case $1 in
+		scorpio|taurus|gemini|cygnus)
+			case $2 in
+				linux)
+					build_linux_platform csky $1
+					;;
+				ecos)
+					build_ecos_platform csky $1
+					;;
+				nos)
+					build_nos_platform csky $1
+					;;
+				*)
+					build_help
+			esac
+			;;
+		sirius|canopus|vega)
+			case $2 in
+				linux)
+					build_linux_platform arm $1
+					;;
+				ecos)
+					build_ecos_platform arm $1
+					;;
+				nos)
+					build_nos_platform arm $1
+					;;
+				linux-tee)
+					build_linux_platform arm $1_optee
+					build_teeos_platform $1 linux
+					;;
+				ecos-tee)
+					build_ecos_platform arm $1
+					build_teeos_platform $1 ecos
+					;;
+				*)
+					build_help
+			esac
+			;;
+		*)
+			build_help
+	esac
+elif [ $# -eq 3 ]; then
+	echo $1 $2 $3
+	case $1 in
+		# $1 project
+		# $2 arch
+		# $3 os
+		gxosal|gxsecure|gxavdev|gxfrontend)
+			build_drv $1 $2 $3
+			;;
+		gxapi|gxbus|thirdparty)
+			build_lib $1 $2 $3
+			;;
+		# $1 chip
+		# $2 arch-tee
+		# $3 config
+		sirius|canopus|vega)
+			case $2 in
+				linux-tee)
+					build_linux_platform arm $1_optee
+					build_teeos_platform $1 linux $3
+					;;
+				ecos-tee)
+					build_ecos_platform arm $1
+					build_teeos_platform $1 ecos $3
+					;;
+				*)
+					build_help
+			esac
+			;;
+		*)
+			build_help
+	esac
+else
+	build_help
+fi
+

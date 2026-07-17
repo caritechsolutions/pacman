@@ -1,0 +1,56 @@
+SET(SRC_DECODER
+	decoder/vd.c
+	decoder/ad.c
+	decoder/sd.c
+	)
+
+IF (CONFIG_VD_HW)
+	SET (SRC_DECODER ${SRC_DECODER} decoder/vd_hw.c)
+ENDIF (CONFIG_VD_HW)
+
+IF (CONFIG_VD_MPEG)
+	SET (SRC_DECODER ${SRC_DECODER}
+		decoder/vd_mpeg_es.c
+		decoder/vd_es2frame.c
+		)
+ENDIF (CONFIG_VD_MPEG)
+
+IF (CONFIG_VD_DUMMY)
+	SET (SRC_DECODER ${SRC_DECODER} decoder/vd_dummy.c)
+ENDIF (CONFIG_VD_DUMMY)
+
+IF (CONFIG_AD_HW)
+	SET (SRC_DECODER ${SRC_DECODER} decoder/ad_hw.c)
+ENDIF (CONFIG_AD_HW)
+
+IF (CONFIG_AD_SW)
+	SET (SRC_DECODER ${SRC_DECODER}
+		decoder/ad_sw.c
+		decoder/audio/audio_dec.c
+		decoder/audio/amr-nb_dec.c
+		decoder/audio/amr-wb_dec.c
+		)
+ENDIF (CONFIG_AD_SW)
+
+IF (CONFIG_AD_SW_APE)
+	SET (SRC_DECODER ${SRC_DECODER}
+		decoder/audio/ape_dec.c
+		)
+ENDIF (CONFIG_AD_SW_APE)
+
+IF (CONFIG_AD_MP3)
+	SET (SRC_DECODER ${SRC_DECODER} decoder/ad_mp3.c decoder/mp3lib/sr1.c)
+endif (CONFIG_AD_MP3)
+
+IF (CONFIG_AD_DUMMY)
+	SET (SRC_DECODER ${SRC_DECODER} decoder/ad_dummy.c)
+ENDIF (CONFIG_AD_DUMMY)
+
+IF (CONFIG_SUBTITLE_MEDIA)
+	SET (SRC_DECODER ${SRC_DECODER} decoder/sd_text.c)
+	SET (SRC_DECODER ${SRC_DECODER} decoder/sd_vob.c)
+ENDIF (CONFIG_SUBTITLE_MEDIA)
+
+IF (CONFIG_IPTV_ENABLE AND CONFIG_STREAM_MPEGDASH AND CONFIG_SUBTITLE_TTML)
+	SET (SRC_DECODER ${SRC_DECODER} decoder/sd_ttml.c)
+ENDIF (CONFIG_IPTV_ENABLE AND CONFIG_STREAM_MPEGDASH AND CONFIG_SUBTITLE_TTML)

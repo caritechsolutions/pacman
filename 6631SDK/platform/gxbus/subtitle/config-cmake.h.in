@@ -1,0 +1,6 @@
+#ifndef __GX_SUBTITLE_CONFIG_H__
+#define __GX_SUBTITLE_CONFIG_H__
+
+#cmakedefine CONFIG_SUBTITLE_GDI_DRAW
+
+#endif

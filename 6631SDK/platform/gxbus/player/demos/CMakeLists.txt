@@ -1,0 +1,6 @@
+
+ADD_SUBDIRECTORY(common)
+
+ADD_SUBDIRECTORY(gxplayer)
+
+ADD_SUBDIRECTORY(mediaapi)

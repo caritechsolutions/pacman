@@ -1,0 +1,2 @@
+/usr/bin/ar qc libgxserial.a  CMakeFiles/gxserial_static.dir/serial/gxserial.c.o
+/usr/bin/ranlib libgxserial.a

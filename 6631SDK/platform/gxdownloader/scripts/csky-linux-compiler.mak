@@ -1,0 +1,4 @@
+CROSS_COMPILE=csky-linux-
+
+TARGET_DEFS=-DLINUX_OS
+

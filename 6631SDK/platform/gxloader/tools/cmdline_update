@@ -1,0 +1,168 @@
+#!/bin/bash
+
+BASE_ADDR=
+END_ADDR=
+MEM_SIZE=0
+FW_SIZE=0
+SRC_CMDLINE=
+NEW_CMDLINE=
+TMP_FILE=.tmp_file
+CONF_FILE=.cfg
+
+flag="# cmdline add config flag"
+
+check_flag_and_clean() {
+	if [ -f ${CONF_FILE} ];then
+		line_st=$(grep -n "${flag}" ${CONF_FILE} | cut -d : -f1)
+		line_ed=$(wc -l ${CONF_FILE} | awk '{print $1}')
+		if [ -n "${line_st}" ];then
+			sed -i "${line_st}, ${line_ed}d" ${CONF_FILE}
+		fi
+	fi
+}
+
+get_src_cmdline() {
+	cfg_file=$1
+	if [ ! -f "${cfg_file}" ];then
+		echo "file '${cfg_file}' not exist !"
+		exit 1
+	fi
+	BASE_ADDR=$(printf "0x%08x" $2 2>/dev/null)
+	if [ $? -ne 0 ];then
+		echo "error: wrong hexadecimal number !!!"
+		exit 1
+	fi
+	if [ -n "$5" ];then
+		SRC_CMDLINE=$(grep -s -E "\<$5\>" ${cfg_file})
+	else
+		SRC_CMDLINE=$(grep -s -E "\<CMDLINE_VALUE\>" ${cfg_file})
+	fi
+	SRC_CMDLINE=$(echo "${SRC_CMDLINE}" | grep -v -E "#")
+	SRC_CMDLINE=$(echo ${SRC_CMDLINE#*\"})
+	SRC_CMDLINE=$(echo ${SRC_CMDLINE%\"*})
+}
+
+analyse() {
+	str=$1
+	size=$(echo ${str##*=})
+	size=$(echo ${size} | tr -cd "[0-9]")
+	chr=$((${#str} - 1))
+	symb=${str:${chr}:1}
+	case ${symb} in
+		G|g)
+			size_B=$(printf "0x%08x" $(expr ${size} \* 1024 \* 1024 \* 1024))
+			;;
+		M|m)
+			size_B=$(printf "0x%08x" $(expr ${size} \* 1024 \* 1024))
+			;;
+		K|k)
+			size_B=$(printf "0x%08x" $(expr ${size} \* 1024))
+			;;
+		*)
+			size_B=$(printf "0x%08x" ${size})
+			;;
+	esac
+}
+
+fill_spaces() {
+	string="$1"
+	if [ -n "$2" ];then
+		diff=$2
+	else
+		diff=0
+	fi
+	num=19
+	str_num=$(echo -n "${string}" | wc -m)
+	for i in $(seq $((${num} - ${str_num} + ${diff})))
+	do
+		echo -n " " >> ${TMP_FILE}
+	done
+}
+
+calc() {
+	a_cnt=1
+	mem_end_find=0
+	rm -f ${TMP_FILE}
+	COUNT=$(echo "${SRC_CMDLINE}" | wc -w)
+	for cnt in $(seq ${COUNT})
+	do
+		str=$(echo "${SRC_CMDLINE}" | cut -d " " -f${cnt})
+		tmp_str=$(echo "${str}" | grep -s "mem")
+
+		if [ "${tmp_str}" == "mem_end" ];then
+			mem_end_find=1
+		fi
+
+		if [ -n "${tmp_str}" ] && [ "${tmp_str}" != "mem_end" ] && [ "${mem_end_find}" != "1" ];then
+			analyse ${tmp_str}
+			T_CMDLINE="${tmp_str}@${BASE_ADDR}"
+			END_ADDR=$(printf "0x%08x" $((${BASE_ADDR}+${size_B})))
+			a_cnt=$(expr ${a_cnt} + 1)
+
+			src_str=$(echo ${T_CMDLINE} | cut -d = -f1 | tr \"[a-z]\" \"[A-Z]\")
+			################## add to tmp_file ################
+			echo -n "#define CMDLINE_${src_str}_START" >> ${TMP_FILE}
+			fill_spaces ${src_str}
+			echo "$(echo ${T_CMDLINE} | cut -d @ -f2)" >> ${TMP_FILE}
+
+			echo -n "#define CMDLINE_${src_str}_SIZE" >> ${TMP_FILE}
+			fill_spaces ${src_str} 1
+			echo "${size_B}" >> ${TMP_FILE}
+
+			echo -n "#define CMDLINE_${src_str}_END" >> ${TMP_FILE}
+			fill_spaces ${src_str} 2
+			echo "${END_ADDR}" >> ${TMP_FILE}
+
+			################## get fr size #################
+			if [ "${src_str}" != "MEM" ] && [ "${src_str}" != "VIDEOMEM" ];then
+				FW_SIZE=$(printf "0x%08x" $((${FW_SIZE}+${size_B})))
+			fi
+
+			################## add to .config #################
+			echo "CMDLINE_${src_str}_START = ${BASE_ADDR}" >> ${CONF_FILE}
+			echo "CMDLINE_${src_str}_SIZE = ${size_B}" >> ${CONF_FILE}
+			echo "CMDLINE_${src_str}_END = ${END_ADDR}" >> ${CONF_FILE}
+
+			################## calc mem size ##################
+			MEM_SIZE=$(printf "0x%08x" $((${MEM_SIZE}+${size_B})))
+
+			BASE_ADDR=${END_ADDR}
+		else
+			T_CMDLINE="${str}"
+		fi
+
+		if [ "${cnt}" = "1" ];then
+			NEW_CMDLINE=${T_CMDLINE}
+		else
+			NEW_CMDLINE="${NEW_CMDLINE} ${T_CMDLINE}"
+		fi
+	done
+	echo "CMDLINE_FWMEM_SIZE = ${FW_SIZE}" >> ${CONF_FILE}
+	echo "CMDLINE_DRAM_SIZE = ${MEM_SIZE}" >> ${CONF_FILE}
+	export NEW_CMDLINE
+	a_cnt=$(expr ${a_cnt} - 1)
+}
+
+update_cmdline() {
+	if [ $# -le 1 ];then
+		echo "less argument !"
+		exit 1
+	fi
+	if [ -n "$3" ];then
+		TMP_FILE="$3"
+	fi
+	if [ -n "$4" ];then
+		CONF_FILE="$4"
+	fi
+	get_src_cmdline $@
+	check_flag_and_clean
+	echo "${flag}" >> ${CONF_FILE}
+	calc $@
+	if [ "$4" = "memsize" ];then
+		echo "${MEM_SIZE}" #can't delete, otherwise makefile can't get mem size
+	else
+		echo "${NEW_CMDLINE}" #can't delete, otherwise makefile can't get cmdline
+	fi
+}
+
+update_cmdline $@

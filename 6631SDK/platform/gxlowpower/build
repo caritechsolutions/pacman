@@ -1,0 +1,49 @@
+#!/bin/bash
+
+build()
+{
+	CHIP=$1
+	case "$CHIP" in
+		gx3201|gx3211|gx6605s|gx3113c)
+			cd ck610
+			./build $@ || exit 1
+			cd -
+			;;
+		sirius|taurus|gemini|cygnus|canopus|vega|scorpio|scorpio-taurus)
+			cd xx51
+			./build $@ || exit 1
+			cd -
+			;;
+		*)
+			echo "EORROR CHIP_ID: $CHIP"
+			help
+			;;
+	esac
+}
+
+clean()
+{
+	cd ck610
+	./build clean || exit 1
+	cd -
+	cd xx51
+	./build clean || exit 1
+	cd -
+}
+
+help()
+{
+	echo "./build <chip>"
+	echo "         chip: gx3113c|gx3201|gx3211|gx6605s|sirius|taurus|gemini|cygnus"
+	echo "               canopus|vega|scorpio|scorpio-taurus"
+	echo " "
+	exit 1
+}
+
+if [ $# -ne 1 ]; then
+	help
+elif [ $1 = "clean" ]; then
+	clean
+else
+	build $@ || exit 1
+fi

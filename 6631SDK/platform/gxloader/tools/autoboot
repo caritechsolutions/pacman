@@ -1,0 +1,53 @@
+#!/bin/sh
+
+ver="v0.3 -- 20140219"
+chip=gx3113C
+boardlist=`ls conf/${chip}`
+
+help()
+{
+
+cat << HELP
+eg.	./bootcp mt41j128m16_500m.h /huangjb/repo_goxceed/master_view/gxloader/board/${chip}
+HELP
+	exit 0
+}
+
+error()
+{
+	echo "$1"
+	exit 1
+}
+
+echo_exec()
+{
+	echo $1
+	$1
+}
+
+par_check()
+{
+	if [ $# -lt 2 ]; then
+		echo "parameters not enough."
+		help
+	fi
+}
+
+main()
+{
+#	par_check $@
+	if [ ! -d "boot" ]; then
+		mkdir boot
+	fi
+	for board in ${boardlist};do
+		echo_exec "./build ${chip} $board boot"
+		BIN_NAME=`ls output/`
+		echo $BIN_NAME
+		mv output/${BIN_NAME} boot/${chip}-${board}_boot.bin
+		cd boot/
+		xxd -i ${chip}-${board}_boot.bin > ${chip}-${board}_boot.c
+		cd -
+	done
+}
+
+main $@

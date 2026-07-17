@@ -1,0 +1,45 @@
+#!/bin/sh
+
+ver="v0.1 -- 20130820"
+#boardlist="3231 dvbs-6602 dvbs-6601 dvbc-3201 dvbc-3201e dvbt2-3201 generic"
+boardlist=`ls conf/gx3201`
+
+help()
+{
+
+cat << HELP
+eg.	./bootcp mt41j128m16_500m.h /huangjb/repo_goxceed/master_view/gxloader/board/gx3201
+HELP
+	exit 0
+}
+
+error()
+{
+	echo "$1"
+	exit 1
+}
+
+echo_exec()
+{
+	echo $1
+	$1
+}
+
+par_check()
+{
+	if [ $# -lt 2 ]; then
+		echo "parameters not enough."
+		help
+	fi
+}
+
+main()
+{
+	par_check $@
+	chmod -x $1
+	for board in ${boardlist};do
+		echo_exec "cp ${1} ${2}/board-${board}/"
+	done
+}
+
+main $@

@@ -1,0 +1,3049 @@
+/************************************************************ 
+Copyright (C), 2007-2009, GX S&T Co., Ltd. 
+FileName   :	uial_av.c
+Author     : 	zhangling
+Version    : 	1.0
+Date       :
+Description:	
+Version    :	
+History    :	
+Date                Author      Modification 
+2007.03.14     zhangling         create
+***********************************************************/  
+    
+/* Includes --------------------------------------------------------------- */ 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "module/sqlite/sqlite3.h"
+#include "module/pm/gxprogram_manage_sqlite.h"
+#include "gxcore.h"
+#include "module/sys_info/gxsys_info.h"
+    
+/* Exported Macros -------------------------------------------------------- */ 
+    
+/* Exported Types --------------------------------------------------------- */ 
+    
+/* Exported Constants ----------------------------------------------------- */ 
+    
+/* Exported Variables ----------------------------------------------------- */ 
+    
+/* Private Macros --------------------------------_------------------------ */ 
+#ifdef __DEBUG
+//#define GX_BUS_PM_DBUG
+#endif
+
+#define PM_PRINTF(...) gxlogd( __VA_ARGS__ )
+
+#define GX_BUS_PM_PRINTF(msg)\
+do{\
+	PM_PRINTF("\n\n*****pm error*****\n");\
+	PM_PRINTF("%s:%s:%d\n", __FILE__, __FUNCTION__, __LINE__ );\
+	PM_PRINTF("%s\n",msg);\
+	PM_PRINTF("~~~~~pm error~~~~~\n");\
+}while(0)
+#define GX_PM_FILE_PATH "./dvb.db"
+
+/* Private Types ---------------------------------------------------------- */ 
+    
+//typedef int32_t (*sqlite3_callback)(void*,int32_t,uint8_t**, uint8_t**);///<sql exc的回调函数
+    struct gx_pm_data_get {
+	uint32_t num;		///<要获得的数量
+	union {
+		GxBusPmDataSat * sat;
+		GxBusPmDataTP * tp;
+		GxBusPmDataProg * prog;
+		GxBusPmDataFavItem * fav;
+		GxBusPmDataStream * stream;
+	};
+};
+struct gx_pm_prog_pos_get {
+	uint32_t i;		//数组的下标
+	uint32_t *pos_id_arry;
+};
+
+enum gx_pm_prog_command_type
+{
+	GET_NUM = 0,
+	GET_INFO ,
+};
+
+/* Private Constants ------------------------------------------------------ */ 
+    
+/* Private Variables ------------------------------------------------------ */ 
+static sqlite3 *db = NULL;	///<相当于数据库的句柄 在打开数据库的时候获得的
+static int8_t *err_msg = NULL;	///<数据库的操作状态码
+static uint32_t g_count = 0;
+GxBusPmDataCasInfot DefaultCaSystem[MAX_CA_SYSTEM] = {
+	 {
+	CAS_ID_FREE, CAS_ID_FREE, "Free"}, {
+	0x0500, 0x05ff, "Viaccess"}, {
+	0x0100, 0x01ff, "SECA"}, {
+	0x0600, 0x06ff, "IRDETO"}, {
+	0x1800, 0x18ff, "Nagravision"},  {
+	0x001, 0x001, "Alphacrypt"},	//?
+	{
+	0x1700, 0x17ff, "Betacrypt"}, {
+	0x0b00, 0x0bff, "Conax"}, {
+	0x0d00, 0x0dff, "Cryptoworks"}, {
+	0x0900, 0x09ff, "NDS"}, {
+	0x0e00, 0x0eff, "PowerVU"},  {
+	0x001, 0x001, "Skycrypt"},	//?
+	{
+	0x001, 0x001, "Firecrpt"},	//?
+	{
+	0x4a00, 0x4aff, "Xcrypt"}, {
+	0x2600, 0x26ff, "BISS"},	// zfz dubai 20071213 add biss
+	{
+CAS_ID_UNKNOW, CAS_ID_UNKNOW, "Unknow"} };
+
+uint8_t fav_name[9][MAX_CA_SYSTEM] = 
+    { "Movies", "Music", "Cartoons", "News", "Sports", "Education", "Adult", "Leisure", "Unknowed" 
+};
+
+
+/* Debug Defined ---------------------------------------------------------- */ 
+    
+/* Private Functions ------------------------------------------------------ */ 
+static status_t gx_pm_dbase_table_check(void);
+static int32_t gx_pm_data_count_get_callback(void *count, int n_column, int8_t ** value, int8_t ** column_name);
+static int32_t gx_pm_sat_data_get_callback(void *para, int n_column, int8_t ** value, int8_t ** column_name);
+static status_t gx_pm_sat_update_command_create(GxBusPmDataSat * sat, uint8_t * sql_cmd);
+static status_t gx_pm_sat_insert_command_create(GxBusPmDataSat * sat, uint8_t * sql_cmd);
+static status_t gx_pm_sat_delete(uint32_t * id_arry, uint32_t num);
+static int32_t gx_pm_tp_data_get_callback(void *para, int n_column, int8_t ** value, int8_t ** column_name);
+static status_t gx_pm_tp_update_command_create(GxBusPmDataTP * tp, uint8_t * sql_cmd);
+static status_t gx_pm_tp_insert_command_create(GxBusPmDataTP * tp, uint8_t * sql_cmd);
+static status_t gx_pm_tp_delete_by_sat(uint32_t * id_arry, uint32_t num);
+static status_t gx_pm_tp_delete(uint32_t * id_arry, uint32_t num);
+static status_t gx_pm_prog_delete_by_sat(uint32_t * id_arry, uint32_t num);
+static status_t gx_pm_prog_delete_by_tp(uint32_t * id_arry, uint32_t num);
+static int32_t gx_pm_prog_data_get_callback(void *para, int n_column, int8_t ** value, int8_t ** column_name);
+static int32_t gx_pm_prog_pos_id_get_callback(void *para, int n_column, int8_t ** value, int8_t ** column_name);
+static status_t gx_pm_prog_update_command_create(GxBusPmDataProg * prog, uint8_t * sql_cmd);
+static status_t gx_pm_prog_insert_command_create(GxBusPmDataProg * prog, uint8_t * sql_cmd);
+static status_t gx_pm_prog_pos_init(uint32_t * pos_arry, 
+				     uint32_t max_pos, uint32_t min_pos, uint32_t target_id, uint32_t * target_id_pos);
+static int32_t gx_pm_prog_modify_count_get(uint32_t max_pos, uint32_t min_pos);
+static uint8_t gx_pm_prog_id_exist_check(uint32_t source_id, uint32_t * id_arry, uint32_t num);
+static status_t gx_pm_prog_before_after_buff_init(uint32_t * before_target_id, 
+						   uint32_t * after_target_id, 
+						   uint32_t * before_count, 
+						   uint32_t * after_count, 
+						   uint32_t max_pos, 
+						   uint32_t min_pos, 
+						   uint32_t target_id_pos, uint32_t * id_arry, uint32_t num);
+static status_t gx_pm_prog_pos_update(uint32_t * real_id_arry, uint32_t * real_pos_arry, uint32_t num);
+static status_t gx_pm_prog_command_create(enum gx_pm_prog_command_type type,uint8_t * sql_cmd);
+static int32_t gx_pm_stream_data_get_callback(void *para, int n_column, int8_t ** value, int8_t ** column_name);
+static status_t gx_pm_fav_group_init(void);
+static int32_t gx_pm_fav_group_data_get_callback(void *para, int n_column, int8_t ** value, int8_t ** column_name);
+status_t gx_pm_dbase_table_check(void) 
+{
+	uint8_t * sql_cmd;	//数据库的操作命令buffer
+	status_t ret = 0;
+	int32_t count = 0;
+	
+	    /*检测数据库是否存在sat表 如果不存在 创建 */ 
+	    sql_cmd = (uint8_t *) ("select count(*) from sqlite_master where type= 'table' and name = 'sat_table';");
+	ret = sqlite3_exec(db, 
+			    (const char *)sql_cmd, 
+			    (sqlite3_callback) & gx_pm_data_count_get_callback, (void *)&count, (char **)&err_msg);
+	if (0 == count) {
+		#ifdef GX_BUS_PM_DBUG
+		GX_BUS_PM_PRINTF("[PM]---have no sat table !!\n");
+		#endif
+		sql_cmd = (uint8_t *) ("create table sat_table(id integer primary key autoincrement,\
+										  type integer,\
+										  tuner integer,\
+										  lnb1 integer,\
+										  lnb_power integer,\
+										  lnb2 integer,\
+										  switch_22k integer,\
+										  diseqc_version integer,\
+										  diseqc10 integer,\
+										  diseqc11 integer,\
+										  diseqc12pos integer,\
+										  lnb_type integer,\
+										  switch_12V integer,\
+										  longitude_direct integer,\
+										  sat_name varchar(20),\
+										  longitude integer);");
+		ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+		if (ret != SQLITE_OK) {
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---create sat table err !!\n ret = %s\n",err_msg);
+			#endif
+			return GXCORE_ERROR;	//创建sat table失败
+		}
+	}
+	
+	    /*检测数据库是否存在tp表 如果不存在 创建 */ 
+	    sql_cmd = (uint8_t *) ("select count(*) from sqlite_master where type ='table'and name = 'tp_table';");
+	ret = sqlite3_exec(db, 
+			    (const char *)sql_cmd, 
+			    (sqlite3_callback) & gx_pm_data_count_get_callback, (void *)&count, (char **)&err_msg);
+	if (0 == count) {
+		#ifdef GX_BUS_PM_DBUG
+		GX_BUS_PM_PRINTF("[PM]---have no tp table !!\n");
+		#endif
+		sql_cmd = (uint8_t *) ("create table tp_table(id integer primary key autoincrement,\
+										  sat_id integer,\
+										  frequency integer,\
+										  symbol_rate integer,\
+										  polar_qam integer);");
+		ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+		if (ret != SQLITE_OK) {
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---create tp table err !!\n ret = %s\n",err_msg);
+			#endif
+			return GXCORE_ERROR;	//创建tp table失败
+		}
+	}
+	
+	    /*检测数据库是否存在prog表 如果不存在 创建 */ 
+	    sql_cmd = (uint8_t *) ("select count(*) from sqlite_master where type ='table' and name = 'prog_table';");
+	ret = sqlite3_exec(db, 
+			    (const char *)sql_cmd, 
+			    (sqlite3_callback) & gx_pm_data_count_get_callback, (void *)&count, (char **)&err_msg);
+	if (0 == count) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---have no prog table !!\n");
+		#endif
+		sql_cmd = (uint8_t *) ("create table prog_table(id integer primary key autoincrement,\
+											tp_id integer,\
+											sat_id integer,\
+											service_id integer,\
+											audio_volume integer,\
+											audio_mode integer,\
+											scramble_flag integer,\
+											skip_flag integer,\
+											lock_flag integer,\
+											ttx_flag integer,\
+											subt_flag integer,\
+											favorite_flag integer,\
+											pcr_pid integer,\
+											pmt_pid integer,\
+											pmt_version integer,\
+											cc_flag integer,\
+											bouquet_id integer,\
+											ac3_flag integer,\
+											service_type integer,\
+											audio_count integer,\
+											audio_level integer,\
+											video_type integer,\
+											prog_name varchar(16),\
+											video_pid integer,\
+											ecm_pid_v integer,\
+											ts_id integer,\
+											cas_id integer,\
+											count integer,\
+											pos integer);");
+		
+		    //上面语句缺少分号
+		    ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+		if (ret != SQLITE_OK) {
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---create prog table err !!\n ret = %s\n",err_msg);
+			#endif
+			return GXCORE_ERROR;	//创建sat table失败
+		}
+	}
+	
+	    /*检测数据库是否存在stream表 如果不存在 创建 */ 
+	    sql_cmd = (uint8_t *) ("select count(*) from sqlite_master where type ='table' and name = 'stream_table';");
+	ret = sqlite3_exec(db, 
+			    (const char *)sql_cmd, 
+			    (sqlite3_callback) & gx_pm_data_count_get_callback, (void *)&count, (char **)&err_msg);
+	if (0 == count) {
+		#ifdef GX_BUS_PM_DBUG
+		GX_BUS_PM_PRINTF("[PM]---have no stream table !!\n");
+		#endif
+		sql_cmd = (uint8_t *) ("create table stream_table( prog_id integer,\
+											  audio_type integer,\
+											  audio_pid integer,\
+											  language varchar(4),\
+											  ecm_pid integer);");
+		ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+		if (ret != SQLITE_OK) {
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---create stream table err !!\n ret = %s\n",err_msg);
+			#endif
+			return GXCORE_ERROR;	//创建tp table失败
+		}
+	}
+	
+	    /*检测数据库是否存在fav表 如果不存在 创建 */ 
+	    sql_cmd = (uint8_t *) ("select count(*) from sqlite_master where type ='table' and name = 'fav_table';");
+	ret = sqlite3_exec(db, 
+			    (const char *)sql_cmd, 
+			    (sqlite3_callback) & gx_pm_data_count_get_callback, (void *)&count, (char **)&err_msg);
+	if (0 == count) {
+		#ifdef GX_BUS_PM_DBUG
+		GX_BUS_PM_PRINTF("[PM]---have no fav table !!\n");
+		#endif
+		sql_cmd = (uint8_t *) ("create table fav_table( id integer,\
+										   name  varchar(20));");
+		ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+		if (ret != SQLITE_OK) {
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---create fav table err !!\n ret = %s\n",err_msg);
+			#endif
+			return GXCORE_ERROR;	//创建fav table失败
+		}
+		ret = gx_pm_fav_group_init();
+		if (ret != GXCORE_SUCCESS) {
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---init fav table err !!\n re = %s\n",err_msg);
+			#endif
+			return GXCORE_ERROR;	//创建fav table失败
+		}
+	}
+	return GXCORE_SUCCESS;
+}
+
+int32_t gx_pm_data_count_get_callback(void *count, int n_column, int8_t ** value, int8_t ** column_name)
+{
+	*(uint32_t *) count = atoi((const char *)value[0]);
+	return 0;
+}
+
+int32_t gx_pm_sat_data_get_callback(void *para, int n_column, int8_t ** value, int8_t ** column_name)
+{
+	GxBusPmDataSat * temp = NULL;
+	uint32_t num = 0;
+	num = ((struct gx_pm_data_get *)para)->num;
+	temp = (GxBusPmDataSat *) (((struct gx_pm_data_get *)para)->sat);
+	if (g_count == num) {
+		return -1;
+	}
+	temp[g_count].id = atoi((const char *)value[0]);
+	temp[g_count].type = (GxBusPmDataSatType)atoi((const char *)value[1]);
+	temp[g_count].tuner = (GxBusPmDataSatTuner)atoi((const char *)value[2]);
+	switch (temp[g_count].type) {
+	case GXBUS_PM_SAT_S:
+		temp[g_count].sat_s.lnb1 = atoi((const char *)value[3]);	//
+		temp[g_count].sat_s.lnb_power = atoi((const char *)value[4]);
+		temp[g_count].sat_s.lnb2 = atoi((const char *)value[5]);
+		temp[g_count].sat_s.switch_22K = atoi((const char *)value[6]);
+		temp[g_count].sat_s.diseqc_version = atoi((const char *)value[7]);
+		temp[g_count].sat_s.diseqc10 = atoi((const char *)value[8]);
+		temp[g_count].sat_s.diseqc11 = atoi((const char *)value[9]);
+		temp[g_count].sat_s.diseqc12_pos = atoi((const char *)value[10]);
+		temp[g_count].sat_s.lnb_type = atoi((const char *)value[11]);
+		temp[g_count].sat_s.switch_12V = atoi((const char *)value[12]);
+		temp[g_count].sat_s.longitude_direct = atoi((const char *)value[13]);
+		memcpy(temp[g_count].sat_s.sat_name, value[14], strlen((const char *)value[14]));
+		temp[g_count].sat_s.longitude = atoi((const char *)value[15]);
+		break;
+	case GXBUS_PM_SAT_C:
+		break;
+	case GXBUS_PM_SAT_T:
+		break;
+	default:
+		return -1;
+		break;
+	}
+	g_count++;
+	return 0;
+}
+
+status_t gx_pm_sat_update_command_create(GxBusPmDataSat * sat, uint8_t * sql_cmd) 
+{
+	switch (sat->type) {
+	case GXBUS_PM_SAT_S:
+		sprintf((char *)sql_cmd, "update sat_table set type = %d,\
+							tuner = %d,\
+							lnb1 = %d,\
+							lnb_Power = %d,\
+							lnb2 = %d,\
+							switch_22k = %d,\
+							diseqc_version = %d,\
+							diseqc10 = %d,\
+							diseqc11 = %d,\
+							diseqc12pos = %d,\
+							Lnb_type = %d,\
+							switch_12V = %d,\
+							longitude_direct = %d,\
+							sat_name = '%s',\
+							longitude = %d\
+							where id = %d;", sat->type, sat->tuner, sat->sat_s.lnb1, sat->sat_s.lnb_power, sat->sat_s.lnb2, sat->sat_s.switch_22K, sat->sat_s.diseqc_version, sat->sat_s.diseqc10, sat->sat_s.diseqc11, sat->sat_s.diseqc12_pos, sat->sat_s.lnb_type, sat->sat_s.switch_12V, sat->sat_s.longitude_direct, sat->sat_s.sat_name, sat->sat_s.longitude, sat->id);
+		break;
+	case GXBUS_PM_SAT_C:
+		break;
+	case GXBUS_PM_SAT_T:
+		break;
+	default:
+		break;
+	}
+	return GXCORE_SUCCESS;
+}
+
+status_t gx_pm_sat_insert_command_create(GxBusPmDataSat * sat, uint8_t * sql_cmd) 
+{
+	switch (sat->type) {
+	case GXBUS_PM_SAT_S:
+		sprintf((char *)sql_cmd, "insert into sat_table\
+							(id,\
+							 type,\
+							 tuner,\
+							 lnb1,\
+							 lnb_power,\
+							 lnb2,\
+							 switch_22k,\
+							 diseqc_version,\
+							 diseqc10,\
+							 diseqc11,\
+							 diseqc12pos,\
+							 Lnb_type,\
+							 switch_12V,\
+							 longitude_direct,\
+							 sat_name,\
+							 longitude)\
+							values(NULL,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,'%s',%d);", sat->type, sat->tuner, sat->sat_s.lnb1, sat->sat_s.lnb_power, sat->sat_s.lnb2, sat->sat_s.switch_22K, sat->sat_s.diseqc_version, sat->sat_s.diseqc10, sat->sat_s.diseqc11, sat->sat_s.diseqc12_pos, sat->sat_s.lnb_type, sat->sat_s.switch_12V, sat->sat_s.longitude_direct, sat->sat_s.sat_name, sat->sat_s.longitude);
+		break;
+	case GXBUS_PM_SAT_C:
+		break;
+	case GXBUS_PM_SAT_T:
+		break;
+	default:
+		break;
+	}
+	return GXCORE_SUCCESS;
+}
+
+status_t gx_pm_sat_delete(uint32_t * id_arry, uint32_t num) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	uint32_t i = 0;
+	
+	    /*删除sat */ 
+	    sqlite_ret = sqlite3_exec(db, (const char *)("begin transaction"), NULL, NULL, (char **)&err_msg);	//开始一个事务
+	for (i = 0; i < num; i++) {
+		sprintf((char *)sql_cmd, "delete from sat_table where id = %d;", id_arry[i]);
+		sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) {
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---sat delete err !!\n ret = %s\n",err_msg);
+			#endif
+			sqlite_ret = sqlite3_exec(db, (const char *)("rollback transaction"), NULL, NULL, (char **)&err_msg);	//发生错误回滚事务
+			
+			    /*sqlite_ret = sqlite3_exec( db, 
+			       "commit transaction", 
+			       NULL,
+			       NULL,
+			       (char**)&err_msg );//提交事务 */ 
+				
+			    return GXCORE_ERROR;
+		}
+	}
+	sqlite_ret = sqlite3_exec(db, (const char *)("commit transaction"), NULL, NULL, (char **)&err_msg);	//提交事务
+	return GXCORE_SUCCESS;
+}
+
+int32_t gx_pm_tp_data_get_callback(void *para, int n_column, int8_t ** value, int8_t ** column_name)
+{
+	GxBusPmDataTP * temp = NULL;
+	uint32_t num = 0;
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[500];	//数据库的操作命令buffer
+	uint8_t **dbResult;	//
+	uint32_t row = 0;
+	uint32_t column = 0;
+	GxBusPmDataSatType type = GXBUS_PM_SAT_S;
+	num = ((struct gx_pm_data_get *)para)->num;
+	temp = (GxBusPmDataTP *) (((struct gx_pm_data_get *)para)->tp);
+	if (g_count == num) {
+		#ifdef GX_BUS_PM_DBUG
+		GX_BUS_PM_PRINTF("[PM]---get tp err !!\n");
+		#endif
+		return -1;
+	}
+	temp[g_count].id = atoi((const char *)value[0]);
+	temp[g_count].sat_id = atoi((const char *)value[1]);
+	temp[g_count].frequency = atoi((const char *)value[2]);
+	
+	    /*获得tp的type */ 
+	    sprintf((char *)sql_cmd, "select type from sat_table where id='%d';", temp[g_count].sat_id);
+	sqlite_ret = sqlite3_get_table(db, (const char *)sql_cmd, (char ***)&dbResult, (int *)&row, (int *)&column, 
+					(char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get tp err !!\n ret = %s\n",err_msg);
+		#endif
+		return -1;
+	}
+	type = (GxBusPmDataSatType)atoi((const char *)dbResult[1]);	//dbResult[0]是字段名 dbResult[1]是字段值
+	sqlite3_free_table((char **)dbResult);
+	switch (type) {
+	case GXBUS_PM_SAT_S:
+		temp[g_count].tp_s.symbol_rate = atoi((const char *)value[3]);	//
+		temp[g_count].tp_s.polar = atoi((const char *)value[4]);
+		break;
+	case GXBUS_PM_SAT_C:
+		temp[g_count].tp_c.symbol_rate = atoi((const char *)value[3]);	//
+		temp[g_count].tp_c.modulation = atoi((const char *)value[4]);
+		break;
+	case GXBUS_PM_SAT_T:
+		break;
+	default:
+		return -1;
+		break;
+	}
+	g_count++;
+	return 0;
+}
+
+status_t gx_pm_tp_update_command_create(GxBusPmDataTP * tp, uint8_t * sql_cmd) 
+{
+	uint8_t sql_cmd_temp[300];	//数据库的操作命令buffer
+	uint8_t **dbResult;	//
+	uint32_t row = 0;
+	uint32_t column = 0;
+	int32_t sqlite_ret = 0;
+	GxBusPmDataSatType type = GXBUS_PM_SAT_S;
+	
+	    /*获得tp类型 */ 
+	    sprintf((char *)sql_cmd_temp, "select type from sat_table where id=%d;", tp->sat_id);
+	sqlite_ret =
+	    sqlite3_get_table(db, (const char *)sql_cmd_temp, (char ***)&dbResult, (int *)&row, (int *)&column,
+			       (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---create tp updata command err !!\n ret = %s\n",err_msg);
+		#endif
+		return GXCORE_ERROR;
+	}
+	type = (GxBusPmDataSatType)atoi((const char *)dbResult[1]);	//dbResult[0]是字段名 dbResult[1]是字段值
+	sqlite3_free_table((char **)dbResult);
+	switch (type) {
+	case GXBUS_PM_SAT_S:
+		sprintf((char *)sql_cmd, "update tp_table set sat_id = %d,\
+							frequency = %d,\
+							symbol_rate = %d,\
+							polar_qam = %d\
+							where id = %d;", tp->sat_id, tp->frequency, tp->tp_s.symbol_rate, tp->tp_s.polar, tp->id);
+		break;
+	case GXBUS_PM_SAT_C:
+		sprintf((char *)sql_cmd, "update tp_table set sat_id = %d,\
+							frequency = %d,\
+							symbol_rate = %d,\
+							polar_qam = %d,\
+							where id = %d;", tp->sat_id, tp->frequency, tp->tp_c.symbol_rate, tp->tp_c.modulation, tp->id);
+		break;
+	case GXBUS_PM_SAT_T:
+		break;
+	default:
+		break;
+	}
+	return GXCORE_SUCCESS;
+}
+
+status_t gx_pm_tp_insert_command_create(GxBusPmDataTP * tp, uint8_t * sql_cmd) 
+{
+	uint8_t sql_cmd_temp[300];	//数据库的操作命令buffer
+	uint8_t **dbResult;	//
+	uint32_t row = 0;
+	uint32_t column = 0;
+	int32_t sqlite_ret = 0;
+	GxBusPmDataSatType type = GXBUS_PM_SAT_S;
+	
+	    /*获得tp类型 */ 
+	    sprintf((char *)sql_cmd_temp, "select type from sat_table where id=%d;", tp->sat_id);
+	sqlite_ret =
+	    sqlite3_get_table(db, (const char *)sql_cmd_temp, (char ***)&dbResult, (int *)&row, (int *)&column,
+			       (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---create tp insert command err !!\n ret = %s\n",err_msg);
+		#endif
+		return GXCORE_ERROR;
+	}
+	type = (GxBusPmDataSatType)atoi((const char *)dbResult[1]);	//dbResult[0]是字段名 dbResult[1]是字段值
+	sqlite3_free_table((char **)dbResult);
+	switch (type) {
+	case GXBUS_PM_SAT_S:
+		sprintf((char *)sql_cmd, "insert into tp_table\
+							(id,\
+							 sat_id,\
+							 frequency,\
+							 symbol_rate,\
+							 polar_qam)\
+							values(NULL,%d,%d,%d,%d);", tp->sat_id, tp->frequency, tp->tp_s.symbol_rate, tp->tp_s.polar);
+		break;
+	case GXBUS_PM_SAT_C:
+		sprintf((char *)sql_cmd, "insert into tp_table\
+							(id,\
+							 sat_id,\
+							 frequency,\
+							 symbol_rate,\
+							 polar_qam)\
+							values(NULL,%d,%d,%d,%d);", tp->sat_id, tp->frequency, tp->tp_c.symbol_rate, tp->tp_c.modulation);
+		break;
+	case GXBUS_PM_SAT_T:
+		break;
+	default:
+		break;
+	}
+	return GXCORE_SUCCESS;
+}
+
+status_t gx_pm_tp_delete_by_sat(uint32_t * id_arry, uint32_t num) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	uint32_t i = 0;
+	int32_t count = 0;
+	uint32_t * real_id = NULL;	//需要删除tp的卫星
+	uint32_t real_num = 0;	//需要删除tp的卫星的数量
+	real_id = (uint32_t *) GxCore_Malloc(sizeof(uint32_t) * num);
+	
+	    /*首先判断存不存在tp 或许可以用删除的返回值判断 但是,不知道是什么返回值
+	       调试的时候可以试验下,如果使用这种方法判断得测试速度 如果慢 那么判断是否
+	       有tp得操作也要做成事务 */ 
+	    for (i = 0; i < num; i++) {
+		sprintf((char *)sql_cmd, "select count(*) from tp_table where sat_id = %d", id_arry[i]);
+		sqlite_ret = sqlite3_exec(db, 
+					   (const char *)sql_cmd, 
+					   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+					   (void *)&count, (char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) {
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---delete tp by sat err !!\n ret = %s\n",err_msg);
+			#endif
+			GxCore_Free(real_id);
+			return GXCORE_ERROR;
+		}
+		
+		else if (count == 0) {
+			continue;	//这颗卫星没有tp 判断下一颗卫星
+		}
+		
+		else {
+			real_id[real_num] = id_arry[i];
+			real_num++;
+		}
+	}
+	if (real_num == 0) {
+		GxCore_Free(real_id);
+		return GXCORE_SUCCESS;	//所有卫星都没有tp 相当于删除完成
+	}
+	
+	    /*删除tp */ 
+	    sqlite_ret = sqlite3_exec(db, (const char *)("begin transaction"), NULL, NULL, (char **)&err_msg);	//开始一个事务
+	for (i = 0; i < real_num; i++) {
+		sprintf((char *)sql_cmd, "delete from tp_table where sat_id = %d", real_id[i]);
+		sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) {
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---delete tp err !!\n ret = %s\n",err_msg);
+			#endif
+			sqlite_ret = sqlite3_exec(db, (const char *)("rollback transaction"), NULL, NULL, (char **)&err_msg);	//发生错误回滚事务
+			
+			    /*sqlite_ret = sqlite3_exec( db, 
+			       "commit transaction", 
+			       NULL,
+			       NULL,
+			       (char**)&err_msg );//提交事务 */ 
+			    GxCore_Free(real_id);
+			return GXCORE_ERROR;
+		}
+	}
+	sqlite_ret = sqlite3_exec(db, (const char *)("commit transaction"), NULL, NULL, (char **)&err_msg);	//提交事务
+	GxCore_Free(real_id);
+	return GXCORE_SUCCESS;
+}
+
+status_t gx_pm_tp_delete(uint32_t * id_arry, uint32_t num) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	uint32_t i = 0;
+	
+	    /*删除tp */ 
+	    sqlite_ret = sqlite3_exec(db, (const char *)("begin transaction"), NULL, NULL, (char **)&err_msg);	//开始一个事务
+	for (i = 0; i < num; i++) {
+		sprintf((char *)sql_cmd, "delete from tp_table where id = %d;", id_arry[i]);
+		sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) {
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---delete tp err !!\n ret = %s\n",err_msg);
+			#endif
+			sqlite_ret = sqlite3_exec(db, (const char *)("rollback transaction"), NULL, NULL, (char **)&err_msg);	//发生错误回滚事务
+			
+			    /*sqlite_ret = sqlite3_exec( db, 
+			       "commit transaction", 
+			       NULL,
+			       NULL,
+			       &err_msg );//提交事务 */ 
+			    return GXCORE_ERROR;
+		}
+	}
+	sqlite_ret = sqlite3_exec(db, (const char *)("commit transaction"), NULL, NULL, (char **)&err_msg);	//提交事务
+	return GXCORE_SUCCESS;
+}
+
+status_t gx_pm_prog_delete_by_sat(uint32_t * id_arry, uint32_t num) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	uint32_t i = 0;
+	int32_t count = 0;
+	uint32_t * real_id = NULL;	//需要删除节目的卫星
+	uint32_t real_num = 0;	//需要删除节目的卫星的数量
+	real_id = (uint32_t *) GxCore_Malloc(sizeof(uint32_t) * num);
+	
+	    /*首先判断存不存在节目 或许可以用删除的返回值判断 但是,不知道是什么返回值
+	       调试的时候可以试验下,如果使用这种方法判断得测试速度 如果慢 那么判断是否
+	       有节目得操作也要做成事务 */ 
+	    for (i = 0; i < num; i++) {
+		sprintf((char *)sql_cmd, "select count(*) from prog_table where sat_id = %d", id_arry[i]);
+		sqlite_ret = sqlite3_exec(db, 
+					   (const char *)sql_cmd, 
+					   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+					   (void *)&count, (char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) {
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---check the prog exist by sat err !!\n ret = %s\n",err_msg);
+			#endif
+			GxCore_Free(real_id);
+			return GXCORE_ERROR;
+		}
+		
+		else if (count == 0) {
+			continue;	//这颗卫星没有节目 判断下一颗卫星
+		}
+		
+		else {
+			real_id[real_num] = id_arry[i];
+			real_num++;
+		}
+	}
+	if (real_num == 0) {
+		GxCore_Free(real_id);
+		return GXCORE_SUCCESS;	//所有卫星都没有节目 相当于删除完成
+	}
+	
+	    /*删除节目 */ 
+	    sqlite_ret = sqlite3_exec(db, (const char *)("begin transaction"), NULL, NULL, (char **)&err_msg);	//开始一个事务
+	for (i = 0; i < real_num; i++) {
+		sprintf((char *)sql_cmd, "delete from prog_table where sat_id = %d", real_id[i]);
+		sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) {
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---delete prog err !!\n ret = %s\n",err_msg);
+			#endif
+			sqlite_ret = sqlite3_exec(db, (const char *)("rollback transaction"), NULL, NULL, (char **)&err_msg);	//发生错误回滚事务
+			
+			    /*sqlite_ret = sqlite3_exec( db, 
+			       "commit transaction", 
+			       NULL,
+			       NULL,
+			       &err_msg );//提交事务 */ 
+			    GxCore_Free(real_id);
+			return GXCORE_ERROR;
+		}
+	}
+	sqlite_ret = sqlite3_exec(db, (const char *)("commit transaction"), NULL, NULL, (char **)&err_msg);	//提交事务
+	GxCore_Free(real_id);
+	return GXCORE_SUCCESS;
+}
+
+status_t gx_pm_prog_delete_by_tp(uint32_t * id_arry, uint32_t num) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	uint32_t i = 0;
+	int32_t count = 0;
+	uint32_t * real_id = NULL;	//需要删除节目的卫星
+	uint32_t real_num = 0;	//需要删除节目的卫星的数量
+	real_id = (uint32_t *) GxCore_Malloc(sizeof(uint32_t) * num);
+	
+	    /*首先判断存不存在节目 或许可以用删除的返回值判断 但是,不知道是什么返回值
+	       调试的时候可以试验下,如果使用这种方法判断得测试速度 如果慢 那么判断是否
+	       有节目得操作也要做成事务 */ 
+	    for (i = 0; i < num; i++) {
+		sprintf((char *)sql_cmd, "select count(*) from prog_table where tp_id = %d", id_arry[i]);
+		sqlite_ret = sqlite3_exec(db, 
+					   (const char *)sql_cmd, 
+					   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+					   (void *)&count, (char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) {
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---check prog exist by tp err !!\n ret = %s\n",err_msg);
+			#endif
+			GxCore_Free(real_id);
+			return GXCORE_ERROR;
+		}
+		
+		else if (count == 0) {
+			continue;	//这个tp没有节目 判断下一个tp
+		}
+		
+		else {
+			real_id[real_num] = id_arry[i];
+			real_num++;
+		}
+	}
+	if (real_num == 0) {
+		GxCore_Free(real_id);
+		return GXCORE_SUCCESS;	//所有tp都没有节目 相当于删除完成
+	}
+	
+	    /*删除节目 */ 
+	    sqlite_ret = sqlite3_exec(db, (const char *)("begin transaction"), NULL, NULL, (char **)&err_msg);	//开始一个事务
+	for (i = 0; i < real_num; i++) {
+		sprintf((char *)sql_cmd, "delete from prog_table where tp_id = %d", real_id[i]);
+		sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) {
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---delete prog err !!\n ret = %s\n",err_msg);
+			#endif
+			sqlite_ret = sqlite3_exec(db, (const char *)("rollback transaction"), NULL, NULL, (char **)&err_msg);	//发生错误回滚事务
+			
+			    /*sqlite_ret = sqlite3_exec( db, 
+			       "commit transaction", 
+			       NULL,
+			       NULL,
+			       (char**)&err_msg );//提交事务 */ 
+			    GxCore_Free(real_id);
+			return GXCORE_ERROR;
+		}
+	}
+	sqlite_ret = sqlite3_exec(db, (const char *)("commit transaction"), NULL, NULL, (char **)&err_msg);	//提交事务
+	GxCore_Free(real_id);
+	return GXCORE_SUCCESS;
+}
+
+static int32_t gx_pm_prog_data_get_callback(void *para, int n_column, int8_t ** value, int8_t ** column_name) 
+{
+	GxBusPmDataProg * temp = NULL;
+	uint32_t num = 0;
+	
+//      int32_t sqlite_ret = 0;
+	    num = ((struct gx_pm_data_get *)para)->num;
+	temp = (GxBusPmDataProg *) (((struct gx_pm_data_get *)para)->prog);
+	if (g_count == num) {
+		return -1;
+	}
+	temp[g_count].id = atoi((const char *)value[0]);
+	temp[g_count].tp_id = atoi((const char *)value[1]);
+	temp[g_count].sat_id = atoi((const char *)value[2]);
+	temp[g_count].service_id = atoi((const char *)value[3]);
+	temp[g_count].audio_volume = atoi((const char *)value[4]);
+	temp[g_count].audio_mode = atoi((const char *)value[5]);
+	temp[g_count].scramble_flag = atoi((const char *)value[6]);
+	temp[g_count].skip_flag = atoi((const char *)value[7]);
+	temp[g_count].lock_flag = atoi((const char *)value[8]);
+	temp[g_count].ttx_flag = atoi((const char *)value[9]);
+	temp[g_count].subt_flag = atoi((const char *)value[10]);
+	temp[g_count].favorite_flag = atoi((const char *)value[11]);
+	temp[g_count].pcr_pid = atoi((const char *)value[12]);
+	temp[g_count].pmt_pid = atoi((const char *)value[13]);
+	temp[g_count].pmt_version = atoi((const char *)value[14]);
+	temp[g_count].cc_flag = atoi((const char *)value[15]);
+	temp[g_count].bouquet_id = atoi((const char *)value[16]);
+	temp[g_count].ac3_flag = atoi((const char *)value[17]);
+	temp[g_count].service_type = atoi((const char *)value[18]);
+	temp[g_count].audio_count = atoi((const char *)value[19]);
+	temp[g_count].audio_level = atoi((const char *)value[20]);
+	temp[g_count].video_type = atoi((const char *)value[21]);
+	memcpy(temp[g_count].prog_name, value[22], strlen((const char *)value[22]));
+	temp[g_count].video_pid = atoi((const char *)value[23]);
+	temp[g_count].ecm_pid_v = atoi((const char *)value[24]);
+	temp[g_count].ts_id = atoi((const char *)value[25]);
+	temp[g_count].cas_id = atoi((const char *)value[26]);
+	temp[g_count].count = atoi((const char *)value[27]);
+	g_count++;
+	return 0;
+}
+
+int32_t gx_pm_prog_pos_id_get_callback(void *para, int n_column, int8_t ** value, int8_t ** column_name)
+{
+	struct gx_pm_prog_pos_get *temp;
+	temp = (struct gx_pm_prog_pos_get *)para;
+	temp->pos_id_arry[temp->i] = atoi((const char *)value[0]);
+	temp->i += 1;
+	return 0;
+}
+
+status_t gx_pm_prog_update_command_create(GxBusPmDataProg * prog, uint8_t * sql_cmd) 
+{
+	sprintf((char *)sql_cmd, "update prog_table set\
+					tp_id = %d,\
+					sat_id  = %d,\
+					service_id  = %d,\
+					audio_volume  = %d,\
+					audio_mode  = %d,\
+					scramble_flag  = %d,\
+					skip_flag  = %d,\
+					lock_flag  = %d,\
+					ttx_flag  = %d,\
+					subt_flag  = %d,\
+					favorite_flag  = %d,\
+					pcr_pid  = %d,\
+					pmt_pid  = %d,\
+					pmt_version  = %d,\
+					cc_flag  = %d,\
+					bouquet_id  = %d,\
+					ac3_flag  = %d,\
+					service_type  = %d,\
+					audio_count  = %d,\
+					audio_level  = %d,\
+					video_type  = %d,\
+					prog_name  = '%s',\
+					video_pid  = %d,\
+					ecm_pid_v  = %d,\
+					ts_id  = %d,\
+					cas_id  = %d,\
+					count  = %d\
+					where id = %d;", prog->tp_id, prog->sat_id, prog->service_id, prog->audio_volume, prog->audio_mode, prog->scramble_flag, prog->skip_flag, prog->lock_flag, prog->ttx_flag, prog->subt_flag, prog->favorite_flag, prog->pcr_pid, prog->pmt_pid, prog->pmt_version, prog->cc_flag, prog->bouquet_id, prog->ac3_flag, prog->service_type, prog->audio_count, prog->audio_level, prog->video_type, prog->prog_name, prog->video_pid, prog->ecm_pid_v, prog->ts_id, prog->cas_id, prog->count, prog->id);
+	return GXCORE_SUCCESS;
+}
+
+status_t gx_pm_prog_insert_command_create(GxBusPmDataProg * prog, uint8_t * sql_cmd) 
+{
+	sprintf((char *)sql_cmd, "insert into prog_table\
+					(id,\
+					tp_id,\
+					sat_id,\
+					service_id,\
+					audio_volume,\
+					audio_mode,\
+					scramble_flag,\
+					skip_flag,\
+					lock_flag,\
+					ttx_flag,\
+					subt_flag,\
+					favorite_flag,\
+					pcr_pid,\
+					pmt_pid,\
+					pmt_version,\
+					cc_flag,\
+					bouquet_id,\
+					ac3_flag,\
+					service_type,\
+					audio_count,\
+					audio_level,\
+					video_type,\
+					prog_name,\
+					video_pid,\
+					ecm_pid_v,\
+					ts_id,\
+					cas_id,\
+					count)\
+					values(NULL,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\
+							,%d,%d,%d,%d,'%s',%d,%d,%d,%d,%d);", prog->tp_id, prog->sat_id, prog->service_id, prog->audio_volume, prog->audio_mode, prog->scramble_flag, prog->skip_flag, prog->lock_flag, prog->ttx_flag, prog->subt_flag, prog->favorite_flag, prog->pcr_pid, prog->pmt_pid, prog->pmt_version, prog->cc_flag, prog->bouquet_id, prog->ac3_flag, prog->service_type, prog->audio_count, prog->audio_level, prog->video_type, prog->prog_name, prog->video_pid, prog->ecm_pid_v, prog->ts_id, prog->cas_id, prog->count);
+	return GXCORE_SUCCESS;
+}
+
+int32_t gx_pm_prog_modify_count_get(uint32_t max_pos, uint32_t min_pos) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	int32_t count = 0;
+	sprintf((char *)sql_cmd, "select count(*) from prog_table where pos<=%d and pos>=%d;", max_pos, min_pos);
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---check prog exist by max pos and min pos err !!\n ret = %s\n",err_msg);
+		#endif
+		return -1;
+	}
+	return count;
+}
+
+status_t gx_pm_prog_pos_init(uint32_t * pos_arry, uint32_t max_pos, uint32_t min_pos, uint32_t target_id,
+			       uint32_t * target_id_pos) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	struct gx_pm_prog_pos_get pos_get;
+	pos_get.i = 0;
+	pos_get.pos_id_arry = pos_arry;
+	sprintf((char *)sql_cmd, "select pos from prog_table where pos<=%d and pos>=%d order by pos;", max_pos,
+		 min_pos);
+	sqlite_ret =
+	    sqlite3_exec(db, (const char *)sql_cmd, (sqlite3_callback) & gx_pm_prog_pos_id_get_callback,
+			  (void *)&pos_get, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get the pos between max pos and min pos err !!\n ret = %s\n",err_msg);
+		#endif
+		return -1;
+	}
+	pos_get.i = 0;
+	pos_get.pos_id_arry = target_id_pos;
+	sprintf((char *)sql_cmd, "select pos from prog_table where id = %d;", target_id);
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_prog_pos_id_get_callback, 
+				   (void *)&pos_get, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+
+		return -1;
+	}
+	return 0;
+}
+
+status_t gx_pm_prog_max_min_pos_get(uint32_t * id_arry, uint32_t num, uint32_t target_id, uint32_t * max,
+				      uint32_t * min) 
+{
+	uint32_t i = 0;
+	
+//      uint32_t j;
+//      uint32_t k =0;
+	    uint32_t * pos_arry;	//用于存储找到的pos值 等会儿比较
+	uint32_t *real_id_arry;	//还得加上目标id
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	struct gx_pm_prog_pos_get pos_get;
+	pos_arry = (uint32_t*)GxCore_Malloc(sizeof(uint32_t) * (num + 1));
+	real_id_arry = (uint32_t*)GxCore_Malloc(sizeof(uint32_t) * (num + 1));
+	memcpy(real_id_arry, id_arry, sizeof(uint32_t) * num);
+	real_id_arry[num] = target_id;
+	pos_get.i = 0;
+	pos_get.pos_id_arry = pos_arry;
+	
+	    /*获取传下来的所有id的pos */ 
+	    for (i = 0; i < num + 1; i++) {
+		sprintf((char *)sql_cmd, "select pos from prog_table where id = %d;", real_id_arry[i]);
+		sqlite_ret = sqlite3_exec(db, 
+					   (const char *)sql_cmd, 
+					   (sqlite3_callback) & gx_pm_prog_pos_id_get_callback, 
+					   (void *)&pos_get, (char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) {
+			return GXCORE_ERROR;
+		}
+	}
+	if (pos_get.i != num + 1) {
+		return GXCORE_ERROR;
+	}
+	*min = pos_arry[0];
+	*max = pos_arry[0];
+	for (i = 0; i < pos_get.i; i++) {
+		*min = (*min) < (pos_arry[i]) ? (*min) : (pos_arry[i]);
+		*max = (*max) > (pos_arry[i]) ? (*max) : (pos_arry[i]);
+	}
+	GxCore_Free(pos_arry);
+	GxCore_Free(real_id_arry);
+	return GXCORE_SUCCESS;
+}
+
+static uint8_t gx_pm_prog_id_exist_check(uint32_t source_id, uint32_t * id_arry, uint32_t num) 
+{
+	uint32_t i;
+	for (i = 0; i < num; i++) {
+		if (id_arry[i] == source_id) {
+			return 0;
+		}
+	}
+	return 1;
+}
+
+status_t gx_pm_prog_before_after_buff_init(uint32_t * before_target_id, uint32_t * after_target_id,
+					     uint32_t * before_count, uint32_t * after_count, uint32_t max_pos,
+					     uint32_t min_pos, uint32_t target_id_pos, uint32_t * id_arry,
+					     uint32_t num) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	uint32_t *id_temp;
+	uint32_t count_temp = 0;
+	uint32_t count = 0;
+	uint32_t i = 0;
+	
+//      uint32_t j =0;
+	struct gx_pm_prog_pos_get pos_get;
+	
+	    //该空间应该是所要修改的全部id数量那么大
+	    id_temp = (uint32_t*)GxCore_Malloc(sizeof(uint32_t) * ((*before_count + num + 1)));
+	
+	    /*获取before_target_id */ 
+	    pos_get.i = 0;
+	pos_get.pos_id_arry = id_temp;
+	sprintf((char *)sql_cmd, "select id from prog_table where pos<%d and pos>%d order by pos;", target_id_pos,
+		 min_pos);
+	sqlite_ret =
+	    sqlite3_exec(db, (const char *)sql_cmd, (sqlite3_callback) & gx_pm_prog_pos_id_get_callback,
+			  (void *)&pos_get, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		return GXCORE_ERROR;
+	}
+	count_temp = pos_get.i;
+	
+	    /*去除掉所要移动的id */ 
+	    if (count_temp != 0) {
+		for (i = 0; i < count_temp; i++) {
+			if (gx_pm_prog_id_exist_check(id_temp[i], id_arry, num)) {
+				before_target_id[count] = id_temp[i];
+				count++;
+			}
+		}
+		*before_count = count;
+	}
+	
+	else {
+		*before_count = 0;
+	}
+	
+	    /*获取after_target_id */ 
+	    pos_get.i = 0;
+	pos_get.pos_id_arry = id_temp;
+	sprintf((char *)sql_cmd, "select id from prog_table where pos<%d and pos>%d order by pos;", max_pos,
+		 target_id_pos);
+	sqlite_ret =
+	    sqlite3_exec(db, (const char *)sql_cmd, (sqlite3_callback) & gx_pm_prog_pos_id_get_callback,
+			  (void *)&pos_get, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		return GXCORE_ERROR;
+	}
+	count_temp = pos_get.i;
+	count = 0;
+	
+	    /*去除掉所要移动的id */ 
+	    if (count_temp != 0) {
+		for (i = 0; i < count_temp; i++) {
+			if (gx_pm_prog_id_exist_check(id_temp[i], id_arry, num)) {
+				after_target_id[count] = id_temp[i];
+				count++;
+			}
+		}
+		*after_count = count;
+	}
+	
+	else {
+		*after_count = 0;
+	}
+	GxCore_Free(id_temp);
+	return GXCORE_SUCCESS;
+}
+
+status_t gx_pm_prog_pos_update(uint32_t * real_id_arry, uint32_t * real_pos_arry, uint32_t num) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	uint32_t i = 0;
+	sqlite_ret = sqlite3_exec(db, (const char *)("begin transaction"), NULL, NULL, (char **)&err_msg);	//开始一个事务
+	for (i = 0; i < num; i++) {
+		sprintf((char *)sql_cmd, "update prog_table set pos = %d where id = %d;", real_pos_arry[i],
+			 real_id_arry[i]);
+		sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) {
+			sqlite_ret = sqlite3_exec(db, (const char *)("rollback transaction"), NULL, NULL, (char **)&err_msg);	//发生错误回滚事务
+			return GXCORE_ERROR;
+		}
+	}
+	sqlite_ret = sqlite3_exec(db, (const char *)("commit transaction"), NULL, NULL, (char **)&err_msg);	//提交事务
+	return GXCORE_SUCCESS;
+}
+
+status_t gx_pm_prog_command_create(enum gx_pm_prog_command_type type,uint8_t * sql_cmd)
+{
+	uint8_t command_type[50] ={0};
+	uint8_t command_stream_type[50] = {0};
+	uint8_t command_group_type[100] = {0};
+	uint8_t command_taxis_type[100] = {0};
+	uint8_t letter = 0;
+	uint8_t letter1 = 0;
+	uint32_t fav_id = 0;
+	GxBusSysInfo sys = {{0}};
+	#ifdef GX_BUS_PM_DBUG
+	;//GxBus_SysInfoGet(&sys);
+	#else
+	GxBus_SysInfoGet(&sys);
+	#endif
+	switch(type)
+	{
+		case GET_NUM:
+			sprintf((char*)command_type,"select count(*) from prog_table");
+			break;
+
+		case GET_INFO:
+			sprintf((char*)command_type,"select * from prog_table");
+			break;
+	}
+	sprintf((char*)command_stream_type," where service_type = %d",sys.view_info.stream_type);
+	switch(sys.view_info.group_mode)
+	{
+		case GROUP_MODE_ALL://all
+			//sprintf((char*)command_group_type,"");
+			break;
+
+		case GROUP_MODE_SAT://sat
+			sprintf((char*)command_group_type," and sat_id = %d",sys.view_info.sat_id);
+			break;
+
+		case GROUP_MODE_FAV://fav
+			fav_id = sys.view_info.fav_id-1;//id是从1开始的
+			sprintf((char*)command_group_type," and ((favorite_flag>>%d)&1)>0",fav_id);
+			break;
+	}
+	switch(sys.view_info.taxis_mode)
+	{
+		case TAXIS_MODE_NON://all
+			sprintf((char*)command_taxis_type," order by pos");
+			break;
+
+		case TAXIS_MODE_CAS://sat
+			sprintf((char*)command_taxis_type," and cas_id = %d order by pos",sys.view_info.cas_id);
+			break;
+
+		case TAXIS_MODE_LETTER://fav
+			letter1 = letter = sys.view_info.letter_pos;
+			if(letter == 0)//a~z
+			{
+				sprintf((char*)command_taxis_type," and ((prog_name>='A'\
+													and prog_name<='Z')\
+													or (prog_name>='a'\
+													and prog_name <='z'))\
+													order by prog_name");
+			}
+			else if(letter == 27)//other
+			{
+				sprintf((char*)command_taxis_type," and ((prog_name<'A'\
+													and prog_name>'Z')\
+													or (prog_name<'a'\
+													and prog_name >'z'))\
+													order by prog_name");
+			}
+			else//某个字母
+			{
+				letter+=64;//大写
+				letter1+=96;//小写
+				sprintf((char*)command_taxis_type," and (prog_name like '%c%%'\
+													or prog_name like '%c%%')\
+													order by prog_name",letter,letter1);
+			}
+			
+			break;
+
+		case TAXIS_MODE_TP:
+			sprintf((char*)command_taxis_type," and tp_id = %d order by pos",sys.view_info.tp_id);
+			break;
+	}
+	sprintf((char*)sql_cmd,"%s%s%s%s",
+			command_type,
+			command_stream_type,
+			command_group_type,
+			command_taxis_type);
+
+	return GXCORE_SUCCESS;
+}
+
+int32_t gx_pm_stream_data_get_callback(void *para, int n_column, int8_t ** value, int8_t ** column_name)
+{
+	GxBusPmDataStream * temp = NULL;
+	uint32_t num = 0;
+	num = ((struct gx_pm_data_get *)para)->num;
+	temp = (GxBusPmDataStream *) (((struct gx_pm_data_get *)para)->stream);
+	if (g_count == num) {
+		return -1;
+	}
+	temp[g_count].audio_type = atoi((const char *)value[1]);
+	temp[g_count].audio_pid = atoi((const char *)value[2]);
+	memcpy(temp[g_count].name, value[3], strlen((const char *)value[3]));
+	temp[g_count].ecm_pid = atoi((const char *)value[4]);
+	g_count++;
+	return 0;
+}
+
+static status_t gx_pm_fav_group_init(void) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	uint32_t i = 0;
+	sqlite_ret = sqlite3_exec(db, (const char *)("begin transaction"), NULL, NULL, (char **)&err_msg);	//开始一个事务
+	for (i = 0; i < 8; i++) {
+		sprintf((char *)sql_cmd, "insert into fav_table\
+							(id,\
+							 name)\
+							values(%d,'%s');", i + 1, fav_name[i]);
+		sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) {
+			sqlite_ret = sqlite3_exec(db, (const char *)("rollback transaction"), NULL, NULL, (char **)&err_msg);	//发生错误回滚事务
+			return GXCORE_ERROR;
+		}
+	}
+	for (i = 0; i < 24; i++) {
+		sprintf((char *)sql_cmd, "insert into fav_table\
+							(id,\
+							 name)\
+							values(%d,'%s%d');", i + 9, fav_name[8], i + 1);
+		sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) {
+			sqlite_ret = sqlite3_exec(db, (const char *)("rollback transaction"), NULL, NULL, (char **)&err_msg);	//发生错误回滚事务
+			return GXCORE_ERROR;
+		}
+	}
+	sqlite_ret = sqlite3_exec(db, (const char *)("commit transaction"), NULL, NULL, (char **)&err_msg);	//提交事务
+	return GXCORE_SUCCESS;
+}
+
+int32_t gx_pm_fav_group_data_get_callback(void *para, int n_column, int8_t ** value, int8_t ** column_name)
+{
+	GxBusPmDataFavItem * temp = NULL;
+	uint32_t num = 0;
+	num = ((struct gx_pm_data_get *)para)->num;
+	temp = (GxBusPmDataFavItem *) (((struct gx_pm_data_get *)para)->fav);
+	if (g_count == num) {
+		return -1;
+	}
+	temp[g_count].id = atoi((const char *)value[0]);
+	memcpy(temp[g_count].fav_name, value[1], strlen((const char *)value[1]));
+	g_count++;
+	return 0;
+}
+
+
+/* Exported Functions ----------------------------------------------------- */ 
+    
+/**
+ * @brief 		数据库初始化,用于打开数据库 并且当需要的表不存在的时候创建表
+ * @param   	void
+ * @return   	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmDbaseInit(void)
+{
+	int32_t sqlite_ret = 0;
+	
+//      int32_t count=0;
+	    status_t ret = 0;
+	sqlite_ret = sqlite3_open(GX_PM_FILE_PATH, &db);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		GX_BUS_PM_PRINTF("[PM]---open dbase err !!\n");
+		#endif
+		return GXCORE_ERROR;	//数据库打开失败
+	}
+	
+	    /*检测数据库是否存在sat表 tp表 prog表 stream表和fav表 如果不存在 创建 */ 
+	    ret = gx_pm_dbase_table_check();
+	if (ret != GXCORE_SUCCESS) {
+		#ifdef GX_BUS_PM_DBUG
+		GX_BUS_PM_PRINTF("[PM]---dbase table check err !!\n");
+		#endif
+		return GXCORE_ERROR;	//创建表失败
+	}
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		关闭数据库,下次再使用前必须再次调用初始化打开数据库
+ * @param   	void
+ * @return   	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmDbaseClose(void)
+{
+	int32_t sqlite_ret = 0;
+	sqlite_ret = sqlite3_close(db);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		GX_BUS_PM_PRINTF("[PM]---close dbase err !!\n");
+		#endif
+		return GXCORE_ERROR;	//数据库关闭失败 
+	}
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		获取卫星的数量
+ * @param   	void
+ * @return   	-1:发生错误
+                正常数字:卫星数量
+ */ 
+    int32_t GxBus_PmSatNumGet(void)
+{
+	int32_t count = 0;
+	int32_t sqlite_ret = 0;
+	uint8_t * sql_cmd;	//数据库的操作命令buffer
+	sql_cmd = (uint8_t *) ("select count(*) from sat_table;");
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get sat count err !!\n ret = %s\n",err_msg);
+		#endif
+		return -1;
+	}
+	return count;
+}
+
+
+/**
+ * @brief 		通过位置获取卫星的信息
+ * @param   	pos:所要获取信息的起始卫星的位置
+      			Num:想要获取的卫星数量
+      			sat_arry:获取的信息的指针,由该函数的使用者开辟空间
+ * @return     	-1:发生错误
+ 				正常数字:读取的真正的卫星数量
+ */ 
+    int32_t GxBus_PmSatsGetByPos(uint32_t pos, uint32_t num, GxBusPmDataSat * sat_arry) 
+{
+	struct gx_pm_data_get para;	//传入回调的参数
+	int32_t sqlite_ret = 0;
+	int32_t count = 0;
+	uint8_t sql_cmd[500];	//数据库的操作命令buffer
+	if (sat_arry == NULL) 
+	{
+		return -1;
+	}
+	sprintf((char *)sql_cmd,"select count(*) from sat_table;");
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if(((int32_t)num>count)||((int32_t)pos>(count-1))||(sqlite_ret != SQLITE_OK))
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get sat by pos params err !!\nnum=%d,pos=%d,count=%d\n ret = %s\n",num,pos,err_msg);
+		#endif
+		return -1;
+	}
+	para.num = num;
+	para.sat = sat_arry;
+	sprintf((char *)sql_cmd, "select * from sat_table limit %d offset %d;", num, pos);
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_sat_data_get_callback, (void *)&para, (char **)&err_msg);
+	count = g_count;	//获取实际得到的记录的条数
+	g_count = 0;		//清除计数值
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get sat by pos err !!\n ret = %s\n",err_msg);
+		#endif
+		return -1;
+	}
+	return count;
+}
+
+
+/**
+ * @brief 		通过id获取卫星的信息
+ * @param   	id:所要获取信息的卫星的id
+     			sat:获取的信息的指针
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmSatGetById(uint32_t id, GxBusPmDataSat * sat) 
+{
+	struct gx_pm_data_get para;	//传入回调的参数
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	if (sat == NULL) {
+		return GXCORE_ERROR;
+	}
+	para.num = 1;
+	para.sat = sat;
+	sprintf((char *)sql_cmd, "select * from sat_table where id = %d;", id);
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_sat_data_get_callback, (void *)&para, (char **)&err_msg);
+	if(g_count == 0)
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---no sat exist id=%d!!\n ret = %s\n",id);
+		#endif
+		return GXCORE_ERROR;	//
+	}
+	g_count = 0;		//清除计数值
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get sat by id err !!\n ret = %s\n",err_msg);
+		#endif
+		return GXCORE_ERROR;	//数据库读取失败
+	}
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		编辑卫星参数,编辑前需要先获取原始参数 再进行修改 其中id号是
+ 				不能改动的
+ * @param   	sat:信息的指针
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmSatModify(GxBusPmDataSat * sat) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[500];	//数据库的操作命令buffer
+	if (sat == NULL) {
+		return GXCORE_ERROR;
+	}
+	gx_pm_sat_update_command_create(sat, sql_cmd);
+	sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---modify sat err !!\n ret = %s\n",err_msg);
+		#endif
+		return GXCORE_ERROR;	//数据库修改失败
+	}
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		删除卫星,支持批量删除
+ * @param   	id_arry:所要删除的卫星的id
+ 				num:所要删除的卫星数量
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmSatDelete(uint32_t * id_arry, uint32_t num) 
+{
+	status_t ret = 0;
+	uint32_t count = 0;
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	if ((id_arry == NULL)||(num == 0)) {
+		return GXCORE_ERROR;
+	}
+	sprintf((char *)sql_cmd,"select count(*) from sat_table;");
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if((num>count)||(sqlite_ret != SQLITE_OK))
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---delete sat err !!\nnum=%d, ret = %s\n",num,err_msg);
+		#endif
+		return GXCORE_ERROR;
+	}
+	    /*后续考虑采用事务控制 保证在出现错误的时候能够还原数据库 */ 
+	    ret = gx_pm_prog_delete_by_sat(id_arry, num);	//first删除卫星下的节目
+	if (ret != GXCORE_SUCCESS) {
+		return GXCORE_ERROR;	//删除节目失败
+	}
+	ret = gx_pm_tp_delete_by_sat(id_arry, num);	//second删除卫星下的tp
+	if (ret != GXCORE_SUCCESS) {
+		return GXCORE_ERROR;	//删除tp失败
+	}
+	ret = gx_pm_sat_delete(id_arry, num);	//third删除卫星
+	if (ret != GXCORE_SUCCESS) {
+		return GXCORE_ERROR;	//删除卫星失败
+	}
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		添加卫星
+ * @param   	sat:添加的卫星
+ 				
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GX_PM_DBASE_FULL:数据库已经满了
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmSatAdd(GxBusPmDataSat * sat) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[500];	//数据库的操作命令buffer
+	uint8_t **dbResult;	//
+	uint32_t row = 0;
+	uint32_t column = 0;
+	uint32_t count = 0;
+	if (sat == NULL) {
+		return GXCORE_ERROR;
+	}
+
+	sprintf((char *)sql_cmd,"select count(*) from sat_table;");
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if(count == MAX_SAT_COUNT)
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---add sat err dbase full !!\n ret = %s\n",err_msg);
+		#endif
+		return GX_PM_DBASE_FULL;
+	}
+	
+	gx_pm_sat_insert_command_create(sat, sql_cmd);
+	sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---add sat err !!\n ret = %s\n",err_msg);
+		#endif
+		return GXCORE_ERROR;	//添加卫星失败
+	}
+	
+	    /*获得id */ 
+	    sprintf((char *)sql_cmd, "select MAX(id) from sat_table where sat_name='%s';", sat->sat_s.sat_name);
+	sqlite_ret = sqlite3_get_table(db, (const char *)sql_cmd, (char ***)&dbResult, (int *)&row, (int *)&column, 
+					(char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get sat id after add err !!\n ret = %s\n",err_msg);
+		#endif
+		return GXCORE_ERROR;	//添加卫星失败
+	}
+	sat->id = atoi((const char *)dbResult[1]);	//dbResult[0]是字段名 dbResult[1]是字段值
+	sqlite3_free_table((char **)dbResult);
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		获取tp的数量
+ * @param   	void
+ 				
+
+ * @return     	-1:发生错误
+                正常数字:卫星数量
+ */ 
+    int32_t GxBus_PmTpNumGet(void)
+{
+	int32_t count = 0;
+	int32_t sqlite_ret = 0;
+	uint8_t * sql_cmd;	//数据库的操作命令buffer
+	sql_cmd = (uint8_t *) ("select count(*) from tp_table;");
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get tp count err !!\n ret = %s\n",err_msg);
+		#endif
+		return -1;
+	}
+	return count;
+}
+
+
+/**
+ * @brief 		通过位置获取tp的信息
+ * @param   	pos:所要获取信息的起始tp的位置
+      			Num:想要获取的tp数量
+      			tp_arry:获取的信息的指针tp_arry:获取的信息的指针,由该函数的使用者开辟空间
+ * @return     	-1:发生错误
+ 				正常数字:读取的真正的tp数量
+ */ 
+    int32_t GxBus_PmTpGetByPos(uint32_t pos, uint32_t num, GxBusPmDataTP * tp_arry) 
+{
+	struct gx_pm_data_get para;	//传入回调的参数
+	int32_t sqlite_ret = 0;
+	int32_t count = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	if (tp_arry == NULL) {
+		return GXCORE_ERROR;
+	}
+	sprintf((char *)sql_cmd,"select count(*) from tp_table;");
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if(((int32_t)num>count)||((int32_t)pos>(count-1))||(sqlite_ret != SQLITE_OK))
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get tp by pos params err !!\nnum=%d,pos=%d,count=%d\n ret = %s\n",num,pos,err_msg);
+		#endif
+		return -1;
+	}
+	para.num = num;
+	para.tp = tp_arry;
+	sprintf((char *)sql_cmd, "select * from tp_table limit %d offset %d;", num, pos);
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_tp_data_get_callback, (void *)&para, (char **)&err_msg);
+	count = g_count;	//获取实际得到的记录的条数
+	g_count = 0;		//清除计数值
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get tp by pos err !!\n ret = %s\n",err_msg);
+		#endif
+		return -1;
+	}
+	return count;
+}
+
+
+/**
+ * @brief 		通过id获取tp的信息
+ * @param   	id:所要获取信息的tp的id
+     			tp:获取的信息的指针
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmTpGetById(uint32_t id, GxBusPmDataTP * tp) 
+{
+	struct gx_pm_data_get para;	//传入回调的参数
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	if (tp == NULL) {
+		return GXCORE_ERROR;
+	}
+	para.num = 1;
+	para.tp = tp;
+	sprintf((char *)sql_cmd, "select * from tp_table where id = %d;", id);
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_tp_data_get_callback, (void *)&para, (char **)&err_msg);
+	if(g_count == 0)
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---no tp exist id=%d!!\n ret = %s\n",id);
+		#endif
+		return GXCORE_ERROR;	//
+	}
+	g_count = 0;		//清除计数值
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get tp by id err !!\n ret = %s\n",err_msg);
+		#endif
+		return GXCORE_ERROR;	//数据库读取失败
+	}
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		编辑tp参数,编辑前需要先获取原始参数 再进行修改 其中id号是
+ 				不能改动的
+ * @param   	tp:信息的指针
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmTpModify(GxBusPmDataTP * tp) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[500];	//数据库的操作命令buffer
+	if (tp == NULL) {
+		return GXCORE_ERROR;
+	}
+	gx_pm_tp_update_command_create(tp, sql_cmd);
+	sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---modify tp err !!\n ret = %s\n",err_msg);
+		#endif
+		return GXCORE_ERROR;	//数据库修改失败
+	}
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		删除tp,支持批量删除
+ * @param   	id_arry:所要删除的tp的id
+ 				num:所要删除的tp数量
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmTpDelete(uint32_t * id_arry, uint32_t num) 
+{
+	status_t ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	int32_t sqlite_ret = 0;
+	uint32_t count = 0;
+	if ((id_arry == NULL)||(num == 0)) {
+		return GXCORE_ERROR;
+	}
+	sprintf((char *)sql_cmd,"select count(*) from tp_table;");
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if((num>count)||(sqlite_ret != SQLITE_OK))
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---delete sat err !!\nnum=%d, ret = %s\n",num,err_msg);
+		#endif
+		return GXCORE_ERROR;
+	}
+	    /*后续考虑采用事务控制 保证在出现错误的时候能够还原数据库 */ 
+	    ret = gx_pm_prog_delete_by_tp(id_arry, num);	//first删除tp下的节目
+	if (ret != GXCORE_SUCCESS) {
+		return GXCORE_ERROR;	//删除节目失败
+	}
+	ret = gx_pm_tp_delete(id_arry, num);	//second删除tp
+	if (ret != GXCORE_SUCCESS) {
+		return GXCORE_ERROR;	//删除tp失败
+	}
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		添加tp
+ * @param   	tp:添加的tp
+ 				
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GX_PM_DBASE_FULL:数据库满
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmTpAdd(GxBusPmDataTP * tp) 
+{
+	int32_t sqlite_ret = 0;
+	uint32_t count = 0;
+	uint8_t sql_cmd[500];	//数据库的操作命令buffer
+	uint8_t **dbResult;	//
+	uint32_t row = 0;
+	uint32_t column = 0;
+	if (tp == NULL) {
+		return GXCORE_ERROR;
+	}
+
+	sprintf((char *)sql_cmd,"select count(*) from tp_table;");
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if(count == MAX_TP_COUNT)
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---add tp err dbase full !!\n ret = %s\n",err_msg);
+		#endif
+		return GX_PM_DBASE_FULL;
+	}
+	gx_pm_tp_insert_command_create(tp, sql_cmd);
+	sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---add tp err !!\n ret = %s\n",err_msg);
+		#endif
+		return GXCORE_ERROR;	//添加tp失败
+	}
+	
+	    /*获得id */ 
+	    sprintf((char *)sql_cmd, "select MAX(id) from tp_table where sat_id=%d;", tp->sat_id);
+	sqlite_ret = sqlite3_get_table(db, (const char *)sql_cmd, (char ***)&dbResult, (int *)&row, (int *)&column, 
+					(char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get tp id after add err !!\n ret = %s\n",err_msg);
+		#endif
+		return GXCORE_ERROR;	//添加tp失败
+	}
+	tp->id = atoi((const char *)dbResult[1]);	//dbResult[0]是字段名 dbResult[1]是字段值
+	sqlite3_free_table((char **)dbResult);
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		获取prog的数量 使用此接口时如果更改了观看模式 
+ 				应该先更新系统信息里的view_info 
+ 				再调用此接口获取新的观看模式下的节目数量
+ * @param   	void
+ 				
+
+ * @return     	-1:发生错误
+                正常数字:prog数量
+ */
+int GxBus_PmProgNumGet(void) 
+{
+	int32_t count = 0;
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[500];	//数据库的操作命令buffer
+	gx_pm_prog_command_create(GET_NUM,sql_cmd);
+	strcat((char*)sql_cmd,";");//上面的接口不生成";"
+	//sql_cmd = (uint8_t *) ("select count(*) from prog_table;");
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get prog count err !!\n ret = %s\n",err_msg);
+		#endif
+		return -1;
+	}
+	return count;
+}
+
+
+/**
+ * @brief 		通过位置获取prog的信息 使用此接口时如果更改了观看模式
+ 				应该先更新系统信息里的view_info 
+ 				再调用此节口更新节目列表
+ * @param   	pos:所要获取信息的起始prog的位置
+      			Num:想要获取的prog数量
+      			prog_arry:获取的信息的指针prog_arry:获取的信息的指针,由该函数的使用者开辟空间
+ * @return     	-1:发生错误
+ 				正常数字:读取的真正的prog数量
+ */
+    int32_t GxBus_PmProgGetByPos(uint32_t pos, uint32_t num, GxBusPmDataProg * prog_arry) 
+{
+	struct gx_pm_data_get para;	//传入回调的参数
+	int32_t sqlite_ret = 0;
+	int32_t count = 0;
+	uint8_t sql_cmd_temp[100]={0};
+	uint8_t sql_cmd[500];	//数据库的操作命令buffer
+	if (prog_arry == NULL) {
+		return GXCORE_ERROR;
+	}
+	sprintf((char *)sql_cmd,"select count(*) from prog_table;");
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if(((int32_t)num>count)||((int32_t)pos>(count-1))||(sqlite_ret != SQLITE_OK))
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get prog by pos params err !!\nnum=%d,pos=%d,count=%d\n ret = %s\n",num,pos,err_msg);
+		#endif
+		return -1;
+	}
+	para.num = num;
+	para.prog = prog_arry;
+	sprintf((char*)sql_cmd_temp," limit %d offset %d;",num, pos);
+	gx_pm_prog_command_create(GET_INFO,sql_cmd);
+	strcat((char*)sql_cmd,(char*)sql_cmd_temp);
+	//sprintf((char *)sql_cmd, "select * from prog_table limit %d offset %d;", num, pos);
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_prog_data_get_callback, (void *)&para, (char **)&err_msg);
+	count = g_count;	//获取实际得到的记录的条数
+	g_count = 0;		//清除计数值
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get prog by pos err !!\n ret = %s\n",err_msg);
+		#endif
+		return -1;
+	}
+	return count;
+}
+
+
+/**
+ * @brief 		通过id获取prog的信息
+ * @param   	id:所要获取信息的prog的id
+     			prog:获取的信息的指针
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmProgGetById(uint32_t id, GxBusPmDataProg * prog) 
+{
+	struct gx_pm_data_get para;	//传入回调的参数
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	if (prog == NULL) {
+		return GXCORE_ERROR;
+	}
+	para.num = 1;
+	para.prog = prog;
+	sprintf((char *)sql_cmd, "select * from prog_table where id = %d;", id);
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_prog_data_get_callback, (void *)&para, (char **)&err_msg);
+	if(g_count == 0)
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---no prog exist id=%d!!\n ret = %s\n",id);
+		#endif
+		return GXCORE_ERROR;	//
+	}
+	g_count = 0;		//清除计数值
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get tp by id err !!\n ret = %s\n",err_msg);
+		#endif
+		return GXCORE_ERROR;	//数据库读取失败
+	}
+	return GXCORE_SUCCESS;
+}
+
+/**
+ * @brief 		通过id获取prog的url信息,该信息主要是为了给player播放用的,prog_url的
+ 				空间是由使用接口的地方分配的 大小为 GX_PM_MAX_PROG_URL_SIZE
+ * @param   	prog:所要获取url信息的prog
+     			prog_url:获取的url信息的buffer
+     			uint32_t size:buffer的大小 如果小于GX_PM_MAX_PROG_URL_SIZE会返回错误
+     			
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */
+status_t GxBus_PmProgUrlGet(GxBusPmDataProg* prog, int8_t* prog_url,uint32_t size)
+{
+	uint32_t tp_id = 0;
+	uint32_t sat_id = 0;
+	int32_t stream_count = 0;
+	int32_t i = 0;
+	GxBusPmDataStream * stream_arry = NULL;
+	GxBusPmDataStream stream = {0};
+	status_t ret = GXCORE_SUCCESS;
+	GxBusPmDataTP tp = {0};
+	GxBusPmDataSat sat = {0};
+
+	if(prog == NULL||prog_url == NULL)
+	{
+		#ifdef GX_BUS_PM_DBUG
+		GX_BUS_PM_PRINTF("[PM]---params err!!\n");
+		#endif
+		return GXCORE_ERROR;
+	}
+	if(size<GX_PM_MAX_PROG_URL_SIZE)
+	{
+		#ifdef GX_BUS_PM_DBUG
+		GX_BUS_PM_PRINTF("[PM]---buffer size err!!\n");
+		#endif
+		return GXCORE_ERROR;
+	}
+	tp_id = prog->tp_id;
+	sat_id = prog->sat_id;
+
+	GxBus_PmTpGetById(tp_id,&tp);
+	GxBus_PmSatGetById(sat_id,&sat);
+	stream_count = GxBus_PmStreamNumGet(prog->id);
+	if(stream_count != -1)
+	{
+		stream_arry = (GxBusPmDataStream *)GxCore_Malloc(sizeof(GxBusPmDataStream) * stream_count);
+		GxBus_PmStreamGet(prog->id,stream_count,stream_arry);
+		for(i=0; i<stream_count; i++)
+		{
+			if(stream_arry[i].audio_type == 0)//pcm
+			{
+				stream.audio_pid = stream_arry[i].audio_pid;
+				break;
+			}
+		}
+		if(i == stream_count)//没有pcm
+		{
+			stream.audio_pid = 0x1fff;
+		}
+		GxCore_Free(stream_arry);
+	}
+	else
+	{
+		stream.audio_pid = 0x1fff;
+	}
+	switch(sat.type)
+	{
+		case GXBUS_PM_SAT_S:
+			sprintf((char *)prog_url,"dvbs://fre=%d&polar=%d&symbol=%d&22k=%d&vpid=%d&apid=%d&pcrpid=%d",
+				    tp.frequency,
+				    tp.tp_s.polar,
+				    tp.tp_s.symbol_rate,
+				    sat.sat_s.switch_22K,
+				    prog->video_pid,
+				    stream.audio_pid,
+				    prog->pcr_pid);
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---prog_url = %s!!\n",prog_url);
+			#endif
+			break;
+
+		case GXBUS_PM_SAT_C:
+			sprintf((char *)prog_url,"dvbc://fre=%d&qam=%d&symbol=%d&vpid=%d&apid=%d&pcrpid=%d",
+				    tp.frequency,
+				    tp.tp_c.modulation,
+				    tp.tp_c.symbol_rate,
+				    prog->video_pid,
+				    stream.audio_pid,
+				    prog->pcr_pid);
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---prog_url = %s!!\n",prog_url);
+			#endif
+			break;
+
+		case GXBUS_PM_SAT_T:
+			break;
+
+		default:
+			#ifdef GX_BUS_PM_DBUG
+			GX_BUS_PM_PRINTF("[PM]---sat type err!!\n");
+			#endif
+			ret = GXCORE_ERROR;
+			break;
+	}
+	
+	return ret;
+}
+
+/**
+ * @brief 		通过id修改节目信息中以bool形式表示的信息,比如skip:0-跳过 1-不跳过
+ * @param   	type:修改的内容
+ 				id_arry:所要修改的id
+     			num:所要修改的节目的数量
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmProgBoolModify(GxBusPmProgModifyBoolType type, uint32_t * id_arry, uint32_t num) 
+{
+	uint32_t i = 0;
+	uint32_t flag = 0;
+	int32_t sqlite_ret = 0;
+	uint32_t count = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	uint8_t **dbResult;	//
+	uint32_t row = 0;
+	uint32_t column = 0;
+
+	sprintf((char *)sql_cmd,"select count(*) from prog_table;");
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if((num==0)||(num>count)||(sqlite_ret != SQLITE_OK)||(id_arry == NULL))
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get prog bool modify err !!\nnum=%d ret = %s\n",num,err_msg);
+		#endif
+		return GXCORE_ERROR;
+	}
+	switch (type) {
+	case GXBUS_PM_PROG_MODIFY_SKIP:
+		sqlite_ret = sqlite3_exec(db, (const char *)("begin transaction"), NULL, NULL, (char **)&err_msg);	//开始一个事务
+		for (i = 0; i < num; i++) {
+			
+			    /*获取原始数据 */ 
+			    sprintf((char *)sql_cmd, "select skip_flag from prog_table where id = %d;", id_arry[i]);
+			sqlite_ret = sqlite3_get_table(db, (const char *)sql_cmd, (char ***)&dbResult, (int *)&row, 
+							(int *)&column, (char **)&err_msg);
+			if (sqlite_ret != SQLITE_OK) {
+				#ifdef GX_BUS_PM_DBUG
+				PM_PRINTF("[PM]---get prog skip status err !!\n ret = %s\n",err_msg);
+				#endif
+				sqlite_ret = sqlite3_exec(db, (const char *)("commit transaction"), NULL, NULL, (char **)&err_msg);	//提交事务
+				return GXCORE_ERROR;
+			}
+			
+			    /*获取修改值 */ 
+			    flag = !(atoi((const char *)dbResult[1]));	//dbResult[0]是字段名 dbResult[1]是字段值
+			sqlite3_free_table((char **)dbResult);
+			sprintf((char *)sql_cmd, "update prog_table set skip_flag = %d where id = %d;", flag,
+				 id_arry[i]);
+			sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+			if (sqlite_ret != SQLITE_OK) {
+				#ifdef GX_BUS_PM_DBUG
+				PM_PRINTF("[PM]---modify prog skip err !!\n ret = %s\n",err_msg);
+				#endif
+				sqlite_ret = sqlite3_exec(db, (const char *)("rollback transaction"), NULL, NULL, (char **)&err_msg);	//发生错误回滚事务
+				return GXCORE_ERROR;
+			}
+		}
+		sqlite_ret = sqlite3_exec(db, (const char *)("commit transaction"), NULL, NULL, (char **)&err_msg);	//提交事务
+		break;
+	case GXBUS_PM_PROG_MODIFY_LOCK:
+		sqlite_ret = sqlite3_exec(db, (const char *)("begin transaction"), NULL, NULL, (char **)&err_msg);	//开始一个事务
+		for (i = 0; i < num; i++) {
+			
+			    /*获取原始数据 */ 
+			    sprintf((char *)sql_cmd, "select lock_flag from prog_table where id = %d;", id_arry[i]);
+			sqlite_ret = sqlite3_get_table(db, (const char *)sql_cmd, (char ***)&dbResult, (int *)&row, 
+							(int *)&column, (char **)&err_msg);
+			if (sqlite_ret != SQLITE_OK) {
+				#ifdef GX_BUS_PM_DBUG
+				PM_PRINTF("[PM]---get prog lock status err !!\n ret = %s\n",err_msg);
+				#endif
+				sqlite_ret = sqlite3_exec(db, (const char *)("commit transaction"), NULL, NULL, (char **)&err_msg);	//提交事务
+				return GXCORE_ERROR;
+			}
+			
+			    /*获取修改值 */ 
+			    flag = !(atoi((const char *)dbResult[1]));	//dbResult[0]是字段名 dbResult[1]是字段值
+			sqlite3_free_table((char **)dbResult);
+			sprintf((char *)sql_cmd, "update prog_table set lock_flag = %d where id = %d;", flag,
+				 id_arry[i]);
+			sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+			if (sqlite_ret != SQLITE_OK) {
+				#ifdef GX_BUS_PM_DBUG
+				PM_PRINTF("[PM]---modify prog lock err !!\n ret = %s\n",err_msg);
+				#endif
+				sqlite_ret = sqlite3_exec(db, (const char *)("rollback transaction"), NULL, NULL, (char **)&err_msg);	//发生错误回滚事务
+				return GXCORE_ERROR;
+			}
+		}
+		sqlite_ret = sqlite3_exec(db, (const char *)("commit transaction"), NULL, NULL, (char **)&err_msg);	//提交事务
+		break;
+	default:
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get prog bool modify type err !!\n type = %d\n",type);
+		#endif
+		return GXCORE_ERROR;
+		break;
+	}
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		修改节目的喜爱组信息 一次一个喜爱组
+ * @param   	fav_id:所要修改的喜爱组
+				id_arry:所要修改的节目的id
+      			Num:所要修改的节目的数量
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmProgFavModify(uint32_t fav_id, uint32_t * id_arry, uint32_t num) 
+{
+	uint32_t i = 0;
+	uint32_t flag = 0;
+	uint32_t modify_flag = 0;
+	uint32_t count = 0;
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	uint8_t **dbResult;	//
+	uint32_t row = 0;
+	uint32_t column = 0;
+	if ((id_arry == NULL)||(fav_id==0)) {
+		return GXCORE_ERROR;
+	}
+
+	sprintf((char *)sql_cmd,"select count(*) from prog_table;");
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if((num==0)||(num>count))
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---modify prog fav group err !!\nnum=%d ret = %s\n",num,err_msg);
+		#endif
+		return GXCORE_ERROR;
+	}
+	sqlite_ret = sqlite3_exec(db, (const char *)("begin transaction"), NULL, NULL, (char **)&err_msg);	//开始一个事务
+	for (i = 0; i < num; i++) {
+		
+		    /*获取原始数据 */ 
+		    sprintf((char *)sql_cmd, "select favorite_flag from prog_table where id = %d;", id_arry[i]);
+		sqlite_ret =
+		    sqlite3_get_table(db, (const char *)sql_cmd, (char ***)&dbResult, (int *)&row, (int *)&column,
+				       (char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) {
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---get prog fav status err !!\n ret = %s\n",err_msg);
+			#endif
+			sqlite_ret = sqlite3_exec(db, (const char *)("commit transaction"), NULL, NULL, (char **)&err_msg);	//提交事务
+			return GXCORE_ERROR;
+		}
+		
+		    /*获取修改值 */ 
+		    flag = atoi((const char *)dbResult[1]);	//dbResult[0]是字段名 dbResult[1]是字段值
+		modify_flag = flag;
+		if (flag &= (1 << (fav_id - 1))) {
+			modify_flag &= ~(1 << (fav_id - 1));
+		}
+		
+		else {
+			modify_flag |= (1 << (fav_id - 1));
+		}
+		sqlite3_free_table((char **)dbResult);
+		sprintf((char *)sql_cmd, "update prog_table set favorite_flag = %d where id = %d;", modify_flag,
+			 id_arry[i]);
+		sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) {
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---modify prog fav err !!\n ret = %s\n",err_msg);
+			#endif
+			sqlite_ret = sqlite3_exec(db, (const char *)("rollback transaction"), NULL, NULL, (char **)&err_msg);	//发生错误回滚事务
+			return GXCORE_ERROR;
+		}
+	}
+	sqlite_ret = sqlite3_exec(db, (const char *)("commit transaction"), NULL, NULL, (char **)&err_msg);	//提交事务
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		编辑prog参数,编辑前需要先获取原始参数 再进行修改 其中id号是
+ 				不能改动的
+ * @param   	prog:信息的指针
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmProgInfoModify(GxBusPmDataProg * prog) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[800];	//数据库的操作命令buffer
+	if (prog == NULL) {
+		return GXCORE_ERROR;
+	}
+	gx_pm_prog_update_command_create(prog, sql_cmd);
+	sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---modify prog info err !!\n ret = %s\n",err_msg);
+		#endif
+		return GXCORE_ERROR;	//数据库修改失败
+	}
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		删除prog,支持批量删除
+ * @param   	id_arry:所要删除的prog的id
+ 				num:所要删除的prog数量
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmProgDelete(uint32_t * id_arry, uint32_t num) 
+{
+	int32_t sqlite_ret = 0;
+	uint32_t count = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	uint32_t i = 0;
+	if ((id_arry == NULL)||(num==0)) {
+		return GXCORE_ERROR;
+	}
+	sprintf((char *)sql_cmd,"select count(*) from prog_table;");
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if((num>count)||(sqlite_ret != SQLITE_OK))
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---delete sat err !!\nnum=%d, ret = %s\n",num,err_msg);
+		#endif
+		return GXCORE_ERROR;
+	}
+	sqlite_ret = sqlite3_exec(db, (const char *)("begin transaction"), NULL, NULL, (char **)&err_msg);	//开始一个事务
+	for (i = 0; i < num; i++) {
+		sprintf((char *)sql_cmd, "delete from prog_table where id = %d;", id_arry[i]);
+		sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) {
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---delete prog err !!\n ret = %s\n",err_msg);
+			#endif
+			sqlite_ret = sqlite3_exec(db, (const char *)("rollback transaction"), NULL, NULL, (char **)&err_msg);	//发生错误回滚事务
+			
+			    /*sqlite_ret = sqlite3_exec( db, 
+			       "commit transaction", 
+			       NULL,
+			       NULL,
+			       (char**)&err_msg );//提交事务 */ 
+			    return GXCORE_ERROR;
+		}
+	}
+	sqlite_ret = sqlite3_exec(db, (const char *)("commit transaction"), NULL, NULL, (char **)&err_msg);	//提交事务
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		添加prog
+ * @param   	prog:添加的prog
+ 				
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ 				GX_PM_DBASE_FULL:数据库已经满了
+ */ 
+status_t GxBus_PmProgAdd(GxBusPmDataProg * prog) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[600];	//数据库的操作命令buffer
+	uint8_t **dbResult;	//
+	uint32_t row = 0;
+	uint32_t column = 0;
+	int32_t count = 0;
+	if (prog == NULL) {
+		return GXCORE_ERROR;
+	}
+	sprintf((char *)sql_cmd,"select count(*) from prog_table;");
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if(count == MAX_PROG_COUNT)
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---add prog err dbase full !!\n ret = %s\n",err_msg);
+		#endif
+		return GX_PM_DBASE_FULL;
+	}
+	
+	gx_pm_prog_insert_command_create(prog, sql_cmd);
+	sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---add prog err !!\n ret = %s\n",err_msg);
+		#endif
+		return GXCORE_ERROR;	//添加prog失败
+	}
+	
+	    /*获得id */ 
+	    sprintf((char *)sql_cmd, "select MAX(id) from prog_table where prog_name='%s';", prog->prog_name);
+	sqlite_ret = sqlite3_get_table(db, (const char *)sql_cmd, (char ***)&dbResult, (int *)&row, (int *)&column, 
+					(char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get prog id after add err !!\n ret = %s\n",err_msg);
+		#endif
+		return GXCORE_ERROR;	//添加prog失败
+	}
+	prog->id = atoi((const char *)dbResult[1]);	//dbResult[0]是字段名 dbResult[1]是字段值
+	sqlite3_free_table((char **)dbResult);
+	
+	    /*更新节目的初始位置,一开始和id是相同的 */ 
+	    sprintf((char *)sql_cmd, "update prog_table set pos = %d where id =%d;", prog->id, prog->id);
+	sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---init prog pos err !!\n ret = %s\n",err_msg);
+		#endif
+		return GXCORE_ERROR;	//添加prog失败
+	}
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		移动节目 注意 target_id不能出现在id_arry中
+ * @param   	id_arry:所要移动的节目id
+     			Num:所要移动的节目数量
+     			target_id:目标id,比如 次参数为5 代表要把选中的节目移动到节目id为5的节目前
+ 	
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmProgMove(uint32_t * id_arry, uint32_t num, uint32_t target_id) 
+{
+	uint32_t max_pos;	//所要修改的最大位置 用于和min一起确定修改的区间
+	uint32_t min_pos;	//所要修改的最小位置 用于和max一起确定修改的区间
+	uint32_t *pos_arry;	//由以上区间确定的位置 从小到大排列
+	uint32_t modify_count;	//所要修改的节目的数量
+	uint32_t target_id_pos;	//目标id的pos,用于建立before_target和after_target
+	uint32_t *real_id_arry;	//重建好后的id数组 顺序和real_pos_arry是一一对应的,用于更新表
+	uint32_t *real_pos_arry;	//重建好后的pos数组 顺序和real_id_arry是一一对应的,用于更新表
+	uint32_t *before_target_id = NULL;	//目标id之前的id的数组
+	uint32_t *after_target_id = NULL;	//目标id之后的id的数组
+	uint32_t before_count = 0;	//目标id之前的id数量
+	uint32_t after_count = 0;	//目标id之后的id数量
+	uint32_t i = 0;
+	uint32_t j = 0;
+	uint32_t k = 0;
+	uint32_t p = 0;
+	uint32_t q = 0;
+	uint32_t id_pos = 0;	//real_id_arry数组的下标
+	uint8_t sql_cmd[100];	//数据库的操作命令buffer
+	int32_t sqlite_ret = 0;
+	uint32_t count = 0;
+	
+	if (id_arry == NULL) {
+		return GXCORE_ERROR;
+	}
+	sprintf((char *)sql_cmd,"select count(*) from prog_table;");
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if(num>count)
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---move prog err!!\nnum=%d\ncount=%d\n ret = %s\n",num,count,err_msg);
+		#endif
+		return GXCORE_ERROR;
+	}
+	
+	    /*目标id是不能被移动的 */ 
+	    for (i = 0; i < num; i++) {
+		if (id_arry[i] == target_id) {
+			#ifdef GX_BUS_PM_DBUG
+			PM_PRINTF("[PM]---move prog err!! can't move the target id\n");
+			#endif
+			return GXCORE_ERROR;
+		}
+	}
+	
+	    /*找到最大的pos和最小的pos,作为要修改的区间 */ 
+	    gx_pm_prog_max_min_pos_get(id_arry, num, target_id, &max_pos, &min_pos);
+	
+	    /*获取要修改的区间内的记录数量 */ 
+	    modify_count = gx_pm_prog_modify_count_get(max_pos, min_pos);
+	pos_arry = (uint32_t*)GxCore_Malloc(sizeof(uint32_t) * modify_count);
+	
+	    /*通过上面的pos区间获取这个区间内的pos的值 按从小到大排列 并且获得目标id的pos */ 
+	    gx_pm_prog_pos_init(pos_arry, max_pos, min_pos, target_id, &target_id_pos);
+	
+	    /*通过最大最小pos和目标id的pos 建立before_target_id 不包括所要移动的id 记录下数量before_count */ 
+	    /*通过最大最小pos和目标id的pos  建立after_target_id  不包括所要移动的id 记录下数量after_count */ 
+	    before_count = modify_count - num - 1;//不包括要修改的和目标id 因为这三个id 首先分配了1 2 3 的位置 等待其他id插入
+	if (before_count != 0) {
+		before_target_id = (uint32_t*)GxCore_Malloc(sizeof(uint32_t) * before_count);
+		after_target_id = (uint32_t*)GxCore_Malloc(sizeof(uint32_t) * before_count);
+		gx_pm_prog_before_after_buff_init(before_target_id, after_target_id, &before_count, &after_count,
+						   max_pos, min_pos, target_id_pos, id_arry, num);
+	}
+	
+	else {
+		before_count = 0;
+		after_count = 0;
+	}
+	real_id_arry = (uint32_t*)GxCore_Malloc(sizeof(uint32_t) * modify_count);
+	real_pos_arry = (uint32_t*)GxCore_Malloc(sizeof(uint32_t) * modify_count);
+	
+	    /*写入real_id_arry 前num个成员和目标id,也就是传下来的id 记录下下标 */ 
+	    for (i = 0; i < num; i++) {
+		real_id_arry[id_pos] = id_arry[i];
+		id_pos++;
+	}
+	real_id_arry[id_pos] = target_id;
+	id_pos++;
+	
+	    /*写入real_pos_arry 前num个成员 也就是pos的前num个值 */ 
+	    for (i = 0; i < id_pos; i++) {
+		real_pos_arry[i] = pos_arry[i];
+	}
+	
+	    /*往real_id_arry 从后往前写入before_target的成员 数量是before_count 每写入一个成员 
+	       新的成员real_pos_arry就是pos[0],而之前的成员的real_pos_arry为pos[i] */ 
+	    p = id_pos;
+	for (i = 0; i < before_count; i++) {
+		real_id_arry[id_pos] = before_target_id[before_count - i - 1];
+		
+		    //real_pos_arry[id_pos] =  pos_arry[0];
+		    k++;
+		
+		    /*更新刚写入新的id的pos */ 
+		    for (q = 0; q < k; q++) {
+			real_pos_arry[id_pos - q] = pos_arry[q];
+		}
+		
+		    /*更新之前写入的id的pos */ 
+		    for (j = 0; j < p; j++) {
+			real_pos_arry[j] = pos_arry[j + k];
+		}
+		id_pos++;
+	}
+	
+	    /*往real_id_arry 从前往后写入after_target的成员 数量是after_count 每写入一个成员 
+	       新的成员real_pos_arry就是pos[num],num是上一个步骤后pos的下标 */ 
+	    for (i = 0; i < after_count; i++) {
+		real_id_arry[id_pos] = after_target_id[i];
+		real_pos_arry[id_pos] = pos_arry[id_pos];
+		id_pos++;
+	}
+	gx_pm_prog_pos_update(real_id_arry, real_pos_arry, id_pos);
+	GxCore_Free(pos_arry);
+	GxCore_Free(before_target_id);
+	GxCore_Free(after_target_id);
+	GxCore_Free(real_id_arry);
+	GxCore_Free(real_pos_arry);
+	return GXCORE_SUCCESS;
+}
+
+/**
+ * @brief 		监测节目时否存在,主要用于搜台时候的保存
+ * @param   	ts_id:所要检测的ts id
+     			service_id:所要检测的service id
+ 	
+ * @return     	0:该节目不存在
+ 				>1:该节目已经存在
+ 				-1:失败
+ */
+int32_t GxBus_PmProgExistChek(uint16_t ts_id, uint16_t service_id)
+{
+	int32_t count = 0;
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+
+	sprintf((char*)sql_cmd,"select count(*) from prog_table where ts_id = %d and service_id = %d;",
+		    ts_id,service_id);
+	
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---check the prog exist err !!\n ret = %s\n",err_msg);
+		#endif
+		return -1;
+	}
+	return count;
+}
+
+/**
+ * @brief 		获取指定的prog的pos,主要用于epg删除service时的判断
+ * @param   	uint32_t ts_id:和service_id确定一个service
+ 				uint32_t service_id:和ts_id确定一个service
+
+ * @return     	-1:获取失败
+ 				正常值:节目的pos
+ */
+int32_t GxBus_PmProgPosGet(uint32_t ts_id,uint32_t service_id)
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	uint8_t **dbResult;	//
+	uint32_t row = 0;
+	uint32_t column = 0;
+	int32_t pos = -1;
+	uint32_t count = 0;
+
+	sprintf((char*)sql_cmd,"select count(*) from prog_table where ts_id = %d and service_id = %d;",
+		    ts_id,service_id);
+	
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if((count == 0)||(sqlite_ret != SQLITE_OK))
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---get the prog pos err !!\nts_id=%d\nservice_id=%d\ncount=%d\n ret = %s\n",ts_id,service_id,count,err_msg);
+		#endif
+		return -1;
+	}
+	sprintf((char *)sql_cmd, "select pos from prog_table where service_id = %d and ts_id = %d;", service_id,ts_id);
+
+	sqlite_ret = sqlite3_get_table(db, 
+									(const char *)sql_cmd, 
+									(char ***)&dbResult, 
+									(int *)&row, 
+									(int *)&column,
+				       				(char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) 
+		{
+	
+			return pos;
+		}
+		
+	    /*获取修改值 */ 
+	    pos = atoi((const char *)dbResult[1]);	//dbResult[0]是字段名 dbResult[1]是字段值
+	    return pos;
+}
+
+/**
+ * @brief 		获取节目的stream记录数量
+ * @param   	prog_id:节目的id
+ 	
+ * @return     	-1:发生错误
+                正常数字:stream 记录数
+ */ 
+    int32_t GxBus_PmStreamNumGet(uint32_t prog_id) 
+{
+	int32_t count = 0;
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	sprintf((char *)sql_cmd, "select count(*) from stream_table where prog_id = %d;", prog_id);
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		return -1;
+	}
+	return count;
+}
+
+
+/**
+ * @brief 		获取节目的stream记录 调用此接口之前必须调用
+ 				int32_t GxBus_PmStreamNumGet(uint32_t prog_id);先获取数量
+ * @param   	prog_id:节目的id
+ 	
+ * @return     	-1:发生错误
+                正常数字:获取的stream 记录数
+ */ 
+    int32_t GxBus_PmStreamGet(uint32_t prog_id, uint32_t num, GxBusPmDataStream * stream_arry) 
+{
+	struct gx_pm_data_get para;	//传入回调的参数
+	int32_t sqlite_ret = 0;
+	int32_t count = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	if (stream_arry == NULL) {
+		return -1;
+	}
+	sprintf((char *)sql_cmd, "select count(*) from stream_table where prog_id = %d;", prog_id);
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_data_count_get_callback, 
+				   (void *)&count, (char **)&err_msg);
+	if (((int32_t)num>count)||(sqlite_ret != SQLITE_OK)) {
+		return -1;
+	}
+	para.num = num;
+	para.stream = stream_arry;
+	sprintf((char *)sql_cmd, "select * from stream_table where prog_id = %d;", prog_id);
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_stream_data_get_callback, 
+				   (void *)&para, (char **)&err_msg);
+	count = g_count;	//获取实际得到的记录的条数
+	g_count = 0;		//清除计数值
+	if (sqlite_ret != SQLITE_OK) {
+		return -1;
+	}
+	return count;
+}
+
+
+/**
+ * @brief 		添加节目的stream记录,函数内部会先把之前的prog_id的记录全部删除
+ * @param   	prog_id:节目的id
+				num:stream信息的条数
+				stream_arry:stream信息
+
+ 	
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmStreamAdd(uint32_t prog_id, uint32_t num, GxBusPmDataStream * stream_arry) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	uint16_t i = 0;
+
+	if(stream_arry == NULL)
+	{
+		return GXCORE_ERROR;
+	}
+	
+	    /*删除prog id的stream记录 */ 
+	    sprintf((char *)sql_cmd, "delete from stream_table where prog_id = %d;", prog_id);
+	sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		return GXCORE_ERROR;
+	}
+	
+	    /*添加stream */ 
+	    for (i = 0; i < num; i++) {
+		sprintf((char *)sql_cmd, "insert into stream_table\
+							(prog_id,\
+							 audio_type,\
+							 audio_pid,\
+							 language,\
+							 ecm_pid)\
+							values(%d,%d,%d,'%s',%d);", prog_id, stream_arry[i].audio_type,stream_arry[i].audio_pid, stream_arry[i].name, stream_arry[i].ecm_pid);
+		sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) {
+			return GXCORE_ERROR;
+		}
+	}
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		获取cas的数量
+ * @param   	void
+ 	
+ * @return     	-1:发生错误
+                正常数字:cas 数
+ */ 
+    int32_t GxBus_PmCasNumGet(void)
+{
+	return MAX_CA_SYSTEM;
+}
+
+
+/**
+ * @brief 		通过位置获取cas信息
+ * @param   	pos:位置
+				Cas:cas信息
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmCasGetByPos(uint32_t pos, GxBusPmDataCasInfot * cas) 
+{
+	if (pos >= MAX_CA_SYSTEM) {
+		return GXCORE_ERROR;
+	}
+	memcpy(cas, &DefaultCaSystem[pos], sizeof(GxBusPmDataCasInfot));
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		获取节目的cas,首先得从节目中获取cas_id
+ * @param   	cas_id:cas的id
+				cas:case信息
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmCasGetById(uint32_t cas_id, GxBusPmDataCasInfot * cas) 
+{
+	uint32_t i = 0;
+	if(cas == NULL)
+	{
+		return GXCORE_ERROR;
+	}
+	for (i = 0; i < MAX_CA_SYSTEM; i++) {
+		if ((DefaultCaSystem[i].cas_id_begin <= cas_id) &&( DefaultCaSystem[i].cas_id_end >= cas_id)) {
+			memcpy(cas, &DefaultCaSystem[i], sizeof(GxBusPmDataCasInfot));
+			break;
+		}
+	}
+	if (i == MAX_CA_SYSTEM) {
+		return GXCORE_ERROR;
+	}
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		获取喜爱组的数量
+ * @param   	void
+
+ * @return     -1:发生错误
+                正常数字:获取的fav group 记录数
+ */ 
+int GxBus_PmFavGroupNumGet(void) 
+{
+	return 32;
+}
+
+
+/**
+ * @brief 		通过位置获取fav group信息
+ * @param   	pos:位置
+ 				num:所要获取的数量
+				fav_arry:cas信息
+
+ * @return     	-1:失败
+ 				正常数字:获取的真是数量
+ */ 
+    int32_t GxBus_PmFavGroupGetByPos(uint32_t pos, uint32_t num, GxBusPmDataFavItem * fav_arry) 
+{
+	struct gx_pm_data_get para;	//传入回调的参数
+	int32_t sqlite_ret = 0;
+	int32_t count = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	if ((fav_arry == NULL)) {
+		return -1;
+	}
+	para.num = num;
+	para.fav = fav_arry;
+	sprintf((char *)sql_cmd, "select * from fav_table limit %d offset %d;", num, pos);
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_fav_group_data_get_callback, 
+				   (void *)&para, (char **)&err_msg);
+	count = g_count;	//获取实际得到的记录的条数
+	g_count = 0;		//清除计数值
+	if (sqlite_ret != SQLITE_OK) {
+		return -1;
+	}
+	return count;
+}
+
+
+/**
+ * @brief 		通过id获取喜爱组信息
+ * @param   	id:喜爱组id
+				fav_arry:cas信息
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmFavGroupGetById(uint32_t id, GxBusPmDataFavItem * fav) 
+{
+	struct gx_pm_data_get para;	//传入回调的参数
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	if (fav == NULL) {
+		return GXCORE_ERROR;
+	}
+	para.num = 1;
+	para.fav = fav;
+	sprintf((char *)sql_cmd, "select * from fav_table where id = %d;", id);
+	sqlite_ret = sqlite3_exec(db, 
+				   (const char *)sql_cmd, 
+				   (sqlite3_callback) & gx_pm_fav_group_data_get_callback, 
+				   (void *)&para, (char **)&err_msg);
+	if(g_count==0)
+	{
+		return GXCORE_ERROR;
+	}
+	g_count = 0;		//清除计数值
+	if (sqlite_ret != SQLITE_OK) {
+		return GXCORE_ERROR;	//数据库读取失败
+	}
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		编辑fav参数,编辑前需要先获取原始参数 再进行修改 其中id号是
+ 				不能改动的
+ * @param   	fav:信息的指针
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmFavGroupModify(GxBusPmDataFavItem * fav) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[500];	//数据库的操作命令buffer
+	if (fav == NULL) {
+		return GXCORE_ERROR;
+	}
+	sprintf((char *)sql_cmd, "update fav_table set name = '%s'\
+							where id = %d;", fav->fav_name, fav->id);
+	sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+	if (sqlite_ret != SQLITE_OK) {
+		return GXCORE_ERROR;	//数据库修改失败
+	}
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		往一个喜爱组添加节目
+ * @param   	fav_id:喜爱组id
+				prog_id:prog的id
+				num:节目数量
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmFavGroupProgAdd(uint32_t fav_id, uint32_t * prog_id, uint32_t num) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	uint32_t i = 0;
+	if (prog_id == NULL) {
+		return GXCORE_ERROR;
+	}
+	sqlite_ret = sqlite3_exec(db, (const char *)("begin transaction"), NULL, NULL, (char **)&err_msg);	//开始一个事务
+	for (i = 0; i < num; i++) {
+		sprintf((char *)sql_cmd, "update prog_table set favorite_flag =(favorite_flag|%d)\
+							where id = %d;", 1 << (fav_id - 1), prog_id[i]);
+		sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) {
+			sqlite_ret = sqlite3_exec(db, (const char *)("rollback transaction"), NULL, NULL, (char **)&err_msg);	//发生错误回滚事务
+			return GXCORE_ERROR;	//数据库修改失败
+		}
+	}
+	sqlite_ret = sqlite3_exec(db, (const char *)("commit transaction"), NULL, NULL, (char **)&err_msg);	//提交事务
+	return GXCORE_SUCCESS;
+}
+
+
+/**
+ * @brief 		把节目从喜爱组中移除
+ * @param   	fav_id:喜爱组id
+				prog_id:prog的id
+				num:节目数量
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */ 
+    status_t GxBus_PmFavGroupProgDel(uint32_t fav_id, uint32_t * prog_id, uint32_t num) 
+{
+	int32_t sqlite_ret = 0;
+	uint8_t sql_cmd[200];	//数据库的操作命令buffer
+	uint32_t i = 0;
+	if (prog_id == NULL) {
+		return GXCORE_ERROR;
+	}
+	sqlite_ret = sqlite3_exec(db, (const char *)("begin transaction"), NULL, NULL, (char **)&err_msg);	//开始一个事务
+	for (i = 0; i < num; i++) {
+		sprintf((char *)sql_cmd, "update prog_table set favorite_flag =(favorite_flag&%d)\
+							where id = %d;", ~(1 << (fav_id - 1)), prog_id[i]);
+		sqlite_ret = sqlite3_exec(db, (const char *)sql_cmd, NULL, NULL, (char **)&err_msg);
+		if (sqlite_ret != SQLITE_OK) {
+			sqlite_ret = sqlite3_exec(db, (const char *)("rollback transaction"), NULL, NULL, (char **)&err_msg);	//发生错误回滚事务
+			return GXCORE_ERROR;	//数据库修改失败
+		}
+	}
+	sqlite_ret = sqlite3_exec(db, (const char *)("commit transaction"), NULL, NULL, (char **)&err_msg);	//提交事务
+	return GXCORE_SUCCESS;
+}
+
+/**
+ * @brief 		开始一个事务 典型应用:搜索存台时由search服务控制保存节目
+ * @param   	void
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */
+status_t GxBus_PmTransactionBegin(void)
+{
+	int32_t sqlite_ret = 0;
+
+	sqlite_ret = sqlite3_exec(db, 
+							(const char *)("begin transaction"), 
+							NULL, 
+							NULL, 
+							(char **)&err_msg);	//开始一个事务
+
+	if(sqlite_ret != SQLITE_OK)
+		
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---begin transaction err !!\n ret = %s\n",err_msg);
+		#endif
+		return GXCORE_ERROR;
+	}
+	return GXCORE_SUCCESS;
+}
+
+/**
+ * @brief 		提交一个事务 典型应用:搜索存台时由search服务控制保存节目
+ * @param   	void
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */
+status_t GxBus_PmTransactionCommit(void)
+{
+	int32_t sqlite_ret = 0;
+
+	sqlite_ret = sqlite3_exec(db, 
+							(const char *)("commit transaction"), 
+							NULL, 
+							NULL, 
+							(char **)&err_msg);	//提交一个事务
+
+	if(sqlite_ret != SQLITE_OK)
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---commit transaction err !!\n ret = %s\n",err_msg);
+		#endif
+		return GXCORE_ERROR;
+	}
+	return GXCORE_SUCCESS;
+}
+
+/**
+ * @brief 		回滚一个事务 取消开始后的事务,恢复事务开始前的状态
+ * @param   	void
+
+ * @return     	GXCORE_SUCCESS:执行正常
+ 				GXCORE_ERROR:执行失败
+ */
+status_t GxBus_PmTransactionRollback(void)
+{
+	int32_t sqlite_ret = 0;
+
+	sqlite_ret = sqlite3_exec(db, 
+							(const char *)("rollback transaction"), 
+							NULL, 
+							NULL, 
+							(char **)&err_msg);	//回滚一个事务
+
+	if(sqlite_ret != SQLITE_OK)
+	{
+		#ifdef GX_BUS_PM_DBUG
+		PM_PRINTF("[PM]---rollback transaction err !!\n ret = %s\n",err_msg);
+		#endif
+		return GXCORE_ERROR;
+	}
+	return GXCORE_SUCCESS;
+}
+

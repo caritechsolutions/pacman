@@ -1,0 +1,274 @@
+#!/bin/bash
+
+J=-j`cat /proc/cpuinfo| grep processor | wc -l`
+
+export GX_PREFIX=$(pwd)/../../library/goxceed
+
+GXSRC_PATH=$(cd `dirname $0`; pwd)
+BUILD_MODE="release"
+
+function set_build_mode() {
+	sed -i '/^SET(CMAKE_BUILD_TYPE/s/\([A-Z0-9_(]*\)/# \1/' CMakeLists.txt
+
+	if [ $BUILD_MODE = "debug" ]; then
+		sed -i '/SET(CMAKE_BUILD_TYPE/s/#[ ]*\([A-Z0-9_(]* "Debug"\)/\1/' CMakeLists.txt
+	elif [ $BUILD_MODE = "release" ]; then
+		sed -i '/SET(CMAKE_BUILD_TYPE/s/#[ ]*\([A-Z0-9_(]* "Release"\)/\1/' CMakeLists.txt
+	fi
+}
+
+function set_cross_compile() {
+	if [[ $CROSS_COMPILE = "" ]]; then
+		case "$ARCH_OS" in
+			arm-ecos)
+				CROSS_COMPILE=arm-none-eabi-
+				;;
+			arm-linux)
+				CROSS_COMPILE=arm-linux-uclibcgnueabihf-
+				;;
+			arm-nos)
+				CROSS_COMPILE=arm-none-eabi-
+				;;
+			csky-ecos)
+				CROSS_COMPILE=csky-elf-
+				;;
+			csky-linux)
+				CROSS_COMPILE=csky-linux-
+				;;
+			csky-nos)
+				CROSS_COMPILE=csky-elf-
+				;;
+			*)
+				echo "ARCH_OS = $ARCH_OS not support"
+				exit;
+		esac
+	fi
+
+	export CROSS_COMPILE=$CROSS_COMPILE
+}
+
+function set_loglevel_env() {
+	if [ "${loglevel}" == '0' ]; then
+		GX_LOGLEVEL=0
+	elif [ "${loglevel}" == '1' ]; then
+		GX_LOGLEVEL=1
+	elif [ "${loglevel}" == '3' ]; then
+		GX_LOGLEVEL=3
+	elif [ "${loglevel}" == '4' ]; then
+		GX_LOGLEVEL=4
+	elif [ "${loglevel}" == '5' ]; then
+		GX_LOGLEVEL=5
+	else
+		GX_LOGLEVEL=2
+	fi
+
+	if [ "${loglevel}" == 'flow' ]; then
+		GX_DEBUG_FLOW="-DAV_FLOW_DEBUG"
+	else
+		GX_DEBUG_FLOW=""
+	fi
+
+	export GX_LOGLEVEL GX_DEBUG_FLOW
+}
+
+function set_optimize_env() {
+	if [ "${optimize}" == 'Os' ]; then
+		GX_OPTIMIZE='Os'
+	elif [ "${optimize}" == 'O0' ]; then
+		GX_OPTIMIZE='O0'
+	else
+		GX_OPTIMIZE='O2'
+	fi
+
+	export GX_OPTIMIZE
+}
+
+function set_debughole_env() {
+	if [ "${debughole}" == '1' ]; then
+		GX_DEBUG_HOLE="-DBG_QM_MALLOC=1"
+	else
+		GX_DEBUG_HOLE=""
+	fi
+
+	export GX_DEBUG_HOLE
+}
+
+function set_debugheap_env() {
+	if [ "${debugheap}" == '1' ]; then
+		GX_DEBUG_HEAP="-DMEMORY_DEBUG"
+	else
+		GX_DEBUG_HEAP=""
+	fi
+
+	export GX_DEBUG_HEAP
+}
+
+function set_ext_cflags_env() {
+    GX_EXT_CFLAGS="${ext_cflags}"
+    export GX_EXT_CFLAGS
+}
+
+function set_ssl_lib() {
+	if [ "${ssl}" = 'openssl' ]; then
+		case "$ARCH_OS" in
+		arm-ecos|csky-ecos)
+			GX_SSLLIB='wolfssl'
+			;;
+		arm-linux|csky-linux)
+			GX_SSLLIB='openssl'
+			;;
+		*)
+			GX_SSLLIB=
+			;;
+		esac
+	else
+		case "$ARCH_OS" in
+		arm-ecos|csky-ecos|arm-linux|csky-linux)
+			GX_SSLLIB='wolfssl'
+			;;
+		*)
+			GX_SSLLIB=
+			;;
+		esac
+	fi
+
+	export GX_SSLLIB
+}
+
+function set_xml_lib() {
+	if [ "${xml}" = 'libxml2' ]; then
+		GX_XMLLIB_VERSION='libxml2'
+		echo "use libxml2 lib"
+	else
+		GX_XMLLIB_VERSION='libxml'
+		echo "use gxlibxml lib"
+	fi
+
+	export GX_XMLLIB_VERSION
+}
+
+function set_project_env() {
+	if [ "$1" == 'ota' ]; then
+		GX_PROJ='ota'
+		echo "Building OTA GxBus Config"
+	else
+		GX_PROJ='generic'
+		echo "Building Generic GxBus Config"
+	fi
+
+	export GX_PROJ
+}
+
+function build_clean() {
+	if [ $# -le 0 ]; then
+		rm -rf _build-*
+		rm -rf .buildtarget*
+	else
+		rm -rf _build-$1-$2
+		rm -rf .buildtarget_$1$2*
+	fi
+}
+
+# build <csky|arm> <ecos|linux>
+function build() {
+	ARCH=$1
+	OS=$2
+	PROJ=$3
+
+	set_project_env $PROJ
+
+	echo "*****************************************"
+	echo "     Build $ARCH $OS [$PROJ] BUS Service   "
+	echo "*****************************************"
+
+	BUILD_PATH=_build-$ARCH-$OS
+	mkdir -p $BUILD_PATH
+	cd       $BUILD_PATH
+	export ARCH_OS=$ARCH-$OS
+	set_cross_compile
+	set_ssl_lib
+	set_xml_lib
+	cmake $GXSRC_PATH || exit 1
+	cmake $GXSRC_PATH || exit 1
+	for file in $(find . -name link.txt)
+	do
+		echo "modifing file: $file"
+		sed -i -r "s/-Wl,-Bdynamic/ /g" $file
+		sed -i -r "s/-rdynamic/ /g" $file
+	done
+	make $J || exit 1
+	make $J install || exit 1
+	cd $GXSRC_PATH
+}
+
+if [[ "$1" = "debug" || "$1" = "release" ]]; then
+	BUILD_MODE=$1
+	shift 1
+fi
+
+if [[ "$1" = "mp" ]]; then
+	MULTIPROCESS="-DMULTIPROCESS"
+	export MULTIPROCESS
+	shift 1
+else
+	MULTIPROCESS=" "
+	export MULTIPROCESS
+fi
+
+set_build_mode
+if [ $# -le 1 ]; then
+	if [ "$1" = "clean" ]; then
+		build_clean
+		echo "clean ok"
+		exit 0
+	else
+		echo "[debughole=<n>] [debugheap=<n>] [loglevel=<n>] [optimize=<s>] [ssl=<s>] ./build [clean|debug|release] <csky|arm> <ecos|linux|ucos|nos> [ota]"
+		echo ""
+		echo "    [loglevel List] : "
+		echo "                  n=0    - not  print"
+		echo "                  n=1    - error print"
+		echo "                  n=2    - error info print"
+		echo "                  n=3    - error info warning print"
+		echo "                  n=4    - error info warning debug print"
+		echo "                  n=flow - error info flow print"
+		echo "    [optimize List] : "
+		echo "                  s=O0"
+		echo "                  s=O2"
+		echo "                  s=Os"
+		echo "    [debugheap list] (MEMORY_DEBUG)"
+		echo "                  n=1 - enable  debug heap"
+		echo "                  n=0 - disbale debug heap"
+		echo "    [debughole list]"
+		echo "                  n=1 - enable  debug hole"
+		echo "                  n=0 - disbale debug hole"
+		echo "    [     ssl List] : "
+		echo "                  s=openssl"
+		echo "                  s=wolfssl"
+		echo "    [     xml List] : "
+		echo "                  s=libxml2  (eg:OpenSource)"
+		echo "                  s=libxml   (Private:gx xml lib)"
+		echo ""
+		echo "    eg: ./build csky ecos"
+		echo "        ./build csky nos"
+		echo "        ./build csky ecos ota"
+		echo "        ./build csky linux"
+		echo "        ./build arm ecos"
+		echo "        ./build arm linux"
+		echo "./build clean"
+		echo "exit"
+		exit 1
+	fi
+fi
+
+set_loglevel_env
+set_optimize_env
+set_debughole_env
+set_debugheap_env
+set_ext_cflags_env
+
+BUILD_TARGET=.buildtarget_$1$2$3_${loglevel}_${optimize}_${debughole}_${debugheap}_${extcflags}
+if [[ -f .buildtarget* ]] && [[ ! -f $BUILD_TARGET ]]; then
+	build_clean $1 $2
+fi
+touch $BUILD_TARGET
+build $@

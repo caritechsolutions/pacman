@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window">
+	<property name="name" type="string" value="" hint="widget name||控件名称"/>
+	<property name="style" type="string" value="default" hint="widget style||控件风格"/>
+	<property name="rect" type="container" hint="widget postion||组件位置设置">
+		<property name="x" type="u16" value="0" hint="x position||水平坐标"/>
+		<property name="y" type="u16" value="0" hint="y position||垂直坐标"/>
+		<property name="width" type="u16" value="0" hint="widget width||宽度"/>
+		<property name="height" type="u16" value="0" hint="widget height||高度"/>
+	</property>
+	<property name="state" type="strselect" help="item||enable;disable;hide;show;focus" value="show" attr="optional" hint="widget initial state||控件初始显示状态"/>
+
+	<property name="forecolor" type="container" hint="foreground color||前景颜色设置">
+		<property name="unfocus" type="color" value="#000000" hint="unfocus color||非焦点时的颜色"/>
+		<property name="focus" type="color" value="#000000" hint="focus color||焦点时的颜色"/>
+		<property name="disable" type="color" value="#000000" hint="disable color||被禁用时的颜色"/>
+	</property>
+	<property name="backcolor" type="container" hint="background color||背景颜色设置">
+		<property name="unfocus" type="color" value="#7d9de2" hint="unfocus color||非焦点时的颜色"/>
+		<property name="focus" type="color" value="#7d9de2" hint="focus color||焦点时的颜色"/>
+		<property name="disable" type="color" value="#7d9de2" hint="disable color||被禁用时的颜色"/>
+	</property>
+	<property name="mirror" type="strselect" help="item||enable;disable" value="disable" attr="optional" hint="widget mirror state||组件镜像状态"/>
+	<property name="keypress_revert" type="strselect" help="item||enable;disable" value="disable" attr="optional" hint="key (left/right) revert state||(左右)按键反转状态"/>
+	<property name="fade_style" type="strselect" help="item||no_effect;random;slide_left;slide_right;slide_top;slide_bottom;diagonal_top_left;diagonal_top_right;diagonal_bottom_left;diagonal_bottom_right;hstep_top_left;hstep_top_right;hstep_bottom_left;hstep_bottom_right;checker_board" value="no_effect" attr="optional" hint="窗口进出渐进退特效"/>
+	<property name="fade_steps" type="u32" value="0" attr="optional" hint="渐进退步数"/>
+
+	<property name="image" type="file" value="" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||./image" attr="optional" hint="window image||窗体图片"/>
+	<property name="back_ground" type="file" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||./image" attr="optional" hint="background image||背景图片"/>
+	<property name="format" type="strselect" help="item||popup;dialog;movable" value="dialog" attr="optional" hint="background image||背景图片"/>
+	<property name="encoding" type="strselect" help="item||utf8;gb2312;gbk;big5" value="utf8" attr="optional" hint="encoding type||编码类型"/>
+	<property name="cache" type="strselect" help="item||enable;disable" value="enable" attr="optional" hint="cache||缓存"/>
+	<property name="acceralate" type="strselect" help="item||true;false" value="true" attr="optional" hint="acceralate drawing||加速绘制"/>
+	<property name="back_sync"  type="strselect" help="item||true;false" value="false" attr="optional" hint="background synchronize||背景图片同步绘制"/>
+
+	<signal name = "create" value=""/>
+	<signal name = "destroy" value=""/>
+	<signal name = "close" value=""/>
+	<signal name = "show" value=""/>
+	<signal name = "clicked" value=""/>
+	<signal name = "got_focus" value=""/>
+	<signal name = "lost_focus" value=""/>
+	<signal name = "change" value=""/>
+	<signal name = "service" value=""/>
+	<signal name = "keypress" value=""/>
+</widget>
+

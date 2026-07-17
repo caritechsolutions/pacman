@@ -1,0 +1,9 @@
+#cmakedefine HAVE_DIRENT_H
+#cmakedefine HAVE_UNISTD_H
+#cmakedefine HAVE_BCOPY
+#cmakedefine HAVE_MEMMOVE
+#cmakedefine HAVE_BYTESWAP_H
+
+#define TEST @TEST@
+
+#define CMAKE_BINARY_DIR @CMAKE_BINARY_DIR@

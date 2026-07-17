@@ -1,0 +1,27 @@
+The system is: Linux - 5.4.0-150-generic - x86_64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /opt/gcc-nationalchip-arm-none-eabi-4_9-2015q3-20150921/bin/arm-none-eabi-gcc 
+Build flags: ;-Wno-cpp;-Wno-unused-variable;-Wno-maybe-uninitialized;-Wno-attributes;-Wno-implicit-function-declaration;-Wno-aggressive-loop-optimizations;-Wno-unused-but-set-variable;-Wno-enum-compare;-Wno-sizeof-pointer-memaccess;-fgnu89-inline;-Werror;;;;;-D_GNU_SOURCE
+Id flags: -c 
+
+The output was:
+0
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.o"
+
+The C compiler identification is GNU, found in "/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/_build-arm-ecos/CMakeFiles/3.10.2/CompilerIdC/CMakeCCompilerId.o"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: /opt/gcc-nationalchip-arm-none-eabi-4_9-2015q3-20150921/bin/arm-none-eabi-g++ 
+Build flags: 
+Id flags: -c 
+
+The output was:
+0
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.o"
+
+The CXX compiler identification is GNU, found in "/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/_build-arm-ecos/CMakeFiles/3.10.2/CompilerIdCXX/CMakeCXXCompilerId.o"
+

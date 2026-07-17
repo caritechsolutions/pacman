@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf8" standalone="no"?>
+<keymap>
+	  <tree>
+    <item display="Remote Key map">
+    <item display="Remote 1" group="KEY_TONGHUI_PINGJIANG"/>
+    </item>
+    </tree>
+    <group name="KEY_TONGHUI_PINGJIANG">
+	<key name="GUIK_0">0xffaf</key>
+	<key name="GUIK_1">0xffff</key>
+	<key name="GUIK_2">0xff7f</key>
+	<key name="GUIK_3">0xffbf</key>
+	<key name="GUIK_4">0xff3f</key>
+	<key name="GUIK_5">0xffdf</key>
+	<key name="GUIK_6">0xff5f</key>
+	<key name="GUIK_7">0xff9f</key>
+	<key name="GUIK_8">0xff1f</key>
+	<key name="GUIK_9">0xffef</key>
+	<key name="GUIK_M">0xff8f</key>
+	<key name="GUIK_ESCAPE">0xff17</key><!-->KEY_EXIT<-->
+	<key name="GUIK_F5">0xffc7</key><!-->KEY_EMAIL<-->
+	<key name="GUIK_RETURN">0xff57</key><!-->KEY_OK<-->
+	<key name="GUIK_UP">0xffb7</key>
+	<key name="GUIK_DOWN">0xff37</key>
+	<key name="GUIK_LEFT">0xff77</key>
+	<key name="GUIK_RIGHT">0xfff7</key>
+	<key name="GUIK_HOME">0xffcf</key><!-->KEY_MUTE<-->
+	<key name="GUIK_R">0xffa7</key><!-->KEY_RED<-->
+	<key name="GUIK_Y">0xff97</key><!-->KEY_YELLOW<-->
+	<key name="GUIK_B">0xff87</key><!-->KEY_BLUE<-->
+	<key name="GUIK_G">0xff47</key><!-->KEY_GREEN<-->
+	<key name="GUIK_P">0xffd7</key><!-->KEY_POWER<-->
+	<key name="GUIK_I">0xff6f</key><!-->KEY_INFO<-->
+	<key name="GUIK_BACKSPACE">0xff27</key><!-->KEY_return<-->
+	<key name="GUIK_T">0xff0f</key>	<!--tv radio switch-->
+	<key name="GUIK_S">0xff4f</key>	<!--audio-->
+	<key name="GUIK_E">0xff5d</key>		<!--epg-->
+	<key name="GUIK_F">0xffdd</key>		<!--fav-->
+	<key name="GUIK_PAGE_UP">0xffe5</key>		<!--page up-->
+	<key name="GUIK_PAGE_DOWN">0xffc5</key>		<!--page down-->
+	<key name="GUIK_K">0xff67</key>		<!--search-->
+	   </group>
+</keymap>

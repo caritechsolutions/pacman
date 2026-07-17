@@ -1,0 +1,39 @@
+.wy-nav-content {
+
+    max-width: none;
+
+}
+.wy-table-responsive table td, .wy-table-responsive table th {
+    white-space: normal;
+}
+
+.wy-table-responsive {
+    margin-bottom: 24px;
+    max-width: 100%;
+    overflow: auto;
+}
+
+.align-center {
+    text-align: center;
+}
+
+/* 自定义正文行间距和字体大小 */
+/* 自定义正文字体 */
+p {
+    font-size: 18px;
+    line-height: 2;
+}
+
+/*table {
+/*    font-size: 88px;
+/*    line-height: 1.5;
+/*}
+
+/* 自定义标题字体 */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.wy-nav-content {
+    background-color: #ffffff;
+}

@@ -1,0 +1,110 @@
+{% extends "!layout.html" %}
+{% block extrahead %}
+    <link href="{{ pathto("_static/style.css", True) }}" rel="stylesheet" type="text/css">
+
+<style>
+#anchor-menu {
+  position: fixed;
+  top: 100px;
+  right: 60px;
+  z-index: 1000;
+}
+
+#anchor-menu:before {
+  content: '⚓';
+  font-size: 24px;
+  color: Black;
+}
+
+#anchor-menu ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  display: none;
+  min-width: 220px;
+  width: max-content;
+  max-height: 700px; /* 设置最大高度 */
+  overflow-y: auto; /* 设置垂直滚动条 */
+}
+
+#anchor-menu:hover ul {
+  display: block;
+}
+
+#anchor-menu ul li {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+#anchor-menu ul li:hover {
+  background-color: #f1f1f1;
+}
+
+#anchor-menu ul li a {
+  text-decoration: none;
+  color: #333;
+  display: block;
+}
+
+
+</style>
+{% endblock %}
+
+{% block extrabody %}
+<div id="anchor-menu">
+  <ul></ul>
+</div>
+
+<script>
+  function createAnchorMenu() {
+    const anchorMenu = document.getElementById('anchor-menu');
+    const anchorList = anchorMenu.querySelector('ul');
+
+  function genspace(num){
+    let spaces = "";
+    for (let i=0; i< num; i++){
+        spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
+    }
+    return spaces;
+  }
+
+  function populateAnchorList() {
+    const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    headings.forEach(heading => {
+      const anchor = heading.querySelector('a');
+      if (anchor) {
+        const listItem = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = anchor.href;
+        link.textContent = heading.textContent.replace(/¶/g, "");
+        //console.log(heading.tagName, heading.textContent);
+        link.insertAdjacentHTML("afterbegin", genspace(Number(heading.tagName.replace(/H/g, "")-1)));
+        listItem.appendChild(link);
+        anchorList.appendChild(listItem);
+      }
+    });
+  }
+
+    function showAnchorMenu() {
+      anchorMenu.style.display = 'block';
+    }
+
+    function hideAnchorMenu() {
+      anchorMenu.style.display = 'block';
+    }
+
+    anchorMenu.addEventListener('mouseover', showAnchorMenu);
+    anchorMenu.addEventListener('mouseout', hideAnchorMenu);
+
+    populateAnchorList();
+  }
+
+  document.addEventListener('DOMContentLoaded', createAnchorMenu);
+</script>
+{% endblock %}

@@ -1,0 +1,19 @@
+#ifndef __GUI_CONFIG_H__
+#define __GUI_CONFIG_H__
+
+#define CONFIG_GIF       @CONFIG_GIF@
+#define CONFIG_PNG       @CONFIG_PNG@
+#define CONFIG_JPEG      @CONFIG_JPEG@
+#define I18N_IN_REALTIME @I18N_IN_REALTIME@
+#define JPEG_SIZE        @JPEG_SIZE@
+
+#define CONFIG_TTF       @CONFIG_TTF@
+#define CONFIG_SOFT_JPEG @CONFIG_SOFT_JPEG@
+
+#if 1
+#define CONFIG_FONT_GB   @CONFIG_FONT_GB@
+#define CONFIG_FONT_BIG5 @CONFIG_FONT_BIG5@
+#define CONFIG_FONT_KSX  @CONFIG_FONT_KSX@
+#endif
+
+#endif

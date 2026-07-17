@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="canvas">
+	<property name="name" type="string" value="" hint="widget name||控件名称"/>
+	<property name="style" type="string" value="default" hint="widget style||控件风格"/>
+	<property name="rect" type="container" hint="widget postion||控件位置设置">
+		<property name="x" type="u16" value="0" hint="x position||水平坐标"/>
+		<property name="y" type="u16" value="0" hint="y postion||垂直坐标"/>
+		<property name="width" type="u16" value="60" hint="widget width||宽度"/>
+		<property name="height" type="u16" value="30" hint="widget height||高度"/>
+	</property>
+	<property name="state" type="strselect" help="item||enable;disable;hide;show;focus" value="show" attr="optional" hint="widget initial state||控件初始显示状态"/>
+
+	<property name="backcolor" type="container" hint="background color||背景颜色设置">
+		<property name="unfocus" type="color" value="#808080" hint="unfocus color||非焦点时的颜色"/>
+		<property name="focus" type="color" value="#808080" hint="focus color||焦点时的颜色"/>
+		<property name="disable" type="color" value="#808080" hint="disable color||被禁用时的颜色"/>
+	</property>
+
+	<property name="font" type="font" value="" attr="optional" hint="widget font||控件字体"/>
+	<property name="mirror" type="strselect" help="item||enable;disable" value="disable" attr="optional" hint="widget mirror state||组件镜像状态"/>
+	<property name="keypress_revert" type="strselect" help="item||enable;disable" value="disable" attr="optional" hint="key (left/right) revert state||(左右)按键反转状态"/>
+
+	<signal name = "create" value=""/>
+	<signal name = "show" value=""/>
+	<signal name = "destroy" value=""/>
+</widget>
+

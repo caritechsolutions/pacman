@@ -1,0 +1,7 @@
+CROSS_COMPILE=arm-none-eabi-
+CC     = $(CROSS_COMPILE)gcc
+CPP    = $(CROSS_COMPILE)g++
+LD     = $(CROSS_COMPILE)gcc
+AR     = $(CROSS_COMPILE)ar
+RANLIB = $(CROSS_COMPILE)ranlib
+STRIP  = $(CROSS_COMPILE)strip

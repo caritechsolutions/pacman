@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf8" standalone="no"?>
+<keymap>
+    <tree>
+      <item display="Remote Key map">
+        <item display="Remote 1" group="KEY_ANHUI"/>
+      </item>
+    </tree>
+ 	<group name="KEY_ANHUI">
+	<key name="GUIK_0">0xef4d</key>
+	<key name="GUIK_1">0xefbd</key>
+	<key name="GUIK_2">0xef7d</key>
+	<key name="GUIK_3">0xeffd</key>
+	<key name="GUIK_4">0xef9d</key>
+	<key name="GUIK_5">0xef5d</key>
+	<key name="GUIK_6">0xefdd</key>
+	<key name="GUIK_7">0xefad</key>
+	<key name="GUIK_8">0xef6d</key>
+	<key name="GUIK_9">0xefed</key>
+	<key name="GUIK_M">0xef2d</key>		<!--menu-->
+	<key name="GUIK_ESCAPE">0xeff7</key>	<!--exit-->
+	<key name="GUIK_BACKSPACE">0xefc7</key>	<!-->KEY_BACK<-->
+	<key name="GUIK_RETURN">0xef57</key>	<!-->KEY_OK<-->
+	<key name="GUIK_UP">0xefd7</key>
+	<key name="GUIK_DOWN">0xef97</key>
+	<key name="GUIK_LEFT">0xef47</key>
+	<key name="GUIK_RIGHT">0xef77</key>
+	<key name="GUIK_I">0xef8d</key>		<!--info-->
+	<key name="GUIK_PAGE_UP">0xefc5</key>		<!--page up-->
+	<key name="GUIK_PAGE_DOWN">0xef45</key>		<!--page down-->
+	<key name="GUIK_HOME">0xef1d</key><!-->KEY_MUTE<-->
+	<key name="GUIK_T">0xef15</key><!-->KEY_TV_RADIO<-->	
+	<key name="GUIK_R">0xef07</key><!-->KEY_RED<-->
+	<key name="GUIK_G">0xef27</key><!-->KEY_GREEN<-->
+	<key name="GUIK_Y">0xef17</key><!-->KEY_YELLOW<-->
+	<key name="GUIK_B">0xef37</key><!-->KEY_BLUE<-->
+	<key name="GUIK_E">0xef05</key><!-->KEY_EPG<-->
+	<key name="GUIK_P">0xef3d</key><!-->KEY_POWER<-->
+	<key name="GUIK_S">0xefe7</key><!-->KEY_TRACK<-->	
+	<key name="GUIK_Z">0xef75</key><!-->KEY_SEARCH<-->
+	<!--><key name="GUIK_PANEL_M">0xef982dd2</key><-->
+	<!--><key name="GUIK_PANEL_ESCAPE">0xef98f708</key><-->
+	<!--><key name="GUIK_PANEL_RETURN">0xef9857a8</key><-->
+	<!--><key name="GUIK_PANEL_UP">0xef98d728</key><-->
+	<!--><key name="GUIK_PANEL_DOWN">0xef989768</key><-->
+	<!--><key name="GUIK_PANEL_LEFT">0xef9847b8</key><-->
+	<!--><key name="GUIK_PANEL_RIGHT">0xef987788</key><-->
+	<!--><key name="GUIK_PANEL_P">0xef983dc2</key><-->
+	</group>
+</keymap>

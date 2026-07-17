@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf8" standalone="no"?>
+<keymap>
+    <tree>
+    <item display="Remote Key map">
+    <item display="Remote 1" group="KEY_KINGVON"/>
+    </item>
+    </tree>
+    <group name="KEY_KINGVON">
+	<key name="GUIK_0">0xff3f</key>
+	<key name="GUIK_1">0xff8f</key>
+	<key name="GUIK_2">0xff9f</key>
+	<key name="GUIK_3">0xff0f</key>
+	<key name="GUIK_4">0xffb7</key>
+	<key name="GUIK_5">0xff1f</key>
+	<key name="GUIK_6">0xff37</key>
+	<key name="GUIK_7">0xff97</key>
+	<key name="GUIK_8">0xffbf</key>
+	<key name="GUIK_9">0xff17</key>
+	<key name="GUIK_M">0xff15</key>		<!--menu-->
+	<key name="GUIK_ESCAPE">0xffd5</key>	<!--exit-->
+	<key name="GUIK_RETURN">0xffa5</key>	<!-->KEY_OK<-->
+	<key name="GUIK_UP">0xff85</key>
+	<key name="GUIK_DOWN">0xff95</key>
+	<key name="GUIK_LEFT">0xff25</key>
+	<key name="GUIK_RIGHT">0xffe5</key>
+	<key name="GUIK_I">0xfff5</key>		<!--info-->
+	<key name="GUIK_PAGE_UP">0xff87</key>		<!--page up-->
+	<key name="GUIK_PAGE_DOWN">0xff05</key>		<!--page down-->
+	<key name="GUIK_HOME">0xff2f</key><!-->KEY_MUTE<-->
+	<key name="GUIK_F11">0xff6d</key><!-->KEY_TV<-->
+	<key name="GUIK_F12">0xffed</key><!-->KEY_TV<-->
+	<key name="GUIK_BACKSPACE">0xffad</key><!-->KEY_BACK<-->	
+	<key name="GUIK_R">0xff1d</key><!-->KEY_RED<-->
+	<key name="GUIK_G">0xff9d</key><!-->KEY_GREEN<-->
+	<key name="GUIK_Y">0xff5d</key><!-->KEY_YELLOW<-->
+	<key name="GUIK_B">0xffdd</key><!-->KEY_BLUE<-->
+	<key name="GUIK_E">0xff55</key><!-->KEY_EPG<-->
+	<key name="GUIK_P">0xffaf</key><!-->KEY_POWER<-->
+	<key name="GUIK_F">0xffb5</key><!-->KEY_FAV<-->	
+	<key name="GUIK_PLUS">0xff35</key><!-->KEY_VOLUME_UP_1<-->	
+	<key name="GUIK_MINUS">0xff0d</key><!-->KEY_VOLUME_DOWN_1<-->		
+	<key name="GUIK_S">0xff8d</key><!-->KEY_TRACK<-->
+	<key name="GUIK_C">0xff75</key><!-->PRGO_LIST<-->
+	<key name="GUIK_N">0xff45</key><!-->PRGO_BOUQUET<-->
+	<key name="GUIK_F5">0xff27</key><!-->MAIL<-->
+	<key name="GUIK_Z">0xffa7</key><!-->KEY_SEARCH<-->
+	<!--><key name="GUIK_PANEL_M">0xff0015ea</key><-->
+	<!--><key name="GUIK_PANEL_ESCAPE">0xff00d52a</key><-->
+	<!--><key name="GUIK_PANEL_RETURN">0xff00a55a</key><-->
+	<!--><key name="GUIK_PANEL_UP">0xff00857a</key><-->
+	<!--><key name="GUIK_PANEL_DOWN">0xff00956a</key><-->
+	<!--><key name="GUIK_PANEL_LEFT">0xff0025da</key><-->
+	<!--><key name="GUIK_PANEL_RIGHT">0xff00e51a</key><-->
+	<!--><key name="GUIK_PANEL_P">0xff00af50</key><-->
+    </group>
+  </keymap>

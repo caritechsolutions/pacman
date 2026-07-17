@@ -1,0 +1,43 @@
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: /opt/gcc-nationalchip-arm-none-eabi-4_9-2015q3-20150921/bin/arm-none-eabi-gcc 
+Build flags: ;-Wno-cpp;-Wno-unused-variable;-Wno-maybe-uninitialized;-Wno-attributes;-Wno-implicit-function-declaration;-Wno-aggressive-loop-optimizations;-Wno-unused-but-set-variable;-Wno-enum-compare;-Wno-sizeof-pointer-memaccess;-fgnu89-inline;-Werror;;;;;-D_GNU_SOURCE
+Id flags:  
+
+The output was:
+1
+/opt/gcc-nationalchip-arm-none-eabi-4_9-2015q3-20150921/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/libc.a(lib_a-exit.o): In function `exit':
+/git/toolchains/gcc-arm-none-eabi-4_9-2015q3-20150921/src/newlib/newlib/libc/stdlib/exit.c:70: undefined reference to `_exit'
+collect2: error: ld returned 1 exit status
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /opt/gcc-nationalchip-arm-none-eabi-4_9-2015q3-20150921/bin/arm-none-eabi-g++ 
+Build flags: 
+Id flags:  
+
+The output was:
+1
+/opt/gcc-nationalchip-arm-none-eabi-4_9-2015q3-20150921/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/libc.a(lib_a-exit.o): In function `exit':
+/git/toolchains/gcc-arm-none-eabi-4_9-2015q3-20150921/src/newlib/newlib/libc/stdlib/exit.c:70: undefined reference to `_exit'
+collect2: error: ld returned 1 exit status
+
+
+Determining if the include file byteswap.h exists failed with the following output:
+Change Dir: /home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/_build-arm-ecos/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_45647/fast"
+/usr/bin/make -f CMakeFiles/cmTC_45647.dir/build.make CMakeFiles/cmTC_45647.dir/build
+make[1]: Entering directory '/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/_build-arm-ecos/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_45647.dir/CheckIncludeFile.c.o
+/opt/gcc-nationalchip-arm-none-eabi-4_9-2015q3-20150921/bin/arm-none-eabi-gcc    -o CMakeFiles/cmTC_45647.dir/CheckIncludeFile.c.o   -c /home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/_build-arm-ecos/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/_build-arm-ecos/CMakeFiles/CMakeTmp/CheckIncludeFile.c:1:22: fatal error: byteswap.h: No such file or directory
+ #include <byteswap.h>
+                      ^
+compilation terminated.
+CMakeFiles/cmTC_45647.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_45647.dir/CheckIncludeFile.c.o' failed
+make[1]: *** [CMakeFiles/cmTC_45647.dir/CheckIncludeFile.c.o] Error 1
+make[1]: Leaving directory '/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/_build-arm-ecos/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_45647/fast' failed
+make: *** [cmTC_45647/fast] Error 2
+
+

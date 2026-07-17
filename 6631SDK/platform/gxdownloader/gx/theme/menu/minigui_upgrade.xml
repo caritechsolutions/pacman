@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf8" standalone="no"?>
+<interface>
+	<!--Basic Configure-->
+	<width>1024</width>
+  	<height>576</height>
+  	<bpp>16</bpp>
+
+	<!--All of fonts-->
+	<fonts>
+		<font>
+			<name>Arial</name>
+			<file>Arial</file>
+    		</font>
+	</fonts>
+
+	<!--All of images>
+	<images>
+		<image id= "s_pvr_progress_r2" >s_pvr_progress_r2.bmp</image>
+		<image id= "s_pvr_dot_grey" >s_pvr_dot_grey.bmp</image>
+	</images-->
+
+	<images>
+		<image id= "nc_logo" >nc_logo.bmp</image>
+	</images>
+	<!--All of windows/widgets-->
+	<widget class="frame" name="win_ota_screen">
+		<property>
+			<rect>[0,0,1024,576]</rect>
+		    <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+		    <backcolor>[#0F0F0F,#0F0F0F,#0F0F0F]</backcolor>
+		</property>
+
+		<signal>
+			<create>win_ota_screen_create</create>
+			<destroy>win_ota_screen_destroy</destroy>
+		</signal>
+
+		<children>
+			<widget class="label" name="win_ota_title_label1">
+                <property>
+                    <rect>[160,160,550,45]</rect>
+                    <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                    <backcolor>[#0F0F0F,#0F0F0F,#0F0F0F]</backcolor>
+                    <font>Arial</font>
+                    <alignment>hcentre|top</alignment>
+                    <string></string>
+                </property>
+			</widget>
+
+			<widget class="label" name="win_ota_title_label2">
+                <property>
+                    <rect>[160,390,550,45]</rect>
+                    <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                    <backcolor>[#0F0F0F,#0F0F0F,#0F0F0F]</backcolor>
+                    <font>Arial</font>
+                    <alignment>hcentre|top</alignment>
+                    <string></string>
+                </property>
+			</widget>
+
+			<widget class="label" name="win_ota_title_label3">
+                <property>
+                    <rect>[100,300,550,45]</rect>
+                    <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                    <backcolor>[#0F0F0F,#0F0F0F,#0F0F0F]</backcolor>
+                    <font>Arial</font>
+                    <alignment>left|top</alignment>
+                    <string></string>
+                </property>
+            </widget>
+
+			<widget class="label" name="win_ota_logo_label">
+                <property>
+                    <rect>[420,200,180,80]</rect>
+                    <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#0F0F0F,#0F0F0F,#0F0F0F]</backcolor>
+					<img>nc_logo</img>
+                </property>
+			</widget>
+
+			<widget class="progress" name="win_ota_progress1">
+				<property>
+					<rect>[200,350,600,20]</rect>
+					<forecolor>[#0F0F0F,#0F0F0F,#0F0F0F]</forecolor>
+					<backcolor>[#FFFFFF,#FFFF00,#FFFF00]</backcolor>
+					<value>0</value>
+				</property>
+			</widget>
+
+			<widget class="label" name="win_ota_progress_labe_value1">
+                <property>
+                    <rect>[824,344,100,45]</rect>
+                    <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                    <backcolor>[#0F0F0F,#0F0F0F,#0F0F0F]</backcolor>
+                    <font>Arial</font>
+                    <alignment>left|top</alignment>
+                    <string>0%</string>
+                </property>
+            </widget>
+
+		</children>
+	</widget>
+	<!--All of windows/widgeusb-->
+    <widget class="frame" name="win_usb_list">
+        <property>
+            <rect>[0,0,1024,576]</rect>
+			<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+			<backcolor>[#0F0F0F,#0F0F0F,#0F0F0F]</backcolor>
+        </property>
+
+        <signal>
+            <create>usb_upgrade_create</create>
+            <destroy>usb_upgrade_destroy</destroy>
+        </signal>
+
+		<children>
+			<widget class="list" name="win_usb_upgrade_list">
+                <property>
+                    <rect>[100,165,824,315]</rect>
+                    <forecolor>[#4A708B,#CDB38B,#B8B8B8]</forecolor>
+                    <backcolor>[#0F0F0F,#0F0F0F,#FFFFFF]</backcolor>
+					<itemcolor>[#FFFFFF,#4D4D4D,#000000]</itemcolor>
+					<column>[0, 602]</column>
+                    <rows>7</rows>
+                    <space>2</space>
+                    <grid>2</grid>
+                    <scroll>0</scroll>
+                </property>
+			</widget>
+			<widget class="label" name="win_usb_title_label1">
+                <property>
+                    <rect>[100,120,824,43]</rect>
+                    <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                    <backcolor>[#4A708B,#4A708B,#4A708B]</backcolor>
+                    <font>Arial</font>
+                    <alignment>left|top</alignment>
+					<string>c></string>
+                </property>
+            </widget>
+
+		</children>
+    </widget>
+	<!--All of windows/widgenet-->
+	<widget class="frame" name="win_net_upgrade_list">
+		<property>
+			<rect>[0,0,1024,576]</rect>
+		    <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+		    <backcolor>[#0F0F0F,#0F0F0F,#0F0F0F]</backcolor>
+		</property>
+
+		<signal>
+			<create>net_upgrade_create</create>
+			<destroy>net_upgrade_destroy</destroy>
+		</signal>
+
+		<children>
+			<widget class="label" name="win_net_title_label1">
+                <property>
+                    <rect>[0,160,300,45]</rect>
+                    <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                    <backcolor>[#0F0F0F,#0F0F0F,#0F0F0F]</backcolor>
+                    <font>Arial</font>
+                    <alignment>hcentre|top</alignment>
+                    <string>File Name</string>
+                </property>
+			</widget>
+
+			<widget class="label" name="win_net_title_label2">
+                <property>
+                    <rect>[0,55,300,45]</rect>
+                    <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                    <backcolor>[#0F0F0F,#0F0F0F,#0F0F0F]</backcolor>
+                    <font>Arial</font>
+                    <alignment>hcentre|top</alignment>
+                    <string>IP</string>
+                </property>
+			</widget>
+
+			<widget class="label" name="win_net_title_label2">
+                <property>
+                    <rect>[223,55,300,45]</rect>
+                    <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                    <backcolor>[#0F0F0F,#0F0F0F,#0F0F0F]</backcolor>
+                    <font>Arial</font>
+                    <alignment>hcentre|top</alignment>
+                    <string>PORT</string>
+                </property>
+			</widget>
+
+			<widget class="label" name="win_net_filename_label">
+                <property>
+                    <rect>[50,200,160,45]</rect>
+                    <forecolor>[#0F0F0F,#0F0F0F,#0F0F0F]</backcolor>
+                    <backcolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                    <font>Arial</font>
+                    <alignment>hcentre|top</alignment>
+                    <string>update.bin</string>
+                </property>
+            </widget>
+
+			<widget class="label" name="win_net_ip_label">
+				<property>
+					<rect>[94,100,40,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#0F0F0F,#0F0F0F,#0F0F0F]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string>.</string>
+				</property>
+			</widget>
+
+			<widget class="label" name="win_net_ip_label1">
+				<property>
+					<rect>[159,100,40,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#0F0F0F,#0F0F0F,#0F0F0F]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string>.</string>
+				</property>
+			</widget>
+
+			<widget class="label" name="win_net_ip_label2">
+				<property>
+					<rect>[224,100,40,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#0F0F0F,#0F0F0F,#0F0F0F]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string>.</string>
+				</property>
+			</widget>
+
+			<widget class="label" name="win_net_port_label">
+				<property>
+					<rect>[296,100,40,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#0F0F0F,#0F0F0F,#0F0F0F]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string>:</string>
+				</property>
+			</widget>
+
+			<widget class="edit_box" name="win_net_edit_box">
+				<property>
+					<rect>[50,100,60,45]</rect>
+					<forecolor>[#0F0F0F,#0F0F0F,#0F0F0F]</forecolor>
+					<backcolor>[#FFFFFF,#FFFFFF,#000000]</backcolor>
+					<font>Arial</font>
+					<alignment>left|top</alignment>
+					<string></string>
+					<cursor></cursor>
+					<state></state>
+				</property>
+			</widget>
+
+			<widget class="edit_box" name="win_net_edit_box1">
+				<property>
+					<rect>[115,100,60,45]</rect>
+					<forecolor>[#0F0F0F,#0F0F0F,#0F0F0F]</forecolor>
+					<backcolor>[#FFFFFF,#FFFFFF,#000000]</backcolor>
+					<font>Arial</font>
+					<alignment>left|top</alignment>
+					<string></string>
+					<cursor></cursor>
+					<state></state>
+				</property>
+			</widget>
+
+			<widget class="edit_box" name="win_net_edit_box2">
+				<property>
+					<rect>[180,100,60,45]</rect>
+					<forecolor>[#0F0F0F,#0F0F0F,#0F0F0F]</forecolor>
+					<backcolor>[#FFFFFF,#FFFFFF,#000000]</backcolor>
+					<font>Arial</font>
+					<alignment>left|top</alignment>
+					<string></string>
+					<cursor></cursor>
+					<state></state>
+				</property>
+			</widget>
+
+			<widget class="edit_box" name="win_net_edit_box3">
+				<property>
+					<rect>[245,100,60,45]</rect>
+					<forecolor>[#0F0F0F,#0F0F0F,#0F0F0F]</forecolor>
+					<backcolor>[#FFFFFF,#FFFFFF,#000000]</backcolor>
+					<font>Arial</font>
+					<alignment>left|top</alignment>
+					<string></string>
+					<cursor></cursor>
+					<state></state>
+				</property>
+			</widget>
+
+			<widget class="edit_box" name="win_net_edit_box4">
+				<property>
+					<rect>[330,100,80,45]</rect>
+					<forecolor>[#0F0F0F,#0F0F0F,#0F0F0F]</forecolor>
+					<backcolor>[#FFFFFF,#FFFFFF,#000000]</backcolor>
+					<font>Arial</font>
+					<alignment>left|top</alignment>
+					<string></string>
+					<cursor></cursor>
+					<state></state>
+				</property>
+			</widget>
+
+		</children>
+	</widget>
+
+</interface>
+

@@ -1,0 +1,39 @@
+SET(SRC_AVOUT
+	avout/vo.c
+	avout/ao.c
+	avout/so.c
+	avout/aformat.c
+	)
+
+IF (CONFIG_VO_HW)
+	SET (SRC_AVOUT ${SRC_AVOUT} avout/vo_hw.c)
+ENDIF (CONFIG_VO_HW)
+
+IF (CONFIG_VO_FBDEV)
+	SET (SRC_AVOUT ${SRC_AVOUT} avout/vo_fbdev.c )
+ENDIF (CONFIG_VO_FBDEV)
+
+IF (CONFIG_VO_DUMMY)
+	SET (SRC_AVOUT ${SRC_AVOUT} avout/vo_dummy.c )
+ENDIF (CONFIG_VO_DUMMY)
+
+IF (CONFIG_AO_HW)
+	SET (SRC_AVOUT ${SRC_AVOUT} avout/ao_hw.c )
+ENDIF (CONFIG_AO_HW)
+
+IF (CONFIG_AO_OSS)
+	SET (SRC_AVOUT ${SRC_AVOUT} avout/ao_oss.c )
+ENDIF (CONFIG_AO_OSS)
+
+IF (CONFIG_AO_SDL)
+	SET (SRC_AVOUT ${SRC_AVOUT} avout/ao_sdl.c )
+ENDIF (CONFIG_AO_SDL)
+
+IF (CONFIG_AO_DUMMY)
+	SET (SRC_AVOUT ${SRC_AVOUT} avout/ao_dummy.c )
+ENDIF (CONFIG_AO_DUMMY)
+
+IF (CONFIG_SUBTITLE_MEDIA)
+	SET (SRC_AVOUT ${SRC_AVOUT} avout/so_text.c )
+	SET (SRC_AVOUT ${SRC_AVOUT} avout/so_image.c )
+ENDIF (CONFIG_SUBTITLE_MEDIA)

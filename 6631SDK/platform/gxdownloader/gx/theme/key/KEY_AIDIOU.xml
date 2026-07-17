@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf8" standalone="no"?>
+<keymap>
+	  <tree>
+    <item display="Remote Key map">
+    <item display="Remote 1" group="KEY_AIDIOU"/>
+    </item>
+    </tree>
+	<group name="KEY_AIDIOU">
+	<key name="GUIK_0">0xff9f</key>
+	<key name="GUIK_1">0xff6f</key>
+	<key name="GUIK_2">0xff5f</key>
+	<key name="GUIK_3">0xff7f</key>
+	<key name="GUIK_4">0xff57</key>
+	<key name="GUIK_5">0xff77</key>
+	<key name="GUIK_6">0xff4f</key>
+	<key name="GUIK_7">0xff67</key>
+	<key name="GUIK_8">0xff47</key>
+	<key name="GUIK_9">0xff87</key>
+	<key name="GUIK_M">0xffd5</key>		<!--menu-->
+	<key name="GUIK_ESCAPE">0xffcd</key>	<!--exit-->
+	<key name="GUIK_RETURN">0xffc5</key>	<!-->KEY_OK<-->
+	<key name="GUIK_UP">0xfff5</key>
+	<key name="GUIK_DOWN">0xff45</key>
+	<key name="GUIK_LEFT">0xffe5</key>
+	<key name="GUIK_RIGHT">0xffdd</key>
+	<key name="GUIK_I">0xff1f</key>		<!--info-->
+	<key name="GUIK_PAGE_UP">0xff9d</key>		<!--page up-->
+	<key name="GUIK_PAGE_DOWN">0xffbd</key>		<!--page down-->
+	<key name="GUIK_HOME">0xffff</key><!-->KEY_MUTE<-->
+	<key name="GUIK_T">0xfffd</key><!-->KEY_TV_RADIO<-->
+	<key name="GUIK_BACKSPACE">0xffbf</key><!-->KEY_BACK<-->
+	<key name="GUIK_R">0xff0d</key><!-->KEY_RED<-->
+	<key name="GUIK_G">0xff2d</key><!-->KEY_GREEN<-->
+	<key name="GUIK_Y">0xff1d</key><!-->KEY_YELLOW<-->
+	<key name="GUIK_B">0xff3d</key><!-->KEY_BLUE<-->
+	<key name="GUIK_E">0xffed</key><!-->KEY_EPG<-->
+	<key name="GUIK_P">0xffef</key><!-->KEY_POWER<-->
+	<key name="GUIK_F">0xff2f</key><!-->KEY_FAV<-->
+	<key name="GUIK_PLUS">0xffb5</key><!-->KEY_V_Format<-->
+	<key name="GUIK_MINUS">0xff25</key><!-->KEY_ZOOM<-->
+	<key name="GUIK_S">0xffad</key><!-->KEY_TRACK<-->
+	<key name="GUIK_FIND">0xffaf</key><!-->PRGO_FIND<-->
+	<key name="GUIK_SAT">0xff3f</key><!-->KEY_SAT<-->
+	<key name="GUIK_TV_VCR">0xff8d</key><!-->KEY_TV_VCR<-->
+	<key name="GUIK_F3">0xffa7</key><!-->KEY_BACKWARD-->
+	<key name="GUIK_F2">0xff97</key><!-->KEY_FORWARD-->
+	<key name="GUIK_F1">0xffb7</key><!-->KEY_PREVIEWS-->
+	<key name="GUIK_F4">0xff8f</key><!-->KEY_NEXT-->
+	<key name="GUIK_F8">0xff37</key><!-->KEY_PLAY-->
+	<key name="GUIK_F6">0xff27</key><!-->KEY_STOP-->
+	<key name="GUIK_PAUSE">0xff17</key><!-->KEY_PAUSE-->
+	<key name="GUIK_PRINT">0xff0f</key><!-->KEY_REC-->
+	<!--><key name="GUIK_PANEL_M">0xff00d52a</key><!-->
+	<!--><key name="GUIK_PANEL_ESCAPE">0xff00cd32</key><-->
+	<!--><key name="GUIK_PANEL_RETURN">0xff00c53a</key><-->
+	<!--><key name="GUIK_PANEL_UP">0xff00f50a</key><-->
+	<!--><key name="GUIK_PANEL_DOWN">0xfff0045ba</key><-->
+	<!--><key name="GUIK_PANEL_LEFT">0xff00e51a</key><-->
+	<!--><key name="GUIK_PANEL_RIGHT">0xff00dd22</key><-->
+	<!--><key name="GUIK_PANEL_P">0xff00ef10</key><-->
+	</group>
+</keymap>

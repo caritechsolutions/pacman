@@ -1,0 +1,20 @@
+[
+    {
+        "bytes": 1,
+        "name": "ota_type",
+        "type": "num",
+        "value": "0"
+    },
+    {
+        "bytes": 4,
+        "name": "sn_range_start",
+        "type": "num",
+        "value": "0x00000001"
+    },
+    {
+        "bytes": 4,
+        "name": "sn_range_end",
+        "type": "num",
+        "value": "0x00001000"
+    }
+]

@@ -1,0 +1,180 @@
+#!/bin/bash
+
+export GX_PREFIX=$(pwd)/../../library/goxceed
+export GXSRC_PATH=$(cd `dirname $0`; pwd)
+
+function set_loglevel_env() {
+	if [ "${loglevel}" == '0' ]; then
+		GX_LOGLEVEL=0
+	elif [ "${loglevel}" == '1' ]; then
+		GX_LOGLEVEL=1
+	elif [ "${loglevel}" == '3' ]; then
+		GX_LOGLEVEL=3
+	elif [ "${loglevel}" == '4' ]; then
+		GX_LOGLEVEL=4
+	elif [ "${loglevel}" == '5' ]; then
+		GX_LOGLEVEL=5
+	else
+		GX_LOGLEVEL=2
+	fi
+
+	export GX_LOGLEVEL
+}
+
+function set_optimize_env() {
+	if [ "${optimize}" == 'Os' ]; then
+		GX_OPTIMIZE='Os'
+	elif [ "${optimize}" == 'O0' ]; then
+		GX_OPTIMIZE='O0'
+	else
+		GX_OPTIMIZE='O2'
+	fi
+
+	export GX_OPTIMIZE
+}
+
+function set_ext_cflags_env() {
+    GX_EXT_CFLAGS="${ext_cflags}"
+    export GX_EXT_CFLAGS
+}
+
+function set_debughole_env() {
+	if [ "${debughole}" == '1' ]; then
+		GX_DEBUG_HOLE=1
+	else
+		GX_DEBUG_HOLE=0
+	fi
+
+	export GX_DEBUG_HOLE
+}
+function build() {
+	export ARCH=$1
+	export IMAGE=$3
+	set_loglevel_env
+	set_optimize_env
+	set_debughole_env
+	set_ext_cflags_env
+	BUILD_MODE="release"
+	export BUILD_MODE
+	CHIP=image
+
+	shift 1
+
+	for OS in $@ ; do
+		if [[ "$OS" = "ecos" || "$OS" = "linux" || "$OS" = "nos" ]]; then
+		echo "*****************************************"
+		echo "     Build $ARCH $OS GXOTA               "
+		echo "*****************************************"
+		export OS
+		export ARCH_OS=$ARCH-$OS
+		export CROSS_TOOLCHAIN=$ARCH-$OS-
+		export GXLIB_PATH=$GX_PREFIX/$ARCH_OS
+		BUILD_PATH=_build-$ARCH-$OS
+		if [ ! -d include/config ]
+		then
+			mkdir -p include/config
+		fi
+		if [ ! -d include/generated ]
+		then
+			mkdir -p include/generated
+		fi
+		if [[ ${OS} == "nos" ]]; then
+			CHIP=$2
+		elif [[ "${OS}" == "ecos" ]]; then
+			CHIP=$3
+		fi
+		if [ ! ${CHIP} ]; then
+			CHIP=image
+		fi
+		if [ ! -f .config ] || [ ! -f env.sh ]
+		then
+			if [[ "${CHIP}" = "image" ]]; then
+				make ${OS}_defconfig
+			else
+				make ${CHIP}_${OS}_defconfig
+			fi
+			echo "LAST_COMPILE_OS=${OS}" > env.sh
+			echo "LAST_CHIP=${CHIP}" >> env.sh
+			make silentoldconfig || exit 1
+		else
+			source env.sh
+			if [ ${LAST_COMPILE_OS} != ${OS} ] || [ ${LAST_CHIP} != ${CHIP} ]
+			then
+				if [[ "${CHIP}" = "image" ]]; then
+					make ${OS}_defconfig
+				else
+					make ${CHIP}_${OS}_defconfig
+				fi
+				echo "LAST_COMPILE_OS=${OS}" > env.sh
+				echo "LAST_CHIP=${CHIP}" >> env.sh
+				make silentoldconfig || exit 1
+			fi
+		fi
+		mkdir -p $BUILD_PATH
+		cd $BUILD_PATH
+		cmake ../gx || exit 1
+		make $J || exit 1
+		make install || exit 1
+		cd ..
+		case "$OS" in
+			ecos)
+				if [[ ${IMAGE} = image ]]
+				then
+					make clean || exit 1
+					make gxota.bin|| exit 1
+				fi
+				;;
+			linux)
+				;;
+			nos)
+				make clean || exit 1
+				make gxota.bin|| exit 1
+				;;
+			*)
+				echo "EORROR OS: $1"
+				exit 1
+				;;
+		esac
+		fi
+
+	done
+}
+
+if [ $# -le 1 ]; then
+	if [ "$1" = "clean" ]; then
+		rm -rf _build-*
+		rm -f .config
+		rm -rf include/generated
+		rm -rf include/config
+		make clean || exit 1
+		exit 0
+	else
+		echo "[debughole=<n>] [loglevel=<n>] [optimize=<s>] ./build [clean] <csky|arm> <ecos|linux|nos> [image] [CHIP]"
+		echo ""
+		echo "    [loglevel List] : "
+		echo "                  n=0    - not  print"
+		echo "                  n=1    - error print"
+		echo "                  n=2    - error info print"
+		echo "                  n=3    - error info warning print"
+		echo "                  n=4    - error info warning debug print"
+		echo "                  n=flow - error info flow print"
+		echo "    [optimize List] : "
+		echo "                  s=O0"
+		echo "                  s=O2"
+		echo "                  s=Os"
+		echo "    [debughole list]"
+		echo "                  n=1 - enable  debug hole"
+		echo "                  n=0 - disbale debug hole"
+		echo ""
+		echo "    eg: ./build csky nos"
+		echo "        ./build csky nos gx3211"
+		echo "        ./build csky ecos"
+		echo "        ./build csky ecos image"
+		echo "        ./build csky ecos image gx3211"
+		echo "        ./build arm linux"
+		echo "        ext_cflags=-mfloat-abi=hard ./build arm ecos"
+		exit 1
+	fi
+fi
+
+build $@

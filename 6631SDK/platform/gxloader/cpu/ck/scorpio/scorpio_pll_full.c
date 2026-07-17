@@ -1,0 +1,654 @@
+/** 
+ ***********************************************************************
+ *                          CONFIDENTIAL                               *
+ *        Hangzhou Nationalchip Science and Technology Co. Ltd.        *
+ *                       All Rights Reserved.                          *
+ ***********************************************************************
+ * @file pll_mini.c
+ * @brief 
+ * @author leo
+ * @date 2023-11-13
+ */
+
+#include <gxhwlib_registers.h>
+#include "cpu_config.h"
+
+#ifndef CLKMGR_VERI// Default
+  #define MY_PRINTF(...) 
+  #define MY_SVSETSCOPE() 
+  #define MY_XTAL_FREQ     24
+#else // ForClockManagerVerify
+  #include <svdpi.h>
+  extern int get_xtal_define(); 
+  ///scope
+  svScope my_scope;
+  #define MY_PRINTF(...)  io_printf(__VA_ARGS__)
+  #define MY_SVSETSCOPE() svSetScope(my_scope)
+  #define MY_XTAL_FREQ    get_xtal_define()
+  void save_my_scope(){
+    my_scope = svGetScope();
+    MY_PRINTF("cpu_config_task scope %s\n",svGetNameFromScope(svGetScope()));  }
+#endif
+
+static void cpu_config_write(unsigned int addr,unsigned int data,unsigned int prot)
+{
+  volatile unsigned int *point;
+
+  point = (unsigned int *)(addr+GX_REG_VIRTUAL_BASE1);
+  *point = data;
+}
+
+static void cpu_config_read(unsigned int *data,unsigned int addr,unsigned int prot)
+{
+  volatile unsigned int *point;
+
+  point = (unsigned int *)(addr+GX_REG_VIRTUAL_BASE1);
+  *data = *point;
+}
+
+static void cpu_delay_cycle(unsigned int n)
+{
+  SDelay(n);
+}
+
+static void cpu_write(unsigned int addr, unsigned int data){
+  cpu_config_write(addr, data, 0);
+  //MY_PRINTF("cpu_config_write, addr=[%0x], data=[%0x]... \n", addr, data);
+}
+
+static void cpu_read(unsigned int addr, unsigned int *data){
+  cpu_config_read(data, addr, 0);
+  //MY_PRINTF("cpu_config_read, addr=[%0x], data=[%0x]... \n", addr, *data);
+}
+
+extern void serial_put_no_mmu(char);
+extern void serial_init(int, int);
+
+//scorpio
+#define COLD_RESET_REG_ADDR      (CONFIG_BASE + CONFIG_MPEG_CLD_RST_NORM)
+#define COLD_RST_SET_ADDR        (CONFIG_BASE + CONFIG_MPEG_CLD_RST_1SET)
+#define COLD_RST_CLEAR_ADDR      (CONFIG_BASE + CONFIG_MPEG_CLD_RST_1CLR)
+#define HOT_RST_REG_ADDR         (CONFIG_BASE + CONFIG_MPEG_HOT_RST_NORM)
+#define HOT_RST_SET_ADDR         (CONFIG_BASE + CONFIG_MPEG_HOT_RST_1SET)
+#define HOT_RST_CLEAR_ADDR       (CONFIG_BASE + CONFIG_MPEG_HOT_RST_1CLR)
+#define CLOCK_GATE_REG0_ADDR     (CONFIG_BASE + CONFIG_CLOCK_GATE_REG0)
+#define CLOCK_GATE_SET0_ADDR     (CONFIG_BASE + CONFIG_CLOCK_GATE_SET0)
+#define CLOCK_GATE_CLEAR0_ADDR   (CONFIG_BASE + CONFIG_CLOCK_GATE_CLEAR0)
+#define CLOCK_GATE_REG2_ADDR     (CONFIG_BASE + CLOCK_GATE_CONFIG2_REG)
+#define CLOCK_GATE_SET2_ADDR     (CONFIG_BASE + CLOCK_GATE_CONFIG2_REG_1SET)
+#define CLOCK_GATE_CLEAR2_ADDR   (CONFIG_BASE + CLOCK_GATE_CONFIG2_REG_1CLR)
+#define CLOCK_GATE_REG3_ADDR     (CONFIG_BASE + CLOCK_GATE_REG3)
+#define CLOCK_GATE_SET3_ADDR     (CONFIG_BASE + CLOCK_GATE_SET3)
+#define CLOCK_GATE_CLEAR3_ADDR   (CONFIG_BASE + CLOCK_GATE_CLEAR3)
+#define CLOCK_GATE_REG4_ADDR     (CONFIG_BASE + CLOCK_GATE_REG4)
+#define CLOCK_GATE_SET4_ADDR     (CONFIG_BASE + CLOCK_GATE_SET4)
+#define CLOCK_GATE_CLEAR4_ADDR   (CONFIG_BASE + CLOCK_GATE_CLEAR4)
+#define DTO_CONFIG1_ADDR         (CONFIG_BASE + CONFIG_DTO1_CONFIG)
+#define DTO_CONFIG2_ADDR         (CONFIG_BASE + CONFIG_DTO2_CONFIG)
+#define DTO_CONFIG10_ADDR        (CONFIG_BASE + CONFIG_DTO10_CONFIG)
+#define DTO_CONFIG11_ADDR        (CONFIG_BASE + CONFIG_DTO11_CONFIG)
+#define DTO_CONFIG12_ADDR        (CONFIG_BASE + CONFIG_DTO12_CONFIG)
+#define DTO_CONFIG13_ADDR        (CONFIG_BASE + CONFIG_DTO13_CONFIG)
+#define DTO_CONFIG15_ADDR        (CONFIG_BASE + CONFIG_DTO15_CONFIG) // [M:1117] 0x5c->0x60
+#define PLL_LOCK_IN_ADDR         (CONFIG_BASE + CONFIG_PLL_CONFIG_IN)
+#define CLOCK_DIV_CONFIG1_ADDR   (CONFIG_BASE + CONFIG_CLOCK_DIV_CONFIG)
+#define CLOCK_DIV_CONFIG2_ADDR   (CONFIG_BASE + CONFIG_CLOCK_DIV_CONFIG2)
+#define CLOCK_DIV_CONFIG3_ADDR   (CONFIG_BASE + CONFIG_CLOCK_DIV_CONFIG3)
+#define CLOCK_DIV_CONFIG4_ADDR   (CONFIG_BASE + CONFIG_DIV4_CONFIG)
+#define CLOCK_DIV_CONFIG5_ADDR   (CONFIG_BASE + CONFIG_DIV5_CONFIG)
+#define CLOCK_DIV_CONFIG6_ADDR   (CONFIG_BASE + CONFIG_DIV6_CONFIG)
+#define CLOCK_DIV_CONFIG7_ADDR   (CONFIG_BASE + CONFIG_DIV7_CONFIG)
+#define CLOCK_DIV_CONFIG8_ADDR   (CONFIG_BASE + CONFIG_DIV8_CONFIG)
+#define CLOCK_SOURCE1_ADDR       (CONFIG_BASE + CONFIG_SOURCE1_SEL)
+#define CLOCK_SOURCE2_ADDR       (CONFIG_BASE + CONFIG_SOURCE2_SEL)
+#define CLOCK_SOURCE3_ADDR       (CONFIG_BASE + CONFIG_SOURCE3_SEL)
+
+#define DTO_PLL_CONFIG_ADDR      (CONFIG_BASE + CONFIG_PLL1_CONFIG)
+#define DDR_PLL_CONFIG_ADDR      (CONFIG_BASE + CONFIG_PLL2_CONFIG)
+#define CPU_PLL_CONFIG_ADDR      (CONFIG_BASE + CONFIG_PLL3_CONFIG)
+
+
+struct reg_field{
+  unsigned int addr;
+  unsigned int site;
+  unsigned int bits;
+  unsigned int data;
+};
+
+struct Reg{
+  unsigned int addr;
+  unsigned int data;
+  unsigned int active;
+  unsigned int modify;
+};
+
+static struct Reg reg_array[40]; // Real:35
+static struct reg_field
+  clk_gate_table[] = {
+#if 0
+  { CLOCK_GATE_REG3_ADDR  , 20,  1, 0x0 }, // clock_arm_core_pre_en
+  { CLOCK_GATE_REG0_ADDR  , 28,  1, 0x0 }, // clock_denali_phy_en
+  { CLOCK_GATE_REG0_ADDR  , 27,  1, 0x0 }, // clock_denali_controller_en
+  { CLOCK_GATE_REG0_ADDR  , 16,  1, 0x0 }, // clock_APB2_2_en
+  { CLOCK_GATE_REG0_ADDR  , 15,  1, 0x0 }, // clock_APB2_0_en
+  { CLOCK_GATE_REG2_ADDR  , 12,  1, 0x0 }, // clock_scpu_en
+  { CLOCK_GATE_REG2_ADDR  , 11,  1, 0x0 }, // clock_APB2_4_en
+  { CLOCK_GATE_REG3_ADDR  , 21,  1, 0x0 }, // clock_ahb_pre_en
+  { CLOCK_GATE_REG3_ADDR  , 19,  1, 0x0 }, // clock_scpu_pre_en
+  { CLOCK_GATE_REG3_ADDR  , 16,  1, 0x0 }, // clock_apb2_4_pre_en
+  { CLOCK_GATE_REG3_ADDR  , 15,  1, 0x0 }, // clock_apb2_2_pre_en
+  { CLOCK_GATE_REG3_ADDR  ,  7,  1, 0x0 }, // clock_apb2_0_pre_en
+  { CLOCK_GATE_REG4_ADDR  ,  1,  1, 0x0 }, // clock_ssi_pre_en
+  { CLOCK_GATE_REG4_ADDR  ,  2,  1, 0x0 }, // clock_ssi_en
+#endif
+
+  //scorpio
+  { CLOCK_GATE_REG3_ADDR  , 22,  1, 0x1 }, // clock_ga_pre_en
+  //{ CLOCK_GATE_REG3_ADDR  , 18,  1, 0x0 }, // clock_dvb_ts_pre_en //[M:1123] hdl del
+  { CLOCK_GATE_REG3_ADDR  , 17,  1, 0x0 }, // clock_usb_pre_en
+  { CLOCK_GATE_REG3_ADDR  , 14,  1, 0x1 }, // clock_demux_stc_pre_en
+  { CLOCK_GATE_REG3_ADDR  , 13,  1, 0x1 }, // clock_demux_pre_en
+  { CLOCK_GATE_REG3_ADDR  , 12,  1, 0x0 }, // clock_secure_ctrl_pre_en
+  { CLOCK_GATE_REG3_ADDR  , 11,  1, 0x1 }, // clock_audio_decoder_pre_en
+  { CLOCK_GATE_REG3_ADDR  , 10,  1, 0x1 }, // clock_pp_pre_en
+  { CLOCK_GATE_REG3_ADDR  ,  9,  1, 0x1 }, // clock_jpeg_decoder_pre_en
+  { CLOCK_GATE_REG3_ADDR  ,  8,  1, 0x1 }, // clock_video_decoder_pre_en
+  { CLOCK_GATE_REG3_ADDR  ,  6,  1, 0x1 }, // clock_video_pixel1_pre_en
+  { CLOCK_GATE_REG3_ADDR  ,  5,  1, 0x1 }, // clock_video_pixel_pre_en
+  { CLOCK_GATE_REG3_ADDR  ,  4,  1, 0x1 }, // clock_lodac_audio_pre_en
+  { CLOCK_GATE_REG3_ADDR  ,  3,  1, 0x1 }, // clock_srl_audio_play_pre_en
+  { CLOCK_GATE_REG3_ADDR  ,  2,  1, 0x1 }, // clock_spd1_audio_play_pre_en
+  { CLOCK_GATE_REG3_ADDR  ,  1,  1, 0x1 }, // clock_spd0_audio_play_pre_en
+  { CLOCK_GATE_REG0_ADDR  , 31,  1, 0x1 }, // dvb_adc_clk_gen_en
+  { CLOCK_GATE_REG0_ADDR  , 30,  1, 0x1 }, // clock_vdac1_en  [1123] hdl update
+  { CLOCK_GATE_REG0_ADDR  , 29,  1, 0x1 }, // clock_adc_en
+  { CLOCK_GATE_REG0_ADDR  , 26,  1, 0x0 }, // clock_ahb_mac_en
+  { CLOCK_GATE_REG0_ADDR  , 25,  1, 0x0 }, // clock_ahb_usb_en
+  { CLOCK_GATE_REG0_ADDR  , 23,  1, 0x1 }, // clock_video_hdmi_sfr_en
+  { CLOCK_GATE_REG0_ADDR  , 22,  1, 0x1 }, // clock_video_hdmi_icec_en
+  { CLOCK_GATE_REG0_ADDR  , 21,  1, 0x0 }, // clock_secure_ctrl_en
+  { CLOCK_GATE_REG0_ADDR  , 20,  1, 0x0 }, // clock_usb_12m_en
+  { CLOCK_GATE_REG0_ADDR  , 19,  1, 0x0 }, // clock_usb_48m_en
+  { CLOCK_GATE_REG0_ADDR  , 18,  1, 0x0 }, // clock_usb_mac_en
+  { CLOCK_GATE_REG0_ADDR  , 17,  1, 0x0 }, // clock_usb1_mac_en
+  { CLOCK_GATE_REG0_ADDR  , 14,  1, 0x1 }, // clock_demux_stc_en
+  { CLOCK_GATE_REG0_ADDR  , 13,  1, 0x1 }, // clock_demux_sys_en
+  { CLOCK_GATE_REG0_ADDR  , 12,  1, 0x1 }, // clock_ga_en
+  { CLOCK_GATE_REG0_ADDR  , 11,  1, 0x1 }, // clock_audio_decoder_en
+  { CLOCK_GATE_REG0_ADDR  , 10,  1, 0x1 }, // clock_pp_en
+  { CLOCK_GATE_REG0_ADDR  ,  9,  1, 0x1 }, // clock_jpeg_decoder_en
+  { CLOCK_GATE_REG0_ADDR  ,  8,  1, 0x1 }, // clock_video_decoder_en
+  { CLOCK_GATE_REG0_ADDR  ,  7,  1, 0x1 }, // clock_video_pixel1_en
+  { CLOCK_GATE_REG0_ADDR  ,  6,  1, 0x1 }, // clock_video_pixel1_double_en
+  { CLOCK_GATE_REG0_ADDR  ,  5,  1, 0x1 }, // clock_video_pixel_hdmi_en
+  { CLOCK_GATE_REG0_ADDR  ,  4,  1, 0x1 }, // clock_video_pixel_en
+  { CLOCK_GATE_REG0_ADDR  ,  3,  1, 0x1 }, // clock_audio_lodac_en
+  //{ CLOCK_GATE_REG0_ADDR  ,  2,  1, 0x0 }, // clock_video_pixel_dcs_en
+  { CLOCK_GATE_REG0_ADDR  ,  1,  1, 0x1 }, // clock_spd0_audio_play_en
+  { CLOCK_GATE_REG0_ADDR  ,  0,  1, 0x1 }, // clock_srl_audio_play_en
+
+  //{ CLOCK_GATE_REG2_ADDR  , 14,  1, 0x0 }, // clock_video_up_sample_en
+  { CLOCK_GATE_REG2_ADDR  , 13,  1, 0x0 }, // clock_ahb_secure_en
+  { CLOCK_GATE_REG2_ADDR  ,  9,  1, 0x1 }, // clock_pidfilter_sys_en
+  // { CLOCK_GATE_REG2_ADDR  ,  8,  1, 0x0 }, // clock_ts_base_en   //[M:1123] hdl del
+  { CLOCK_GATE_REG2_ADDR  ,  7,  1, 0x1 }, // clock_video_pixel_double_en
+  { CLOCK_GATE_REG2_ADDR  ,  5,  1, 0x1 }, // clock_denali_controller_video_en
+  { CLOCK_GATE_REG2_ADDR  ,  3,  1, 0x0 }, // clock_denali_controller_apu_en
+  { CLOCK_GATE_REG2_ADDR  ,  2,  1, 0x1 }, // clock_denali_controller_vpu_en
+  { CLOCK_GATE_REG2_ADDR  ,  0,  1, 0x1 }, // clock_denali_controller_pp_en
+
+  { CLOCK_GATE_REG3_ADDR  , 24,  1, 0x1 }, // clock_dem_l_en
+  { CLOCK_GATE_REG3_ADDR  , 23,  1, 0x1 }, // clock_dvbs_osc_en
+  { CLOCK_GATE_REG3_ADDR  ,  0,  1, 0x1 }, // clock_spd1_audio_play_en
+  { CLOCK_GATE_REG4_ADDR  ,  4,  1, 0x1 }, // clock_hdcp_en
+  { CLOCK_GATE_REG4_ADDR  ,  3,  1, 0x1 }, // clock_audio_play_ahb_en 
+  { CLOCK_GATE_REG4_ADDR  ,  0,  1, 0x1 }, // clock_jepg_axi_en
+
+  //{ CLOCK_SOURCE2_ADDR    , 18,  1, 0x1 }, // ts_clk_3_edge       EDGE 
+  //{ CLOCK_SOURCE2_ADDR    , 17,  1, 0x1 }, // ts_clk_2_edge       EDGE 
+  //{ CLOCK_SOURCE2_ADDR    , 16,  1, 0x1 }, // ts_clk_1_edge       EDGE  
+  //{ CLOCK_SOURCE2_ADDR    , 15,  1, 0x1 }  // ts_clk_0_edge       EDGE 
+},clk_mux_table[] = {
+// pll_mini
+#if 0
+  { CLOCK_SOURCE1_ADDR    , 24,  1, 0x1 }, // clock_cpu_sel
+  { CLOCK_SOURCE3_ADDR    ,  7,  1, 0x0 }, // clock_pll_dto_cpu_sel // 0112, 1->0, update for rtl 1228
+  { CLOCK_SOURCE1_ADDR    , 26,  1, 0x1 }, // clock_denali_sel
+  { CLOCK_SOURCE1_ADDR    , 25,  1, 0x1 }, // clock_ddr_sel
+  { CLOCK_SOURCE1_ADDR    , 21,  1, 0x1 }, // clock_APB2_4_sel
+  { CLOCK_SOURCE1_ADDR    , 20,  1, 0x1 }, // clock_APB2_2_sel
+  { CLOCK_SOURCE1_ADDR    , 19,  1, 0x1 }, // clock_APB2_0_sel
+  { CLOCK_SOURCE2_ADDR    , 19,  1, 0x1 }, // clock_scpu_source
+  { CLOCK_SOURCE3_ADDR    ,  6,  1, 0x1 }, // clock_ssi_source
+#endif
+
+  //scorpio
+  { CLOCK_SOURCE3_ADDR    , 10,  1, 0x1 }, // clock_pp_mux_sel       // 0504, Add axi2_aclk_div2 -> pp 
+  { CLOCK_SOURCE3_ADDR    ,  9,  1, 0x1 }, // clock_jpeg_mux_sel     // 0504, Add axi2_aclk_div2 -> jpeg
+  { CLOCK_SOURCE3_ADDR    ,  8,  1, 0x0 }, // clock_pll_cpu_dto_sel  // 0814 ->0 ,USE CPU
+  { CLOCK_SOURCE3_ADDR    ,  5,  1, 0x1 }, // denali_apu_source
+  { CLOCK_SOURCE3_ADDR    ,  4,  1, 0x1 }, // denali_video_source  not select PLL_DDR
+  { CLOCK_SOURCE3_ADDR    ,  3,  1, 0x1 }, // denali_vpu_source    not select PLL_DDR
+  { CLOCK_SOURCE3_ADDR    ,  2,  1, 0x1 }, // denali_pp_source
+  //{ CLOCK_SOURCE3_ADDR    ,  1,  1, 0x1 }, // clock_ahb_source
+  { CLOCK_SOURCE3_ADDR    ,  0,  1, 0x1 }, // clock_spd1_audio_play_source
+
+  { CLOCK_SOURCE1_ADDR    , 31,  1, 0x1 }, // dvbc_adc_sel
+  //{ CLOCK_SOURCE1_ADDR    , 30,  1, 0x1 }, // adc_clk_sel1
+  { CLOCK_SOURCE1_ADDR    , 29,  1, 0x1 }, // adc_clk_sel0
+  { CLOCK_SOURCE1_ADDR    , 18,  1, 0x1 }, // clock_demux_stc_sel
+  { CLOCK_SOURCE1_ADDR    , 17,  1, 0x1 }, // clock_demux_sys_sel
+  { CLOCK_SOURCE1_ADDR    , 16,  1, 0x1 }, // clock_ga_sel
+  { CLOCK_SOURCE1_ADDR    , 15,  1, 0x1 }, // clock_audio_decoder_sel
+  { CLOCK_SOURCE1_ADDR    , 14,  1, 0x1 }, // clock_pp_sel
+  { CLOCK_SOURCE1_ADDR    , 13,  1, 0x1 }, // clock_jpeg_decoder_sel
+  { CLOCK_SOURCE1_ADDR    , 12,  1, 0x1 }, // clock_video_decoder_sel
+  //{ CLOCK_SOURCE1_ADDR    ,  8,  1, 0x1 }, // clock_dac_sel1
+  //{ CLOCK_SOURCE1_ADDR    ,  7,  1, 0x1 }, // clock_hdmi_sel
+  { CLOCK_SOURCE1_ADDR    ,  6,  1, 0x1 }, // clock_pll_pixel1_double_sel
+  { CLOCK_SOURCE1_ADDR    ,  5,  1, 0x1 }, // clock_pll_pixel_double_sel
+  { CLOCK_SOURCE1_ADDR    ,  3,  1, 0x1 }, // clock_secure_sel
+  { CLOCK_SOURCE1_ADDR    ,  2,  1, 0x1 }, // clock_spd0_audio_play_sel
+  { CLOCK_SOURCE1_ADDR    ,  1,  1, 0x1 }, // clock_srl_audio_play_sel
+  { CLOCK_SOURCE1_ADDR    ,  0,  1, 0x0 }, // clock_audio_lodec_sel
+
+  // { CLOCK_SOURCE2_ADDR    ,  6,  1, 0x1 }, // clock_vpu_dac_soure INV 
+  // { CLOCK_SOURCE2_ADDR    ,  9,  1, 0x1 }, // adc_clk_inv_sel     INV
+  // { CLOCK_SOURCE2_ADDR    , 10,  1, 0x1 }, // clock_ADC_clk_edge  INV 
+  // { CLOCK_SOURCE2_ADDR    , 20,  1, 0x1 }, // cfg_bitosync_inv    INV 
+  // { CLOCK_SOURCE2_ADDR    , 21,  1, 0x1 }, // clock_ts_base_source  //[M:1123] hdl del
+  { CLOCK_SOURCE2_ADDR    , 14,  1, 0x1 }, // ts_clk_3_source
+  { CLOCK_SOURCE2_ADDR    , 13,  1, 0x1 }, // ts_clk_2_source
+  { CLOCK_SOURCE2_ADDR    , 12,  1, 0x1 }, // ts_clk_1_source
+  { CLOCK_SOURCE2_ADDR    , 11,  1, 0x1 }, // ts_clk_0_source
+  { CLOCK_SOURCE2_ADDR    ,  8,  1, 0x1 }, // clock_dem_l_source
+  //{ CLOCK_SOURCE2_ADDR    ,  7,  1, 0x1 }, // clock_svpu_dac_soure
+  //{ CLOCK_SOURCE2_ADDR    ,  6,  1, 0x1 }, // clock_vdac1_sel  // [1123] hdl update // INV
+  { CLOCK_SOURCE2_ADDR    ,  4,  1, 0x1 }, // clock_usb_12m_source
+  { CLOCK_SOURCE2_ADDR    ,  3,  1, 0x1 }, // clock_usb_48m_source
+  { CLOCK_SOURCE2_ADDR    ,  2,  1, 0x1 }, // clock_usb1_mac_source
+  { CLOCK_SOURCE2_ADDR    ,  1,  1, 0x1 }, // clock_usb_mac_source
+  { CLOCK_SOURCE2_ADDR    ,  0,  1, 0x1 }  // clock_usb_source
+},clk_div_table[] = {
+// pll_mini
+#if 0
+  { CLOCK_DIV_CONFIG2_ADDR,  0,  4, 0x03 }, // cpu_clk_div_ratio_core_config          clock_DTO_CPU[594MHZ] -> 198MHZ
+  { CLOCK_DIV_CONFIG2_ADDR,  4,  4, 0x07 }, // ck_clk_div_ratio_core                  clock_DTO_CPU[594MHZ] -> 118.8MHZ //[M:1117] DIV_ADDR7->DIV_ADDR2
+  { CLOCK_DIV_CONFIG5_ADDR, 24,  6, 0x08 }, // scpu_clk_div_config                    1188MHZ -> 148.5MHZ //[M:0130] 1188MHZ -> 132MHZ
+  { CLOCK_DIV_CONFIG7_ADDR,  0,  6, 0x05 }, // ssi_clk_div_ratio                      1188MHZ -> 198MHZ
+#endif
+
+  { CLOCK_DIV_CONFIG1_ADDR,  8,  3, 0x00 }, // clock_pixel_gate_div_config            148.5*2 -> 148.5MHZ //[M:1115] 148.5MHZ->148.5MHZ
+  { CLOCK_DIV_CONFIG3_ADDR,  0,  3, 0x01 }, // clock_pixel_gate_div_config            27MHZ ->  13.5MHZ //[M:1117] site,2->0 bits,1->3
+  //scorpio
+  { CLOCK_DIV_CONFIG1_ADDR, 24,  6, 0x05 }, // audio_lodac_div_config                 667MHZ  -> 99MHZ ?? [M:1117] 648MHZ -> 108MHZ
+  { CLOCK_DIV_CONFIG1_ADDR, 16,  6, 0x2B }, // svpu_pix_clk_div_config                1188MHZ -> 27MHZ
+  { CLOCK_DIV_CONFIG1_ADDR,  0,  6, 0x07 }, // vpu_pix_clk_div_config                 1188MHZ -> 148.5*2  //[M:1115] 1188MHZ -> 148.5MHZ
+
+  { CLOCK_DIV_CONFIG2_ADDR, 24,  6, 0x08 }, // dvb_clk3_div_config dem_clk_l adc_clk  1188MHZ -> 66MHZ | 540MHZ->60MHZ(0814)
+  { CLOCK_DIV_CONFIG2_ADDR,  8,  6, 0x02 }, // dvb_clk1_div_config                    567MHZ  -> 170MHZ ???//SCAN_MODE
+
+  { CLOCK_DIV_CONFIG3_ADDR, 24,  6, 0x03 }, // usb12m_div_config                      USB PHY[48MHZ] -> 12MHZ
+  //{ CLOCK_DIV_CONFIG3_ADDR,  8,  6, 0x03 }, // ts_base_div_config                     1188MHZ -> 297MHZ  //[M:1123] hdl del
+
+  { CLOCK_DIV_CONFIG4_ADDR, 24,  6, 0x04 }, // audio_decoder_clk_div_config           1188MHZ -> 237.6MHZ 
+  { CLOCK_DIV_CONFIG4_ADDR, 16,  6, 0x07 }, // pp_clk_div_config                      1188MHZ -> 148.5MHZ 
+  { CLOCK_DIV_CONFIG4_ADDR,  8,  6, 0x07 }, // jpeg_decoder_clk_div_config            1188MHZ -> 148.5MHZ 
+  { CLOCK_DIV_CONFIG4_ADDR,  0,  6, 0x05 }, // video_decoder_clk_div_config           1188MHZ -> 198MHZ 
+
+  { CLOCK_DIV_CONFIG5_ADDR, 16,  6, 0x0a }, // demux_stc_clk_div_config               1188MHZ -> 108MHZ
+  { CLOCK_DIV_CONFIG5_ADDR,  8,  6, 0x06 }, // demux_sys_clk_div_config               1188MHZ -> 169.7MHZ ??? //差一点点
+  { CLOCK_DIV_CONFIG5_ADDR,  0,  6, 0x08 }, // secure_clk_div_config                  1188MHZ -> 148.5MHZ //[M:0130] 1188MHZ -> 132MHZ
+
+  //{ CLOCK_DIV_CONFIG6_ADDR,  8,  6, 0x00 }, // ahb_clk_div_config
+  { CLOCK_DIV_CONFIG6_ADDR,  0,  6, 0x05 }, // ga_clk_div_config                      1188MHZ -> 198MHZ
+
+  { CLOCK_DIV_CONFIG8_ADDR, 24,  6, 0x06 }, // apu_hclk_div_ratio                     1188MHZ -> 198MHZ //[M:0130] 1188MHZ -> 169.7MHZ
+  { CLOCK_DIV_CONFIG8_ADDR, 16,  6, 0x03 }, // video_aclk_div_ratio                   1188MHZ -> 324MHZ ?? 648MHZ -> 324MHZ  // 1188MHZ -> 297MHZ
+  { CLOCK_DIV_CONFIG8_ADDR,  8,  6, 0x03 }, // vpu_axi5_div_ratio                     1188MHZ -> 324MHZ ?? 648MHZ -> 324MHZ  // 1188MHZ -> 297MHZ
+  { CLOCK_DIV_CONFIG8_ADDR,  0,  6, 0x03 }  // denali_clk_div_ratio                   1188MHZ -> 297MHZ
+},clk_dto_table[] = {
+  //scorpio
+
+  { DTO_CONFIG1_ADDR      ,  0, 30, 0x05555555 }, // DTO value clock_srl_audio_play   1188MHZ -> 99MHZ
+  { DTO_CONFIG2_ADDR      ,  0, 30, 0x05555555 }, // DTO value clock_spd0_audio_play  1188MHZ -> 99MHZ
+
+// pll_mini
+#if 0
+  { DTO_CONFIG12_ADDR     ,  0, 30, 0x20000000 }, // DTO value clock_DTO_CPU          1188MHZ -> 594MHZ
+  { DTO_CONFIG10_ADDR     ,  0, 30, 0x03333333 }, // DTO value clock_APB2_0           1188MHZ -> 59.4MHZ
+  { DTO_CONFIG11_ADDR     ,  0, 30, 0x0199999a }, // DTO value clock_APB2_2           1188MHZ -> 29.7MHZ
+  { DTO_CONFIG13_ADDR     ,  0, 30, 0x0aaaaaab }, // DTO value clock_APB2_4           1188MHZ -> 198MHZ
+#endif
+  { DTO_CONFIG15_ADDR     ,  0, 30, 0x05555555 }  // DTO value clock_spd1_audio_play  1188MHZ -> 99MHZ
+},clk_rst_table[] = {
+  { CLOCK_DIV_CONFIG1_ADDR,  11, 1, 0x0 }, // clock_pixel_gate_div_config             148.5*2 -> 148.5MHZ
+  { CLOCK_DIV_CONFIG3_ADDR,  3,  1, 0x0 }, // clock_pixel_gate_div_config             27MHZ ->  13.5MHZ //[M:1117] site,0->3
+  //scorpio
+  { DTO_CONFIG1_ADDR      , 30,  2, 0x0 }, // DTO reset
+  { DTO_CONFIG2_ADDR      , 30,  2, 0x0 }, // DTO reset
+
+// pll_mini
+#if 0
+  { DTO_CONFIG10_ADDR     , 30,  2, 0x0 }, // DTO reset clock_APB2_0
+  { DTO_CONFIG11_ADDR     , 30,  2, 0x0 }, // DTO reset clock_APB2_2
+  { DTO_CONFIG12_ADDR     , 30,  2, 0x0 }, // DTO reset clock_DTO_CPU
+  { DTO_CONFIG13_ADDR     , 30,  2, 0x0 }, // DTO reset clock_APB2_4
+  { CLOCK_DIV_CONFIG5_ADDR, 30,  2, 0x0 }, // scpu_clk_div_config
+  { CLOCK_DIV_CONFIG7_ADDR,  6,  2, 0x0 }, // ssi_clk_div_ratio
+#endif
+
+  { DTO_CONFIG15_ADDR     , 30,  2, 0x0 }, // DTO reset
+  { CLOCK_DIV_CONFIG1_ADDR, 30,  2, 0x0 }, // audio_lodac_div_config
+  { CLOCK_DIV_CONFIG1_ADDR, 22,  2, 0x0 }, // svpu_pix_clk_div_config
+  { CLOCK_DIV_CONFIG1_ADDR,  6,  2, 0x0 }, // vpu_pix_clk_div_config
+
+  { CLOCK_DIV_CONFIG2_ADDR, 30,  2, 0x0 }, // dvb_clk3_div_config
+  { CLOCK_DIV_CONFIG2_ADDR, 14,  2, 0x0 }, // dvb_clk1_div_config
+
+  { CLOCK_DIV_CONFIG3_ADDR, 30,  2, 0x0 }, // usb12m_div_config
+  { CLOCK_DIV_CONFIG3_ADDR, 14,  2, 0x0 }, // ts_base_div_config
+
+  { CLOCK_DIV_CONFIG4_ADDR, 30,  2, 0x0 }, // audio_decoder_clk_div_config
+  { CLOCK_DIV_CONFIG4_ADDR, 22,  2, 0x0 }, // pp_clk_div_config
+  { CLOCK_DIV_CONFIG4_ADDR, 14,  2, 0x0 }, // jpeg_decoder_clk_div_config
+  { CLOCK_DIV_CONFIG4_ADDR,  6,  2, 0x0 }, // video_decoder_clk_div_config
+
+  { CLOCK_DIV_CONFIG5_ADDR, 22,  2, 0x0 }, // demux_stc_clk_div_config
+  { CLOCK_DIV_CONFIG5_ADDR, 14,  2, 0x0 }, // demux_sys_clk_div_config
+  { CLOCK_DIV_CONFIG5_ADDR,  6,  2, 0x0 }, // secure_clk_div_config
+
+  { CLOCK_DIV_CONFIG6_ADDR, 14,  2, 0x0 }, // ahb_clk_div_config
+  { CLOCK_DIV_CONFIG6_ADDR,  6,  2, 0x0 }, // ga_clk_div_config
+
+
+  { CLOCK_DIV_CONFIG8_ADDR, 30,  2, 0x0 }, // apu_hclk_div_ratio
+  { CLOCK_DIV_CONFIG8_ADDR, 22,  2, 0x0 }, // video_aclk_div_ratio
+  { CLOCK_DIV_CONFIG8_ADDR, 14,  2, 0x0 }, // vpu_axi5_div_ratio
+  { CLOCK_DIV_CONFIG8_ADDR,  6,  2, 0x0 }  // denali_clk_div_ratio 
+};
+//struct reg_field clk_mux_bind_tables[][] ={{
+//}};
+
+static struct reg_field clk_inv_table[] = {
+  { CLOCK_SOURCE2_ADDR    ,  6,  1, 0x1 }, // clock_vpu_dac_soure INV 
+  { CLOCK_SOURCE2_ADDR    ,  9,  1, 0x1 }, // adc_clk_inv_sel     INV
+  { CLOCK_SOURCE2_ADDR    , 10,  1, 0x1 }  // clock_ADC_clk_edge  INV 
+};
+
+
+
+static unsigned int get_clk_gate_table_size(void){
+  return sizeof(clk_gate_table)/sizeof(struct reg_field);
+}
+
+static unsigned int get_clk_mux_table_size(void){
+  return sizeof(clk_mux_table)/sizeof(struct reg_field);
+}
+
+static unsigned int get_clk_div_table_size(void){
+  return sizeof(clk_div_table)/sizeof(struct reg_field);
+}
+
+static unsigned int get_clk_dto_table_size(void){
+  return sizeof(clk_dto_table)/sizeof(struct reg_field);
+}
+
+static unsigned int get_clk_inv_table_size(void){
+  return sizeof(clk_inv_table)/sizeof(struct reg_field);
+}
+//unsigned int get_clk_mux_bind_table_size(void){
+//  return sizeof(clk_mux_bind_tables)/sizeof(clk_mux_bind_tables[0]);
+//}
+
+
+
+/** 
+ * @brief field set函数
+ *   仅对模型操作，不操作实际寄存器dd
+ * @param addr 地址
+ * @param site 起始位
+ * @param bits 宽度
+ * @param data 更新值
+ * @return id 
+ */
+static unsigned int reg_set(unsigned int addr, unsigned int site, unsigned int bits, unsigned int data){
+#ifdef CLKMGR_VERI
+  unsigned int i;
+  unsigned int num = sizeof(reg_array)/sizeof(struct Reg);
+  for(i=0; i<num; i++){
+    if((!reg_array[i].active)||(reg_array[i].active && reg_array[i].addr == addr)){
+      reg_array[i].addr   = addr;
+      reg_array[i].data   &= ~((((unsigned long)1<<bits)-1)<<site); // old_data,mask[site+bits-1:site]
+      data                &=   (((unsigned long)1<<bits)-1);        // new_data,mask[bits-1:0], <<site
+      reg_array[i].data   |=  data<<site;                           // merge old_data,new_data
+      reg_array[i].active  = 1;  
+      reg_array[i].modify  = 1; // 更新modify标志位，须update方法清掉
+      return i;
+    }
+  }
+#else
+  unsigned int tmp_data;
+  cpu_read(addr, &tmp_data);
+  tmp_data       &= ~((((unsigned long)1<<bits)-1)<<site);
+  data           &=   (((unsigned long)1<<bits)-1);
+  tmp_data       |=   data<<site;
+  cpu_write(addr, tmp_data);
+
+  return 0;
+#endif
+}
+
+/** 
+ * @brief 覆写所有已激活且被修改的寄存器
+ *   须配合set使用来共同维护modify标志位
+ */
+static void reg_update_all(void){
+#ifdef CLKMGR_VERI
+  unsigned int data;
+  unsigned int i;
+  unsigned int num = sizeof(reg_array)/sizeof(struct Reg);
+  for(i=0; i<num; i++){
+    if(reg_array[i].active && reg_array[i].modify){
+      cpu_write(reg_array[i].addr, reg_array[i].data);
+      reg_array[i].modify = 0;
+    }
+  }
+#endif
+}
+
+/** 
+ * @brief 时钟配置主函数
+ */
+static void clk_reg_init_all(void){
+  unsigned int i;
+  struct reg_field  field;
+
+  // div & dto, reset
+  for(i=0; i<sizeof(clk_rst_table)/sizeof(struct reg_field); i++){
+    field = clk_rst_table[i];
+    reg_set(field.addr, field.site, field.bits, field.data);}
+  reg_update_all();
+  // div & dto, config
+  for(i=0; i<sizeof(clk_div_table)/sizeof(struct reg_field); i++){
+    field = clk_div_table[i];
+    reg_set(field.addr, field.site, field.bits,  field.data);}
+  for(i=0; i<sizeof(clk_dto_table)/sizeof(struct reg_field); i++){
+    field = clk_dto_table[i];
+    reg_set(field.addr, field.site, field.bits,  field.data);}
+  // div & dto, reset release
+  for(i=0; i<sizeof(clk_rst_table)/sizeof(struct reg_field); i++){
+    field = clk_rst_table[i];
+    reg_set(field.addr, field.site, field.bits, ~field.data);}
+  // mux config
+  for(i=0; i<sizeof(clk_mux_table)/sizeof(struct reg_field); i++){
+    field = clk_mux_table[i];
+    reg_set(field.addr, field.site, field.bits,  field.data);}
+  reg_update_all();
+
+  // gate,  config
+  for(i=0; i<sizeof(clk_gate_table)/sizeof(struct reg_field); i++){
+    field = clk_gate_table[i];
+    reg_set(field.addr, field.site, field.bits,  field.data);}
+  reg_update_all();
+
+  MY_PRINTF("clk_reg_init_all end...\n");
+}
+
+/* routine.c */
+static void sys_config(void){
+  //MY_PRINTF("sys_config\n");
+}
+
+static void pll_config_sm40(unsigned int ADDR, unsigned int FBDIV,unsigned int  REFDIV, unsigned int POSTDIV1, unsigned int POSTDIV2){
+  unsigned int lock_status, data;
+  // XIN=27MHZ, FOUT=972HMZ
+  // FBDIV=36, REFDIV=1, POSTDIV1=1,POSTDIV2=1
+  cpu_write(ADDR, (1<<26|1<<27|1<<28|1<<29|1<<30));//pd 
+  cpu_read(ADDR,   &data);
+  cpu_write(ADDR, (REFDIV<<20|POSTDIV2<<16|POSTDIV1<<12|FBDIV|data));
+  cpu_read(ADDR,   &data);
+  cpu_write(ADDR, (data&0x03ffffff));//release power down bypass=0;
+  //MY_PRINTF("pll_config_sm40 DIV[%.3f]\n", (float)FBDIV/(float)REFDIV/(float)(POSTDIV1*POSTDIV2));
+}
+
+static void pll_config(void){
+  unsigned int lock_status, data, xtal_define;
+  xtal_define = MY_XTAL_FREQ; 
+  if(xtal_define == 24){
+    pll_config_sm40(DTO_PLL_CONFIG_ADDR,  99, 2, 1, 1); // 24MHZ-1188MHZ
+    pll_config_sm40(DDR_PLL_CONFIG_ADDR,  27, 1, 1, 1); // 24MHZ-648MHZ
+    pll_config_sm40(CPU_PLL_CONFIG_ADDR, 189, 4, 2, 1); // 24MHZ-567MHZ 
+  }
+  else{
+    pll_config_sm40(DTO_PLL_CONFIG_ADDR,  44, 1, 1, 1); // 27MHZ-1188MHZ
+    pll_config_sm40(DDR_PLL_CONFIG_ADDR,  24, 1, 1, 1); // 27MHZ-648MHZ
+    pll_config_sm40(CPU_PLL_CONFIG_ADDR,  21, 1, 1, 1); // 27MHZ-567MHZ
+  }
+  while(1) {
+    cpu_read(PLL_LOCK_IN_ADDR, &data);
+    lock_status=(data&0x07);
+    if(lock_status==0x07) break;
+  }
+  MY_PRINTF("-----------PLL_CONFIG---XTAL %0dMHZ-------------\n",xtal_define);
+}
+
+static void USB_SetSuspendM(void)
+{
+    *(volatile unsigned int *)(USB_CONFIG_BASE + CONFIG_USB1_CONFIG) &= ~(1<<10);
+    *(volatile unsigned int *)(USB_CONFIG_BASE + CONFIG_USB1_CONFIG) &= ~(1<<26);
+    *(volatile unsigned int *)(USB_CONFIG_BASE + CONFIG_USB2_CONFIG) &= ~(1<<26);
+}
+
+static void USB_ClrSuspendM(void)
+{
+    *(volatile unsigned int *)(USB_CONFIG_BASE + CONFIG_USB1_CONFIG) |= (1<<10);
+    *(volatile unsigned int *)(USB_CONFIG_BASE + CONFIG_USB1_CONFIG) |= (1<<26);
+    *(volatile unsigned int *)(USB_CONFIG_BASE + CONFIG_USB2_CONFIG) |= (1<<26);
+}
+
+static void USB_SetPhyReset(void)
+{
+    *(volatile unsigned int *)(USB_CONFIG_BASE + CONFIG_USB1_CONFIG) |= (1<<12);
+    *(volatile unsigned int *)(USB_CONFIG_BASE + CONFIG_USB1_CONFIG) |= (1<<28);
+    *(volatile unsigned int *)(USB_CONFIG_BASE + CONFIG_USB2_CONFIG) |= (1<<28);
+}
+
+static void USB_ClrPhyReset(void)
+{
+    *(volatile unsigned int *)(USB_CONFIG_BASE + CONFIG_USB1_CONFIG) &= ~(1<<12);
+    *(volatile unsigned int *)(USB_CONFIG_BASE + CONFIG_USB1_CONFIG) &= ~(1<<28);
+    *(volatile unsigned int *)(USB_CONFIG_BASE + CONFIG_USB2_CONFIG) &= ~(1<<28);
+}
+
+static void USB_Init(void)
+{
+	// QFN
+	*(volatile unsigned int*)(USB_PHY_PORT1 + 0x00) = 0x1f;
+	*(volatile unsigned int*)(USB_PHY_PORT1 + 0x08) = 0x5c;
+	*(volatile unsigned int*)(USB_PHY_PORT1 + 0x14) = 0xac;
+	*(volatile unsigned int*)(USB_PHY_PORT1 + 0x18) = 0x05;
+
+	*(volatile unsigned int*)(USB_PHY_PORT2 + 0x00) = 0x1f;
+	*(volatile unsigned int*)(USB_PHY_PORT2 + 0x08) = 0x5c;
+	*(volatile unsigned int*)(USB_PHY_PORT2 + 0x14) = 0xac;
+	*(volatile unsigned int*)(USB_PHY_PORT2 + 0x18) = 0x05;
+
+	// USB CONFIG
+    *(volatile unsigned int*)(USB_CONFIG_BASE + CONFIG_USB_CONFIG)  |= (1<<25) | (1<<31) | (0x20<<8) | (0x20<<20) | (0x20<<26) | (0xf<<16);
+    *(volatile unsigned int*)(USB_CONFIG_BASE + CONFIG_USB3_CONFIG) |= (1<<25) | (0x20<<20);
+
+    USB_SetSuspendM();
+    USB_SetPhyReset();
+    USB_ClrPhyReset();
+    USB_ClrSuspendM();
+    USB_SetSuspendM();
+    USB_SetPhyReset();
+    USB_ClrPhyReset();
+
+	return ;
+}
+
+void gx_setup_pll_full_controller(void)
+{
+    MY_PRINTF("gx_setup_pll_full_controller begin...\n");
+    sys_config();
+    clk_reg_init_all();
+    cpu_delay_cycle(20);
+    MY_PRINTF("gx_setup_pll_full_controller end...\n");
+ 
+    //set the  fsctrl
+    *(volatile unsigned int*)(CONFIG_BASE_MMU + CONFIG_ADC_CONFIG_0) &= ~(0xff<<10); // fsctrl 000is 1x 11111111 = 1.996x
+    *(volatile unsigned int*)(CONFIG_BASE_MMU + CONFIG_ADC_CONFIG_0) |= (0x10<<10);
+    //bctrl 00110
+    *(volatile unsigned int*)(CONFIG_BASE_MMU + CONFIG_ADC_CONFIG_0) &= ~(0x1f<<2);
+    *(volatile unsigned int*)(CONFIG_BASE_MMU + CONFIG_ADC_CONFIG_0) |= (0x6<<2); ///70%
+
+
+    *(volatile unsigned int*)(CONFIG_BASE_MMU + CONFIG_ADC_CONFIG_0) &= ~(0x1f<<24); // set i2c address
+    *(volatile unsigned int*)(CONFIG_BASE_MMU + CONFIG_ADC_CONFIG_0) |=  (0x1d<<24); // set i2c address //1d << 2 address is 74
+    //set the scl and sda is high
+    *(volatile unsigned int*)(CONFIG_BASE_MMU + CONFIG_ADC_CONFIG_0) |=  (0x7<<29); // set scl and sdi and i2c resetz go high
+
+    // when power down . adc is in power down  mode set opm =00;
+
+    *(volatile unsigned int*)(CONFIG_BASE_MMU + CONFIG_ADC_CONFIG_0) &= ~((0x3<<18) | (0x1<<8) ); // adc in power down mode endacr is 0
+    *(volatile unsigned int*)(CONFIG_BASE_MMU + CONFIG_ADC_CONFIG_0) |= (1<<8); // endcr disable the duty cycle restorer
+
+    *(volatile unsigned int*)(CONFIG_BASE_MMU + CONFIG_ADC_CONFIG_0) &=  ~(0x3<<22); // use_prev_f is zero ,powerup need the use_prev_f, startcal set zero, power auto starcal
+
+    *(volatile unsigned int*)(CONFIG_BASE_MMU + CONFIG_ADC_CONFIG_0) &= ~(0x1<<29); // i2c resetz set low keep at leas 4ns
+    *(volatile unsigned int*)(CONFIG_BASE_MMU + CONFIG_ADC_CONFIG_0) |=  (0x1<<29); // i2c resetz set hihgh no is
+
+    *(volatile unsigned int*)(CONFIG_BASE_MMU + CONFIG_ADC_CONFIG_0) |=  (0x3<<18); // i2c resetz set hihgh no is
+
+    // set to the normal mode
+    //do {
+    //	adc_rdy = (*(volatile unsigned int*)(CONFIG_BASE_MMU+STATE_ADC))& 0x2 ; // [1] bit is adcrdy
+    //} while (!(adc_rdy & 0x2));
+
+    // set the port
+    // DVBS set the duble I and q
+
+    *(volatile unsigned int*)(CONFIG_BASE_MMU + CONFIG_ADC_CONFIG_0) &= ~((0x1<<7) |(0x1<<20)) ; // one port
+    //end
+
+    USB_Init();
+ 
+    // 关闭USB时钟
+    *(volatile unsigned int *)(CONFIG_BASE_MMU + CLOCK_GATE_SET3) = (1 << 17);
+    *(volatile unsigned int *)(CONFIG_BASE_MMU + CONFIG_CLOCK_GATE_SET0) = ( (1 << 17) |  (1 << 18) |  (1 << 19) | \
+        (1 << 20) |  (1 << 26) |  (1 << 25) );
+
+#ifdef ENABLE_SECURE_ALIGN
+	// ga
+	*(volatile unsigned int*)(REG_BASE_GA + 0x34) |= 1;
+	// demux
+	*(volatile unsigned int*)(REG_BASE_DEMUX + 0x47F0) |= 0x3;
+	// audio_decoder
+	*(volatile unsigned int*)(REG_BASE_ADEC + 0x150) |= 0x7;
+	// HDMI
+	*(volatile unsigned int*)(REG_BASE_HDMI + 0x8838) |= 0x1;
+#endif
+
+}

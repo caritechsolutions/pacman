@@ -1,0 +1,78 @@
+#!/bin/bash
+
+function build_clean(){
+	cd $GXSRC_PATH
+	cd app
+	make clean
+	cd -
+	rm -rf output
+	rm -rf bin/flash/download.bin
+	rm -rf bin/flash/ecos_romfs.img
+	rm -rf bin/flash/root_cramfs.img
+}
+
+function set_env() {
+	ARCH=$1
+	OS=$2
+	export ARCH OS
+	export GXSRC_PATH=`pwd`
+	CROSS_PATH=$ARCH-$OS
+	export GXLIB_PATH=$OPT/opt/goxceed/$CROSS_PATH
+	echo
+}
+
+
+BUILD_CAS="abv"
+if [[ "$1" == "abv" || "$1" = "cd" || "$1" == "cti" || "$1" == "rs" || "$1" == "dvt" || "$1" ==	"uti" || "$1" =  "cryptoguard" || "$1" =  "tr" ]]; then
+    BUILD_CAS=$1
+    shift 1
+fi
+export BUILD_CAS
+
+function build(){
+	DATE=$(date +%Y%m%d)
+	NAME=output/$DATE.bin
+
+	set_env $1 $2
+
+	cd $GXSRC_PATH/app
+	make clean; make;make bin
+	cd -
+	#output
+	if [ ! -d output ]; then
+		mkdir output
+	fi
+	echo $NAME
+	cp ./bin/flash/download.bin $NAME
+}
+
+function build_sci(){
+
+	set_env $1 $2
+
+	cd $GXSRC_PATH/sci
+	make clean; make;
+}
+if [ "$1" = "clean" ]; then
+	build_clean
+	exit 0
+fi
+
+if [ $# -le 1 ]; then
+	echo "./build [CA] <csky> <ecos|linux>"
+	echo "    eg: ./build sci csky ecos "
+	echo "    eg: ./build abv csky ecos "
+	echo "    eg: ./build dvt csky ecos "
+	echo "    eg: ./build cd  csky ecos "
+	echo "    eg: ./build cti csky ecos "
+	echo "    eg: ./build rs  csky ecos "
+	echo "    eg: ./build abv csky linux "
+	echo "    eg: ./build cd  csky linux "
+else
+	if [[ "$1" == "sci" ]]; then
+		shift 1
+		build_sci $@
+	else
+		build $@
+	fi
+fi

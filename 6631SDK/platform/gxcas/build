@@ -1,0 +1,224 @@
+#!/bin/bash
+
+J=-j`cat /proc/cpuinfo| grep processor | wc -l`
+export GX_PREFIX=$(pwd)/../../library/goxceed
+
+CURRENT_PATH=$(cd `dirname $0`; pwd)
+
+function generate_release_info() {
+    version_file=$(pwd)/module/gxcas_version.c
+    version='#define GXCAS_VERSION "'$(git log|grep commit | head -1)'"'
+    branch='#define GXCAS_BRANCH "'$(git branch -a|grep remotes/m/)'"'
+    generator_name='#define GXCAS_GENERATOR "'$(whoami)'"'
+    sed -i "1i\\$version" $version_file
+    sed -i "2i\\$branch" $version_file
+    sed -i "3i\\$generator_name" $version_file
+}
+
+function clear_release_info(){
+    sed -i '/#define GXCAS_VERSION/d' $version_file
+    sed -i '/#define GXCAS_BRANCH/d' $version_file
+    sed -i '/#define GXCAS_GENERATOR/d' $version_file
+}
+
+function config_ca() {
+    cd cas
+    if [[ $BUILD_CAS == "cd" ]]
+    then
+    	cd cdhs
+    	./pre-build
+	cd ..
+    fi
+    cd ..
+}
+
+function set_ext_cflags_env() {
+    GX_EXT_CFLAGS="-mfloat-abi=hard"
+    export GX_EXT_CFLAGS
+}
+
+function build() {
+    config_ca
+
+    ARCH=$1
+    OS=$2
+
+    echo "*****************************************"
+    echo "     Build $ARCH $OS GxCas [$BUILD_CAS]  "
+    echo "*****************************************"
+    
+    generate_release_info
+    BUILD_PATH=_build-$ARCH-$OS
+    mkdir -p $BUILD_PATH
+    cd $BUILD_PATH
+    export ARCH_OS=$ARCH-$OS
+    if [[ $CONFIG_HARD_FLOAT == "y" ]]; then
+        set_ext_cflags_env
+    fi
+    #export CROSS_TOOLCHAIN=$ARCH-$OS-
+    cmake $CURRENT_PATH || exit 1
+    make $J || exit 1
+    make install || exit 1
+    clear_release_info
+}
+
+function parse_config(){
+	if [[ $CONFIG_RELEASE == "y" ]]; then
+		BUILD_MODE=release
+	elif [[ $CONFIG_DEBUG == "y" ]]; then
+		BUILD_MODE=debug
+	fi
+	export BUILD_MODE
+
+	if [[ $CONFIG_CSKY == "y" ]]; then
+		ARCH=csky
+	elif [[ $CONFIG_ARM == "y" ]]; then
+		ARCH=arm
+	fi
+
+	if [[ $CONFIG_ECOS == "y" ]]; then
+		OS=ecos
+	elif [[ $CONFIG_LINUX == "y" ]]; then
+		OS=linux
+	fi
+
+	if [[ $CONFIG_CD == "y" ]]; then
+		BUILD_CAS=cd
+	elif [[ $CONFIG_CTI == "y" ]]; then
+		BUILD_CAS=cti
+	elif [[ $CONFIG_ABV == "y" ]]; then
+		BUILD_CAS=abv
+	elif [[ $CONFIG_DVT == "y" ]]; then
+		BUILD_CAS=dvt
+	elif [[ $CONFIG_IRDETO == "y" ]]; then
+		BUILD_CAS=irdeto
+	elif [[ $CONFIG_RS == "y" ]]; then
+		BUILD_CAS=rs
+	elif [[ $CONFIG_UTI == "y" ]]; then
+		BUILD_CAS=uti
+	elif [[ $CONFIG_DIVIG == "y" ]]; then
+		BUILD_CAS=divig
+	elif [[ $CONFIG_CPG == "y" ]]; then
+		BUILD_CAS=cryptoguard
+	elif [[ $CONFIG_TR == "y" ]]; then
+		BUILD_CAS=tr		
+	elif [[ $CONFIG_DESAI == "y" ]]; then
+		BUILD_CAS=desai
+	elif [[ $CONFIG_CONAX == "y" ]]; then
+		BUILD_CAS=conax
+	elif [[ $CONFIG_GOS == "y" ]]; then
+		BUILD_CAS=gospell
+	elif [[ $CONFIG_VMX == "y" ]]; then
+		BUILD_CAS=vmx
+	elif [[ $CONFIG_TELECAST == "y" ]]; then
+		BUILD_CAS=telecast		
+	elif [[ $CONFIG_NAGRA == "y" ]]; then
+		BUILD_CAS=nagra		
+	fi
+    	export BUILD_CAS
+
+	if [[ $CONFIG_CARD == "y" ]]; then
+		CARD_MODE=card
+	elif [[ $CONFIG_NOCARD == "y" ]]; then
+		CARD_MODE=nocard
+	fi
+	export CARD_MODE
+
+	if [[ $CONFIG_EAD == "y" ]]; then
+		EAD=y
+	fi
+	export EAD
+	
+	if [[ $CONFIG_ABVA6 == "y" ]]; then
+		CA_VERSION=abva6
+	elif [[ $CONFIG_ABVB5 == "y" ]]; then
+		CA_VERSION=abvb5
+	elif [[ $CONFIG_ABV38 == "y" ]]; then
+		CA_VERSION=abv3.8		
+	elif [[ $CONFIG_CGHS == "y" ]]; then
+		CA_VERSION=cghs
+	elif [[ $CONFIG_CGCS == "y" ]]; then
+		CA_VERSION=cgcs
+	elif [[ $CONFIG_DVT00 == "y" ]]; then
+		CA_VERSION=dvt00
+	elif [[ $CONFIG_DVT09 == "y" ]]; then
+		CA_VERSION=dvt09
+	elif [[ $CONFIG_DVT10 == "y" ]]; then
+		if [[ $CONFIG_DVT10_OLD == "y" ]]; then
+			CA_VERSION=dvt10_old
+		elif [[ $CONFIG_DVT10_NEW == "y" ]]; then
+			CA_VERSION=dvt10_new
+		fi
+	elif [[ $CONFIG_DVT20 == "y" ]]; then
+		CA_VERSION=dvt20
+	elif [[ $CONFIG_VMXADV == "y" ]]; then
+		CA_VERSION=vmxadv
+	elif [[ $CONFIG_VMXPLUS == "y" ]]; then
+		CA_VERSION=vmxadvplus
+	elif [[ $CONFIG_IRDETOSOFTCELL == "y" ]]; then
+		CA_VERSION=irdetosoftcell
+	elif [[ $CONFIG_IRDETOCCA_V4_6_8 == "y" ]]; then
+		CA_VERSION=irdetocca
+		CCA_SUB_VERSION=v4_6_8
+		export CCA_SUB_VERSION
+	elif [[ $CONFIG_IRDETOCCA_V4_12_4 == "y" ]]; then
+		CA_VERSION=irdetocca
+		CCA_SUB_VERSION=v4_12_4
+		export CCA_SUB_VERSION	
+	elif [[ $CONFIG_IRDETOCCA_V5_0_7 == "y" ]]; then
+		CA_VERSION=irdetocca
+		CCA_SUB_VERSION=v5_0_7
+		export CCA_SUB_VERSION
+	elif [[ $CONFIG_TELECAST09 == "y" ]]; then
+		CA_VERSION=telecast09
+	elif [[ $CONFIG_GOSHS == "y" ]]; then
+		CA_VERSION=goshs
+	elif [[ $CONFIG_GOSCS == "y" ]]; then
+		CA_VERSION=goscs
+	fi
+    	export CA_VERSION
+
+	if [[ $CONFIG_VMX_DVR_ENABLE == "y" ]]; then
+		VMX_DVR_FUNC=dvr_enable
+	elif [[ $CONFIG_VMX_DVR_DISABLE == "y" ]]; then
+		VMX_DVR_FUNC=dvr_disable
+	fi
+	export VMX_DVR_FUNC
+
+	if [[ $CONFIG_VOLUME_PVR == "y" ]]; then
+		PVR_TYPE=volume
+	elif [[ $CONFIG_SEGMENT_PVR == "y" ]]; then
+		PVR_TYPE=segment
+	fi
+	export PVR_TYPE
+	
+}
+
+if [ $# -le 1 ]; then
+    if [ "$1" = "clean" ]; then
+        rm -rf _build-*
+    elif [ "$1" = "distclean" ]; then
+        rm -rf _build-*
+	rm -rf .config
+	rm -rf .config.old
+	rm -rf include/autoconf.h
+    elif [ "$1" = "config" ]; then
+	./scripts/kconfig/mconf Kconfig
+	./scripts/autoconf.sh > /dev/null
+	cat .config
+    else
+        if [ -e .config ]; then
+        	source .config
+		parse_config
+		build $CA $ARCH $OS
+        else
+        	echo "Cannot find .config file, please config first"
+        	echo "./build config"
+        	exit 1
+        fi
+    fi
+    #exit 1
+else
+	build $@
+fi
+

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="progbar">
+	<property name="name" type="string" value="" hint="widget name||控件名称"/>
+	<property name="style" type="string" value="default" hint="widget style||控件风格"/>
+	<property name="rect" type="container" hint="widget postion||控件位置设置">
+		<property name="x" type="u16" value="0" hint="x position||水平坐标"/>
+		<property name="y" type="u16" value="0" hint="y position||垂直坐标"/>
+		<property name="width" type="u16" value="0" hint="widget width||宽度"/>
+		<property name="height" type="u16" value="0" hint="widget height||高度"/>
+	</property>
+	<property name="state" type="strselect" help="item||enable;disable;hide;show;focus" value="show" attr="optional" hint="widget initial state||控件初始显示状态"/>
+
+	<property name="forecolor" type="container" hint="foreground color||前景颜色设置">
+		<property name="unfocus" type="color" value="#000000" hint="text color||前景字的颜色" />
+		<property name="focus" type="color" value="#000000" hint="invalid||无效"/>
+		<property name="disable" type="color" value="#000000" hint="invalid||无效"/>
+	</property>
+	<property name="backcolor" type="container">
+		<property name="unfocus" type="color" value="#808080" hint="back bar color||背景条颜色"/>
+		<property name="focus" type="color" value="#808080" hint="fore bar color||前景条颜色"/>
+		<property name="disable" type="color" value="#808080" hint="invalid||无效"/>
+	</property>
+	<property name="mirror" type="strselect" help="item||enable;disable" value="disable" attr="optional" hint="widget mirror state||组件镜像状态"/>
+	<property name="keypress_revert" type="strselect" help="item||enable;disable" value="disable" attr="optional" hint="key (left/right) revert state||(左右)按键反转状态"/>
+
+	<property name="min" type="u8" value="0" hint="minimum value||最小值"/>
+	<property name="max" type="u8" value="100" hint="maximum value||最大值"/>
+	<property name="value" type="u8" value="0" attr="optional" hint="default value||默认值"/>
+
+	<property name="encoding" type="strselect" help="item||utf8;gb2312;gbk;big5" value="utf8" attr="optional" hint="encoding type||编码类型"/>
+	<property name="back_image" type="file" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" value="" attr="optional" hint="background image||背景图片"/>
+	<property name="back_image_l" type="file" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" value="" attr="optional|disable" hint="left background image||左侧背景图片"/>
+	<property name="back_image_m" type="file" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" value="" attr="optional|disable" hint="middle background image||中间背景图片"/>
+	<property name="back_image_r" type="file" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" value="" attr="optional|disable" hint="right background image||右侧背景图片"/>
+
+	<property name="fore_image" type="file" value="" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" attr="optional" hint="foreground image||前景图片"/>
+	<property name="fore_image_l" type="file" value="" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" attr="optional|disable" hint="left background image||左侧前景图片"/>
+	<property name="fore_image_m" type="file" value="" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" attr="optional|disable" hint="middle background image||中间前景图片"/>
+	<property name="fore_image_r" type="file" value="" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" attr="optional|disable" hint="right background image||右侧前景图片"/>
+
+	<property name="format" type="strselect" help="item||normal;water;vertical" value="normal" hint="progress bar format||显示模式"/>
+	<property name="text_format" type="strselect" help="item||percentage;decimal;hide" value="percentage" hint="text format||文本显示方式"/>
+	<property name="typeset" type="strselect" help="item||l2r;r2l" value="r2l" attr="optional" hint="typeset||排版方式"/>
+
+	<property name="alignment" type="container" hint="widget alignment||对齐方式">
+		<property name="hcentre" type="strselect" help="item||left;hcentre;right" value="hcentre" hint="horizontal alignment||水平对齐"/>
+		<property name="vcentre" type="strselect" help="item||top;vcentre;bottom" value="vcentre" attr="disable" hint="vertical alignment||垂直对齐"/>
+	</property>
+
+	<property name="font" type="font" value="" attr="optional" hint="widget font||控件字体"/>
+
+	<signal name = "create" value=""/>
+	<signal name = "destroy" value=""/>
+	<signal name = "reach_end" value=""/>
+</widget>
+

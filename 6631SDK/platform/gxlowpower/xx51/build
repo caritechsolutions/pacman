@@ -1,0 +1,68 @@
+#!/bin/bash
+
+GXSRC_PATH=$(cd `dirname $0`; pwd)
+
+J=-j`cat /proc/cpuinfo| grep processor | wc -l`
+
+set_env()
+{
+	export CHIP=$1
+	export CROSS_COMPILE=$2
+}
+
+check_sdcc()
+{
+	SDCC_VERSION="3.6.0"
+	cross_compile_version=$(${CROSS_COMPILE} -v | grep -o "${SDCC_VERSION}")
+	if [ "${cross_compile_version}" != "${SDCC_VERSION}" ]; then
+		echo "error, Your sdcc compiler is not ${SDCC_VERSION}"
+		exit 1
+	fi
+}
+
+build()
+{
+	CHIP=$1
+	echo "CHIP $CHIP"
+	case "$CHIP" in
+		sirius|taurus|gemini|cygnus|canopus|vega|scorpio)
+			CROSS_COMPILE=sdcc
+			check_sdcc
+			;;
+
+		scorpio-taurus)
+			CROSS_COMPILE=sdcc
+			check_sdcc
+			CHIP=scorpio_taurus
+			;;
+		*)
+			echo "EORROR CHIP_ID: $CHIP"
+			help
+			;;
+	esac
+
+	set_env $CHIP $CROSS_COMPILE
+
+	echo "build $CHIP lowpower"
+
+	make clean || exit 1
+	make || exit 1
+}
+
+help()
+{
+	echo "./build clean"
+	echo ""
+	echo "./build <chip>"
+	echo "         chip: sirius|taurus|gemini|cygnus|canopus|vega|scorpio|scorpio-taurus"
+	echo " "
+	exit 1
+}
+
+if [ $# -ne 1 ]; then
+	help
+elif [ "$1" == "clean" ];then
+	make clean
+else
+	build $@
+fi

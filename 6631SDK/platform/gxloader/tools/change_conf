@@ -1,0 +1,188 @@
+#!/bin/bash
+
+DIR=$(pwd)
+DDIR=
+ARGV1=
+
+help() {
+	cat << EOF
+note: this tools is used to change config of chip !
+---------------------------------------------------------------------------------------
+1. if you want to insert a strings to one line
+use: $0 insert [chip/all] [line_num]  [strings]
+     $0 insert [chip/all] [strings_a] [strings_b]
+     $0 insert [chip/all] [strings_a] ""                     (insert a empty line after strings_a)
+     $0 insert [chip/all] "a2end"     [strings_b]            (insert a line to the file end)
+     note: strings can not be line number !
+
+2. if you want to delete a line
+use: $0 delete [chip/all] [line_num]
+     $0 delete [chip/all] [strings]
+     $0 delete [chip/all] [line_num1] to [line_num2]
+     note: strings can not be number !
+
+3. if you want to change some characters or a line
+use: $0 change [chip/all] [src_strings] [dst_strings]        (change some strings)
+use: $0 change [chip/all] [src_strings??] [dst_strings]      (change a line)
+
+---------------------------------------------------------------------------------------
+eg:
+     $0 insert gx3211 32 "CHIPNAME = gx3211"
+          (insert a string 'CHIPNAME = gx3211' into line 32 of all chip of 'gx3211')
+     $0 insert gx3211 "CHIP_CORE" "CHIPNAME = gx3211"
+          (insert a string 'CHIPNAME = gx3211' after line 'CHIP_CORE' in the chip 'gx3211')
+     $0 insert all "a2end" "CHIPTEST = ct"
+          (insert "CHIPTEST = ct" at the end of all files)
+     $0 delete all    "CONFIG_ARCH"
+          (delete a line when string 'CONFIG_ARCH' in all chips)
+     $0 change all    "DDR_TYPE = DDR2"  "DDR_TYPE = DDR3"
+          (change the string "DDR_TYPE = DDR2" of a line to "DDR_TYPE = DDR3" in all chips)
+     $0 change all    "DDR_TYPE = DDR2??"  "DDR_TYPE = DDR3"
+          (change the string "DDR_TYPE = DDR2" of a line to "DDR_TYPE = DDR3" in all chips)
+          (warning: This operation will clear the characters after the replacement target.)
+     $0 change all    "DDR_TYPE"  "DDR_TYPE = DDR3"
+          (change the string "DDR_TYPE" of a line to "DDR_TYPE = DDR3" in all chips)
+EOF
+}
+
+check_dir(){
+	TDIR=$(basename ${DIR})
+	if [ "${TDIR}" = "tools" ];then
+		DDIR=..
+	elif [ "${TDIR}" = "gxloader" ];then
+		DDIR=.
+	else
+		echo "error: dir must be 'tools' or 'gxloader' !"
+		exit 1
+	fi
+}
+
+change_dir(){
+	case $1 in
+		all)
+			DDIR=${DDIR}/conf
+			;;
+		*)
+			DDIR=${DDIR}/conf/$1
+			if [ $(find ${DDIR} -name "*.config" 2> /dev/null | wc -l) -eq 0 ];then
+				echo "error: can not find chipname '$1'"
+				exit 1
+			fi
+			;;
+	esac
+}
+
+num_args(){
+	echo "$#"
+}
+
+search_and_update(){
+	for cfg_file in $(find ${DDIR} -name "*.config")
+	do
+		sed -i "$@" ${cfg_file}
+	done
+}
+
+insert(){
+	arg1=${ARGV1}
+	args=$@
+	if [ $(echo ${arg1} | grep "[a-zA-Z]" | wc -l) -ge 1 ];then
+		if [ ! -n "${args}" ];then
+			if [ "${arg1}" = "a2end" ];then
+				flag="chip config test flag"
+				###### add a empty line at the end of the file
+				search_and_update "\$a ${flag}"
+				search_and_update "/${flag}/G"
+				search_and_update "/${flag}/d"
+			else
+				###### insert a empty line !
+				search_and_update "/${arg1}/G"
+			fi
+		elif [ "${arg1}" = "a2end" ];then
+			###### insert a line at the end of the file
+			search_and_update "\$a ${args}"
+		else
+			search_and_update "/${arg1}/a\\${args}"
+		fi
+	elif [ $(echo ${arg1} | grep "[0-9]" | wc -l) -ge 1 ];then
+		if [ ! -n "${args}" ];then
+			###### insert a empty line !
+			search_and_update "${arg1}G"
+		else
+			search_and_update "${arg1}i ${args}"
+		fi
+	else
+		echo "insert operation error !"
+		exit 1
+	fi
+}
+
+delete(){
+	arg1=${ARGV1}
+	arg2=$1
+	arg3=$2
+	if [ "${arg2}" = "to" ] && [ $(echo ${arg1} | grep "[0-9]" | wc -l) -ge 1 ] && [ $(echo ${arg3} | grep "[0-9]" | wc -l) -ge 1 ];then
+		search_and_update "${arg1},${arg3}d"
+		return 0
+	fi
+	if [ $(echo ${arg1} | grep "[a-zA-Z]" | wc -l) -ge 1 ];then
+		search_and_update "/${arg1}/d"
+	elif [ $(echo ${arg1} | grep "[0-9]" | wc -l) -ge 1 ];then
+		search_and_update "${arg1}d"
+	else
+		echo "delete operation error !"
+		exit 1
+	fi
+}
+
+change(){
+	src_strings=${ARGV1}
+	dst_strings=$@
+	if [ -n "${src_strings}" ]; then
+		if [ -n "${dst_strings}" ] && [ $(echo $(num_args ${ARGV1})) -gt 1 ];then
+			search_and_update "s/${src_strings}/${dst_strings}/g"
+		else
+			if [[ ${src_strings} == *"??" ]];then
+				###### This operation will clear the characters after the replacement target !
+				search_and_update "s/${src_strings}*\(".*"\)/${dst_strings}/g"
+			else
+				if [ ! -n "${dst_strings}" ];then
+					echo "warning: dst_strings is null !"
+				fi
+				###### This operation is used to change some strings !
+				search_and_update "s/${src_strings}/${dst_strings}/g"
+			fi
+		fi
+	else
+		echo "change operation error !"
+		exit 1
+	fi
+}
+
+run() {
+	check_dir
+	cmd=$1
+	shift 1
+	change_dir $1
+	shift 1
+	shift $(num_args ${ARGV1})
+	case ${cmd} in
+		insert)
+			insert $@
+			;;
+		delete)
+			delete $@
+			;;
+		change)
+			change $@
+			;;
+		*)
+			help
+			exit 1
+			;;
+	esac
+	echo "ok, operation completed !"
+}
+
+ARGV1=$3
+run $@

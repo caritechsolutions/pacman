@@ -1,0 +1,2 @@
+/usr/bin/ar qc libgxbusmisc.a  CMakeFiles/gxbusmisc_static.dir/misc/gxwifi.c.o CMakeFiles/gxbusmisc_static.dir/misc/gxwifi_linux.c.o
+/usr/bin/ranlib libgxbusmisc.a

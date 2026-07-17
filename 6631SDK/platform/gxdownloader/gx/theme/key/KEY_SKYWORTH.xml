@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf8" standalone="no"?>
+<keymap>
+    <tree>
+      <item display="Remote Key map">
+        <item display="Remote 1" group="KEY_SKYWORTH"/>
+      </item>
+    </tree>
+ 	<group name="KEY_SKYWORTH">
+	<key name="GUIK_0">0x7f1e</key>
+	<key name="GUIK_1">0x7fb6</key>
+	<key name="GUIK_2">0x7f36</key>
+	<key name="GUIK_3">0x7fcc</key>
+	<key name="GUIK_4">0x7f8e</key>
+	<key name="GUIK_5">0x7f0e</key>
+	<key name="GUIK_6">0x7fec</key>
+	<key name="GUIK_7">0x7fae</key>
+	<key name="GUIK_8">0x7f2e</key>
+	<key name="GUIK_9">0x7fdc</key>
+	<key name="GUIK_M">0x7f56</key>		<!--menu-->
+	<key name="GUIK_ESCAPE">0x7f5c</key>	<!--exit-->
+	<key name="GUIK_RETURN">0x7f8c</key>	<!-->KEY_OK<-->
+	<key name="GUIK_UP">0x7fac</key>
+	<key name="GUIK_DOWN">0x7fb4</key>
+	<key name="GUIK_LEFT">0x7f66</key>
+	<key name="GUIK_RIGHT">0x7f7c</key>
+	<key name="GUIK_I">0x7ff4</key>		<!--info-->
+	<key name="GUIK_PAGE_UP">0x7f44</key>		<!--page up-->
+	<key name="GUIK_PAGE_DOWN">0x7fce</key>		<!--page down-->
+	<key name="GUIK_PLUS">0x7f5e</key><!-->KEY_VOLUME_UP_1<-->
+	<key name="GUIK_MINUS">0x7f9e</key><!-->KEY_VOLUME_DOWN_1<-->
+	<key name="GUIK_C">0x7fee</key><!-->PRGO_LIST<-->
+	<key name="GUIK_HOME">0x7fc6</key><!-->KEY_MUTE<-->
+	<key name="GUIK_T">0x7f64</key><!-->KEY_TV_RADIO<-->
+	<key name="GUIK_BACKSPACE">0x7fbe</key><!-->KEY_BACK<-->
+	<key name="GUIK_R">0x7f6e</key><!-->KEY_RED<-->
+	<key name="GUIK_G">0x7fde</key><!-->KEY_GREEN<-->
+	<key name="GUIK_Y">0x7f64</key><!-->KEY_YELLOW<-->
+	<key name="GUIK_B">0x7f96</key><!-->KEY_BLUE<-->
+	<key name="GUIK_E">0x7f94</key><!-->KEY_EPG<-->
+	<key name="GUIK_P">0x7fc4</key><!-->KEY_POWER<-->
+	<key name="GUIK_F">0x7f6e</key><!-->KEY_FAV<-->
+	<!--><key name="GUIK_PANEL_M">0x7f4056a9</key><-->
+	<!--><key name="GUIK_PANEL_ESCAPE">0x7f405Ca3</key><-->
+	<!--><key name="GUIK_PANEL_RETURN">0x7f408c73</key><-->
+	<!--><key name="GUIK_PANEL_UP">0x7f40ac53</key><-->
+	<!--><key name="GUIK_PANEL_DOWN">0x7f40b44b</key><-->
+	<!--><key name="GUIK_PANEL_LEFT">0x7f406699</key><-->
+	<!--><key name="GUIK_PANEL_RIGHT">0x7f407c83</key><-->
+	<!--><key name="GUIK_PANEL_P">0x7f40c43b</key><-->
+	</group>
+</keymap>

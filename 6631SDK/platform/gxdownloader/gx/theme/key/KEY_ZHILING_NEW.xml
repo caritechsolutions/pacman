@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf8" standalone="no"?>
+<keymap>
+    <tree>
+    <item display="Remote Key map">
+    <item display="Remote 1" group="KEY_ZHILING_NEW"/>
+    </item>
+    </tree>
+    <group name="KEY_ZHILING_NEW">
+	<key name="GUIK_0">0x7f7f</key>
+	<key name="GUIK_1">0x7f8d</key>
+	<key name="GUIK_2">0x7f4f</key>
+	<key name="GUIK_3">0x7fcf</key>
+	<key name="GUIK_4">0x7fad</key>
+	<key name="GUIK_5">0x7f6f</key>
+	<key name="GUIK_6">0x7fef</key>
+	<key name="GUIK_7">0x7f9d</key>
+	<key name="GUIK_8">0x7f5f</key>
+	<key name="GUIK_9">0x7fdf</key>
+	<key name="GUIK_M">0x7fcd</key>		<!--menu-->
+	<key name="GUIK_ESCAPE">0x7f67</key>	<!--exit-->
+	<key name="GUIK_RETURN">0x7f37</key>	<!-->KEY_OK<-->
+	<key name="GUIK_UP">0x7f97</key>
+	<key name="GUIK_DOWN">0x7fa7</key>
+	<key name="GUIK_LEFT">0x7f75</key>
+	<key name="GUIK_RIGHT">0x7ff5</key>
+	<key name="GUIK_T">0x7fbd</key><!-->KEY_TV_RADIO<-->
+	<key name="GUIK_BACKSPACE">0x7fb7</key><!-->KEY_BACK<-->		
+	<key name="GUIK_R">0x7f1f</key><!-->KEY_RED<-->
+	<key name="GUIK_G">0x7f17</key><!-->KEY_GREEN<-->
+	<key name="GUIK_Y">0x7fff</key><!-->KEY_YELLOW<-->
+	<key name="GUIK_B">0x7f3d</key><!-->KEY_BLUE<-->
+	<key name="GUIK_P">0x7ffd</key><!-->KEY_POWER<-->	
+	<!--><key name="GUIK_PANEL_M">0x7f80cd32</key><-->
+	<!--><key name="GUIK_PANEL_ESCAPE">0x7f806798</key><-->
+	<!--><key name="GUIK_PANEL_RETURN">0x7f8037c8</key><-->
+	<!--><key name="GUIK_PANEL_UP">0x7f809768</key><-->
+	<!--><key name="GUIK_PANEL_DOWN">0x7f80a758</key><-->
+	<!--><key name="GUIK_PANEL_LEFT">0x7f80758a</key><-->
+	<!--><key name="GUIK_PANEL_RIGHT">0x7f80f50a</key><-->
+	<!--><key name="GUIK_PANEL_P">0x7f80fd02</key><-->	
+    </group>
+</keymap>

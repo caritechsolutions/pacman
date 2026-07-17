@@ -1,0 +1,44 @@
+#!/bin/bash
+
+GXSRC_PATH=$(cd `dirname $0`; pwd)
+
+J=-j`cat /proc/cpuinfo| grep processor | wc -l`
+
+build()
+{
+	export CHIP=$1
+	echo "CHIP $CHIP"
+	case "$CHIP" in
+		gx3201|gx3211|gx6605s|gx3113c)
+			export ARCH=csky
+			export CROSS_COMPILE=csky-elf-
+			;;
+		*)
+			echo "EORROR CHIP_ID: $CHIP"
+			help
+			;;
+	esac
+
+	./config.sh $CHIP $ARCH
+
+	make clean || exit 1
+	make || exit 1
+}
+
+help()
+{
+	echo "./build clean"
+	echo ""
+	echo "./build <chip>"
+	echo "         chip: gx3113c|gx3201|gx3211|gx6605s"
+	echo " "
+	exit 1
+}
+
+if [ $# -ne 1 ]; then
+	help
+elif [ "$1" == "clean" ];then
+	make clean
+else
+	build $@
+fi

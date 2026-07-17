@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="notepad">
+	<property name="name" type="string" value="" hint="widget name||控件名称"/>
+	<property name="style" type="string" value="default" hint="widget style||控件风格"/>
+	<property name="rect" type="container" hint="widget postion||控件位置设置">
+		<property name="x" type="u16" value="0" hint="x position||水平座标"/>
+		<property name="y" type="u16" value="0" hint="y postion||垂直座标"/>
+		<property name="width" type="u16" value="60" hint="widget width||宽度"/>
+		<property name="height" type="u16" value="30" hint="widget height||高度"/>
+	</property>
+	<property name="state" type="strselect" help="item||enable;disable;hide;show;focus" value="show" attr="optional" hint="widget initial state||控件初始显示状态"/>
+
+	<property name="forecolor" type="container" hint="foreground color||前景颜色设置">
+		<property name="unfocus" type="color" value="#000000" hint="unfocus color||非焦点时的颜色"/>
+		<property name="focus" type="color" value="#000000" hint="focus color||焦点时的颜色"/>
+		<property name="disable" type="color" value="#000000" hint="disable color||被禁用时的颜色"/>
+	</property>
+	<property name="backcolor" type="container" hint="background color||背景颜色设置">
+		<property name="unfocus" type="color" value="#808080" hint="unfocus color||非焦点时的颜色"/>
+		<property name="focus" type="color" value="#808080" hint="focus color||焦点时的颜色"/>
+		<property name="disable" type="color" value="#808080" hint="disable color||被禁用时的颜色"/>
+	</property>
+
+	<property name="alignment" type="container" hint="widget alignment||对齐方式">
+		<property name="h" type="strselect" help="item||left;hcentre;right" value="hcentre" hint="horizontal alignment||水平对齐"/>
+		<property name="v" type="strselect" help="item||top;vcentre;bottom" value="vcentre" hint="vertical alignment||垂直对齐"/>
+	</property>
+
+	<property name="font" type="font" value="" attr="optional" hint="widget font||控件字体"/>
+	<property name="encoding" type="strselect" help="item||utf8;gb2312;gbk;big5" value="utf8" attr="optional" hint="encoding type||编码类型"/>
+
+	<property name="mirror" type="strselect" help="item||enable;disable" value="disable" attr="optional" hint="widget mirror state||组件镜像状态"/>
+	<property name="keypress_revert" type="strselect" help="item||enable;disable" value="disable" attr="optional" hint="key (left/right) revert state||(左右)按键反转状态"/>
+
+	<property name="file" type="file" value="" help="filter||Text (*.txt);;All files (*.*)||path||image" attr="optional" hint="file||使用的文件"/>
+
+	<property name="image" type="file" value="" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" attr="optional" hint="image file||图像文件"/>
+
+	<property name="vertical_margin" type="u16" value="0" attr="optional" hint="vertical margin||垂直边距"/>
+	<property name="horizontal_margin" type="u16" value="0" attr="optional" hint="horizontal margin||水平边距"/>
+	<property name="hinterval" type="u32" value="0" attr="optional" hint="horizontal interval|文字水平间距"/>
+	<property name="vinterval" type="u32" value="0" attr="optional" hint="vertical interval|文字垂直间距"/>
+	<property name="scrollbar_auto_hide" type="strselect" value="false" help="true||false" attr="optional" hint="scrollbar hidden automatically||自动隐藏位置条"/>
+	<property name="buffer_size" type="u32" value="4096" attr="optional" hint="buffer size||缓存大小"/>
+
+	<signal name = "create" value=""/>
+	<signal name = "destroy" value=""/>
+</widget>

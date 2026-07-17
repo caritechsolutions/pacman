@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf8" standalone="no"?>
+<keymap>
+    <tree>
+    <item display="Remote Key map">
+    <item display="Remote 1" group="KEY_ZHILING_LUFENG"/>
+    </item>
+    </tree>
+    <group name="KEY_ZHILING_LUFENG">
+	<key name="GUIK_0">0x300</key>
+	<key name="GUIK_1">0x301</key>
+	<key name="GUIK_2">0x302</key>
+	<key name="GUIK_3">0x303</key>
+	<key name="GUIK_4">0x304</key>
+	<key name="GUIK_5">0x305</key>
+	<key name="GUIK_6">0x306</key>
+	<key name="GUIK_7">0x307</key>
+	<key name="GUIK_8">0x308</key>
+	<key name="GUIK_9">0x309</key>
+	<key name="GUIK_M">0x315</key>		<!--menu-->
+	<key name="GUIK_ESCAPE">0x31d</key>	<!--exit-->
+	<key name="GUIK_RETURN">0x319</key>	<!-->KEY_OK<-->
+	<key name="GUIK_UP">0x317</key>
+	<key name="GUIK_DOWN">0x31b</key>
+	<key name="GUIK_LEFT">0x318</key>
+	<key name="GUIK_RIGHT">0x31a</key>
+	<key name="GUIK_PAGE_UP">0x320</key>		<!--page up-->
+	<key name="GUIK_PAGE_DOWN">0x321</key>		<!--page down-->
+	<key name="GUIK_HOME">0x30e</key><!-->KEY_MUTE<-->
+	<key name="GUIK_T">0x30f</key><!-->KEY_TV_RADIO<-->	
+	<key name="GUIK_BACKSPACE">0x316</key><!-->KEY_BACK<-->	
+	<key name="GUIK_R">0x311</key><!-->KEY_RED<-->
+	<key name="GUIK_G">0x312</key><!-->KEY_GREEN<-->
+	<key name="GUIK_Y">0x313</key><!-->KEY_YELLOW<-->
+	<key name="GUIK_B">0x314</key><!-->KEY_BLUE<-->
+	<key name="GUIK_E">0x31c</key><!-->KEY_EPG<-->
+	<key name="GUIK_P">0x30c</key><!-->KEY_POWER<-->
+	<key name="GUIK_F">0x310</key><!-->KEY_FAV<-->	
+	<key name="GUIK_PLUS">0x322</key><!-->KEY_VOLUME_UP_1<-->	
+	<key name="GUIK_MINUS">0x323</key><!-->KEY_VOLUME_DOWN_1<-->		
+	<key name="GUIK_S">0x30d</key><!-->KEY_TRACK<-->
+	<key name="GUIK_U">0x31e</key><!-->CHANNEL_UP<-->
+	<key name="GUIK_D">0x31f</key><!-->CHANNEL_DOWN<-->
+    </group>
+</keymap>

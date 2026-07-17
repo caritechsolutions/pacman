@@ -1,0 +1,10 @@
+SET(CA_VERSION $ENV{CA_VERSION})
+MESSAGE(STATUS "CA_VERSION   : ${CA_VERSION}")
+
+IF (CA_VERSION STREQUAL cghs)
+	INCLUDE(cas/cryptoguard/cghs/ca.cmake)
+ELSEIF (CA_VERSION STREQUAL cgcs)
+	INCLUDE(cas/cryptoguard/cgcs/ca.cmake)
+ELSE()
+	MESSAGE(STATUS "CA_VERSION   : ${CA_VERSION}")
+ENDIF()

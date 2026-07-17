@@ -1,0 +1,2 @@
+/usr/bin/ar qc libdemos-common.a  CMakeFiles/demos-common.dir/getopt.c.o CMakeFiles/demos-common.dir/log.c.o CMakeFiles/demos-common.dir/timer.c.o CMakeFiles/demos-common.dir/xshell.c.o
+/usr/bin/ranlib libdemos-common.a

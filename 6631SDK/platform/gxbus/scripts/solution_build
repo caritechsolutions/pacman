@@ -1,0 +1,1624 @@
+#!/bin/bash
+set -e
+
+CURRENT_PATH=$(cd `dirname $0`; pwd)
+PLATFORM_PATH=${CURRENT_PATH}/../../
+gxtest_path=$CURRENT_PATH/../../../gxtest
+
+function check_buildroot_config() {
+	local array
+
+	buildroot="./buildroot/.config"
+	if [[ -f $buildroot ]];then
+		PROFILE=$(cat buildroot/.config | grep CONFIG_PROFILE_NAME | awk -F "=\"" '{print $2}' |  awk -F "\"" '{print $1}')
+	else
+		config_list=$(ls buildroot/profile)
+		echo -e "\033[33;1mPlease Choose one from below for [buildroot config]\033[0m\n"
+		index=0
+		for p in $config_list;
+		do
+			S_ARCH=`cat buildroot/profile/$p/package.config | grep -w CONFIG_ARCH | awk -F "=" '{print $2}' | tr -d '"'`
+			if [[ $S_ARCH == $ARCH ]]; then
+				let index=index+1
+				array[$index]=$p
+				echo -e "\t\033[32;1m[$index] $p\033[0m"
+			fi
+		done
+		echo -en "\n\033[33;1mInput config num (1-${#array[*]}): \033[0m"
+		read -e NUM
+		if [[ $NUM -gt ${#array[*]} || $NUM -le 0 ]];then
+			echo -en "\n\033[31;1mInput profile num out of range!! \033[0m\n"
+			exit 1
+		fi
+		PROFILE=${array[$NUM]}
+	fi
+	echo -e "Choose linux profile = \033[31;1m"buildroot/profile/"$PROFILE\033[0m"
+}
+
+function check_solution_config() {
+	local array
+
+	solution="./solution/.config"
+	if [[ -f $solution ]];then
+		S_OS=`cat solution/.config | grep BR2_OS_NAME | awk -F "=" '{print $2}' | tr -d '"'`
+		S_CHIP=`cat solution/.config | grep BR2_CHIP_NAME | awk -F "=" '{print $2}' | tr -d '"'`
+
+		if [[ $S_CHIP == "sirius" || $S_CHIP == "canopus" || $S_CHIP == "vega" ]]; then
+			S_ARCH=arm
+		else
+			S_ARCH=csky
+		fi
+
+		if [[ $S_ARCH == $ARCH && $S_OS == "$OS" ]]; then
+			CONFIG=`cat solution/.config | grep BR2_PROJ_NAME | awk -F "=" '{print $2}' | tr -d '"'`
+			echo -e "\033[32;1mCompile solution with project $CONFIG\033[0m"
+		else
+			echo -e "\033[31;1mCompile solution with error defconfig\033[0m"
+			rm ./solution/.config
+		fi
+	fi
+
+	if [[ ! -f $solution ]];then
+		config_list=$(ls solution/configs)
+
+		index=0
+		for p in $config_list;
+		do
+			if [[ -d solution/configs/$p ]]; then
+				continue;
+			fi
+			S_OS=`cat solution/configs/$p | grep BR2_OS_NAME | awk -F "=" '{print $2}' | tr -d '"'`
+			S_CHIP=`cat solution/configs/$p | grep BR2_CHIP_NAME | awk -F "=" '{print $2}' | tr -d '"'`
+			if [[ $S_CHIP == "sirius" || $S_CHIP == "canopus" || $S_CHIP == "vega" ]]; then
+				S_ARCH=arm
+			else
+				S_ARCH=csky
+			fi
+			if [[ $S_ARCH == $ARCH && $S_OS == $OS ]]; then
+				if [[ ${OS} == "ecos" ]]; then
+					let index=index+1
+					array[$index]=$p
+				else
+					if [[ -f buildroot/.config ]]; then
+						B_CHIP=`cat buildroot/.config | grep CONFIG_KERNEL_DEFCONFIG | awk -F '"' '{print $2}' | awk -F '_' '{print $1}'`
+					else
+						B_CHIP=`cat buildroot/profile/${PROFILE}/package.config | grep CONFIG_KERNEL_DEFCONFIG | awk -F '"' '{print $2}' | awk -F '_' '{print $1}'`
+					fi
+					if [[ ${B_CHIP} == ${S_CHIP} ]]; then
+						let index=index+1
+						array[$index]=$p
+					fi
+				fi
+			fi
+		done
+
+		if [[ $index -lt 1 ]]; then
+			echo -en "\n\033[33;1mDon't exist match solution config \033[0m\n"
+			exit 1
+		fi
+
+		if [[ ${index} -eq 1 ]]; then
+			cp solution/configs/${array[$index]} solution/.config
+		else
+			echo -e "\033[33;1mPlease Choose one from below for [solution config]\033[0m\n"
+			for((index = 1; index <= ${#array[*]}; index++)) do
+				echo -e "\t\033[32;1m[$index] ${array[$index]}\033[0m"
+			done
+			echo -en "\n\033[33;1mInput config num (1-${#array[*]}): \033[0m"
+			read -e NUM
+			if [[ $NUM -gt ${#array[*]} || $NUM -le 0 ]];then
+				echo -en "\n\033[31;1mInput profile num out of range!! \033[0m\n"
+				exit 1
+			fi
+			CONFIG=${array[$NUM]}
+			cp solution/configs/$CONFIG solution/.config || exit 1
+		fi
+	fi
+
+	CHIP=$(cat solution/.config | grep "^BR2_CHIP_NAME=" | sed 's/^BR2_CHIP_NAME=\"\(\S\+\)\"/\1/g')
+	PROJ=$(cat solution/.config | grep "^BR2_PROJ_NAME=" | sed 's/^BR2_PROJ_NAME=\"\(\S\+\)\"/\1/g')
+	FAMI=$(cat solution/.config | grep "^BR2_FAMILY_NAME=" | sed 's/^BR2_FAMILY_NAME=\"\(\S\+\)\"/\1/g')
+	echo -e "\033[32;1mconfig chip = $CHIP\033[0m"
+	echo -e "\033[32;1mconfig project name = $PROJ\033[0m"
+	echo -e "\033[32;1mconfig family name = $FAMI\033[0m"
+
+	if [[ "$PROFILE" == "sirius_nand" ]]; then
+		echo -e "\033[32;1msupport sirius spi nand \033[0m"
+		sed -i "/^# BR2_MOD_NAND_FLASH is not set/cBR2_MOD_NAND_FLASH=y" solution/.config
+	else
+		echo -e "\033[32;1msupport sirius nor flash \033[0m"
+		sed -i "/^BR2_MOD_NAND_FLASH=y/c# BR2_MOD_NAND_FLASH is not set" solution/.config
+	fi
+
+}
+
+function info() {
+	echo -e "\n=================================================================================="
+	echo -e "\e[1;32mARCH:\e[0m             $ARCH"
+	echo -e "\e[1;32mOS:\e[0m               $OS"
+	echo -e "\e[1;32mPREFIX:\e[0m           $GX_PREFIX"
+	echo -e "\e[1;32mLIB:\e[0m              $GXLIB_PATH"
+	echo -e "\e[1;32mKERNEL:\e[0m           $GX_KERNEL_PATH"
+	echo -e "\e[1;32mCROSS_COMPILE:\e[0m    $CROSS_COMPILE"
+	echo -e "\e[1;32mBUILDROOT:\e[0m        $PROFILE"
+	#echo -e "\e[1;32mSOLUTION:\e[0m  $CONFIG"
+	echo -e "==================================================================================\n"
+}
+
+function set_env() {
+	GX_PREFIX=`pwd`/library/goxceed
+	if [ ${OS} == "linux-tee" ]; then
+		CROSS_PATH=$ARCH-linux
+	elif [ ${OS} == "ecos-tee" ]; then
+		CROSS_PATH=$ARCH-ecos
+	else
+		CROSS_PATH=$ARCH-$OS
+	fi
+	GXLIB_PATH=$GX_PREFIX/$CROSS_PATH
+	GX_KERNEL_PATH=`pwd`/buildroot/kernel/4.9.y
+	GX_APP_PATH=`pwd`/solution/projects
+
+	if [[ -z $CROSS_COMPILE ]]; then
+		if [[ "$ARCH-$OS" = "arm-linux" ]]; then
+			CROSS_COMPILE=arm-linux-uclibcgnueabihf-
+		elif [[ "$ARCH-$OS" = "arm-linux-tee" ]]; then
+			CROSS_COMPILE=arm-linux-uclibcgnueabihf-
+		elif [[ "$ARCH-$OS" = "arm-ecos" ]]; then
+			CROSS_COMPILE=arm-none-eabi-
+		elif [[ "$ARCH-$OS" = "arm-ecos-tee" ]]; then
+			CROSS_COMPILE=arm-none-eabi-
+		elif [[ "$ARCH-$OS" = "arm-nos" ]]; then
+			CROSS_COMPILE=arm-none-eabi-
+		elif [[ "$ARCH-$OS" = "csky-ecos" ]]; then
+			CROSS_COMPILE=csky-elf-
+		elif [[ "$ARCH-$OS" = "csky-nos" ]]; then
+			CROSS_COMPILE=csky-elf-
+		elif [[ "$ARCH-$OS" = "csky-linux" ]]; then
+			CROSS_COMPILE=csky-linux-
+		fi
+	fi
+
+	if [[ ! -d $GX_PREFIX ]];then
+		echo -e "\033[31;1mMkdir prefix : $GX_PREFIX\033[0m"
+		mkdir -p $GX_PREFIX
+	fi
+
+	export GX_PREFIX GXLIB_PATH GX_KERNEL_PATH ARCH OS CROSS_PATH CROSS_COMPILE
+
+	if [[ "$OS" == "linux" || "$OS" == "linux-tee" ]]; then
+		check_buildroot_config
+	fi
+	if [ "$1" == 'solution' ]; then
+		check_solution_config
+	fi
+	info
+}
+
+function build_ecos3.0() {
+	echo -e "\033[31;1mStart build ecos3.0\033[0m"
+	cd ./platform/ecos3.0
+
+	if [[ ${ARCH} == "arm" ]]; then
+		ARCH_TMP=arm_smp
+	else
+		ARCH_TMP=${ARCH}
+	fi
+
+	if [[ "$OPTIMIZE" == "memory" ]]; then
+		loglevel=0 optimize=Os ./build $ARCH_TMP $OS || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=0 optimize=Os ./build $ARCH_TMP $OS"; exit 1; }
+	else
+		# 没有配置全局编译选项并且编译选项配置文件存在
+		if [[ -z ${loglevel} ]] && [[ -z ${optimize} ]] && [[ -s ${CURRENT_PATH}/solution_build_config ]]; then
+			# 定义关联数组存储配置
+			declare -A solution_build_config
+
+			# 读取配置文件到关联数组
+			while IFS='=' read -r key value; do
+				[[ "$key" =~ ^#.*$ || -z "$key" ]] && continue
+				solution_build_config["$key"]="$value"
+			done < "${CURRENT_PATH}/solution_build_config"
+
+			# 提取需要的变量
+			local loglevel=${solution_build_config[ecos3_0_loglevel]}
+			local optimize=${solution_build_config[ecos3_0_optimize]}
+		fi
+		loglevel=${loglevel} optimize=${optimize} ./build $ARCH_TMP $OS || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=${loglevel} optimize=${optimize} ./build $ARCH_TMP $OS"; exit 1; }
+	fi
+	cd -
+}
+
+function cleanup_ecos3.0() {
+	echo -e "\033[31;1mStart cleanup ecos3.0\033[0m"
+	cd ./platform/ecos3.0
+
+	./build clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build clean"; exit 1; }
+	cd -
+}
+
+function build_gxapi() {
+	echo -e "\033[31;1mStart build gxapi\033[0m"
+	cd ./platform/gxapi
+
+	if [ $# -eq 2 ]; then
+		arch=$1
+		os=$2
+	else
+		arch=${ARCH}
+		os=${OS}
+	fi
+
+	if [[ "$OPTIMIZE" == "memory" ]]; then
+		loglevel=0 optimize=Os ./build $arch $os || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=0 optimize=Os ./build $arch $os"; exit 1; }
+	else
+		if [[ -z ${loglevel} ]] && [[ -z ${optimize} ]] && [[ -s ${CURRENT_PATH}/solution_build_config ]]; then
+			# 定义关联数组存储配置
+			declare -A solution_build_config
+
+			# 读取配置文件到关联数组
+			while IFS='=' read -r key value; do
+				[[ "$key" =~ ^#.*$ || -z "$key" ]] && continue
+				solution_build_config["$key"]="$value"
+			done < "${CURRENT_PATH}/solution_build_config"
+
+			# 提取需要的变量
+			local loglevel=${solution_build_config[gxapi_loglevel]}
+			local optimize=${solution_build_config[gxapi_optimize]}
+		fi
+		loglevel=${loglevel} optimize=${optimize} ./build $arch $os || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=${loglevel} optimize=${optimize} ./build $arch $os"; exit 1; }
+	fi
+	cd -
+}
+
+function cleanup_gxapi() {
+	echo -e "\033[31;1mStart cleanup gxapi\033[0m"
+	cd ./platform/gxapi
+
+	./build clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build clean"; exit 1; }
+	cd -
+}
+
+function build_thirdparty() {
+	echo -e "\033[31;1mStart build gxthirdparty\033[0m"
+	cd ./platform/thirdparty
+
+	if [ $# -eq 2 ]; then
+		arch=$1
+		os=$2
+	else
+		arch=${ARCH}
+		os=${OS}
+	fi
+
+	if [[ "$OPTIMIZE" == "memory" ]]; then
+		loglevel=0 optimize=Os ./build $arch $os || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=0 optimize=Os ./build $arch $os"; exit 1; }
+	else
+		if [[ -z ${loglevel} ]] && [[ -z ${optimize} ]] && [[ -s ${CURRENT_PATH}/solution_build_config ]]; then
+			# 定义关联数组存储配置
+			declare -A solution_build_config
+
+			# 读取配置文件到关联数组
+			while IFS='=' read -r key value; do
+				[[ "$key" =~ ^#.*$ || -z "$key" ]] && continue
+				solution_build_config["$key"]="$value"
+			done < "${CURRENT_PATH}/solution_build_config"
+
+			# 提取需要的变量
+			local loglevel=${solution_build_config[thirdparty_loglevel]}
+			local optimize=${solution_build_config[thirdparty_optimize]}
+		fi
+		loglevel=${loglevel} optimize=${optimize} ./build $arch $os || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=${loglevel} optimize=${optimize} ./build $arch $os"; exit 1; }
+	fi
+	cd -
+}
+
+function cleanup_thirdparty() {
+	echo -e "\033[31;1mStart cleanup gxthirdparty\033[0m"
+	cd ./platform/thirdparty
+
+	./build clean
+	cd -
+}
+
+function build_gxbus() {
+	echo -e "\033[31;1mStart build gxbus\033[0m"
+	cd ./platform/gxbus
+
+	if [ $# -eq 2 ]; then
+		arch=$1
+		os=$2
+	else
+		arch=${ARCH}
+		os=${OS}
+	fi
+
+	if [[ "$OPTIMIZE" == "memory" ]]; then
+		loglevel=0 optimize=Os ./build $arch $os || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=0 optimize=Os ./build $arch $os"; exit 1; }
+	else
+		if [[ -z ${loglevel} ]] && [[ -z ${optimize} ]] && [[ -s ${CURRENT_PATH}/solution_build_config ]]; then
+			# 定义关联数组存储配置
+			declare -A solution_build_config
+
+			# 读取配置文件到关联数组
+			while IFS='=' read -r key value; do
+				[[ "$key" =~ ^#.*$ || -z "$key" ]] && continue
+				solution_build_config["$key"]="$value"
+			done < "${CURRENT_PATH}/solution_build_config"
+
+			# 提取需要的变量
+			local loglevel=${solution_build_config[gxbus_loglevel]}
+			local optimize=${solution_build_config[gxbus_optimize]}
+		fi
+		loglevel=${loglevel} optimize=${optimize} ./build $arch $os || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=${loglevel} optimize=${optimize} ./build $arch $os"; exit 1; }
+	fi
+	cd -
+}
+
+function cleanup_gxbus() {
+	echo -e "\033[31;1mStart cleanup gxbus\033[0m"
+	cd ./platform/gxbus
+
+	./build clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build clean"; exit 1; }
+	cd -
+}
+
+function build_gxdownloader() {
+	echo -e "\033[31;1m Start build gxdownloader\033[0m"
+	cd ./platform/gxdownloader
+
+	if [[ "$OPTIMIZE" == "memory" ]]; then
+		loglevel=0 optimize=Os ./build $ARCH $OS || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=0 optimize=Os ./build $ARCH $OS"; exit 1; }
+	else
+		if [[ -z ${loglevel} ]] && [[ -z ${optimize} ]] && [[ -s ${CURRENT_PATH}/solution_build_config ]]; then
+			# 定义关联数组存储配置
+			declare -A solution_build_config
+
+			# 读取配置文件到关联数组
+			while IFS='=' read -r key value; do
+				[[ "$key" =~ ^#.*$ || -z "$key" ]] && continue
+				solution_build_config["$key"]="$value"
+			done < "${CURRENT_PATH}/solution_build_config"
+
+			# 提取需要的变量
+			local loglevel=${solution_build_config[gxdownloader_loglevel]}
+			local optimize=${solution_build_config[gxdownloader_optimize]}
+		fi
+		loglevel=${loglevel} optimize=${optimize} ./build $ARCH $OS || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=${loglevel} optimize=${optimize} ./build $ARCH $OS"; exit 1; }
+	fi
+
+	cd -
+}
+
+function cleanup_gxdownloader() {
+	GXSRC_PATH=$(cd `dirname $0`; pwd)
+	GX_PREFIX=$GXSRC_PATH/library/goxceed
+	echo -e "\033[31;1mStart cleanup gxdownloader\033[0m"
+	cd ./platform/gxdownloader
+	./build clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build clean"; exit 1; }
+	cd -
+}
+
+function build_gxmisc() {
+	echo -e "\033[31;1m Start build gxmisc\033[0m"
+	cd ./platform/gxmisc
+
+	if [[ "$OPTIMIZE" == "memory" ]]; then
+		loglevel=0 optimize=Os ./build $ARCH $OS || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=0 optimize=Os ./build $ARCH $OS"; exit 1; }
+	else
+		if [[ -z ${loglevel} ]] && [[ -z ${optimize} ]] && [[ -s ${CURRENT_PATH}/solution_build_config ]]; then
+			# 定义关联数组存储配置
+			declare -A solution_build_config
+
+			# 读取配置文件到关联数组
+			while IFS='=' read -r key value; do
+				[[ "$key" =~ ^#.*$ || -z "$key" ]] && continue
+				solution_build_config["$key"]="$value"
+			done < "${CURRENT_PATH}/solution_build_config"
+
+			# 提取需要的变量
+			local loglevel=${solution_build_config[gxmisc_loglevel]}
+			local optimize=${solution_build_config[gxmisc_optimize]}
+		fi
+		loglevel=${loglevel} optimize=${optimize} ./build $ARCH $OS || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=${loglevel} optimize=${optimize} ./build $ARCH $OS"; exit 1; }
+	fi
+	cd -
+}
+
+function cleanup_gxmisc() {
+	echo -e "\033[31;1mStart cleanup gxmisc\033[0m"
+
+	./build clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build clean"; exit 1; }
+	cd -
+}
+
+function build_gxsecure() {
+	echo -e "\033[31;1mStart build gxsecure\033[0m"
+	cd ./platform/gxsecure
+
+	if_build_firmware="no"
+	if [ $# -eq 2 ]; then
+		arch=$1
+		os=$2
+	elif [ $# -eq 3 ]; then
+		if_build_firmware="yes"
+	else
+		arch=${ARCH}
+		os=${OS}
+	fi
+
+	if [ ${if_build_firmware} == "yes" ]; then
+		./build $1 $2 $3 || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build $1 $2 $3"; exit 1; }
+	else
+		if [[ "$OPTIMIZE" == "memory" ]]; then
+			if [ "${OS}" == "linux-tee" ];then
+				loglevel=0 ./build $arch $os optee || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=0 ./build $arch $os optee"; exit 1; }
+			else
+				loglevel=0 ./build $arch $os || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=0 ./build $arch $os"; exit 1; }
+			fi
+		else
+			if [[ -z ${loglevel} ]] && [[ -z ${optimize} ]] && [[ -s ${CURRENT_PATH}/solution_build_config ]]; then
+				# 定义关联数组存储配置
+				declare -A solution_build_config
+
+				# 读取配置文件到关联数组
+				while IFS='=' read -r key value; do
+					[[ "$key" =~ ^#.*$ || -z "$key" ]] && continue
+					solution_build_config["$key"]="$value"
+				done < "${CURRENT_PATH}/solution_build_config"
+
+				# 提取需要的变量
+				local loglevel=${solution_build_config[gxsecure_loglevel]}
+				local optimize=${solution_build_config[gxsecure_optimize]}
+			fi
+			if [ "${OS}" == "linux-tee" ];then
+				loglevel=${loglevel} optimize=${optimize} ./build $arch $os optee || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=${loglevel} optimize=${optimize} ./build $arch $os optee"; exit 1; }
+			else
+				loglevel=${loglevel} optimize=${optimize} ./build $arch $os || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=${loglevel} optimize=${optimize} ./build $arch $os"; exit 1; }
+			fi
+		fi
+	fi
+	cd -
+}
+
+function cleanup_gxsecure() {
+	echo -e "\033[31;1mStart cleanup gxsecure\033[0m"
+	cd ./platform/gxsecure
+
+	./build clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build clean"; exit 1; }
+	cd -
+}
+
+function build_secure_firmware() {
+	if [[ $submode =~ "gxtest-goxceed" ]]; then
+		echo -e "\033[31;1mStart build secure firmware\033[0m"
+		cd ./platform/gxosal
+		./build csky seos || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build csky seos"; exit 1; }
+		cd -
+		cd ./platform/gxsecure
+		TKCAS=$(sed -n 's/^[[:space:]]*TKCAS[[:space:]]*=[[:space:]]*\(.*\)/\1/p' ${gxtest_path}/stb/goxceed/cases/service/gxsecure/tfm/firmware/firmware_config | xargs)
+		TCAS=$(sed -n 's/^[[:space:]]*TCAS[[:space:]]*=[[:space:]]*\(.*\)/\1/p' ${gxtest_path}/stb/goxceed/cases/service/gxsecure/tfm/firmware/firmware_config | xargs)
+		if [[ $TCAS == "y" ]]; then
+			./build firmware ${CHIP} TCAS || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build firmware ${CHIP} TCAS"; exit 1; }
+			cp ${GXLIB_PATH}/lib/firmware/secure/*TCAS.fw ${gxtest_path}/stb/goxceed/cases/service/gxsecure/tfm/firmware/current/
+		fi
+		if [[ $TKCAS == "y" ]]; then
+			./build firmware ${CHIP} TKCAS || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build firmware ${CHIP} TKCAS"; exit 1; }
+			cp ${GXLIB_PATH}/lib/firmware/secure/*TKCAS.fw ${gxtest_path}/stb/goxceed/cases/service/gxsecure/tfm/firmware/current/
+		fi
+		cd -
+		mkdir -p ${gxtest_path}/stb/goxceed/cases/service/gxsecure/tfm/firmware/current/
+	fi
+}
+
+function build_gxosal() {
+	echo -e "\033[31;1mStart build gxosal\033[0m"
+	cd ./platform/gxosal
+
+	if [ $# -eq 2 ]; then
+		arch=$1
+		os=$2
+	else
+		arch=${ARCH}
+		os=${OS}
+	fi
+
+	if [[ "$OPTIMIZE" == "memory" ]]; then
+		loglevel=0 optimize=Os ./build $arch $os || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=0 optimize=Os ./build $arch $os"; exit 1; }
+	else
+		if [[ -s ${CURRENT_PATH}/solution_build_config ]]; then
+			# 定义关联数组存储配置
+			declare -A solution_build_config
+
+			# 读取配置文件到关联数组
+			while IFS='=' read -r key value; do
+				[[ "$key" =~ ^#.*$ || -z "$key" ]] && continue
+				solution_build_config["$key"]="$value"
+			done < "${CURRENT_PATH}/solution_build_config"
+
+			# 提取需要的变量
+			local loglevel=${solution_build_config[gxosal_loglevel]}
+			local optimize=${solution_build_config[gxosal_optimize]}
+		fi
+		loglevel=${loglevel} optimize=${optimize} ./build $arch $os || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=${loglevel} optimize=${optimize} ./build $arch $os "; exit 1; }
+	fi
+
+	cd -
+}
+
+function cleanup_optee() {
+	echo -e "\033[31;1mStart cleanup optee\033[0m"
+	cd ./platform/optee/3.22.0
+
+	./build clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build clean"; exit 1; }
+	cd -
+}
+
+function cleanup_gxosal() {
+	echo -e "\033[31;1mStart cleanup gxosal\033[0m"
+	cd ./platform/gxosal
+
+	./build clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build clean"; exit 1; }
+	cd -
+}
+
+function build_gxavdev() {
+	echo -e "\033[31;1mStart build gxavdev\033[0m"
+	cd ./platform/gxavdev
+
+	prj=""
+	if [ $# -ge 2 ]; then
+		arch=$1
+		os=$2
+		prj=$3
+	else
+		arch=${ARCH}
+		os=${OS}
+	fi
+
+	if [[ $submode =~ "gxtest" ]]; then
+		if [[ ${BOARD} =~ "NNE" ]]; then
+			type=irdeto
+		elif [[ ${BOARD} =~ "generic-NNM" ]]; then
+			type=test
+		elif [[ ${BOARD} =~ "fpga-NNM" ]]; then
+			type=test
+		elif [[ ${BOARD} =~ "NNR" ]]; then
+			type=test # 暂时用 test 固件，有正式固件后改成正式固件
+		elif [[ ${BOARD} =~ "NNM" ]]; then
+			type=vmx
+		else
+			type=""
+		fi
+	elif [[ $submode == "solution" ]]; then
+		if [[ -n `grep -w "BR2_MOD_CHIP_NNE=y" ${PLATFORM_PATH}../solution/.config` ]]; then
+			type=irdeto
+		elif [[ -n `grep -w "BR2_MOD_CHIP_NNM=y" ${PLATFORM_PATH}../solution/.config` ]]; then
+			type=vmx
+		else
+			type=""
+		fi
+	else
+		echo "unsupport submode = $submode !"
+		exit 1
+	fi
+
+	if [[ "$OPTIMIZE" == "memory" ]]; then
+		loglevel=0 optimize=Os fwtype=${type} ./build $arch $os $prj || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=0 optimize=Os fwtype=${type} ./build $arch $os $prj"; exit 1; }
+	else
+		if [[ -z ${loglevel} ]] && [[ -z ${optimize} ]] && [[ -s ${CURRENT_PATH}/solution_build_config ]]; then
+			# 定义关联数组存储配置
+			declare -A solution_build_config
+
+			# 读取配置文件到关联数组
+			while IFS='=' read -r key value; do
+				[[ "$key" =~ ^#.*$ || -z "$key" ]] && continue
+				solution_build_config["$key"]="$value"
+			done < "${CURRENT_PATH}/solution_build_config"
+
+			# 提取需要的变量
+			local loglevel=${solution_build_config[gxavdev_loglevel]}
+			local optimize=${solution_build_config[gxavdev_optimize]}
+		fi
+		loglevel=${loglevel} optimize=${optimize} fwtype=${type} ./build $arch $os $prj || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=${loglevel} optimize=${optimize} fwtype=${type} ./build $arch $os $prj"; exit 1; }
+	fi
+	cd -
+}
+
+function cleanup_gxavdev() {
+	echo -e "\033[31;1mStart cleanup gxavdev\033[0m"
+	cd ./platform/gxavdev
+
+	./build clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build clean"; exit 1; }
+	cd -
+}
+
+function cleanup_gxmisc() {
+	echo -e "\033[31;1mStart cleanup gxmisc\033[0m"
+	cd ./platform/gxmisc
+
+	./build clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build clean"; exit 1; }
+	cd -
+}
+
+function build_nos_lib() {
+	echo -e "\033[31;1mStart build gxloader\033[0m"
+	cd ./platform/gxloader
+
+	if [[ "${NOS_LIB_PRE}" == "yes" ]]; then
+		search_dir="conf/${CHIP}/${BOARD}"
+		search_str1="ENABLE_USB ="
+		search_str2="ENABLE_FAT_WRITE ="
+
+		file_array=()
+		while IFS= read -r -d '' file; do
+			file_array+=("${file}")
+		done < <(find "${search_dir}" -type f -print0)
+
+		for file in "${file_array[@]}"; do
+			if grep -q "${search_str1}" "${file}"; then
+				sed -i 's|ENABLE_USB = n|ENABLE_USB = y|' ${file}
+			else
+				sed -i '$aENABLE_USB = y' ${file}
+			fi
+			if grep -q "${search_str2}" "${file}"; then
+				sed -i 's|ENABLE_FAT_WRITE = n|ENABLE_FAT_WRITE = y|' ${file}
+			else
+				sed -i '$aENABLE_FAT_WRITE = y' ${file}
+			fi
+		done
+	fi
+
+	./build $CHIP $BOARD lib || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build $CHIP $BOARD lib"; exit 1; }
+	cd -
+}
+
+function cleanup_nos_lib() {
+	echo -e "\033[31;1mStart cleanup gxloader\033[0m"
+	cd ./platform/gxloader
+
+	./build clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build clean"; exit 1; }
+	cd -
+}
+
+function build_gxfrontend() {
+	echo -e "\033[31;1mStart build gxfrontend\033[0m"
+	cd ./platform/gxfrontend
+
+	if [ $# -eq 2 ]; then
+		arch=$1
+		os=$2
+	else
+		arch=${ARCH}
+		os=${OS}
+	fi
+
+	if [[ "$OPTIMIZE" == "memory" ]]; then
+		loglevel=0 optimize=Os ./build $arch $os || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=0 optimize=Os ./build $arch $os"; exit 1; }
+	else
+		if [[ -z ${loglevel} ]] && [[ -z ${optimize} ]] && [[ -s ${CURRENT_PATH}/solution_build_config ]]; then
+			# 定义关联数组存储配置
+			declare -A solution_build_config
+
+			# 读取配置文件到关联数组
+			while IFS='=' read -r key value; do
+				[[ "$key" =~ ^#.*$ || -z "$key" ]] && continue
+				solution_build_config["$key"]="$value"
+			done < "${CURRENT_PATH}/solution_build_config"
+
+			# 提取需要的变量
+			local loglevel=${solution_build_config[gxfrontend_loglevel]}
+			local optimize=${solution_build_config[gxfrontend_optimize]}
+		fi
+		loglevel=${loglevel} optimize=${optimize} ./build $arch $os || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=${loglevel} optimize=${optimize} ./build $arch $os"; exit 1; }
+	fi
+	cd -
+}
+
+function cleanup_gxfrontend() {
+	echo -e "\033[31;1mStart cleanup gxfrontend\033[0m"
+	cd ./platform/gxfrontend
+
+	./build clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build clean"; exit 1; }
+	cd -
+}
+
+function build_gxlowpower() {
+	echo -e "\033[31;1mStart build gxlowpower\033[0m"
+	cd ./platform/gxlowpower
+	case "$CHIP" in
+		gx3201|gx3211|gx6605s|gx3113c)
+			./build $CHIP || exit 1
+			cp ./ck610/gxlowpower.fw $GX_PREFIX
+			cp ./ck610/gxlowpower.fw $GX_APP_PATH/$FAMI/$PROJ/firmware
+			;;
+		sirius|taurus|gemini|cygnus|canopus|vega|scorpio|scorpio-taurus)
+			./build $CHIP || exit 1
+			cp ./xx51/gxlowpower.fw $GX_PREFIX
+			cp ./xx51/gxlowpower.fw $GX_APP_PATH/$FAMI/$PROJ/firmware
+			;;
+		*)
+			echo "EORROR CHIP_ID: $CHIP"
+			solution_usage
+			;;
+	esac
+	cd -
+}
+
+function cleanup_gxlowpower() {
+	echo -e "\033[31;1mStart cleanup gxlowpower\033[0m"
+	cd ./platform/gxlowpower
+	./build clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build clean"; exit 1; }
+	cd -
+}
+
+function build_bsp() {
+	echo -e "\033[31;1mStart build bsp\033[0m"
+	cd ./platform/bsp
+
+	if [ $# -eq 2 ]; then
+		arch=$1
+		os=$2
+	else
+		arch=${ARCH}
+		os=${OS}
+	fi
+
+	if [[ "$OPTIMIZE" == "memory" ]]; then
+		optimize=Os ./build $arch $os || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: optimize=Os ./build $arch $os"; exit 1; }
+	else
+		if [[ -z ${optimize} ]] && [[ -s ${CURRENT_PATH}/solution_build_config ]]; then
+			# 定义关联数组存储配置
+			declare -A solution_build_config
+
+			# 读取配置文件到关联数组
+			while IFS='=' read -r key value; do
+				[[ "$key" =~ ^#.*$ || -z "$key" ]] && continue
+				solution_build_config["$key"]="$value"
+			done < "${CURRENT_PATH}/solution_build_config"
+
+			# 提取需要的变量
+			local optimize=${solution_build_config[bsp_optimize]}
+		fi
+		optimize=${optimize} ./build $arch $os || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: optimize=${optimize} ./build $arch $os"; exit 1; }
+	fi
+	cd -
+}
+
+function cleanup_bsp() {
+	echo -e "\033[31;1mStart cleanup bsp\033[0m"
+	cd ./platform/bsp
+	./build clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build clean"; exit 1; }
+	cd -
+}
+
+function build_pdmx() {
+	echo -e "\033[31;1mStart build pdmx\033[0m"
+
+	if [ $# -eq 2 ]; then
+		arch=$1
+		os=$2
+	else
+		arch=${ARCH}
+		os=${OS}
+	fi
+
+	cd ./platform/pdmx
+	if [[ -z ${build_mode} ]] && [[ -s ${CURRENT_PATH}/solution_build_config ]]; then
+		# 定义关联数组存储配置
+		declare -A solution_build_config
+
+		# 读取配置文件到关联数组
+		while IFS='=' read -r key value; do
+			[[ "$key" =~ ^#.*$ || -z "$key" ]] && continue
+			solution_build_config["$key"]="$value"
+		done < "${CURRENT_PATH}/solution_build_config"
+
+		# 提取需要的变量
+		local build_mode=${solution_build_config[pdmx_build_mode]}
+	fi
+	./build $build_mode $arch $os || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build $build_mode $arch $os"; exit 1; }
+	cd -
+}
+
+function cleanup_pdmx() {
+	echo -e "\033[31;1mStart cleanup pdmx\033[0m"
+	cd ./platform/pdmx
+	./build clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build clean"; exit 1; }
+	cd -
+}
+
+function build_buildroot() {
+	echo -e "\033[31;1mStart build buildroot\033[0m"
+
+	cd ./buildroot
+	if [[ "$brmode" == "debug" || "$brmode" == "nfs" ]]; then
+		echo -e "\033[32;1msupport gdbserver in rootfs\033[0m"
+		sed -i "/^# PACKAGE_GDBSERVER is not set/cPACKAGE_GDBSERVER=y" .config
+	fi
+	make || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: make"; exit 1; }
+	if [[ $submode =~ "gxtest" ]]; then
+		cp output/uImage ../gxtest/gxbus/board/${CHIP}/${BOARD}/${OS}/${FRONTEND}/${FLASH_TYPE}/flash/
+		cp output/${CHIP}_generic.dtb ../gxtest/gxbus/board/${CHIP}/${BOARD}/${OS}/${FRONTEND}/${FLASH_TYPE}/flash/
+	fi
+	cd -
+}
+
+function build_ta() {
+	echo -e "\033[31;1mStart build ta\033[0m"
+
+	if [ $1 == "stb/goxceed" ] || [ $1 == "gxbus" ];then
+		ta_solution=stb/goxceed
+	else
+		echo "$1 not support TA!!!"
+		exit 0
+	fi
+
+	if [ $1 == "gxbus" ];then # stb/goxceed工程需要在一键编译前config tfm模块
+		cd ${gxtest_path}/${ta_solution}
+		./build config -m tfm || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build config -m tfm"; exit 1; }
+		cd -
+	fi
+
+	if [[ -d ${gxtest_path}/${ta_solution}/ta ]];then
+		cd ${gxtest_path}/${ta_solution}
+		./build ${@:2} || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build ${@:2}"; exit 1; }
+		cd -
+	else
+		echo "not found ta"
+		exit 1
+	fi
+
+	if [ "${OS}" == "linux-tee" ];then
+		if [ ! -d ./buildroot/output/rootfs/rootfs_app_static/lib/optee_armtz ];then
+			mkdir -p ./buildroot/output/rootfs/rootfs_app_static/lib/optee_armtz
+		fi
+		if [[ -d ${gxtest_path}/${ta_solution}/ta ]];then
+			cp ${gxtest_path}/${ta_solution}/ta/*.ta  ./buildroot/output/rootfs/rootfs_app_static/lib/optee_armtz
+		fi
+	else
+		if [[ -d ${gxtest_path}/${ta_solution}/ta ]];then
+			if [[ $submode =~ "gxtest" ]]; then
+				cp ${gxtest_path}/${ta_solution}/ta/*.ta ${gxtest_path}/$1/board/${CHIP}/${BOARD}/${OS}/${FRONTEND}/${FLASH_TYPE}/flash
+			fi
+		fi
+	fi
+}
+
+function build_optee() {
+	echo -e "\033[31;1mStart build optee\033[0m"
+
+	if [ $# -eq 1 ]; then
+		os=$1
+	else
+		os=${OS}
+	fi
+
+	cd ./platform/optee/3.22.0
+	./build ${CHIP} ${os} || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build ${CHIP} ${os}"; exit 1; }
+	if [[ $submode =~ "gxtest" ]]; then
+		cp optee_os/out/arm/core/utee.bin ${PREBUILD}
+	fi
+	cd -
+
+	#if [[ "${OS}" == "ecos-tee" ]] && [[ $submode =~ "gxtest" ]]; then
+	#	if [ "$(ls -A ../library/goxceed/${CHIP}/rootfs/lib/optee_armtz)" ]; then
+	#		cp ${GX_PREFIX}/${CHIP}/rootfs/lib/optee_armtz/* ${PREBUILD}
+	#	fi
+	#fi
+}
+
+function kernel_build() {
+	cd ./buildroot
+	if [ ${OS} == "linux-tee" ]; then
+		#GX_KERNEL_VERSION=4.9.y
+		#MOD_PATH=${GX_PREFIX}/${CHIP}/lib/modules/${GX_KERNEL_VERSION}
+
+		#mkdir -p ${MOD_PATH}
+
+		make prepare_build || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: make prepare_build"; exit 1; }
+		make kernel_build || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: make kernel_build"; exit 1; }
+		if [[ $submode =~ "gxtest" ]]; then
+			cp output/uImage ${PREBUILD}
+			cp output/${CHIP}_generic.dtb ${PREBUILD}
+		fi
+		#if [ -z "kernel/${GX_KERNEL_VERSION}/arch/${ARCH}/boot/Image" ]; then
+		#	cp -f kernel/${GX_KERNEL_VERSION}/arch/${ARCH}/boot/Image ${GX_PREFIX}/${CHIP}
+		#fi
+		#if [ -z "kernel/${GX_KERNEL_VERSION}/arch/${ARCH}/boot/zImage" ]; then
+		#	cp -f kernel/${GX_KERNEL_VERSION}/arch/${ARCH}/boot/zImage ${GX_PREFIX}/${CHIP}
+		#fi
+		#if [ -z "kernel/${GX_KERNEL_VERSION}/arch/${ARCH}/boot/uImage" ]; then
+		#	cp -f kernel/${GX_KERNEL_VERSION}/arch/${ARCH}/boot/uImage ${GX_PREFIX}/${CHIP}
+		#fi
+		#find kernel/${GX_KERNEL_VERSION} -name "*.ko" -exec cp {} $MOD_PATH \;
+	else
+		echo -e "\033[31;1mStart build buildroot\033[0m"
+
+		if [[ "$brmode" == "debug" || "$brmode" == "nfs" ]]; then
+			echo -e "\033[32;1msupport gdbserver in rootfs\033[0m"
+			sed -i "/^# PACKAGE_GDBSERVER is not set/cPACKAGE_GDBSERVER=y" .config
+		fi
+
+		make prepare_build || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: make prepare_build"; exit 1; }
+		make kernel_build || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: make kernel_build"; exit 1; }
+		if [[ $submode =~ "gxtest" ]]; then
+			cp output/uImage ${PREBUILD}
+			cp output/${CHIP}_generic.dtb ${PREBUILD}
+		fi
+	fi
+	cd -
+}
+
+function copy_tee_lib() {
+	so_path=`arm-linux-uclibcgnueabihf-gcc -print-sysroot`
+	cp -rf ${so_path}/lib/* output/rootfs/rootfs_app_static/lib
+
+	if [ ! -f ./output/rootfs/rootfs_app_static/usr/lib ]; then
+		mkdir -p ./output/rootfs/rootfs_app_static/usr/lib
+	fi
+	cp -rf ../library/goxceed/${CHIP}/rootfs/usr/lib/libteec.* output/rootfs/rootfs_app_static/usr/lib
+
+	if [ ! -f output/rootfs/rootfs_app_static/usr/bin ]; then
+		mkdir -p output/rootfs/rootfs_app_static/usr/bin
+	fi
+	cp -rf ../library/goxceed/${CHIP}/rootfs/usr/bin/* output/rootfs/rootfs_app_static/usr/bin
+
+	if [ ! -f ./output/rootfs/rootfs_app_static/lib/optee_armtz ]; then
+		mkdir -p output/rootfs/rootfs_app_static/lib/optee_armtz
+	fi
+	cp -rf ../library/goxceed/${CHIP}/rootfs/lib/optee_armtz/* output/rootfs/rootfs_app_static/lib/optee_armtz
+}
+
+function fs_build() {
+	echo -e "\033[31;1mStart build buildroot\033[0m"
+
+	cd ./buildroot || exit 1
+	if [[ "$brmode" == "debug" || "$brmode" == "nfs" ]]; then
+		echo -e "\033[32;1msupport gdbserver in rootfs\033[0m"
+		sed -i "/^# PACKAGE_GDBSERVER is not set/cPACKAGE_GDBSERVER=y" .config
+	fi
+
+	if [ ${OS} == "linux-tee" ]; then
+		copy_tee_lib
+	fi
+
+	make fsbuild || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: make fsbuild"; exit 1; }
+	if [[ ${OS} == "linux" || ${OS} == "linux-tee" ]]; then
+		cp output/rootfs.squashfs ${PREBUILD}/rootfs.bin
+	else
+		cp output/rootfs.cramfs ${PREBUILD}/rootfs.bin
+	fi
+	cd -
+}
+
+function cleanup_buildroot() {
+	echo -e "\033[31;1mStart cleanup buildroot\033[0m"
+	cd ./buildroot
+	make clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: make clean"; exit 1; }
+	rm output -rf
+	make distclean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: make distclean"; exit 1; }
+	cd -
+}
+
+function build_gxloader() {
+	echo -e "\033[31;1mStart build gxloader\033[0m"
+
+	cd ./platform/gxloader
+
+	if [[ "${submode}" =~ "gxtest" ]]; then
+		# enable USB recovery
+		if [[ "${submode}" == "gxtest-bus" ]]; then
+			if [[ "${OS}" == "ecos" ]]; then
+				if [[ "${BOARD}" == "6706S5" ]] || [[ "${BOARD}" == "6631SH1D" ]]; then
+					sed -i 's|ENABLE_USB = n|ENABLE_USB = y|' conf/"${CHIP}"/"${BOARD}"/release.config
+					sed -i 's|ENABLE_IRR = n|ENABLE_IRR = y|' conf/"${CHIP}"/"${BOARD}"/release.config
+					sed -i 's|ENABLE_FLASH_FULLFUNCTION = n|ENABLE_FLASH_FULLFUNCTION = y|' conf/"${CHIP}"/"${BOARD}"/release.config
+					sed -i 's|ENABLE_GDI = n|ENABLE_GDI = y|' conf/"${CHIP}"/"${BOARD}"/release.config
+					sed -i 's|ENABLE_USB_RECOVER = n|ENABLE_USB_RECOVER = y|' conf/"${CHIP}"/"${BOARD}"/release.config
+					sed -i 's|CONFIG_RECOVERY_IMAGE_SIZE =.*|CONFIG_RECOVERY_IMAGE_SIZE = 0x800000|' conf/"${CHIP}"/"${BOARD}"/release.config
+					sed -i 's|ENABLE_WDT = n|ENABLE_WDT = y|' conf/"${CHIP}"/"${BOARD}"/release.config
+				fi
+			fi
+		fi
+
+		if [[ ${OS} == "linux" ]]; then
+			sed -i 's|ENABLE_DECOMPRESS_GZIP = n|ENABLE_DECOMPRESS_GZIP = y|' conf/${CHIP}/${BOARD}/*.config
+			sed -i 's|ENABLE_KERNEL_DTB = n|ENABLE_KERNEL_DTB = y|' conf/${CHIP}/${BOARD}/*.config
+		elif [[ ${OS} == "ecos" ]]; then
+			sed -i 's|ENABLE_DECOMPRESS_GZIP = y|ENABLE_DECOMPRESS_GZIP = n|' conf/${CHIP}/${BOARD}/*.config
+			sed -i 's|ENABLE_KERNEL_DTB = y|ENABLE_KERNEL_DTB = n|' conf/${CHIP}/${BOARD}/*.config
+		elif [[ ${OS} == "linux-tee" ]]; then
+			sed -i 's|ENABLE_DECOMPRESS_GZIP = n|ENABLE_DECOMPRESS_GZIP = y|' conf/${CHIP}/${BOARD}/*.config
+			sed -i 's|ENABLE_KERNEL_DTB = n|ENABLE_KERNEL_DTB = y|' conf/${CHIP}/${BOARD}/*.config
+			if [ ${CHIP} == "canopus" ]; then
+				if [ ${BOARD} == "6631SH1D" ]; then
+					sed -i 's|ENABLE_TEE = n|ENABLE_TEE = y|' conf/${CHIP}/${BOARD}/*.config
+					sed -i 's|CMDLINE_VALUE = ".*console|CMDLINE_VALUE = "mem=68M videomem=52M teemem=8M mem_end console|' conf/${CHIP}/${BOARD}/*.config
+				elif [ ${BOARD} == "6631SH1D-NNM" ]; then
+					sed -i 's|mem=55M|mem=56M|' conf/${CHIP}/${BOARD}/*.config
+					sed -i 's|teemem=9M|teemem=8M|' conf/${CHIP}/${BOARD}/*.config
+					sed -i 's|teemem_sub=7M|teemem_sub=6M|' conf/${CHIP}/${BOARD}/*.config
+				fi
+			elif [ ${CHIP} == "sirius" ]; then
+				sed -i 's|ENABLE_TEE = n|ENABLE_TEE = y|' conf/${CHIP}/${BOARD}/*.config
+				sed -i 's|CMDLINE_VALUE = ".*console|CMDLINE_VALUE = "mem=131M videomem=93M teemem=32M mem_end console|' conf/${CHIP}/${BOARD}/*.config
+			fi
+		elif [[ ${OS} == "ecos-tee" ]]; then
+			sed -i 's|ENABLE_DECOMPRESS_GZIP = y|ENABLE_DECOMPRESS_GZIP = n|' conf/${CHIP}/${BOARD}/*.config
+			sed -i 's|ENABLE_KERNEL_DTB = y|ENABLE_KERNEL_DTB = n|' conf/${CHIP}/${BOARD}/*.config
+			if [ ${CHIP} == "canopus" ]; then
+				if [ ${BOARD} == "6631SH1D" ]; then
+					sed -i 's|ENABLE_TEE = n|ENABLE_TEE = y|' conf/${CHIP}/${BOARD}/*.config
+					sed -i 's|CMDLINE_VALUE = ".*console|CMDLINE_VALUE = "mem=68M videomem=52M teemem=8M mem_end console|' conf/${CHIP}/${BOARD}/*.config
+				elif [ ${BOARD} == "6631SH1D-NNM" ]; then
+					sed -i 's|mem=55M|mem=56M|' conf/${CHIP}/${BOARD}/*.config
+					sed -i 's|teemem=9M|teemem=8M|' conf/${CHIP}/${BOARD}/*.config
+					sed -i 's|teemem_sub=7M|teemem_sub=6M|' conf/${CHIP}/${BOARD}/*.config
+				fi
+			elif [ ${CHIP} == "sirius" ]; then
+				sed -i 's|ENABLE_TEE = n|ENABLE_TEE = y|' conf/${CHIP}/${BOARD}/*.config
+				sed -i 's|CMDLINE_VALUE = ".*console|CMDLINE_VALUE = "mem=131M videomem=93M teemem=32M mem_end console|' conf/${CHIP}/${BOARD}/*.config
+			fi
+		fi
+		if [[ ${OS} == linux ]] && [[ ${BOARD} == 6701 || ${BOARD} == 6702H5 ]]; then
+			sed -i 's|CMDLINE_VALUE = ".*console|CMDLINE_VALUE = "mem=29384K videomem=30052K esvmem=2560K esamem=64K pcmmem=256K svpumem=812K femem=2407K mem_end console|' conf/${CHIP}/${BOARD}/*.config
+		fi
+		if [[ ${OS} == linux ]] && [[ ${BOARD} == 6605s ]]; then
+			sed -i 's|CMDLINE_VALUE = ".*console|CMDLINE_VALUE = "mem=29384K videomem=32460K esvmem=2560K esamem=64K pcmmem=256K svpumem=812K mem_end console|' conf/${CHIP}/${BOARD}/*.config
+		fi
+		if [[ "${submode}" =~ "gxtest" ]]; then
+			if [[ ${FLASH_TYPE} == "nor" ]]; then
+				sed -i 's/ENABLE_SPIFLASH = [yn]/ENABLE_SPIFLASH = y/g' conf/${CHIP}/${BOARD}/*.config
+				sed -i 's/ENABLE_SPINAND = [yn]/ENABLE_SPINAND = n/g' conf/${CHIP}/${BOARD}/*.config
+				sed -i 's/ENABLE_NANDFLASH = [yn]/ENABLE_NANDFLASH = n/g' conf/${CHIP}/${BOARD}/*.config
+				sed -i 's/ENABLE_ROOTFS_UBIFS = [yn]/ENABLE_ROOTFS_UBIFS = n/g' conf/${CHIP}/${BOARD}/*.config
+			elif [[ ${FLASH_TYPE} == "spi_nand" ]]; then
+				sed -i 's/ENABLE_SPIFLASH = [yn]/ENABLE_SPIFLASH = n/g' conf/${CHIP}/${BOARD}/*.config
+				sed -i 's/ENABLE_SPINAND = [yn]/ENABLE_SPINAND = y/g' conf/${CHIP}/${BOARD}/*.config
+				sed -i 's/ENABLE_NANDFLASH = [yn]/ENABLE_NANDFLASH = n/g' conf/${CHIP}/${BOARD}/*.config
+				sed -i 's/ENABLE_ROOTFS_UBIFS = [yn]/ENABLE_ROOTFS_UBIFS = y/g' conf/${CHIP}/${BOARD}/*.config
+			elif [[ ${FLASH_TYPE} == "parallel_nand" ]]; then
+				sed -i 's/ENABLE_SPIFLASH = [yn]/ENABLE_SPIFLASH = n/g' conf/${CHIP}/${BOARD}/*.config
+				sed -i 's/ENABLE_SPINAND = [yn]/ENABLE_SPINAND = n/g' conf/${CHIP}/${BOARD}/*.config
+				sed -i 's/ENABLE_NANDFLASH = [yn]/ENABLE_NANDFLASH = y/g' conf/${CHIP}/${BOARD}/*.config
+				sed -i 's/ENABLE_ROOTFS_UBIFS = [yn]/ENABLE_ROOTFS_UBIFS = y/g' conf/${CHIP}/${BOARD}/*.config
+			fi
+		fi
+	fi
+
+	./build ${CHIP} ${BOARD} release || exit 1
+	if [[ $submode =~ "gxtest" ]]; then
+		if [[ ${FLASH_TYPE} == "nor" ]]; then
+			cp output/loader-sflash.bin ../../gxtest/stb/goxceed/board/${CHIP}/${BOARD}/${OS}/${FRONTEND}/${FLASH_TYPE}/flash/
+		elif [[ ${FLASH_TYPE} == "spi_nand" ]]; then
+			cp output/loader-spinand.bin ../../gxtest/stb/goxceed/board/${CHIP}/${BOARD}/${OS}/${FRONTEND}/${FLASH_TYPE}/flash/
+		elif [[ ${FLASH_TYPE} == "parallel_nand" ]]; then
+			cp output/loader-nand.bin ../../gxtest/stb/goxceed/board/${CHIP}/${BOARD}/${OS}/${FRONTEND}/${FLASH_TYPE}/flash/
+		fi
+	fi
+
+	cd -
+}
+
+function build_preKernel()
+{
+	cd buildroot
+	make setup profile=$PROFILE || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: make setup profile=$PROFILE"; exit 1; }
+	make -C kernel prepare || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: make -C kernel prepare"; exit 1; }
+	cd -
+}
+
+function build_prekernel_build_in()
+{
+	cd buildroot/kernel/4.9.y/
+	set +e
+	./build ${CHIP} jenkins # 预编译，报错是正常的
+	set -e
+	cd -
+}
+
+function build_kernel_build_in()
+{
+	cd buildroot/kernel/4.9.y/
+	./build ${CHIP} jenkins
+	cd -
+}
+
+function build_solution() {
+	echo -e "\033[31;1mStart build solution\033[0m"
+	cd ./solution
+
+	solution_make_bin="yes"
+	if [[ "$OPTIMIZE" == "memory" ]]; then
+		loglevel=0 make || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=0 make"; exit 1; }
+	else
+		if [[ -z ${loglevel} ]] && [[ -s ${CURRENT_PATH}/solution_build_config ]]; then
+			# 定义关联数组存储配置
+			declare -A solution_build_config
+
+			# 读取配置文件到关联数组
+			while IFS='=' read -r key value; do
+				[[ "$key" =~ ^#.*$ || -z "$key" ]] && continue
+				solution_build_config["$key"]="$value"
+			done < "${CURRENT_PATH}/solution_build_config"
+
+			# 提取需要的变量
+			local loglevel=${solution_build_config[solution_loglevel]}
+			local solution_make_bin=${solution_build_config[solution_make_bin]}
+		fi
+		loglevel=${loglevel} make || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: loglevel=${loglevel} make"; exit 1; }
+	fi
+
+	if [[ ${solution_make_bin} == "yes" ]]; then
+		make bin || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: make bin"; exit 1; }
+	fi
+	cd -
+}
+
+function cleanup_solution() {
+	echo -e "\033[31;1mStart cleanup solution\033[0m"
+	cd ./solution
+	make clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: make clean"; exit 1; }
+	make distclean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: make distclean"; exit 1; }
+	cd -
+}
+
+function build_gxtest() {
+	if [ ! $# -eq 1 ];then
+		echo -e "\033[31;1mStart build gxtest/$1\033[0m"
+	fi
+	case $1 in
+		api)
+			cd ./gxtest/api
+			;;
+		gxbus)
+			cd ./gxtest/gxbus
+			;;
+		stb/goxceed)
+			cd ./gxtest/stb/goxceed
+			;;
+		stb/chiptest)
+			cd ./gxtest/stb/chiptest
+			;;
+		*)
+			solution_usage
+			;;
+	esac
+
+	./build ${@:2} || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build ${@:2}"; exit 1; }
+	cd -
+}
+
+function cleanup_gxtest() {
+	echo -e "\033[31;1mStart cleanup gxtest/$1\033[0m"
+	case $1 in
+		api)
+			cd ./gxtest/api
+			;;
+		gxbus)
+			cd ./gxtest/gxbus
+			;;
+		stb/goxceed)
+			cd ./gxtest/stb/goxceed
+			;;
+		stb/chiptest)
+			cd ./gxtest/stb/chiptest
+			;;
+		*)
+			solution_usage
+			;;
+	esac
+
+	./build clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build clean"; exit 1; }
+	cd -
+}
+
+function build_boot_and_boot_file() {
+       cd ./platform/gxtools/serialboot
+       unset CROSS_COMPILE
+       ./build linux release || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build linux release"; exit 1; }
+       cp output/boot ${gxtest_path}/${SOURCE}/output/
+       cd -
+       cd ./platform/gxloader
+       ./build ${CHIP} ${BOARD} boot || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: ./build ${CHIP} ${BOARD} boot"; exit 1; }
+       case ${FLASH_TYPE} in
+               spi_nand)
+                       sed -i 's/ENABLE_SPINAND = n/ENABLE_SPINAND = y/g' .config
+                       sed -i 's/ENABLE_SPIFLASH = y/ENABLE_SPIFLASH = n/g' .config
+                       make clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: make clean"; exit 1; }
+                       make || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: make"; exit 1; }
+                       cp output/${CHIP}-${BOARD}-spinand.boot ${gxtest_path}/${SOURCE}/output/test.boot
+                       ;;
+               parallel_nand)
+                       sed -i 's/ENABLE_NANDFLASH = n/ENABLE_NANDFLASH = y/g' .config
+                       sed -i 's/ENABLE_SPIFLASH = y/ENABLE_SPIFLASH = n/g' .config
+                       make clean || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: make clean"; exit 1; }
+                       make || { echo "【!!!compiled failed】【${BASH_SOURCE[0]}: $LINENO】Command: make"; exit 1; }
+                       cp output/${CHIP}-${BOARD}-nand.boot ${gxtest_path}/${SOURCE}/output/test.boot
+                       ;;
+               *)
+                       cp output/${CHIP}-${BOARD}-sflash.boot ${gxtest_path}/${SOURCE}/output/test.boot
+                       ;;
+       esac
+}
+
+function solution_usage() {
+	echo "[brmode=<n>] ./make.sh solution [clean] <csky|arm> <linux|ecos> [memory]"
+	echo "    eg: ./make.sh solution clean"
+	echo "        ./make.sh solution arm ecos"
+	echo "        ./make.sh solution arm linux"
+	echo "        ./make.sh solution csky ecos"
+	echo "        ./make.sh solution csky linux"
+	echo "        ./make.sh solution csky ecos memory"
+	echo "        brmode=debug ./make.sh solution csky ecos memory"
+	exit 1
+}
+
+function build_platform() {
+	if [[ $1 == "linux" ]]; then
+		if [[ "$brmode" == "jenkins" ]]; then # 驱动 build in 补丁检查时不能通过 buildroot 做内核预编译和编译，需要直接进入内核目录操作
+			build_prekernel_build_in
+		else
+			build_preKernel
+		fi
+		build_gxosal
+		build_gxmisc
+		build_gxsecure
+		build_gxavdev
+		build_gxfrontend
+		build_bsp
+		build_gxlowpower
+		build_gxapi
+		build_thirdparty
+		build_gxbus
+		build_gxdownloader
+		build_pdmx
+		if [[ "$brmode" == "jenkins" ]]; then # 驱动 build in 补丁检查时不能通过 buildroot 做内核预编译和编译，需要直接进入内核目录操作，并且不能继续编译文件系统和应用
+			build_kernel_build_in
+			exit 0
+		else
+			build_buildroot
+			#build_gxloader
+			build_secure_firmware
+		fi
+	elif [[ $1 == "ecos" ]]; then
+		build_ecos3.0
+		build_gxosal
+		build_gxmisc
+		build_gxavdev
+		build_gxfrontend
+		build_gxsecure
+		build_gxapi
+		build_thirdparty
+		build_gxbus
+		build_gxdownloader
+		build_bsp
+		build_gxlowpower
+		build_pdmx
+		#build_gxloader
+		build_secure_firmware
+	elif [[ $1 == "nos" ]]; then
+		build_nos_lib
+		build_gxosal
+		build_gxmisc
+		build_gxavdev
+		build_gxfrontend
+		build_gxsecure
+		build_gxapi
+		build_thirdparty
+		build_gxbus
+		#if [[ ${ARCH} == csky ]]; then
+		#	build_gxloader
+		#fi
+		build_secure_firmware
+	elif [[ $1 == "linux-tee" ]]; then
+		build_preKernel
+		build_gxosal ${ARCH} linux
+		build_gxsecure ${ARCH} linux
+		build_gxavdev ${ARCH} linux optee
+		build_gxfrontend ${ARCH} linux
+		build_bsp ${ARCH} linux
+		build_gxlowpower
+		kernel_build
+		build_gxapi ${ARCH} linux
+		build_thirdparty ${ARCH} linux
+		build_gxbus ${ARCH} linux
+		build_pdmx ${ARCH} linux
+		build_optee linux
+		build_ta ${SOURCE} ${ARCH} ${OS} ${CHIP} ${BOARD} ${FRONTEND} ${FLASH_TYPE} ta
+		fs_build
+		#build_gxloader
+		build_secure_firmware
+	elif [[ $1 == "ecos-tee" ]]; then
+		build_ecos3.0
+		build_gxosal ${ARCH} ecos
+		build_gxavdev ${ARCH} ecos optee
+		build_gxsecure ${ARCH} ecos
+		build_gxfrontend ${ARCH} ecos
+		build_gxapi ${ARCH} ecos
+		build_thirdparty ${ARCH} ecos
+		build_gxbus ${ARCH} ecos
+		build_bsp ${ARCH} ecos
+		build_gxlowpower
+
+		build_optee ecos
+		#build_gxloader
+		build_ta ${SOURCE} ${ARCH} ${OS} ${CHIP} ${BOARD} ${FRONTEND} ${FLASH_TYPE} ta
+		build_secure_firmware
+	fi
+}
+
+function cleanup_platform() {
+	cleanup_nos_lib
+	cleanup_ecos3.0
+	cleanup_gxapi
+	cleanup_thirdparty
+	cleanup_gxbus
+	cleanup_gxdownloader
+	cleanup_gxsecure
+	cleanup_gxosal
+	cleanup_optee
+	cleanup_gxavdev
+	cleanup_gxmisc
+	cleanup_gxfrontend
+	cleanup_gxlowpower
+	cleanup_bsp
+	cleanup_pdmx
+	cleanup_buildroot
+}
+
+function clean_solution() {
+	cleanup_platform
+	cleanup_buildroot
+	cleanup_solution
+	rm -rf .buildtarget*
+}
+
+function clean_gxtest() {
+	cleanup_platform
+	cleanup_buildroot
+	cleanup_gxtest $1
+	rm -rf .buildtarget*
+}
+
+function compile_solution() {
+	if [ $# -eq 1 ]; then
+		case $1 in
+			clean)
+				clean_solution
+				;;
+			*)
+				solution_usage
+				;;
+		esac
+	elif [ $# -ge 2 ]; then
+		if [[ "$1" != "arm" && "$1" != "csky" ]]; then
+			solution_usage
+			exit 0
+		fi
+		if [[ "$2" != "linux" && "$2" != "ecos" ]]; then
+			solution_usage
+			exit 0
+		fi
+		ARCH=$1
+		OS=$2
+
+		if [[ $# -eq 3 && "$3" == "memory" ]]; then
+			OPTIMIZE="memory"
+		fi
+
+		BUILD_TARGET=.buildtarget_$ARCH$OS$NNE$OPTIMIZE
+		if [ -f .buildtarget* ] && [ ! -f $BUILD_TARGET ]; then
+			clean_solution
+		fi
+		touch $BUILD_TARGET
+
+		set_env 'solution'
+
+		case $2 in
+			linux)
+				build_platform linux
+				build_solution
+				;;
+			ecos)
+				build_platform ecos
+				build_solution
+				;;
+			*)
+				solution_usage
+				;;
+		esac
+	else
+		solution_usage
+	fi
+}
+
+function compile_gxtest() {
+	FLASH_TYPE="nor"
+	SOURCE=$1
+	MODYFY_KEY=no
+	if [[ $@ =~ "key" ]];then
+		MODYFY_KEY=yes
+	fi
+	shift 1
+	if [ $# -eq 1 ]; then
+		case $1 in
+			clean)
+				echo "todo cleanup"
+				clean_gxtest $SOURCE
+				;;
+			*)
+				build_gxtest $SOURCE
+				;;
+		esac
+	elif [ $# -ge 2 ]; then
+		if [[ $SOURCE == "gxbus" ]]; then
+			ARCH=$1
+			CHIP=$2
+			BOARD=$3
+			OS=$4
+			FRONTEND=$5
+			for ((i=6; i<=$#; i++)); do
+				if [[ ${!i} == "nor" || ${!i} == "spi_nand" || ${!i} == "parallel_nand" ]]; then
+					FLASH_TYPE=${!i}
+				fi
+			done
+		elif [[ $SOURCE == "api" ]]; then
+			if [ "$1" = "software" ] || [ "$1" = "chip" ];then
+				ARCH=$3
+				OS=$4
+				CHIP=$5
+				BOARD=$6
+				FRONTEND=$7
+				for ((i=8; i<=$#; i++)); do
+					if [[ ${!i} == "nor" || ${!i} == "spi_nand" || ${!i} == "parallel_nand" ]]; then
+						FLASH_TYPE=${!i}
+					fi
+				done
+			else
+				ARCH=$1
+				OS=$2
+				CHIP=$3
+				BOARD=$4
+				FRONTEND=$5
+				for ((i=6; i<=$#; i++)); do
+					if [[ ${!i} == "nor" || ${!i} == "spi_nand" || ${!i} == "parallel_nand" ]]; then
+						FLASH_TYPE=${!i}
+					fi
+				done
+			fi
+		elif [[ $SOURCE == "stb/goxceed" ]] || [[ $SOURCE == "stb/chiptest" ]]; then
+			ARCH=$1
+			OS=$2
+			CHIP=$3
+			BOARD=$4
+			FRONTEND=$5
+			for ((i=6; i<=$#; i++)); do
+				if [[ ${!i} == "nor" || ${!i} == "spi_nand" || ${!i} == "parallel_nand" ]]; then
+					FLASH_TYPE=${!i}
+				fi
+			done
+		fi
+
+		if [ ${SOURCE} == "stb/goxceed" -o ${SOURCE} == "stb/chiptest" ]; then
+			NOS_LIB_PRE=yes
+			PREBUILD=${gxtest_path}/stb/goxceed/board/${CHIP}/${BOARD}/${OS}/${FRONTEND}/${FLASH_TYPE}/flash
+		else
+			NOS_LIB_PRE=no
+			PREBUILD=${gxtest_path}/gxbus/board/${CHIP}/${BOARD}/${OS}/${FRONTEND}/${FLASH_TYPE}/flash
+		fi
+
+		if [[ "$ARCH" != "arm" && "$ARCH" != "csky" ]]; then
+			build_gxtest $SOURCE
+			exit 1
+		fi
+
+		if [[ "$OS" != "linux" && "$OS" != "ecos" && "$OS" != "nos" && "$OS" != "linux-tee" && "$OS" != "ecos-tee" ]]; then
+			build_gxtest $SOURCE
+			exit 1
+		fi
+
+		if [[ $@ =~ "withclean" ]];then
+			BUILD_TARGET=.buildtarget_$ARCH$OS$NNE$OPTIMIZE
+			if [ -f .buildtarget* ] && [ ! -f $BUILD_TARGET ]; then
+				clean_gxtest $SOURCE
+			fi
+			touch $BUILD_TARGET
+		fi
+
+		set_env 'gxtest'
+		optee=./platform/optee/3.22.0
+		case $OS in
+			linux)
+				buildroot=./buildroot
+				if [[ -e ${buildroot}/template/public/home/root/etc/rcS.d/S10app ]]; then
+					mv ${buildroot}/template/public/home/root/etc/rcS.d/S10app ${buildroot}/template/public/home/root/etc/rcS.d/S30app
+				fi
+				if [[ ${SOURCE} == "stb/goxceed" ]]; then
+					sed -i 's/exec \/sbin\/init <\/dev\/console >\/dev\/console 2>\/dev\/console/exec \/sbin\/init/g' ${buildroot}/template/public/init
+					sed -i 's/\/dvb\/out.elf \&/\/dvb\/out.elf <\/dev\/console >\/dev\/console 2>\/dev\/console/g' ${buildroot}/template/public/home/root/bin/solution_callback
+					sed -i 's/source \/home\/root\/bin\/solution_callback \&/source \/home\/root\/bin\/solution_callback/g' ${buildroot}/template/public/home/root/etc/rcS.d/S30app
+				else
+					sed -i 's/exec \/sbin\/init.*/exec \/sbin\/init <\/dev\/console >\/dev\/console 2>\/dev\/console/g' ${buildroot}/template/public/init
+					sed -i 's/\/dvb\/out.elf <\/dev\/console >\/dev\/console 2>\/dev\/console/\/dvb\/out.elf \&/g' ${buildroot}/template/public/home/root/bin/solution_callback
+					sed -i 's/source \/home\/root\/bin\/solution_callback.*/source \/home\/root\/bin\/solution_callback \&/g' ${buildroot}/template/public/home/root/etc/rcS.d/S30app
+				fi
+				sed -i '/\/usr\/bin\/tee-supplicant/d' ${buildroot}/template/public/home/root/bin/solution_callback
+				build_platform linux
+				# 文件系统测试需要用到的格式化命令 busybox 不包含
+				echo "cp mkfs.exfat to rootfs"
+				cp ${gxtest_path}/stb/tools/mkfs.exfat.${ARCH} ${buildroot}/output/rootfs/rootfs_app_static/sbin/mkfs.exfat
+				echo "cp mkntfs to rootfs"
+				cp ${gxtest_path}/stb/tools/mkntfs.${ARCH} ${buildroot}/output/rootfs/rootfs_app_static/sbin/mkntfs
+				fs_build
+				build_gxtest $SOURCE $@
+				;;
+			ecos)
+				build_platform ecos
+				build_gxtest $SOURCE $@
+				;;
+			nos)
+				build_platform nos
+				build_gxtest $SOURCE $@
+				;;
+			linux-tee)
+				buildroot=./buildroot
+				if [[ -e ${buildroot}/template/public/home/root/etc/rcS.d/S10app ]]; then
+					mv ${buildroot}/template/public/home/root/etc/rcS.d/S10app ${buildroot}/template/public/home/root/etc/rcS.d/S30app
+				fi
+				if [[ ${SOURCE} == "stb/goxceed" ]]; then
+					sed -i 's/exec \/sbin\/init <\/dev\/console >\/dev\/console 2>\/dev\/console/exec \/sbin\/init/g' ${buildroot}/template/public/init
+					sed -i 's/\/dvb\/out.elf \&/\/dvb\/out.elf <\/dev\/console >\/dev\/console 2>\/dev\/console/g' ${buildroot}/template/public/home/root/bin/solution_callback
+					sed -i 's/source \/home\/root\/bin\/solution_callback \&/source \/home\/root\/bin\/solution_callback/g' ${buildroot}/template/public/home/root/etc/rcS.d/S30app
+				else
+					sed -i 's/exec \/sbin\/init.*/exec \/sbin\/init <\/dev\/console >\/dev\/console 2>\/dev\/console/g' ${buildroot}/template/public/init
+					sed -i 's/\/dvb\/out.elf <\/dev\/console >\/dev\/console 2>\/dev\/console/\/dvb\/out.elf \&/g' ${buildroot}/template/public/home/root/bin/solution_callback
+					sed -i 's/source \/home\/root\/bin\/solution_callback.*/source \/home\/root\/bin\/solution_callback \&/g' ${buildroot}/template/public/home/root/etc/rcS.d/S30app
+				fi
+				sed -i '/\/usr\/bin\/tee-supplicant/d' ${buildroot}/template/public/home/root/bin/solution_callback
+				sed -i "/\/dvb\/out\.elf/i /usr/bin/tee-supplicant \&" ${buildroot}/template/public/home/root/bin/solution_callback
+				sed -i "s/CFG_XDEV_TEST *= *n/CFG_XDEV_TEST=y/" ${optee}/optee_os/configs/${CHIP}_defconfig
+				sed -i "s/CFG_ENCRYPT_TA *?= *y/CFG_ENCRYPT_TA ?= n/" ${optee}/optee_os/core/arch/arm/plat-gx/conf.mk
+				build_platform linux-tee
+				build_gxtest $SOURCE $@
+				;;
+			ecos-tee)
+				sed -i "s/CFG_XDEV_TEST *= *n/CFG_XDEV_TEST=y/" ${optee}/optee_os/configs/${CHIP}_defconfig
+				sed -i "s/CFG_ENCRYPT_TA *?= *y/CFG_ENCRYPT_TA ?= n/" ${optee}/optee_os/core/arch/arm/plat-gx/conf.mk
+				build_platform ecos-tee
+				build_gxtest $SOURCE $@
+				;;
+			*)
+				build_gxtest $SOURCE
+				;;
+		esac
+		if [[ "$build_boot" == "yes" ]]; then
+			build_boot_and_boot_file $SOURCE $@
+		fi
+	else
+		build_gxtest $SOURCE
+	fi
+}
+
+if [ $# -ge 1 ]; then
+	FLASH_TYPE="nor"
+	submode=$1
+	shift 1
+	case ${submode} in
+		solution)
+			compile_solution $@
+			;;
+		gxtest-bus)
+			compile_gxtest gxbus $@
+			;;
+		gxtest-api)
+			compile_gxtest api $@
+			;;
+		gxtest-goxceed)
+			compile_gxtest stb/goxceed $@
+			;;
+		gxtest-chiptest)
+			compile_gxtest stb/chiptest $@
+			;;
+	esac
+fi
+

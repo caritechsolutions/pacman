@@ -1,0 +1,421 @@
+# Voice Signal Preprocess
+# Copyright (C) 2001-2018 NationalChip Co., Ltd
+# ALL RIGHTS RESERVED!
+#
+# Kconfig: Top Level Kconfig
+#
+#---------------------------------------------------------------------------------#
+
+mainmenu "NationalChip GxDownloader Configuration"
+
+choice
+	prompt "CPU CHIP SELECT"
+	default TAURUS
+
+	config GX3113C
+		bool "GX3113C"
+	config GX3211
+		bool "GX3211"
+	config GX6605S
+		bool "GX6605S"
+	config SIRIUS
+		bool "SIRIUS"
+	config TAURUS
+		bool "TAURUS"
+	config GEMINI
+		bool "GEMINI"
+	config CYGNUS
+		bool "CYGNUS"
+	config CANOPUS
+		bool "CANOPUS"
+	config VEGA
+		bool "VEGA"
+	config SCORPIO
+		bool "SCORPIO"
+	config SCORPIO_TAURUS
+		bool "SCORPIO_TAURUS"
+endchoice
+
+config ENABLE_UPGRADE
+	bool "ENABLE UPGRADE"
+	default y
+
+if ENABLE_UPGRADE
+menu "Update method select"
+	config ENABLE_OTA
+		bool "ENABLE OTA"
+		default y
+	config ENABLE_USB_UPGRADE
+		bool "ENABLE USB"
+		default n
+	config ENABLE_NET_HTTP
+		bool "ENABLE NET HTTP"
+		default n
+		select NET
+	config ENABLE_NET_TFTP
+		bool "ENABLE NET TFTP"
+		default n
+		select NET
+endmenu
+endif
+
+
+choice
+	prompt "GUI lib select"
+	default ENABLE_GDI
+
+config ENABLE_GDI
+	bool "ENABLE GDI"
+
+config ENABLE_GUI
+	bool "ENABLE GUI"
+
+config NO_GUI
+	bool "NO GUI"
+endchoice
+
+if ENABLE_GDI || ENABLE_GUI
+config ENABLE_LOGO
+	bool "ENABLE LOGO"
+	default y
+endif
+
+config NET
+	bool "Network support"
+	depends on ENABLE_NET_HTTP
+
+if NET
+config WIFI_SUPPORT
+	bool "WIFI support"
+	default y
+
+if WIFI_SUPPORT
+menu "WIFI model select"
+	config WIFI_MT7601
+		bool "WIFI MT7601"
+		default y
+	config WIFI_RT5370
+		bool "WIFI RT5370"
+		default n
+	config WIFI_RTL8188FU
+		bool "WIFI RTL8188FU"
+		default n
+endmenu
+endif
+
+config ETH_SUPPORT
+	bool "ETH support"
+	default n
+
+config USB_ETH_SUPPORT
+	bool "USB ETH support"
+	default n
+endif
+
+config ENABLE_PANEL
+	bool "ENABLE PANEL"
+	default n
+
+config ENABLE_IRR
+	bool "ENABLE IRR"
+	default n
+
+config ENABLE_MINIFS
+	bool "ENABLE MINIFS"
+	default n
+
+config CHECK_TIME
+	int "check time"
+	default 500
+	help
+         Start to enter the configuration unit of the interaction time
+         in milliseconds, configure 0 to not interact
+
+
+config DLP_PATH
+	string "DLP path"
+	default "OEM"
+	help
+         the format of partition path of dlp and backup_dlp is not include "/", like "OEM"
+         oppositely, the format of minifs path of dlp and backup_dlp_path is include "/"
+         and must be prefixed with "/home/gx", like "/home/gx/oem.ini"
+         using different path format to determine how to read and write dlp and backup_dlp file
+
+config BACKUP_DLP_PATH
+	string "Backup DLP path"
+	default "BACKOEM"
+	help
+         the format of partition path of dlp and backup_dlp is not include "/", like "OEM"
+         oppositely, the format of minifs path of dlp and backup_dlp_path is include "/"
+         and must be prefixed with "/home/gx", like "/home/gx/oem.ini"
+         using different path format to determine how to read and write dlp and backup_dlp file
+
+if ENABLE_OTA
+menu "Demod selects"
+	config DEMOD_GX1121D
+	tristate "GX1121D"
+	default n
+	config DEMOD_GX3211
+	tristate "GX3211"
+	default n
+	config DEMOD_GX1001
+	tristate "GX1001"
+	default n
+	config DEMOD_GX1503B_DVBC
+	tristate "GX1503B_DVBC"
+	default n
+	config DEMOD_GX1503B_DTMB
+	tristate "GX1503B_DTMB"
+	default n
+	config DEMOD_GX3211_DVBC
+	tristate "GX3211_DVBC"
+	default n
+	config DEMOD_ATBM888X_DVBC
+	tristate "ATBM888X_DVBC"
+	default n
+	config DEMOD_ATBM888X_DTMB
+	tristate "ATBM888X_DTMB"
+	default n
+	config DEMOD_ATBM783X_DVBC
+	tristate "ATBM783X_DVBC"
+	default n
+	config DEMOD_ATBM783X_DVBS
+	tristate "ATBM783X_DVBS"
+	default n
+	config DEMOD_ATBM78X_DVBT
+	tristate "ATBM78X_DVBT"
+	default n
+	config DEMOD_ATBM78X_DVBC
+	tristate "ATBM78X_DVBC"
+	default n
+	config DEMOD_ATBM78X_REPEAT_DVBT
+	tristate "ATBM78X_REPEAT_DVBT"
+	default n
+	config DEMOD_ATBM78X_REPEAT_DVBC
+	tristate "ATBM78X_REPEAT_DVBC"
+	default n
+	config DEMOD_GX1133
+	tristate "GX1133"
+	default n
+	config DEMOD_Sirius_DVBS
+	tristate "Sirius_DVBS"
+	default n
+	config DEMOD_Sirius_DVBC
+	tristate "Sirius_DVBC"
+	default n
+	config DEMOD_Sirius_J83B
+	tristate "Sirius_J83B"
+	default n
+	config DEMOD_Taurus_DVBS
+	tristate "Taurus_DVBS"
+	default n
+	config DEMOD_Taurus_DVBC
+	tristate "Taurus_DVBC"
+	default n
+	config DEMOD_Taurus_J83B
+	tristate "Taurus_J83B"
+	default n
+	config DEMOD_Gemini_DVBT
+	tristate "Gemini_DVBT"
+	default n
+	config DEMOD_Gemini_DVBC
+	tristate "Gemini_DVBC"
+	default n
+	config DEMOD_Cygnus_DVBT
+	tristate "Cygnus_DVBT"
+	default n
+	config DEMOD_Cygnus_DVBC
+	tristate "Cygnus_DVBC"
+	default n
+	config DEMOD_MXL683
+	tristate "MXL683"
+	default n
+	config DEMOD_GX1135_DVBS
+	tristate "GX1135_DVBS"
+	default n
+	config DEMOD_Canopus_DVBS
+	tristate "Canopus_DVBS"
+	default n
+	config DEMOD_Canopus_DVBC
+	tristate "Canopus_DVBC"
+	default n
+	config DEMOD_Canopus_J83B
+	tristate "Canopus_J83B"
+	default n
+	config DEMOD_Canopus_DVBC1
+	tristate "Canopus_DVBC1"
+	default n
+	config DEMOD_Cygnus_FM
+	tristate "Cygnus_FM"
+	default n
+	config DEMOD_CXD2856_DVBT
+	tristate "CXD2856_DVBT"
+	default n
+	config DEMOD_CXD2856_DVBC
+	tristate "CXD2856_DVBC"
+	default n
+	config DEMOD_CXD2856_REPEAT_DVBT
+	tristate "CXD2856_REPEAT_DVBT"
+	default n
+	config DEMOD_CXD2856_REPEAT_DVBC
+	tristate "CXD2856_REPEAT_DVBC"
+	default n
+	config DEMOD_SI2183_DVBT
+	tristate "SI2183_DVBT"
+	default n
+	config DEMOD_SI2183_DVBC
+	tristate "SI2183_DVBC"
+	default n
+	config DEMOD_Vega_DVBS
+	tristate "Vega_DVBS"
+	default n
+	config DEMOD_Vega_DVBC
+	tristate "Vega_DVBC"
+	default n
+	config DEMOD_Vega_J83B
+	tristate "Vega_J83B"
+	default n
+	config DEMOD_Vega_DVBC1
+	tristate "Vega_DVBC1"
+	default n
+	config DEMOD_Scorpio_DVBC
+	tristate "Scorpio_DVBC"
+	default n
+endmenu
+
+
+menu "Tuner Selects"
+	config TUNER_AV2018
+	tristate "AV2018"
+	default n
+	config TUNER_AV2020
+	tristate "AV2020"
+	default n
+	config TUNER_MXL608_DVBT
+	tristate "MXL608_DVBT"
+	default n
+	config TUNER_MXL608_DTMB
+	tristate "MXL608_DTMB"
+	default n
+	config TUNER_MXL608_DVBC
+	tristate "MXL608_DVBC"
+	default n
+	config TUNER_TDA18250
+	tristate "TDA18250"
+	default n
+	config TUNER_TDA18250A
+	tristate "TDA18250A"
+	default n
+	config TUNER_TDA18273_DTMB
+	tristate "TDA18273_DTMB"
+	default n
+	config TUNER_TDA18273_DVBC
+	tristate "TDA18273_DVBC"
+	default n
+	config TUNER_R850_R836_DTMB
+	tristate "R850_R836_DTMB"
+	default n
+	config TUNER_R850_R836_DVBC
+	tristate "R850_R836_DVBC"
+	default n
+	config TUNER_R850_R836_DVBT
+	tristate "R850_R836_DVBT"
+	default n
+	config TUNER_R910_DTMB
+	tristate "R910_DTMB"
+	default n
+	config TUNER_R910_DVBC
+	tristate "R910_DVBC"
+	default n
+	config TUNER_SI2141_DTMB
+	tristate "SI2141_DTMB"
+	default n
+	config TUNER_SI2141_DVBC
+	tristate "SI2141_DVBC"
+	default n
+	config TUNER_SI2141_DVBT
+	tristate "SI2141_DVBT"
+	default n
+	config TUNER_R848_DVBS
+	tristate "R848_DVBS"
+	default n
+	config TUNER_R848_DVBC
+	tristate "R848_DVBC"
+	default n
+	config TUNER_R848_DVBT
+	tristate "R848_DVBT"
+	default n
+	config TUNER_R848_DTMB
+	tristate "R848_DTMB"
+	default n
+	config TUNER_RDA5815M
+	tristate "RDA5815M"
+	default n
+	config TUNER_ATBM2040
+	tristate "ATBM2040"
+	default n
+	config TUNER_ATBM2030
+	tristate "ATBM2030"
+	default n
+	config TUNER_SHARP7306
+	tristate "SHARP7306"
+	default n
+	config TUNER_ATBM253_DTMB
+	tristate "ATBM2030_DTMB"
+	default n
+	config TUNER_ATBM253_DVBT
+	tristate "ATBM2030_DVBT"
+	default n
+	config TUNER_ATBM253_DVBC
+	tristate "ATBM2030_DVBC"
+	default n
+	config TUNER_RDA5880U_DTMB
+	tristate "RDA5880U_DTMB"
+	default n
+	config TUNER_RDA5880U_DVBT
+	tristate "RDA5880U_DVBT"
+	default n
+	config TUNER_RDA5880U_DVBC
+	tristate "RDA5880U_DVBC"
+	default n
+	config TUNER_ATBM2040_DTMB
+	tristate "ATBM2040_DTMB"
+	default n
+	config TUNER_ATBM2040_DVBT
+	tristate "ATBM2040_DVBT"
+	default n
+	config TUNER_ATBM2040_DVBC
+	tristate "ATBM2040_DVBC"
+	default n
+	config TUNER_TS6011
+	tristate "TS6011"
+	default n
+	config TUNER_M3031
+	tristate "M3031"
+	default n
+	config TUNER_RDA5160_DTMB
+	tristate "RDA5160_DTMB"
+	default n
+	config TUNER_RDA5160_DVBC
+	tristate "RDA5160_DVBC"
+	default n
+	config TUNER_RDA5160_DVBT
+	tristate "RDA5160_DVBT"
+	default n
+	config TUNER_RT720
+	tristate "RT720"
+	default n
+	config TUNER_MTV600
+	tristate "MTV600"
+	default n
+	config TUNER_A3500
+	tristate "A3500"
+	default n
+	config TUNER_R858_DVBC_1ST
+	tristate "R858_DVBC_1ST"
+	default n
+	config TUNER_R858_DVBC_2ND
+	tristate "R858_DVBC_2ND"
+	default n
+endmenu
+endif

@@ -1,0 +1,98 @@
+#!/bin/bash
+
+GXSRC_PATH=$(cd `dirname $0`; pwd)
+BUILD_MODE="release"
+
+# set_env $ARCH $OS
+function set_env() {
+    ARCH=$1
+    OS=$2
+    CROSS_PATH=$ARCH-$OS
+
+    GX_PREFIX=$GXSRC_PATH/../../library/goxceed
+    GXLIB_PATH=$GX_PREFIX/$CROSS_PATH
+	GX_KERNEL_PATH=$GX_PREFIX/kernel-$ARCH
+
+    export GXLIB_PATH GX_KERNEL_PATH GXSRC_PATH ARCH OS CROSS_PATH GX_PREFIX
+}
+
+function set_optimize_env() {
+    if [ "${optimize}" == 'Os' ]; then
+        GX_OPTIMIZE='Os'
+    elif [ "${optimize}" == 'O0' ]; then
+        GX_OPTIMIZE='O0'
+    else
+        GX_OPTIMIZE='O2'
+    fi
+    export GX_OPTIMIZE
+}
+
+function set_ext_cflags_env() {
+    GX_EXT_CFLAGS="${ext_cflags}"
+    export GX_EXT_CFLAGS
+}
+
+# build <csky|arm> <ecos|linux>
+function build() {
+    ARCH=$1
+
+    shift 1
+    for OS in $@ ; do
+        echo "*****************************************"
+        echo "     Build $ARCH $OS BSP Service   "
+        echo "*****************************************"
+
+        set_env $ARCH $OS
+        set_optimize_env
+        set_ext_cflags_env
+
+        make -C gpio clean || exit 1
+        make -C panel clean || exit 1
+        cd gpio && make && cd .. || exit 1
+        cd panel && make && cd .. || exit 1
+    done
+}
+
+if [[ "$1" = "debug" || "$1" = "release" ]]; then
+    BUILD_MODE=$1
+    shift 1
+fi
+
+if [[ "$1" = "patch" ]]; then
+	BUG=$1
+	export BUG
+	shift 1
+else
+	BUG=" "
+	export BUG
+fi
+
+if [ $# -le 1 ]; then
+    if [ "$1" = "all" ]; then
+        build csky ecos linux
+    elif [ "$1" = "clean" ]; then
+        make -C gpio clean
+        make -C panel clean
+    else
+        echo "[optimize=<s>] ./build [debug|release] [clean] [all] <csky|arm> <ecos|linux>"
+        echo ""
+        echo "    [optimize List] : "
+        echo "                  s=O0"
+        echo "                  s=O2 (default)"
+        echo "                  s=Os"
+        echo ""
+        echo "    eg: ./build csky ecos linux"
+        echo "        ./build csky ecos"
+        echo "        ./build csky linux"
+        echo "        ./build arm ecos"
+        echo "        ./build arm linux"
+        echo "        ./build all"
+        echo "        ./build clean"
+        echo "        optimize=Os ./build csky ecos"
+        echo "        ext_cflags=-mfloat-abi=hard ./build arm ecos"
+        echo ""
+    fi
+    exit 0
+fi
+
+build $@

@@ -1,0 +1,20 @@
+1. 解压GX3215B_signature_cli_v3.1.0-CentOS.tar.gz
+运行gx3215b_signature：
+gx3215b_signature  input ouput keypath
+签名自动更新原镜像。
+
+config.txt内容格式:(不能修改文件名且 config.txt 需要存放在 gx3215b_signature 同级目录下)
+input=input_image_path(手动指定)
+output=output_image_path(手动指定)
+keypath=key(手动指定)
+
+key_path内的文件名:(不能修改文件名)
+blk0_pri.bin
+blk0_pub.bin
+blk1_pri.bin
+blk1_pub.bin
+
+image_path内的文件名:(不能修改文件名)
+GX3215B_CAQC_NOVEL
+GX3215B_CAQC_SUMA
+GX3215B_LoaderQC

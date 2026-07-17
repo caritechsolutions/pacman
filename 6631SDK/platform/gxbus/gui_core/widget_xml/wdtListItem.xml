@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="listitem" attr="lodged">
+	<property name="name" type="string" value="" hint="widget name||控件名称"/>
+	<property name="style" type="string" value="default" attr="disable" hint="widget style||控件风格"/>
+	<property name="font" type="font" value="" attr="optional" hint="widget font||控件字体"/>
+
+	<property name="alignment" type="container" attr="optional" hint="widget alignment||对齐方式">
+		<property name="h" type="strselect" help="item||left;hcentre;right" value="" hint="horizontal alignment||水平对齐"/>
+		<property name="v" type="strselect" help="item||top;vcentre;bottom" value="" hint="vertical alignment||垂直对齐"/>
+	</property>
+	<property name="mirror" type="strselect" help="item||enable;disable" value="disable" attr="optional" hint="widget mirror state||组件镜像状态"/>
+	<property name="keypress_revert" type="strselect" help="item||enable;disable" value="disable" attr="optional" hint="key (left/right) revert state||(左右)按键反转状态"/>
+
+	<property name="string" type="string" value="" attr="optional" hint="show string||显示文本"/>
+	<property name="link" type="link" value="" attr="optional" hint="link another window||跳转到指定窗体"/>
+
+	<signal name = "create" value=""/>
+	<signal name = "destroy" value=""/>
+</widget>
+

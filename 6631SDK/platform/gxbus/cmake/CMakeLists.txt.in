@@ -1,0 +1,98 @@
+# CmakeLists.txt
+#
+# This file allows building GXAVDEV with the CMake configuration and build
+# tool. Download CMake in source or binary form from http://www.cmake.org/
+#
+# Original listfile by
+#
+
+PROJECT(gxav C)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+
+# Configuration checks
+#INCLUDE(CheckIncludeFile)
+#INCLUDE(CheckFunctionExists)
+#INCLUDE(CheckTypeSize)
+INCLUDE(cmake/arm-ecos-toolchain.cmake)
+
+CHECK_INCLUDE_FILE(dirent.h       HAVE_DIRENT_H)
+CHECK_INCLUDE_FILE(unistd.h       HAVE_UNISTD_H)
+
+#CHECK_FUNCTION_EXISTS(memmove     HAVE_MEMMOVE)
+
+# User-configurable options
+#
+# (Note: CMakeSetup displays these in alphabetical order, regardless of
+# the order we use here)
+
+SET(BUILD_SHARED_LIBS OFF CACHE BOOL
+		"Build shared libraries instead of static ones.")
+
+SET(TEST "$ENV{GXLIB_PATH}/abcd" CACHE STRING
+		"test")
+
+# Output files
+
+CONFIGURE_FILE(config-cmake.h.in
+		${CMAKE_BINARY_DIR}/config.h
+		@ONLY)
+
+# Include.
+
+INCLUDE_DIRECTORIES( /home/zhuzhg/opt/goxceed/arm-ecos/include )
+INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/include               )
+INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/bus                   )
+INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/ca                    )
+
+
+AUX_SOURCE_DIRECTORY( ${CMAKE_SOURCE_DIR}/bus      SRC_BUS      )
+AUX_SOURCE_DIRECTORY( ${CMAKE_SOURCE_DIR}/book     SRC_BOOK     )
+AUX_SOURCE_DIRECTORY( ${CMAKE_SOURCE_DIR}/common   SRC_COMMON   )
+AUX_SOURCE_DIRECTORY( ${CMAKE_SOURCE_DIR}/ca       SRC_CA       )
+AUX_SOURCE_DIRECTORY( ${CMAKE_SOURCE_DIR}/epg      SRC_EPG      )
+AUX_SOURCE_DIRECTORY( ${CMAKE_SOURCE_DIR}/extra    SRC_EXTRA    )
+AUX_SOURCE_DIRECTORY( ${CMAKE_SOURCE_DIR}/frontend SRC_FRONTEND )
+AUX_SOURCE_DIRECTORY( ${CMAKE_SOURCE_DIR}/oem      SRC_OEM      )
+AUX_SOURCE_DIRECTORY( ${CMAKE_SOURCE_DIR}/pm       SRC_PM       )
+AUX_SOURCE_DIRECTORY( ${CMAKE_SOURCE_DIR}/si       SRC_SI       )
+AUX_SOURCE_DIRECTORY( ${CMAKE_SOURCE_DIR}/si/table SRC_SI       )
+AUX_SOURCE_DIRECTORY( ${CMAKE_SOURCE_DIR}/search   SRC_SEARCH   )
+
+#ADD_SUBDIRECTORY(bus common)
+
+SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb")
+SET(CMAKE_CXX_FLAGS_RELESE "$ENV{CXXFLAGS} -O2 -Wall")
+
+# Source code
+SET(GXBUS_SOURCES ${SRC_BUS} ${SRC_BOOK} ${SRC_COMMON} ${SRC_CA}
+		${SRC_EPG} ${SRC_EXTRA} ${SRC_FRONTEND} ${SRC_OEM} ${SRC_PM}
+		${SRC_SI} ${SRC_SEARCH}
+	test.c)
+
+# Character table generation
+
+
+# Build setup
+
+ADD_DEFINITIONS(-DHAVE_CONFIG_H)
+IF (WIN32)
+	ADD_DEFINITIONS(-D_CRT_SECURE_NO_DEPRECATE)
+ENDIF(WIN32)
+
+# Libraries
+ADD_LIBRARY(gxbus ${GXBUS_SOURCES})
+TARGET_LINK_LIBRARIES(gxav)
+
+#ADD_LIBRARY(gxav_1 ${GXBUS_SOURCES})
+#ADD_LIBRARY(gxav_2 ${GXBUS_SOURCES})
+#TARGET_LINK_LIBRARIES(gxav_1 gxav_2)
+
+# Executables
+#ADD_EXECUTABLE(test test.c)
+#TARGET_LINK_LIBRARIES(gxav)
+
+# Testing
+# ENABLE_TESTING()
+# GET_TARGET_PROPERTY(PCREGREP_EXE pcregrep DEBUG_LOCATION)
+# GET_TARGET_PROPERTY(PCRETEST_EXE pcretest DEBUG_LOCATION)
+

@@ -1,0 +1,8 @@
+- docker 安装
+	- sudo apt-get install docker.io
+	- sudo touch /etc/docker/daemon.json
+	- sudo vi /etc/docker/daemon.json 添加{ "insecure-registries":["192.168.111.250:5000"] }
+	- systemctl restart docker
+	- 安装完执行命令查看一下 docker 的版本，正确的版本为 18 或者更高
+	- sudo docker -v
+	- Docker version 18.09.2, build 6247962

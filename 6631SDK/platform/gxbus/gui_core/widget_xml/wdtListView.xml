@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="listview">
+	<property name="name" type="string" value="" hint="widget name||控件名称"/>
+	<property name="style" type="string" value="default" hint="widget style||控件风格"/>
+	<property name="rect" type="container" hint="widget postion||控件位置设置">
+		<property name="x" type="u16" value="0" hint="x position||水平坐标"/>
+		<property name="y" type="u16" value="0" hint="y postion||垂直坐标"/>
+		<property name="width" type="u16" value="0" hint="widget width||宽度"/>
+		<property name="height" type="u16" value="0" hint="widget height||高度"/>
+	</property>
+	<property name="state" type="strselect" help="item||enable;disable;hide;show;focus" value="show" attr="optional" hint="widget initial state||控件初始显示状态"/>
+
+	<property name="forecolor" type="container" hint="foreground color||前景颜色设置">
+		<property name="unfocus" type="color" value="#000000" hint="unfocus color||非焦点时的颜色"/>
+		<property name="focus" type="color" value="#000000" hint="focus color||焦点时的颜色"/>
+		<property name="disable" type="color" value="#000000" hint="disable color||被禁用时的颜色"/>
+	</property>
+	<property name="backcolor" type="container" hint="background color||背景颜色设置">
+		<property name="unfocus" type="color" value="#808080" hint="unfocus color||非焦点时的颜色"/>
+		<property name="focus" type="color" value="#808080" hint="focus color||焦点时的颜色"/>
+		<property name="disable" type="color" value="#808080" hint="disable color||被禁用时的颜色"/>
+	</property>
+	<property name="mirror" type="strselect" help="item||enable;disable" value="disable" attr="optional" hint="widget mirror state||组件镜像状态"/>
+	<property name="keypress_revert" type="strselect" help="item||enable;disable" value="disable" attr="optional" hint="key (left/right) revert state||(左右)按键反转状态"/>
+
+	<property name="roll_time" type="u16" value="0" attr="optional" hint="refresh millseconds while rolling||滚动刷新间隔时间(毫秒)"/>
+	<property name="encoding" type="strselect" help="item||utf8;gb2312;gbk;big5" value="utf8" attr="optional" hint="encoding type||编码类型"/>
+	<property name="format" type="strselect" help="item||headershow;headerhide;enable_roll;page;fix_round" value="headerhide" attr="optional" hint="format||格式"/>
+	<property name="interval" type="u16" value="0" attr="optional" hint="line interval||行间距"/>
+	<property name="select" type="u16" value="0" attr="optional" hint="selected line||选中某一行"/>
+	<property name="fix_select" type="u16" value="0" attr="optional" hint="fix select||焦点位置固定，真个列表选择的特殊状态"/>
+	<property name="focus_img" type="file" value="" help="filter||Images (*.bmp *.png *.xpm *.jpg *gif);;All files (*.*)||path||image" attr="optional" hint="select focus image file||选择焦点时的图像文件"/>
+	<property name="unfocus_img" type="file" value="" help="filter||Images (*.bmp *.png *.xpm *.jpg *gif);;All files (*.*)||path||image" attr="optional" hint="select unfocus image file||选择非焦点时的图像文件"/>
+	<property name="disable_img" type="file" value="" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" attr="optional" hint="select disabled image file||选择被禁用时的图像文件"/>
+	<property name="item_active_image" type="file" value="" help="filter||Images (*.bmp *.png *.xpm *.jpg *gif);;All files (*.*)||path||image" attr="optional" hint="active image file||被激活时背景图像"/>
+	<property name="item_active_color" type="color" value="#000000" attr="optional" hint="active color||被激活时颜色"/>
+	<property name="i18n" type="strselect" help="item||true;false" value="false" attr="optional" hint="string translation||文本自动翻译"/>
+	<property name="time_out" type="u16" value="0" attr="optional" hint="time out||超时"/>
+	<property name="item_rect" type="container" hint="item rect||条目位置设置">
+		<property name="x" type="u16" value="0" attr="disable" hint="x position||横向坐标"/>
+		<property name="y" type="u16" value="0" attr="disable" hint="y postion||纵向坐标"/>
+		<property name="width" type="u16" value="0" attr="disable" hint="item width||宽度"/>
+		<property name="height" type="u16" value="40" hint="item height||高度"/>
+	</property>
+	<property name="item_fore_color" type="container" attr="optional" hint="item foreground color||条目前景颜色设置">
+		<property name="unfocus" type="color" value="#000000" hint="unfocus color||非焦点时的颜色"/>
+		<property name="focus" type="color" value="#000000" hint="focus color||焦点时的颜色"/>
+		<property name="disable" type="color" value="#000000" hint="disable color||被禁用时的颜色"/>
+	</property>
+	<property name="item_back_color" type="container" attr="optional" hint="item background color||条目背景颜色设置">
+		<property name="unfocus" type="color" value="#808080" hint="unfocus color||非焦点时的背景色"/>
+		<property name="focus" type="color" value="#808080" hint="focus color||焦点时的背景色"/>
+		<property name="disable" type="color" value="#808080" hint="disable color||被禁用时的背景色"/>
+	</property>
+	<property name="font" type="font" value="" attr="optional" hint="widget font||控件字体"/>
+	<property name="alignment" type="container" attr="optional" hint="widget alignment||对齐方式">
+		<property name="h" type="strselect" help="item||left;hcentre;right" value="" hint="horizontal alignment||水平对齐"/>
+		<property name="v" type="strselect" help="item||top;vcentre;bottom" value="" hint="vertical alignment||垂直对齐"/>
+	</property>
+	<property name="accelerate" type="strselect" help="enable||disable" value="disable" attr="optional" hint="accelerate||加速模式开启"/>
+	<property name="arrange" type="strselect" help="left_to_right||right_to_left" value="left_to_right" attr="optional" hint="arrange||布局模式"/>
+	<property name="step" type="u16" value="0" attr="optional" hint="rolling step||滚动刷新步进量"/>
+	<property name="typeset" type="strselect" help="item||l2r;r2l" value="r2l" attr="optional" hint="typeset||排版方式"/>
+
+	<signal name = "create" value=""/>
+	<signal name = "destroy" value=""/>
+	<signal name = "draw" value=""/>
+	<signal name = "keypress" value=""/>
+	<signal name = "clicked" value=""/>
+	<signal name = "get_total" value=""/>
+	<signal name = "get_data" value=""/>
+	<signal name = "change" value=""/>
+	<signal name = "timeout" value=""/>
+</widget>
+

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="image">
+	<property name="name" type="string" value="" hint="widget name||控件名称"/>
+	<property name="style" type="string" value="default" hint="widget style||控件风格"/>
+	<property name="rect" type="container" hint="widget postion||控件位置设置">
+		<property name="x" type="u16" value="0" hint="x position||水平坐标"/>
+		<property name="y" type="u16" value="0" hint="y postion||垂直坐标"/>
+		<property name="width" type="u16" value="0" hint="widget width||宽度"/>
+		<property name="height" type="u16" value="0" hint="widget height||高度"/>
+	</property>
+	<property name="state" type="strselect" help="item||enable;disable;hide;show;focus" value="show" attr="optional" hint="widget initial state||控件初始显示状态"/>
+
+	<property name="forecolor" type="container" attr="disable" hint="foreground color||初始颜色设置">
+		<property name="unfocus" type="color" value="#000000" attr="disable" hint="unfocus color||非焦点时的颜色"/>
+		<property name="focus" type="color" value="#000000" attr="disable" hint="focus color||焦点时的颜色"/>
+		<property name="disable" type="color" value="#000000" attr="disable" hint="disable color||被禁用时的颜色"/>
+	</property>
+	<property name="backcolor" type="container" hint="background color||背景颜色设置">
+		<property name="unfocus" type="color" value="#808080" hint="unfocus color||非焦点时的颜色"/>
+		<property name="focus" type="color" value="#808080" hint="focus color||焦点时的颜色"/>
+		<property name="disable" type="color" value="#808080" hint="disable color||被禁用时的颜色"/>
+	</property>
+	<property name="mirror" type="strselect" help="item||enable;disable" value="disable" attr="optional" hint="widget mirror state||组件镜像状态"/>
+	<property name="keypress_revert" type="strselect" help="item||enable;disable" value="disable" attr="optional" hint="key (left/right) revert state||(左右)按键反转状态"/>
+
+	<property name="mode" type="strselect" help="item||single;multiple" value="single" hint="image mode||图像显示方式"/>
+	<property name="opacity" type="u8" value="100" attr="optional" hint="transparent level||透明度设置"/>
+
+	<property name="img" type="file" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" value="" hint="select single image file||选择图像文件"/>
+	<property name="lt_img" type="file" value="" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" attr="optional|disable" hint="left top image file||选择左上角图像文件"/>
+	<property name="rt_img" type="file" value="" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" attr="optional|disable" hint="right top image file||选择右上角图像文件"/>
+	<property name="lb_img" type="file" value="" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" attr="optional|disable" hint="left bottom image file||选择左下角图像文件"/>
+	<property name="rb_img" type="file" value="" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" attr="optional|disable" hint="right bottom image file||选择右下角图像文件"/>
+	<property name="l_img" type="file" value="" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" attr="optional|disable" hint="left side image file||选择左侧图像文件"/>
+	<property name="r_img" type="file" value="" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" attr="optional|disable" hint="right side image file||选择右侧图像文件"/>
+	<property name="t_img" type="file" value="" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" attr="optional|disable" hint="top image file||选择顶部图像文件"/>
+	<property name="b_img" type="file" value="" help="filter||Images (*.bmp *.png *.xpm *.jpg *.gif);;All files (*.*)||path||image" attr="optional|disable" hint="bottom image file||选择底部图像文件"/>
+	
+	<signal name = "create" value=""/>
+	<signal name = "destroy" value=""/>
+</widget>

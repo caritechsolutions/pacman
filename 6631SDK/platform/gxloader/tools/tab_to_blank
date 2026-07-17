@@ -1,0 +1,6 @@
+#bin/sh 
+in `find . -name "*.c"`; 
+do expand -t 4 $i > $i.tmp;
+mv -f $i.tmp $i;
+done
+find . -name "*.c" |xargs expand -t 4 `

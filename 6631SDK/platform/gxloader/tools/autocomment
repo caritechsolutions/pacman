@@ -1,0 +1,82 @@
+#!/bin/sh
+
+ver="v0.2 -- 20140310"
+boardlist=`ls conf/gx3201`
+#boardlist=`echo "$boardlist" | sed "s/generic//g"`	#delete generic from boardlist
+
+#arg1:input file for src
+#arg2:input file for insert
+#arg3:output file
+#arg4:column
+insert_string() {
+	src=$1
+	insert=`cat $2`
+	out=$3
+	column=$4
+	src_str=`cat $src`
+	expand --tabs=8 $src > string_tmp
+	src_str=`cat string_tmp`
+	echo "$src_str"
+	src_len=`cat string_tmp | wc -c`
+	blanks=$((column-$src_len))
+	echo "$blanks"
+	src_str=`cat string_tmp`
+	for ((j=0;j<$blanks;j++))
+	do
+		src_str=${src_str}' '
+		echo "$src_str"
+	done
+	src_str="${src_str}${insert}"
+	echo "$src_str" > $out
+	out_str=`cat $out`
+	echo "$out_str"
+	rm string_tmp
+}
+
+auto_insert_comment(){
+	for((i=$1;i<=$2;i++))
+	do
+		src=`sed -n "${i}p" board-init.c`
+		dst=`sed -n "${i}p" board/gx3201/board-$board/board-init.c`
+		if [ -n "$dst" ]; then
+			echo "src=$src"
+			echo "dst=$dst"
+			src=${src#*\},}		#cat content after "},"
+			echo "src=$src"
+			src=`echo $src|sed "s+\/+\\\\\/+g"`
+			echo "src=$src"
+			echo "$src" > tmp1
+			echo "$dst" > tmp2
+			insert_string tmp2 tmp1 tmp3 65 #1:input for src 2:input for insert 3:output 4:column
+			dst=`cat tmp3`
+			sed -i "${i}s/.*/$dst/" board/gx3201/board-$board/board-init.c
+		fi
+	done
+	rm tmp1 tmp2 tmp3
+}
+
+auto_clear_comment(){
+	for((i=$1;i<=$2;i++))
+	do
+		src=`sed -n "${i}p" board/gx3201/board-$board/board-init.c`
+		src=${src%\/\/*}	#cat content before "//"
+		echo "src=$src"
+		sed -i "${i}s/.*/$src/" board/gx3201/board-$board/board-init.c
+	done
+}
+
+for board in $boardlist
+do
+	auto_clear_comment 112 187
+	auto_insert_comment 112 187
+
+	#*****command backup*****#
+
+#	sed -i "s/_DEMO_V1.0/${board}_DEMO_V1.0/g" board/gx3201/board-$board/board-init.c
+
+#	sed -i "6r insert.txt" board/gx3201/board-$board/board-init.c
+
+#	insert_line=`sed -n '$=' board/gx3201/board-$board/board-init.c`	#get total line of file.
+#	sed -i "${insert_line}r insert.txt" board/gx3201/board-$board/board-init.c
+
+done

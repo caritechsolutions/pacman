@@ -1,0 +1,20 @@
+#ifndef __VEGA_FIREWALL_REG_H__
+#define __VEGA_FIREWALL_REG_H__
+
+#include "firewall.h"
+
+#define FW_GLOBLE_CFG               (REG_BASE_FIREWALL + 0x000)
+#define FW_DDR_SPACE                (REG_BASE_FIREWALL + 0x004)
+#define FW_CONFIG_UPLOAD            (REG_BASE_FIREWALL + 0x008)
+#define FW_OTP_INFO                 (REG_BASE_FIREWALL + 0x00c)
+#define FW_FILTER_BASE(i)           (REG_BASE_FIREWALL + 0x010 + 0x20*i)
+#define FW_FILTER_SIZE(i)           (REG_BASE_FIREWALL + 0x014 + 0x20*i)
+#define FW_FILTER_RD_MASK(i)        (REG_BASE_FIREWALL + 0x018 + 0x20*i)
+#define FW_FILTER_WR_MASK(i)        (REG_BASE_FIREWALL + 0x01C + 0x20*i)
+#define FW_FILTER_CFG(i)            (REG_BASE_FIREWALL + 0x020 + 0x20*i)
+#define FW_DEFAULT_RD_MASK          (REG_BASE_FIREWALL + 0x310)
+#define FW_DEFAULT_WR_MASK          (REG_BASE_FIREWALL + 0x314)
+
+#define FILTER_FIRST_SOFT_BUFFER_ID             (13)
+
+#endif

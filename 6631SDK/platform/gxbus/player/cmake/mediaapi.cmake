@@ -1,0 +1,13 @@
+SET(SRC_MEDIAAPI
+	mediaapi/gxmedia_common.c
+	mediaapi/gxmedia_audio.c
+	mediaapi/gxmedia_video.c
+	mediaapi/gxmedia_demux.c
+	mediaapi/gxmedia_stc.c
+	mediaapi/gxmedia_module.c
+	mediaapi/gxmedia_api.c
+	mediaapi/gxmedia_aout.c
+	mediaapi/gxmedia_adec.c
+	mediaapi/gxmedia_aplay.c
+	mediaapi/gxaudio_dongle.c
+	)

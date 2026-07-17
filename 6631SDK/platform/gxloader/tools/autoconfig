@@ -1,0 +1,52 @@
+#!/bin/sh
+
+ver="v0.4 -- 20170210"
+#boardlist="3231 dvbs-6602 dvbs-6601 dvbc-3201 dvbc-3201e dvbt2-3201 generic"
+chip=gx3113C
+boardlist=`ls conf/${chip}`
+configlist="release debug boot lib"
+
+help()
+{
+
+cat << HELP
+eg.	autoconfig "80r insert.txt"
+	autoconfig "80d"
+HELP
+	exit 0
+}
+
+error()
+{
+	echo "$1"
+	exit 1
+}
+
+echo_exec()
+{
+	echo $1
+	$1
+}
+
+par_check()
+{
+	if [ $# -lt 1 ]; then
+		echo "parameters not enough."
+		help
+	fi
+}
+
+main()
+{
+	par_check $@
+	for board in ${boardlist}
+	do
+		for config in ${configlist}
+		do
+#			echo_exec "sed -i -e \"${1}\" conf/gx3201/${board}/${config}.config"
+			sed -i -e "${1}" conf/${chip}/${board}/${config}.config
+		done
+	done
+}
+
+main "$@"

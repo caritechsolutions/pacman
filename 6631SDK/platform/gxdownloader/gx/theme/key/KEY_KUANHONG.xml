@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf8" standalone="no"?>
+<keymap>
+	  <tree>
+    <item display="Remote Key map">
+    <item display="Remote 1" group="KEY_KUANHONG"/>
+    </item>
+    </tree>
+    <group name="KEY_KUANHONG">
+	<key name="GUIK_0">0xccf7</key>
+	<key name="GUIK_1">0xcc77</key>
+	<key name="GUIK_2">0xccb7</key>
+	<key name="GUIK_3">0xcc37</key>
+	<key name="GUIK_4">0xccd7</key>
+	<key name="GUIK_5">0xcc57</key>
+	<key name="GUIK_6">0xcc97</key>
+	<key name="GUIK_7">0xcc17</key>
+	<key name="GUIK_8">0xcce7</key>
+	<key name="GUIK_9">0xcc67</key>
+	<key name="GUIK_M">0xccbf</key>		<!--menu-->
+	<key name="GUIK_ESCAPE">0xcc3f</key>	<!--exit-->
+	<key name="GUIK_RETURN">0xccdf</key>	<!--enter-->
+	<key name="GUIK_UP">0xcc5f</key>
+	<key name="GUIK_DOWN">0xcc9f</key>
+	<key name="GUIK_LEFT">0xcc1f</key>
+	<key name="GUIK_RIGHT">0xccef</key>
+	<key name="GUIK_HOME">0xcc7f</key>		<!--mute-->
+	<key name="GUIK_T">0xcc27</key>	<!--tv radio switch-->
+	<key name="GUIK_E">0xcc7b</key>		<!--epg-->
+	<key name="GUIK_PAGE_UP">0xcc6f</key>		<!--page up-->
+	<key name="GUIK_PAGE_DOWN">0xccaf</key>		<!--page down-->
+	<key name="GUIK_BACKSPACE">0xcca7</key><!-->KEY_recall<-->
+	<key name="GUIK_R">0xccdb</key><!-->KEY_RED<-->
+	<key name="GUIK_G">0xcc5b</key><!-->KEY_GREEN<-->
+	<key name="GUIK_Y">0xcc9b</key><!-->KEY_YELLOW<-->
+	<key name="GUIK_P">0xcc1b</key><!-->KEY_POWER<-->
+	<key name="GUIK_I">0xccbb</key><!-->KEY_PROG_INFO<-->
+	<!--><key name="GUIK_PANEL_M">0xcc47bf40</key><-->
+	<!--><key name="GUIK_PANEL_ESCAPE">0xcc473fc0</key><-->
+	<!--><key name="GUIK_PANEL_RETURN">0xcc47df20</key><-->
+	<!--><key name="GUIK_PANEL_UP">0xcc475fa0</key><-->
+	<!--><key name="GUIK_PANEL_DOWN">0xcc479f60</key><-->
+	<!--><key name="GUIK_PANEL_LEFT">0xcc471fe0</key><-->
+	<!--><key name="GUIK_PANEL_RIGHT">0xcc47ef10</key><-->
+	<!--><key name="GUIK_PANEL_P">0xcc471be4</key><-->
+	 </group>
+</keymap>

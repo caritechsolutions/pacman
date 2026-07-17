@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import argparse
+import re
+import shutil
+
+
+class DockerBuild():
+    def __init__(self, args):
+        self.args = args
+        self.containername = "sphinxbuild_container"
+        self.containernamedir = "/home/work/" + os.path.basename(os.getcwd())
+        #self.image = "172.16.0.61:5000/doctools:sphinx"
+        self.image = "192.168.111.250:5000/doctools:sphinx"
+        self.builddir = "./"
+        self.indexrst = "./index.rst"
+        self.exclude_dir = ""
+        self.project_name = "GoXceed"
+        self.compile_type = "all"
+        self.output_type = "html"
+        self.rootdir = "/"
+        self.rerun = "0"
+        self.docker_env = " -e PATH=/home/gx/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/home/work:/sbin:/bin -e LC_ALL=zh_CN.UTF-8"
+
+
+    def build(self):
+        build_cmd = self.args.run
+        print(build_cmd)
+        #run_cmd = "sudo docker run -ti --name sphinxbuild_container -u root -v /home/wangshj/spd_doc/sources/spd/security:/home/work  -e PATH=/home/gx/.local/bin:/usr/local/sbin:/usr/local/bin:/home/work:/usr/sbin:/usr/bin:/sbin:/bin -e LC_ALL=zh_CN.UTF-8 192.168.111.250:5000/doctools:sphinx sh -c 'cd /home/work; build --debug'"
+        #run_cmd = "sudo docker run -ti --name " + self.containername + " -u root -v " +  os.getcwd() + ":" + self.containernamedir + self.docker_env + ' ' + self.image + ' sh -c "'  + 'cd ' + self.containernamedir + ';' + build_cmd + '"'
+        run_cmd = "sudo docker run -ti --name " + self.containername + " -u root -v " + os.path.abspath(os.path.join(os.getcwd(), '..')) + ':/home/work ' + self.docker_env + ' ' + self.image + ' sh -c "'  + 'cd ' + self.containernamedir + ';' + build_cmd + '"'
+        print(run_cmd)
+        os.system(run_cmd)
+        os.system("sudo docker stop " + self.containername)
+        os.system("sudo docker rm -f " + self.containername)
+
+
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description = "")
+    parser.add_argument('-r', dest='run',
+            help='使用docker环境执行命令')
+    if len(sys.argv) == 1:
+        sys.argv.append('-h')
+    args = parser.parse_args()
+
+    db = DockerBuild(args)
+    db.build()

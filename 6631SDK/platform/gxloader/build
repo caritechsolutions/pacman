@@ -1,0 +1,201 @@
+#!/bin/bash
+
+export GX_PREFIX=$(pwd)/../../library/goxceed
+
+GXSRC_PATH=$(cd `dirname $0`; pwd)
+BUILD_MODE="release"
+
+# set_env $ARCH $BOARD $CONFIG
+set_env() {
+    ARCH=$1
+    BOARD=$2
+    CONFIG=$3
+
+    export ARCH BOARD CONFIG
+}
+
+build_clean() {
+    make clean || exit 1
+}
+
+# build <chip> <board> <config>
+build() {
+    CHIP=$1
+    case "$CHIP" in
+        gx3201|gx3211|gx6605s|taurus|gemini|cygnus|scorpio|scorpio-taurus)
+            ARCH=csky
+            ;;
+        gx3113C|gx3113c|GX3113C)
+            CHIP=gx3113C
+            ARCH=csky
+            ;;
+        sirius|canopus|vega)
+            ARCH=arm
+	    ;;
+        *)
+            echo "ERROR CHIP_ID: $CHIP"
+            exit 1
+            ;;
+    esac
+
+    BOARD=$2
+    CONFIG=$3
+    set_env $ARCH $BOARD $CONFIG
+
+    if [ ! -f conf/$CHIP/$BOARD/$CONFIG.config ]; then
+	echo "file conf/$CHIP/$BOARD/$CONFIG.config not exist, please check."
+	exit 1
+    fi
+
+    cp conf/$CHIP/$BOARD/$CONFIG.config .config
+
+	URANDOM_DEV="/dev/urandom"
+	if [ ! -c $URANDOM_DEV ]; then
+		echo "$URANDOM_DEV not exist"
+		exit 1
+	fi
+
+	#if use build to compile, modify nfs addr automatically
+
+	netlst=$(ifconfig | head -n 1 | awk '{print $1}' | cut -d : -f1)
+	ubuntu_lsb_release=$(lsb_release -r | awk '{print $2}' | awk -F '.' '{print $1}')
+	if [ ${ubuntu_lsb_release} -ge 18 ]; then #version after 16.04
+		IP=`LC_ALL=C ifconfig ${netlst} | grep -E 'inet ' | awk '{print $2}'`
+		MASK=$(LC_ALL=C ifconfig ${netlst} | grep -E 'inet ' | awk '{print $4}')
+	else
+		IP=`LC_ALL=C ifconfig ${netlst} | grep -E 'inet ' | cut -d: -f2 | awk '{print $1}'`
+		MASK=$(LC_ALL=C ifconfig ${netlst} | grep -E 'inet ' | awk '{print $4}' | cut -d : -f2)
+	fi
+
+    BIP=`echo $IP | awk -F. '{print $1 "." $2 "." $3 "." $4+1}'`
+    RANDOM_MAC=`dd if=$URANDOM_DEV bs=1024 count=1 2>/dev/null | md5sum | sed 's/\(..\)/&:/g'| cut -b -17`
+	VALID_MAC=`echo $RANDOM_MAC |mawk -F : '{ tmp=int("0x"$1); if(tmp%2 == 1) tmp += 1; if(tmp == 0) tmp += 2; printf("%02x:%02x:%02x:%02x:%02x:%02x\n", tmp, "0x"$2, "0x"$3, "0x"$4, "0x"$5, "0x"$6)}'`
+    sed -i -e "s/nfsroot=*\([.0-9]*\)/nfsroot=$IP/" -e "s/v3 ip=*\([.0-9]*\)/v3 ip=$BIP:::$MASK synopGMAC=mac_addr@${VALID_MAC}/" .config
+
+    if [ "$3" = "lib" ] && [ "$4" = "ecos" ]
+    then
+	    make clean ENABLE_ECOS_OTA=y || exit 1
+	    make ENABLE_ECOS_OTA=y || exit 1
+    else
+	    make clean || exit 1
+	    make || exit 1
+    fi
+
+
+    if [ "$3" = "lib" ]; then
+	if [ "$4" = "ecos" ]
+	then
+	make install ENABLE_ECOS_OTA=y || exit 1
+	else
+	make install || exit 1
+	fi
+    fi
+}
+
+help_chip_info() {
+	if [[ -z $1 ]] || [ ! -d "conf/${1}" ]
+	then
+		return 1
+	fi
+
+	echo "$1 chip support detail info"
+
+	local board_list=`ls conf/${1}/ | grep -v -E "bbt|slt"`
+	local chip_board_detail_info
+	for chip_board in $board_list
+	do
+		chip_board_detail_info=$(cat chip_board_list/${1} | grep "\<${chip_board}\>")
+		chip_board_detail_info=${chip_board_detail_info#*(}
+		chip_board_detail_info=${chip_board_detail_info%)*}
+		if [[ -z $chip_board_detail_info ]]
+		then
+			chip_board_detail_info="$chip_board"
+		else
+			chip_board_detail_info="$chip_board($chip_board_detail_info)"
+		fi
+
+		echo $chip_board_detail_info
+	done
+	exit 0
+}
+
+help() {
+	help_chip_info $@
+	echo
+	echo "note: show all normal board, please input ./build "
+	echo "      show all  test  board, please input ./build <bbt/slt>"
+	if [ "$1" = "bbt" ] || [ "$1" = "slt" ];then
+		flag=s
+	else
+		flag=v
+	fi
+
+	gx3201_list=`ls conf/gx3201/ | grep -${flag} -E "bbt|slt"`
+	gx3201_list=`echo ${gx3201_list}|sed "s/ /|/g"`
+	gx3113c_list=`ls conf/gx3113C/ | grep -${flag} -E "bbt|slt"`
+	gx3113c_list=`echo ${gx3113c_list}|sed "s/ /|/g"`
+	gx3211_list=`ls conf/gx3211/ | grep -${flag} -E "bbt|slt"`
+	gx3211_list=`echo ${gx3211_list}|sed "s/ /|/g"`
+	gx6605s_list=`ls conf/gx6605s/ | grep -${flag} -E "bbt|slt"`
+	gx6605s_list=`echo ${gx6605s_list}|sed "s/ /|/g"`
+	sirius_list=`ls conf/sirius/ | grep -${flag} -E "bbt|slt"`
+	sirius_list=`echo ${sirius_list}|sed "s/ /|/g"`
+	taurus_list=`ls conf/taurus/ | grep -${flag} -E "bbt|slt"`
+	taurus_list=`echo ${taurus_list}|sed "s/ /|/g"`
+	gemini_list=`ls conf/gemini/ | grep -${flag} -E "bbt|slt"`
+	gemini_list=`echo ${gemini_list}|sed "s/ /|/g"`
+	cygnus_list=`ls conf/cygnus/ | grep -${flag} -E "bbt|slt"`
+	cygnus_list=`echo ${cygnus_list}|sed "s/ /|/g"`
+	canopus_list=`ls conf/canopus/ | grep -${flag} -E "bbt|slt"`
+	canopus_list=`echo ${canopus_list}|sed "s/ /|/g"`
+	vega_list=`ls conf/vega/ | grep -${flag} -E "bbt|slt"`
+	vega_list=`echo ${vega_list}|sed "s/ /|/g"`
+	scorpio_list=`ls conf/scorpio/ | grep -${flag} -E "bbt|slt"`
+	scorpio_list=`echo ${scorpio_list}|sed "s/ /|/g"`
+	scorpio_taurus_list=`ls conf/scorpio-taurus/ | grep -${flag} -E "bbt|slt"`
+	scorpio_taurus_list=`echo ${scorpio_taurus_list}|sed "s/ /|/g"`
+	echo ""
+	echo "./build <chip> <board> <.config>"
+	echo ""
+	echo "  chip    list : gx3201|gx3113c|gx3211|gx6605s|sirius|taurus"
+	echo ""
+	echo "  board   list : gx3201  : ${gx3201_list}"
+	echo "                 gx3113c : ${gx3113c_list}"
+	echo "                 gx3211  : ${gx3211_list}"
+	echo "                 gx6605s : ${gx6605s_list}"
+	echo "                 sirius  : ${sirius_list}"
+	echo "                 taurus  : ${taurus_list}"
+	echo "                 gemini  : ${gemini_list}"
+	echo "                 cygnus  : ${cygnus_list}"
+	echo "                 canopus : ${canopus_list}"
+	echo "                 vega    : ${vega_list}"
+	echo "                 scorpio : ${scorpio_list}"
+	echo "                 scorpio-taurus : ${scorpio_taurus_list}"
+	echo ""
+	echo "  .config list : release|debug|boot|lib"
+	echo ""
+	if [ "${flag}" = "v" ];then
+		echo "  eg: ./build gx3201 generic debug"
+		echo "      ./build gx3201 6601-dvbs2 release"
+		echo "      ./build gx3201 6601-dvbs2 boot"
+		echo "      ./build gx3201 3201e-dvbc release"
+	else
+		echo "  eg: ./build gx6605s 6605s-bbt debug"
+		echo "      ./build gx6605s 6605s-slt release"
+	fi
+	echo ""
+	echo "./build clean"
+	echo ""
+}
+
+if [ $# -le 2 ]; then
+    if [ "$1" = "clean" ]; then
+        build_clean
+        exit 0
+    else
+	help $@
+        exit 1
+    fi
+fi
+
+build $@

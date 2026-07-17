@@ -1,0 +1,67 @@
+# Install script for directory: /home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/player/demos/gxplayer
+
+# Set the install prefix
+if(NOT DEFINED CMAKE_INSTALL_PREFIX)
+  set(CMAKE_INSTALL_PREFIX "/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/../../library/goxceed/arm-ecos")
+endif()
+string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+
+# Set the install configuration name.
+if(NOT DEFINED CMAKE_INSTALL_CONFIG_NAME)
+  if(BUILD_TYPE)
+    string(REGEX REPLACE "^[^A-Za-z0-9_]+" ""
+           CMAKE_INSTALL_CONFIG_NAME "${BUILD_TYPE}")
+  else()
+    set(CMAKE_INSTALL_CONFIG_NAME "Release")
+  endif()
+  message(STATUS "Install configuration: \"${CMAKE_INSTALL_CONFIG_NAME}\"")
+endif()
+
+# Set the component getting installed.
+if(NOT CMAKE_INSTALL_COMPONENT)
+  if(COMPONENT)
+    message(STATUS "Install component: \"${COMPONENT}\"")
+    set(CMAKE_INSTALL_COMPONENT "${COMPONENT}")
+  else()
+    set(CMAKE_INSTALL_COMPONENT)
+  endif()
+endif()
+
+# Install shared libraries without execute permission?
+if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
+  set(CMAKE_INSTALL_SO_NO_EXE "1")
+endif()
+
+# Is this installation the result of a crosscompile?
+if(NOT DEFINED CMAKE_CROSSCOMPILING)
+  set(CMAKE_CROSSCOMPILING "FALSE")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  if(EXISTS "$ENV{DESTDIR}/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/../../library/goxceed/arm-ecos/bin/gxplayer" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/../../library/goxceed/arm-ecos/bin/gxplayer")
+    file(RPATH_CHECK
+         FILE "$ENV{DESTDIR}/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/../../library/goxceed/arm-ecos/bin/gxplayer"
+         RPATH "")
+  endif()
+  list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
+   "/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/../../library/goxceed/arm-ecos/bin/gxplayer")
+  if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
+    message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+  endif()
+  if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
+    message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+  endif()
+file(INSTALL DESTINATION "/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/../../library/goxceed/arm-ecos/bin" TYPE EXECUTABLE FILES "/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/_build-arm-ecos/player/demos/gxplayer/gxplayer")
+  if(EXISTS "$ENV{DESTDIR}/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/../../library/goxceed/arm-ecos/bin/gxplayer" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/../../library/goxceed/arm-ecos/bin/gxplayer")
+    file(RPATH_CHANGE
+         FILE "$ENV{DESTDIR}/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/../../library/goxceed/arm-ecos/bin/gxplayer"
+         OLD_RPATH "/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/_build-arm-ecos/player/demos/gxplayer/../..:/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/_build-arm-ecos/player/demos/gxplayer/../../../subtitle:/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/_build-arm-ecos/player/demos/gxplayer/../../../gui_core:/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/_build-arm-ecos/player/demos/gxplayer/../../..:/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/_build-arm-ecos/player/demos/gxplayer/../common:/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/../../library/goxceed/arm-ecos/lib:"
+         NEW_RPATH "")
+    if(CMAKE_INSTALL_DO_STRIP)
+      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxbus/../../library/goxceed/arm-ecos/bin/gxplayer")
+    endif()
+  endif()
+endif()
+

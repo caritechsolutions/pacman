@@ -1,0 +1,29 @@
+CONFIG_CPG=y
+# CONFIG_DIVIG is not set
+# CONFIG_TR is not set
+# CONFIG_DESAI is not set
+# CONFIG_CONAX is not set
+# CONFIG_GOS is not set
+# CONFIG_VMX is not set
+# CONFIG_TELECAST is not set
+# CONFIG_NAGRA is not set
+# CONFIG_RELEASE is not set
+CONFIG_DEBUG=y
+# CONFIG_CSKY is not set
+CONFIG_ARM=y
+CONFIG_ECOS=y
+# CONFIG_LINUX is not set
+CONFIG_CARD=y
+# CONFIG_NOCARD is not set
+# CONFIG_MTC is not set
+# CONFIG_SCPU is not set
+# CONFIG_TFM is not set
+# CONFIG_TFM_USER_DEFINE is not set
+CONFIG_ACPU=y
+# CONFIG_SCI_OLD is not set
+CONFIG_SCI_NEW=y
+# CONFIG_DMX_OLD is not set
+CONFIG_DMX_NEW=y
+# CONFIG_CGHS is not set
+CONFIG_CGCS=y
+CONFIG_HARD_FLOAT=y

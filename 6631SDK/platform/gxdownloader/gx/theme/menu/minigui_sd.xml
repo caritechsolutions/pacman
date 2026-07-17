@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf8" standalone="no"?>
+<interface>
+	<!--Basic Configure-->
+	<width>720</width>
+  	<height>576</height>
+  	<bpp>16</bpp>
+
+	<!--All of fonts-->
+	<fonts>
+		<font>
+			<name>Arial</name>
+	      	<file>Arial</file>
+    		</font>
+	</fonts>
+
+	<!--All of images>
+	<images>
+		<image id= "s_pvr_progress_r2" >s_pvr_progress_r2.bmp</image>
+		<image id= "s_pvr_dot_grey" >s_pvr_dot_grey.bmp</image>
+	</images-->
+
+	<!--All of windows/widgets-->
+	<widget class="frame" name="win_ota_screen">
+		<property>
+			<rect>[0,0,720,576]</rect>
+		    <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+		    <backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+		</property>
+
+		<signal>
+			<create>win_ota_screen_create</create>
+			<destroy>win_ota_screen_destroy</destroy>
+		</signal>
+		
+		<children>
+			<widget class="label" name="win_ota_title_label">
+				<property>
+					<rect>[160,100,400,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string></string>
+				</property>
+			</widget>
+			
+			<widget class="label" name="win_ota_title_label1">
+				<property>
+					<rect>[160,160,400,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string></string>
+				</property>
+			</widget>
+			
+			<widget class="label" name="win_ota_title_label3">
+				<property>
+					<rect>[160,205,400,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string></string>
+				</property>
+			</widget>
+			
+			<widget class="progress" name="win_ota_progress1">
+				<property>
+					<rect>[100,250,500,30]</rect>
+					<backcolor>[#FFFFFF,#FFFF00,#FFFF00]</backcolor>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<value>0</value>
+				</property>
+			</widget>
+			
+			<widget class="label" name="win_ota_progress_labe_value1">
+				<property>
+					<rect>[610,250,100,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<font>Arial</font>
+					<alignment>left|top</alignment>
+					<string>0%</string>
+				</property>
+			</widget>
+			
+			<widget class="label" name="win_ota_title_label2">
+				<property>
+					<rect>[100,300,550,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<font>Arial</font>
+					<alignment>left|top</alignment>
+					<string></string>
+				</property>
+			</widget>
+		</children>
+	</widget>
+	<widget class="frame" name="win_ts_list">
+		<property>
+			<rect>[0,0,720,576]</rect>
+			<forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+			<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+		</property>
+
+		<signal>
+			<create>ts_upgrade_create</create>
+			<destroy>ts_upgrade_destroy</destroy>
+		</signal>
+		
+		<children>
+			<widget class="label" name="win_ts_title_label1">
+				<property>
+					<rect>[50,100,300,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string>Demod Type</string>
+				</property>
+			</widget>
+			
+			<widget class="label" name="win_ts_title_label2">
+				<property>
+					<rect>[50,150,300,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string>Tuner Type</string>
+				</property>
+			</widget>
+			
+			<widget class="label" name="win_ts_title_label3">
+				<property>
+					<rect>[50,200,300,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string>Frequency(MHz)</string>
+				</property>
+			</widget>
+
+			<widget class="label" name="win_ts_title_label4">
+				<property>
+					<rect>[50,250,300,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string>Symbolrate(Kbps)</string>
+				</property>
+			</widget>
+			<widget class="label" name="win_ts_title_label5">
+				<property>
+					<rect>[50,300,300,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string>PID</string>
+				</property>
+			</widget>
+
+			<widget class="label" name="win_ts_title_label6">
+				<property>
+					<rect>[50,350,300,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string>Table ID</string>
+				</property>
+			</widget>
+
+			<widget class="list" name="win_ts_upgrade_list">
+				<property>
+					<rect>[380,100,300,300]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<itemcolor>[#F00F00,#00F700,#000000]</itemcolor>
+					<rows>6</rows>
+					<space>2</space>
+					<grid>1</grid>
+					<scroll>0</scroll>
+				</property>
+			</widget>
+			<widget class="label" name="win_ts_title_label7">
+				<property>
+					<rect>[50,450,300,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string>ok:start</string>
+				</property>
+			</widget>
+			<widget class="label" name="win_ts_title_label8">
+				<property>
+					<rect>[370,450,150,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string>up/down</string>
+				</property>
+			</widget>
+			<widget class="label" name="win_ts_title_label9">
+				<property>
+					<rect>[550,450,150,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string>left/right</string>
+				</property>
+			</widget>
+		</children>
+	</widget>
+	<widget class="frame" name="win_usb_list">
+		<property>
+			<rect>[0,0,720,576]</rect>
+			<forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+			<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+		</property>
+
+		<signal>
+			<create>usb_upgrade_create</create>
+			<destroy>usb_upgrade_destroy</destroy>
+		</signal>
+		
+		<children>
+			<widget class="label" name="win_usb_title_label1">
+				<property>
+					<rect>[120,250,300,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string>File Name</string>
+				</property>
+			</widget>
+			<widget class="list" name="win_usb_upgrade_list">
+				<property>
+					<rect>[450,250,200,50]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<itemcolor>[#F00F00,#00F700,#000000]</itemcolor>
+					<rows>1</rows>
+					<space>2</space>
+					<grid>1</grid>
+					<scroll>0</scroll>
+				</property>
+			</widget>
+			<widget class="label" name="win_usb_title_label2">
+				<property>
+					<rect>[120,400,300,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string>ok: start</string>
+				</property>
+			</widget>
+			<widget class="label" name="win_usb_title_label3">
+				<property>
+					<rect>[450,400,200,45]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#2e1ae1,#2e1ae1,#2e1ae1]</backcolor>
+					<font>Arial</font>
+					<alignment>hcentre|top</alignment>
+					<string>left/right</string>
+				</property>
+			</widget>
+		</children>
+	</widget>
+
+</interface>
+

@@ -1,0 +1,8 @@
+/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxcas/_build-arm-ecos/CMakeFiles/install/strip.dir
+/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxcas/_build-arm-ecos/CMakeFiles/install/local.dir
+/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxcas/_build-arm-ecos/CMakeFiles/gxcas.dir
+/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxcas/_build-arm-ecos/CMakeFiles/install.dir
+/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxcas/_build-arm-ecos/CMakeFiles/list_install_components.dir
+/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxcas/_build-arm-ecos/CMakeFiles/gxmodule.dir
+/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxcas/_build-arm-ecos/CMakeFiles/edit_cache.dir
+/home/geoff/work/GX_251SDK/Trigon_SDK/SDK_V2.10.0/SDK_SourceCode/platform/gxcas/_build-arm-ecos/CMakeFiles/rebuild_cache.dir

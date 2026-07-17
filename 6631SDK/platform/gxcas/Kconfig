@@ -1,0 +1,399 @@
+# Voice Signal Preprocess
+# Copyright (C) 2001-2018 NationalChip Co., Ltd
+# ALL RIGHTS RESERVED!
+#
+# Kconfig: Top Level Kconfig
+#
+#---------------------------------------------------------------------------------#
+
+mainmenu "NationalChip GxCas Configuration"
+
+choice
+    prompt "Cas selects:"
+
+    config NONE
+    bool "NONE"
+
+    config CD 
+    bool "Novel-Super"
+
+    config CTI 
+    bool "Cti"
+
+    config ABV
+    bool "ABV-INTERNATIONAL"
+
+    config DVT
+        bool "Sumavision"
+
+    config IRDETO
+        bool "Irdeto"
+
+    config RS 
+    bool "RsCrypto"
+
+    config UTI 
+    bool "UTI"
+
+    config CPG 
+    bool "CryptoGuard"
+    
+    config DIVIG
+    bool "DiviGuard"
+    
+    config TR 
+    bool "TengRui"   
+
+    config DESAI  #version 6.1
+    bool "Desai"
+
+    config CONAX
+    bool "Conax"
+    
+    config GOS
+    bool "Gospell"
+   
+    config VMX
+    bool "Vmx"
+
+    config TELECAST
+    bool "Telecast"
+    
+    config NAGRA
+    bool "Nagra"
+endchoice
+
+if CD||ABV||DVT||RS||IRDETO||UTI||CPG||TR||DIVIG||CTI||DESAI||CONAX||GOS||VMX||TELECAST||NAGRA
+choice
+    prompt "Release selects:"
+    config RELEASE
+        bool "RELEASE"
+
+    config DEBUG
+        bool "DEBUG"
+endchoice
+
+choice
+    prompt "Arch selects:"
+    config CSKY
+        bool "CSKY"
+
+    config ARM
+        bool "ARM"
+endchoice
+
+choice
+    prompt "OS selects:"
+    config ECOS
+        bool "ECOS"
+
+    config LINUX
+        bool "LINUX"
+endchoice
+
+choice
+    prompt "Card Selects:"
+    config CARD
+        bool "CARD"
+
+    config NOCARD
+        bool "NOCARD"
+
+endchoice
+
+choice
+    prompt "KeyLadder Selects:"
+    default TFM
+
+    config MTC
+        bool "MTC"
+
+    config SCPU
+        bool "SCPU"
+
+    config TFM
+        bool "TFM"
+
+    config TFM_USER_DEFINE
+        bool "TFM_USER_DEFINE"
+
+
+    config ACPU
+        bool "ACPU"
+
+endchoice
+
+choice
+    prompt "SCI Driver Selects:"
+    default SCI_NEW
+
+    config SCI_OLD
+        bool "OLD_MODULE"
+
+    config SCI_NEW
+        bool "NEW_MODULE"
+
+endchoice
+
+choice
+    prompt "DMX Driver Selects:"
+    default DMX_NEW
+
+    config DMX_OLD
+        bool "OLD_MODULE"
+
+    config DMX_NEW
+        bool "NEW_MODULE"
+
+endchoice
+
+endif
+
+if CD
+config SUPER_OSD
+    bool "Enable SUPER OSD "
+    default n
+
+config SUPER_FINGER
+    bool "Enable SUPER FINGER "
+    default n
+
+endif #CD
+
+if CPG 
+
+choice 
+    prompt "Security Mode"
+    config CGHS   # high security 
+        bool "CGHS"
+
+    config CGCS     #common security
+        bool "CGCS"
+endchoice
+
+endif #CPG
+
+if ABV
+
+choice
+    prompt "Version Selects:"
+    config ABVA6
+        bool "A6"
+
+    config ABVB5
+        bool "B5"
+        
+	config ABV38
+		bool "3.8"
+endchoice
+
+choice
+    prompt "Frontend Selects:"
+    config ABV_DVB
+        bool "DVB"
+
+    config ABV_NET
+        bool "NET"
+endchoice
+
+choice
+    prompt "PVR Function:"
+    config ABV_NO_PVR
+        bool "ABV PVR Disable"
+    
+    config ABV_PVR
+        bool "ABV PVR Enable"
+endchoice
+
+endif #ABV-SUPER
+
+if ABVB5
+config B5_CHIP_SET
+    bool "Enable B5 Chip Set "
+    default n
+
+    config EAD
+    tristate "EAD Selects"
+    default y
+
+endif #ABVB5
+
+if ABV38||ABVA6
+if NOCARD
+     config ASYNC_FLASH_WRITE
+         bool "Enable ABV_ASYNC_FLASH_WRITE"
+         default y
+endif
+endif
+
+if DVT
+
+choice
+    prompt "Version Selects:"
+    config DVT00
+        bool "V00"
+
+    config DVT09
+        bool "V09"
+
+    config DVT10
+        bool "V10"
+
+    config DVT20
+        bool "V20"
+endchoice
+
+endif
+
+if DVT10
+
+choice
+    prompt "(KeyLadder version)Sub Version Selects:"
+    config DVT10_OLD
+        bool "V1.x_old"
+
+    config DVT10_NEW
+        bool "V1.x_new"
+endchoice
+
+endif
+
+if DVT20
+
+choice
+    prompt "Sub Version Selects:"
+    config DVT20_0
+        bool "V2.0"
+
+    config DVT20_1
+        bool "V2.1"
+endchoice
+
+endif
+
+if CONAX
+
+choice
+    prompt "Box Type:"
+    config ZAPPER
+        bool "Zapper"
+
+    config ENHANCED_PVR
+        bool "Enhanced PVR"
+
+endchoice
+
+choice
+    prompt "Card Version:"
+    default CONAX_CARD_V6_3
+
+    config CONAX_CARD_V6_0
+        bool "v6.0"
+
+    config CONAX_CARD_V6_3
+        bool "v6.3"
+
+endchoice
+
+endif
+
+if VMX
+
+choice
+    prompt "Version Selects:"
+    config VMXADV
+        bool "Advance"
+
+    config VMXPLUS
+        bool "Advance Plus "
+endchoice
+
+choice
+    prompt "DVR Function:"
+    config VMX_DVR_ENABLE
+        bool "Enable DVR"
+
+    config VMX_DVR_DISABLE
+        bool "Disable DVR"
+endchoice
+
+
+choice
+    prompt "Individuation Number Selects:"
+    config SINGLE_INDIVID 
+        bool "Single"
+
+    config DOUBLE_INDIVID 
+        bool "Double "
+endchoice
+
+if VMX
+
+choice
+    prompt "DVR Mode Selects:"
+    config VOLUME_PVR
+        bool "Volume PVR"
+
+    config SEGMENT_PVR
+        bool "Segment PVR "
+endchoice
+
+endif
+endif
+
+if IRDETO
+
+choice
+    prompt "Version Selects:"
+    config IRDETOSOFTCELL
+        bool "softcell"
+
+    config IRDETOCCA_V4_6_8
+        bool "cca4.6.8"
+
+    config IRDETOCCA_V4_12_4
+        bool "cca4.12.4"
+	config IRDETOCCA_V5_0_7
+        bool "cca5.0.7"
+endchoice
+
+endif
+if TELECAST
+
+choice
+    prompt "Version Selects:"
+    config TELECAST09
+        bool "V9.0"
+endchoice
+
+endif
+
+if GOS
+
+choice
+    prompt "Security Mode"
+    config GOSHS   # high security 
+        bool "GOSHS"
+
+    config GOSCS     #common security
+        bool "GOSCS"
+endchoice
+
+endif
+
+if NAGRA
+if CARD
+choice
+    prompt "STB Mode"
+    config TSIO_MODE
+        bool "TSIO STB"
+
+    config NON_TSIO_MODE
+        bool "Non-TSIO STB"
+endchoice
+endif
+endif
+
+config HARD_FLOAT
+    bool "Hard Float"
+    default n

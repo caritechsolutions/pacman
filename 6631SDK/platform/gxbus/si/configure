@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ $1 == "dtmb" ] ; then
+    sed -i -e "s/.*\#define DTMB_DELIVERY/\#define DTMB_DELIVERY/g" si_parser.c
+else
+    sed -i -e "s/.*\#define DTMB_DELIVERY/\/\/\#define DTMB_DELIVERY/g" si_parser.c
+fi

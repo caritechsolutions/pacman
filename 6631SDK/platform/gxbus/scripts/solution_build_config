@@ -1,0 +1,52 @@
+# 配置文件用于设置各组件的编译选项
+# 格式: 组件名_选项=值
+
+# ECOS 3.0 配置
+ecos3_0_loglevel=2
+ecos3_0_optimize=O2
+
+# GXAPI 配置
+gxapi_loglevel=2
+gxapi_optimize=O2
+
+# 第三方库配置
+thirdparty_loglevel=2
+thirdparty_optimize=O2
+
+# GXBUS 配置
+gxbus_loglevel=2
+gxbus_optimize=O2
+
+# 下载器配置
+gxdownloader_loglevel=2
+gxdownloader_optimize=O2
+
+# 杂项配置
+gxmisc_loglevel=3
+gxmisc_optimize=O2
+
+# 安全模块配置
+gxsecure_loglevel=2
+gxsecure_optimize=O2
+
+# 操作系统抽象层配置
+gxosal_loglevel=2
+gxosal_optimize=O2
+
+# 音视频设备配置
+gxavdev_loglevel=2
+gxavdev_optimize=O2
+
+# 前端配置
+gxfrontend_loglevel=2
+gxfrontend_optimize=O2
+
+# BSP配置
+bsp_optimize=O2
+
+# PDMX配置
+pdmx_build_mode=release
+
+# 解决方案配置
+solution_loglevel=1
+solution_make_bin=yes

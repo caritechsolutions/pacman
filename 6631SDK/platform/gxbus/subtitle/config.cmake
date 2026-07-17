@@ -1,0 +1,1 @@
+SET( CONFIG_SUBTITLE_GDI_DRAW            ON  )
