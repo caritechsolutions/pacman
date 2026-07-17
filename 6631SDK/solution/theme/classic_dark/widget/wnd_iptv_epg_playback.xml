@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_iptv_epg_playback">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <back_ground>null</back_ground>
+    </property>
+    <signal>
+        <create>app_epg_playback_create</create>
+        <destroy>app_epg_playback_destroy</destroy>
+        <got_focus>app_epg_playback_got_focus</got_focus>
+        <lost_focus>app_epg_playback_lost_focus</lost_focus>
+        <keypress>app_epg_playback_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="file_image" style="default" name="fimg_epg_playback_gif">
+            <property>
+                <rect>[496,100,32,32]</rect>
+                <state>hide</state>
+                <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+         <widget class="text" style="default" name="text_epg_playback_netspeed">
+            <property>
+                <rect>[864,100,100,28]</rect>
+                <state>hide</state>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<font>font_22</font>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="sliderbar" style="default" name="sliderbar_epg_playback_cache">
+            <property>
+                <rect>[864,100,100,28]</rect>
+                <state>hide</state>
+                <mirror>disable</mirror>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <step>2</step>
+                <back_image_l>s_progress_bg_l</back_image_l>
+                <back_image_m>s_progress_bg_m</back_image_m>
+                <back_image_r>s_progress_bg_r</back_image_r>
+                <fore_image_l>s_progress_blue_l</fore_image_l>
+                <fore_image_m>s_progress_blue_m</fore_image_m>
+                <fore_image_r>s_progress_blue_r</fore_image_r>
+                <format>water</format>
+            </property>
+        </widget>
+
+        <widget class="text" style="default" name="text_epg_playback_wait">
+            <property>
+                <rect>[480,300,320,40]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[#000000,#000000,#000000]</backcolor>
+                <string>Please wait!</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_epg_playback_popup">
+            <property>
+                <rect>[319,186,386,180]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_t2</lt_img>
+                <rt_img>s_win2_r_t2</rt_img>
+                <lb_img>s_win2_l_b2</lb_img>
+                <rb_img>s_win2_r_b2</rb_img>
+                <l_img>s_win2_l_m</l_img>
+                <r_img>s_win2_r_m</r_img>
+                <t_img>s_win2_m_t2</t_img>
+                <b_img>s_win2_m_b2</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_epg_playback_popup">
+            <property>
+                <rect>[342,226,340,120]</rect>
+                <state>hide</state>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_epg_playback_mute">
+            <property>
+                <rect>[830,40,62,44]</rect>
+                <state>hide</state>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[#808080,#808080,#808080]</backcolor>
+                <mode>single</mode>
+                <img>s_mute</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_epg_playback_pause">
+            <property>
+                <rect>[830,100,30,28]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_pause_2</img>
+            </property>
+        </widget>
+        <widget class="canvas" style="default" name="wnd_apps_epg_playback_canvas_subt">
+            <property>
+                <rect>[40,0,944,576]</rect>
+                <state>hide</state>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+            </property>
+        </widget>
+    </children>
+</widget>

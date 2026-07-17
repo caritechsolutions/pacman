@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_keyboard_language">
+  <property>
+<rect>[192,120,624,268]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+    <keypress_revert>enable</keypress_revert>
+  </property>
+  <signal>
+    <create>app_language_keyboard_create</create>
+    <destroy>app_language_keyboard_destroy</destroy>
+    <keypress>app_language_keyboard_keypress</keypress>
+  </signal>
+  <children>
+    <widget class="image" style="default" name="img_full_keyboard_bk">
+      <property>
+<rect>[0,0,624,268]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>s_win_l_t</lt_img>
+        <rt_img>s_win_r_t</rt_img>
+        <lb_img>s_win_l_b</lb_img>
+        <rb_img>s_win_r_b</rb_img>
+        <l_img>s_win_l_m</l_img>
+        <r_img>s_win_r_m</r_img>
+        <t_img>s_win_m_t</t_img>
+        <b_img>s_win_m_b</b_img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_full_keyboard_title">
+      <property>
+          <rect>[132,2,360,28]</rect>
+        <forecolor>[text_color,text_color,text_focus_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <string>Keyboard</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="edit" style="default" name="edit_lamgiage_keyboard_input">
+      <property>
+<rect>[8,43,555,32]</rect>
+        <forecolor>[keyboard_input_text_color,keyboard_input_text_color,keyboard_input_text_color]</forecolor>
+        <backcolor>[keyboard_input_bg_color,keyboard_input_bg_color,keyboard_input_bg_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+        <maxlen>255</maxlen>
+	<format>edit_string</format>
+	<i18n>true</i18n>
+      </property>
+      <signal>
+        <keypress>app_lang_edit_keyboard_keypress</keypress>
+      </signal>
+    </widget>
+    <widget class="button" style="default" name="button_key_0">
+      <property>
+<rect>[8,88,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_1">
+      <property>
+<rect>[59,88,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_2">
+      <property>
+<rect>[110,88,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_3">
+      <property>
+<rect>[161,88,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_4">
+      <property>
+<rect>[212,88,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_5">
+      <property>
+<rect>[264,88,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_6">
+      <property>
+<rect>[315,88,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_7">
+      <property>
+<rect>[366,88,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_8">
+      <property>
+<rect>[417,88,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_9">
+      <property>
+<rect>[468,88,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_10">
+      <property>
+<rect>[520,88,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_11">
+      <property>
+<rect>[571,88,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_12">
+      <property>
+<rect>[8,131,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_13">
+      <property>
+<rect>[59,131,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_14">
+      <property>
+<rect>[110,131,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_15">
+      <property>
+<rect>[161,131,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_16">
+      <property>
+<rect>[212,131,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_17">
+      <property>
+<rect>[264,131,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_18">
+      <property>
+<rect>[315,131,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_19">
+      <property>
+<rect>[366,131,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_20">
+      <property>
+<rect>[417,131,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_21">
+      <property>
+<rect>[468,131,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_22">
+      <property>
+<rect>[520,131,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_23">
+      <property>
+<rect>[571,131,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_24">
+      <property>
+<rect>[8,174,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_25">
+      <property>
+<rect>[59,174,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_26">
+      <property>
+<rect>[110,174,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_27">
+      <property>
+<rect>[161,174,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_28">
+      <property>
+<rect>[212,174,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_29">
+      <property>
+<rect>[264,174,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_30">
+      <property>
+<rect>[315,174,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_31">
+      <property>
+<rect>[366,174,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_32">
+      <property>
+<rect>[417,174,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_33">
+      <property>
+<rect>[468,174,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_34">
+      <property>
+<rect>[520,174,94,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_35">
+      <property>
+<rect>[8,217,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[key_red,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_36">
+      <property>
+<rect>[59,217,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[key_green,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_37">
+      <property>
+          <rect>[110,217,43,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+        <focus_img>s_kb_focus_left</focus_img>
+        <unfocus_img>s_kb_unfocus_left</unfocus_img>
+        <disable_img>s_kb_focus_left</disable_img>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_38">
+      <property>
+<rect>[161,217,196,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_39">
+      <property>
+          <rect>[366,217,43,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+        <focus_img>s_kb_focus_right</focus_img>
+        <unfocus_img>s_kb_unfocus_right</unfocus_img>
+        <disable_img>s_kb_focus_right</disable_img>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_40">
+      <property>
+<rect>[417,217,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[key_yellow,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_41">
+      <property>
+<rect>[468,217,43,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[key_blue,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+        <focus_img>s_kb_focus_arrow</focus_img>
+        <unfocus_img>s_kb_unfocus_arrow</unfocus_img>
+        <disable_img>s_kb_focus_arrow</disable_img>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="button_key_42">
+      <property>
+<rect>[520,217,94,30]</rect>
+        <forecolor>[black,text_color,black]</forecolor>
+        <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+        <widget class="image" style="default" name="img_keyboard_language_qrencode">
+            <property>
+                <rect>[240,88,160,160]</rect>
+                <state>hide</state>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="s_kb_clr_back">
+            <property>
+                <rect>[563,43,51,32]</rect>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[keyboard_input_bg_color,keyboard_input_bg_color,keyboard_input_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="button_key_43">
+            <property>
+                <rect>[571,44,43,30]</rect>
+                <forecolor>[black,text_color,black]</forecolor>
+                <backcolor>[text_color,key_focus_color,keyboard_button_dis_color]</backcolor>
+                <string>X</string>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+  </children>
+</widget>

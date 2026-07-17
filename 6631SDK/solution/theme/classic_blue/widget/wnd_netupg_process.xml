@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_netupg_process">
+    <property>
+    <rect>[400,190,480,270]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <format>popup</format>
+    </property>
+  <signal>
+    <create>app_netupg_progcess_create</create>
+    <destroy>app_netupg_progcess_destroy</destroy>
+    <service>app_netupg_progcess_service</service>
+    <keypress>app_netupg_progcess_keypress</keypress>
+  </signal>
+  <children>
+    <widget class="image" style="default" name="img_netupg_process_back">
+    <property>
+        <rect>[0,0,480,270]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>s_win_l_t</lt_img>
+        <rt_img>s_win_r_t</rt_img>
+        <lb_img>s_win_l_b</lb_img>
+        <rb_img>s_win_r_b</rb_img>
+        <l_img>s_win_l_m</l_img>
+        <r_img>s_win_r_m</r_img>
+        <t_img>s_win_m_t</t_img>
+        <b_img>s_win_m_b</b_img>
+      </property>
+    </widget>
+    <widget class="progbar" style="default" name="progbar_netupg_process">
+        <property>
+        <rect>[32,60,420,40]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <min>0</min>
+        <max>100</max>
+        <back_image>s_process_grey</back_image>
+        <fore_image>s_process_blue</fore_image>
+        <format>normal</format>
+        <text_format>hide</text_format>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_netupg_process_tip">
+        <property>
+        <rect>[10,2,460,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+            <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <font>font_26_ram</font>
+            <string>Upgrade</string>
+            <format>static</format>
+        </property>
+    </widget>
+    <widget class="text" style="default" name="txt_netupg_process_info1">
+        <property>
+        <rect>[32,104,420,38]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <font>font_26_ram</font>
+            <alignment>left|vcentre</alignment>
+            <string></string>
+            <format>static</format>
+        </property>
+    </widget>
+    <widget class="text" style="default" name="txt_netupg_process_info2">
+        <property>
+        <rect>[32,143,420,70]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <font>font_26_ram</font>
+            <alignment>left|top</alignment>
+            <string></string>
+            <format>automatic</format>
+        </property>
+    </widget>
+  </children>
+</widget>

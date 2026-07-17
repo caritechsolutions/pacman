@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<i18n>
+    <language id= "English">English.xml</language>
+    <language id= "Chinese">Chinese.xml</language>
+    <language id= "Arabic">Arabic.xml</language>
+    <language id= "Farsi">Farsi.xml</language>
+    <language id= "French">French.xml</language>
+    <language id= "Spain">Spain.xml</language>
+    <language id= "Portuguese">Portuguese.xml</language>
+    <language id= "Turkish">Turkish.xml</language>
+    <language id= "Vietnamese">Vietnamese.xml</language>
+    <language id= "Russian">Russian.xml</language>
+    <language id= "German">German.xml</language>
+    <language id= "Thai">Thai.xml</language>
+</i18n>

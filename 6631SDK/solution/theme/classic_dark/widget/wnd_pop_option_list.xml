@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_pop_option_list">
+    <property>
+        <rect>[373,104,290,291]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <accelerate>false</accelerate>
+    </property>
+    <signal>
+        <create>app_pop_option_create</create>
+        <destroy>app_pop_option_destroy</destroy>
+        <keypress>app_pop_option_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_pop_option_back">
+            <property>
+                <rect>[0,0,290,291]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_t2</lt_img>
+                <rt_img>s_win2_r_t2</rt_img>
+                <lb_img>s_win2_l_b2</lb_img>
+                <rb_img>s_win2_r_b2</rb_img>
+                <l_img>s_win2_l_m</l_img>
+                <r_img>s_win2_r_m</r_img>
+                <t_img>s_win2_m_t2</t_img>
+                <b_img>s_win2_m_b2</b_img>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="listview_pop_option">
+            <property>
+                <rect>[4,36,282,243]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <roll_time>0</roll_time>
+                <i18n>true</i18n>
+                <focus_img>s_bar_black3</focus_img>
+                <item_rect>[0,0,272,30]</item_rect>
+                <item_fore_color>[#000000,#000000,#000000]</item_fore_color>
+                <item_back_color>[pop_bg_color,pop_bg_color,pop_bg_color]</item_back_color>
+                <alignment>left|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>app_pop_option_list_keypress</keypress>
+                <get_total>app_pop_option_list_get_total</get_total>
+                <get_data>app_pop_option_list_get_data</get_data>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="listheader_pop_option">
+                    <property>
+                        <rect>[0,0,272,0]</rect>
+                        <state>hide</state>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[#808080,#808080,#808080]</backcolor>
+                        <colum_number>3</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_pop_option_list_num">
+                            <property>
+                                <rect>[5,0,52,0]</rect>
+                                <state>hide</state>
+                                <forecolor>[#96C1F6,#f4f4f4,#96C1F6]</forecolor>
+                                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_pop_option_list_content">
+                            <property>
+                                <rect>[58,0,165,0]</rect>
+                                <state>hide</state>
+                                <forecolor>[#96C1F6,#f4f4f4,#96C1F6]</forecolor>
+                                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_pop_option_list_sel">
+                            <property>
+                                <rect>[224,0,48,0]</rect>
+                                <state>hide</state>
+                                <forecolor>[#96C1F6,#f4f4f4,#96C1F6]</forecolor>
+                                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="scrollbar_pop_option_list">
+                    <property>
+                        <rect>[273,0,9,243]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_pop_option_content1"/>
+                <widget class="listitem" style="default" name="listitem_pop_option_content2"/>
+                <widget class="listitem" style="default" name="listitem_pop_option_content3"/>
+                <widget class="listitem" style="default" name="listitem_pop_option_content4"/>
+                <widget class="listitem" style="default" name="listitem_pop_option_content5"/>
+                <widget class="listitem" style="default" name="listitem_pop_option_content6"/>
+                <widget class="listitem" style="default" name="listitem_pop_option_content7"/>
+                <widget class="listitem" style="default" name="listitem_pop_option_content8"/>
+            </children>
+        </widget>
+        <widget class="text" style="default" name="text_pop_option_title">
+            <property>
+                <rect>[0,1,290,28]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

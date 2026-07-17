@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<interface>
+	<style class = "TEXT" name="default_text">
+		<property>					
+			<rect>[50,50,100,30]</rect>					
+			<font>Arial</font>					
+			<alignment>hcentre|vcentre</alignment>					
+			<backcolor>[#FF00FF,#FF00FF,#FF00FF]</backcolor>					
+			<forecolor>[#A44931,#503AfF,#78D53E]</forecolor>					
+		</property>		
+	</style>
+
+	<style class = "TEXT" name="text_style_1">
+		<property>					
+			<rect>[50,50,100,30]</rect>					
+			<font>Arial</font>					
+			<alignment>hcentre|vcentre</alignment>					
+			<backcolor>[#FF00FF,#FF00FF,#FF00FF]</backcolor>					
+			<forecolor>[#A44931,#503AfF,#78D53E]</forecolor>					
+		</property>		
+	</style>
+
+	<style class="window" name="win_style_1">
+		<property>
+			<rect>[0,0,1280,720]</rect>
+			<backcolor>[#606060,#C54925,#ee43c0]</backcolor>
+			<image>main_menu_backgroud</image>
+			<!--link>MainMenu</link-->
+		</property>
+	</style>
+
+	<style class = "TEXT" name="text_style_2">
+		<property>					
+			<rect>[50,50,100,30]</rect>					
+			<font>Arial</font>					
+			<alignment>hcentre|vcentre</alignment>					
+			<backcolor>[#FF00FF,#FF00FF,#FF00FF]</backcolor>					
+			<forecolor>[#A44931,#503AfF,#78D53E]</forecolor>					
+		</property>		
+	</style>
+
+	<style class="listview" name="default_listview">
+		<property>
+			<rect>[44,140,212,450]</rect>								
+			<backcolor>[#67A958,#503A8F,#85347A]</backcolor>								
+			<forecolor>[#1F1F4D,#FDFDFD,#1F1F4D]</forecolor>
+			<unfocus_img>mp_buttongrey1</unfocus_img>	
+			<focus_img>mp_buttonorange1</focus_img>		
+			<disable_img>mp_buttongrey1</disable_img>
+			<item_rect>[0,0,212,45]</item_rect>
+			<item_bak_color>[#67A958,#503A8F,#85347A]</item_bak_color>
+			<item_fore_color>[#1F1F4D,#000011,#1F1F4D]</item_fore_color>
+			<font>Arial</font>													
+			<alignment>left|vcentre</alignment>	
+			<interval>0</interval>
+		</property>
+	</style>
+
+	<style class="prompt" name="usb_inout_prompt">
+		<property>
+			<rect>[0,0,30,41]</rect>
+            <backcolor>[#ff00ff,#ff00ff,#ff00ff]</backcolor>
+		</property>
+		<children>
+			<widget class="image" style="default" name="usb_inout_image">
+				<property>
+					<rect>[0,0,30,41]</rect>
+                    <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                    <backcolor>[#ff00ff,#ff00ff,#ff00ff]</backcolor>
+					<mode>single</mode>
+					<img></img>
+				</property>
+			</widget>
+		</children>
+	</style>
+
+	<style class="prompt" name="face_detect_prompt">
+		<property>
+			<rect>[0,0,80,80]</rect>
+            <backcolor>[#ff00ff,#ff00ff,#ff00ff]</backcolor>
+		</property>
+		<children>
+			<widget class="image" style="default" name="face_detect_image">
+				<property>
+					<rect>[0,0,80,80]</rect>
+                    <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                    <backcolor>[#ff00ff,#ff00ff,#ff00ff]</backcolor>
+					<mode>single</mode>
+					<img>s_icon_face_detect</img>
+				</property>
+			</widget>
+		</children>
+	</style>
+
+	<style class="prompt" name="vc_notify_prompt">
+		<property>
+            <rect>[30,0,1200,88]</rect>
+			<backcolor>[#080808,#080808,#080808]</backcolor>
+		</property>
+		<children>
+			<widget class="image" style="default" name="img_vc_notify_icon">
+				<property>
+					<rect>[18,14,52,48]</rect>
+					<forecolor>[#000000,#000000,#000000]</forecolor>
+					<backcolor>[#31314a,#31314a,#31314a]</backcolor>
+					<mode>single</mode>
+					<img>notify</img>
+				</property>
+			</widget>
+			
+			<widget class="text" style="default" name="txt_vc_notify_content">
+				<property>
+					<rect>[100,12,1100,64]</rect>
+					<forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+					<backcolor>[#ff00ff,#ff00ff,#ff00ff]</backcolor>
+					<alignment>left|vcentre</alignment>
+					<string></string>
+					<format>automatic</format>
+				</property>
+			</widget>
+		
+		</children>
+	</style>
+</interface>

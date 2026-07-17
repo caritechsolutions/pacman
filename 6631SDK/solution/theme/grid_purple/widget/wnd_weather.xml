@@ -1,0 +1,701 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_weather">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_weather_create</create>
+        <destroy>app_weather_destroy</destroy>
+        <got_focus>app_weather_got_focus</got_focus>
+        <keypress>app_weather_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_weather_back">
+            <property>
+                <rect>[0,0,1024,576]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weather_bottom">
+            <property>
+                <rect>[0,508,1024,66]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_b2</lt_img>
+                <rt_img>s_win2_r_b2</rt_img>
+                <t_img>s_win2_m_b2</t_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weather_line_title">
+            <property>
+                <rect>[120,96,784,2]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_title">
+            <property>
+                <rect>[300,45,400,44]</rect>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <font>font_main</font>
+                <string>Weather</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_weather_gif">
+            <property>
+                <rect>[200,55,32,32]</rect>
+                <state>hide</state>
+                <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_info_city">
+            <property>
+                <rect>[262,100,500,30]</rect>
+                <forecolor>[#FFFF7F,#FFFF7F,#FFFF7F]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weather_info_city_arr_l">
+            <property>
+                <rect>[252,105,10,20]</rect>
+                <mirror>disable</mirror>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_arrow_l</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weather_info_city_arr_r">
+            <property>
+                <rect>[762,105,10,20]</rect>
+                <mirror>disable</mirror>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_arrow_r</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_info_description">
+            <property>
+                <rect>[50,130,380,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_info_publish">
+            <property>
+                <rect>[50,251,180,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_info_temp">
+            <property>
+                <rect>[50,177,120,66]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_main</font>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weather_big_ssd">
+            <property>
+                <rect>[170,180,63,60]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_weather_info_pic">
+            <property>
+                <rect>[240,175,180,108]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_weather_date0">
+            <property>
+                <rect>[82,340,100,60]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_date0_temp">
+            <property>
+                <rect>[64,410,130,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_date0_week">
+            <property>
+                <rect>[47,300,160,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_date0_date">
+            <property>
+                <rect>[48,444,160,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weather_split0">
+            <property>
+                <rect>[220,310,2,160]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_weather_date1">
+            <property>
+                <rect>[272,340,100,60]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_date1_temp">
+            <property>
+                <rect>[252,410,130,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_date1_week">
+            <property>
+                <rect>[237,300,160,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_date1_date">
+            <property>
+                <rect>[237,444,160,30]</rect>
+                <forecolor>[text_color,text_color,#989898]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weather_split1">
+            <property>
+                <rect>[410,310,2,160]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_weather_date2">
+            <property>
+                <rect>[462,340,100,60]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_date2_temp">
+            <property>
+                <rect>[442,410,130,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_date2_week">
+            <property>
+                <rect>[427,300,160,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_date2_date">
+            <property>
+                <rect>[427,444,160,30]</rect>
+                <forecolor>[text_color,text_color,#989898]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weather_split2">
+            <property>
+                <rect>[600,310,2,160]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_weather_date3">
+            <property>
+                <rect>[652,340,100,60]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_date3_temp">
+            <property>
+                <rect>[632,410,130,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_date3_week">
+            <property>
+                <rect>[617,300,160,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_date3_date">
+            <property>
+                <rect>[617,444,160,30]</rect>
+                <forecolor>[text_color,text_color,#989898]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weather_split3">
+            <property>
+                <rect>[790,310,2,160]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_weather_date4">
+            <property>
+                <rect>[842,340,100,60]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_date4_temp">
+            <property>
+                <rect>[820,410,130,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_date4_week">
+            <property>
+                <rect>[807,300,160,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_date4_date">
+            <property>
+                <rect>[807,444,160,30]</rect>
+                <forecolor>[text_color,text_color,#989898]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_info_pressure">
+            <property>
+                <rect>[700,240,300,30]</rect>
+                <forecolor>[text_color,text_color,#989898]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_info_wind">
+            <property>
+                <rect>[700,210,300,30]</rect>
+                <forecolor>[text_color,text_colortext_color,#989898]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_info_humidity">
+            <property>
+                <rect>[700,150,300,30]</rect>
+                <forecolor>[text_color,text_color,#989898]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_info_visibility">
+            <property>
+                <rect>[700,180,300,30]</rect>
+                <forecolor>[text_color,text_color,#989898]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weather_red">
+            <property>
+                <rect>[155,526,20,20]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_red</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_red">
+            <property>
+                <rect>[175,524,130,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Update</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weather_green">
+            <property>
+                <rect>[305,526,20,20]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_green</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_green">
+            <property>
+                <rect>[325,524,130,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Add</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weather_yellow">
+            <property>
+                <rect>[455,526,20,20]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_yellow</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_yellow">
+            <property>
+                <rect>[475,524,130,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Delete</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weather_blue">
+            <property>
+                <rect>[605,526,20,20]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_blue</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_blue">
+            <property>
+                <rect>[625,524,130,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Setting</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="weather_exit_btn">
+            <property>
+                <rect>[755,525,54,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <string>EXIT</string>
+                <focus_img>T2_64_button_tips</focus_img>
+                <unfocus_img>T2_64_button_tips</unfocus_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_exit">
+            <property>
+                <rect>[810,524,100,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Exit</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_weather_small_ssd0">
+            <property>
+                <rect>[165,405,35,30]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[#232323,#232323,#232323]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_weather_small_ssd1">
+            <property>
+                <rect>[355,405,35,30]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[#232323,#232323,#232323]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_weather_small_ssd2">
+            <property>
+                <rect>[545,405,35,30]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[#232323,#232323,#232323]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_weather_small_ssd3">
+            <property>
+                <rect>[735,405,35,30]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[#232323,#232323,#232323]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_weather_small_ssd4">
+            <property>
+                <rect>[925,405,35,30]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[#232323,#232323,#232323]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_info0">
+            <property>
+                <rect>[500,150,180,30]</rect>
+                <forecolor>[text_color,text_color,#989898]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string>Humidity:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_info1">
+            <property>
+                <rect>[500,180,180,30]</rect>
+                <forecolor>[text_color,text_color,#989898]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string>Visibility:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_info2">
+            <property>
+                <rect>[500,210,180,30]</rect>
+                <forecolor>[text_color,text_color,#989898]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string>Wind:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_info3">
+            <property>
+                <rect>[500,240,180,30]</rect>
+                <forecolor>[text_color,text_color,#989898]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string>Pressure:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weather_tip_bk">
+            <property>
+                <rect>[352,180,320,192]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_tip_status">
+            <property>
+                <rect>[362,218,300,140]</rect>
+                <state>hide</state>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weather_search_bk">
+            <property>
+                <rect>[92,150,840,350]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_search_title">
+            <property>
+                <rect>[352,155,320,30]</rect>
+                <state>hide</state>
+                <forecolor>[pop_text_focus_color,pop_text_focus_color,pop_text_focus_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Search Result</string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="list_weather_search">
+            <property>
+                <rect>[100,198,824,290]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <roll_time>100</roll_time>
+                <format>enable_roll</format>
+                <select>0</select>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <i18n>false</i18n>
+                <item_rect>[0,0,815,36]</item_rect>
+                <item_fore_color>[pop_text_color,pop_text_focus_color,pop_text_color]</item_fore_color>
+                <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+                <alignment>left|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>app_weather_search_list_keypress</keypress>
+                <get_total>app_weather_search_list_get_total</get_total>
+                <get_data>app_weather_search_list_get_data</get_data>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="list_weather_search_header">
+                    <property>
+                        <rect>[0,0,815,2]</rect>
+                        <forecolor>[black,black,black]</forecolor>
+                        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                        <format>headershow</format>
+                        <colum_number>1</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_weather_search_head">
+                            <property>
+                                <rect>[0,0,810,2]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string>Search Result</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="list_weather_search_scorll">
+                    <property>
+                        <rect>[815,2,9,288]</rect>
+                        <forecolor>[black,black,black]</forecolor>
+                        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="list_weather_search_listitem0"/>
+                <widget class="listitem" style="default" name="list_weather_search_listitem1"/>
+                <widget class="listitem" style="default" name="list_weather_search_listitem2"/>
+                <widget class="listitem" style="default" name="list_weather_search_listitem3"/>
+                <widget class="listitem" style="default" name="list_weather_search_listitem4"/>
+                <widget class="listitem" style="default" name="list_weather_search_listitem5"/>
+                <widget class="listitem" style="default" name="list_weather_search_listitem6"/>
+                <widget class="listitem" style="default" name="list_weather_search_listitem8"/>
+            </children>
+        </widget>
+    </children>
+</widget>

@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_pvr_media_list">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <back_ground>bg</back_ground>
+    </property>
+    <signal>
+        <create>app_pvr_media_create</create>
+        <destroy>app_pvr_media_destroy</destroy>
+        <keypress>app_pvr_media_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_pvr_media_list_bak">
+            <property>
+                <rect>[75,32,874,520]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pvr_media_list_titlebak">
+            <property>
+                <rect>[80,37,864,58]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win3_l_t</lt_img>
+                <rt_img>s_win3_r_t</rt_img>
+                <lb_img>s_win3_l_b</lb_img>
+                <rb_img>s_win3_r_b</rb_img>
+                <l_img>s_win3_l_m</l_img>
+                <r_img>s_win3_r_m</r_img>
+                <t_img>s_win3_m_t</t_img>
+                <b_img>s_win3_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pvr_meida_title">
+            <property>
+                <rect>[87,44,850,44]</rect>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <font>font_main</font>
+                <string>PVR Media</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="wnd_pvr_media_list_image205">
+            <property>
+                <rect>[84,119,480,352]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win3_l_t</lt_img>
+                <rt_img>s_win3_r_t</rt_img>
+                <lb_img>s_win3_l_b</lb_img>
+                <rb_img>s_win3_r_b</rb_img>
+                <l_img>s_win3_l_m</l_img>
+                <r_img>s_win3_r_m</r_img>
+                <t_img>s_win3_m_t</t_img>
+                <b_img>s_win3_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="listview_pvr_list">
+            <property>
+                <rect>[95,142,456,312]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <roll_time>0</roll_time>
+                <interval>2</interval>
+                <select>0</select>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <i18n>false</i18n>
+                <item_rect>[0,0,440,37]</item_rect>
+                <item_fore_color>[#CEE8FF,#FFFFFF,#CEE8FF]</item_fore_color>
+                <item_back_color>[#384051,#1c242f,#1c242f]</item_back_color>
+            </property>
+            <signal>
+                <get_total>app_pvr_media_list_get_total</get_total>
+                <get_data>app_pvr_media_list_get_data</get_data>
+                <change>app_pvr_media_list_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="header_pvr_list">
+                    <property>
+                        <rect>[0,0,440,0]</rect>
+                        <forecolor>[text_color,text_color,text_color]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <colum_number>2</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_pvr_list_header_1">
+                            <property>
+                                <rect>[5,0,430,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                                <alignment>left|vcentre</alignment>
+                            </property>
+                        </widget>
+
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="scrollbar_pvr_list">
+                    <property>
+                        <rect>[440,0,16,312]</rect>
+		        <forecolor>[text_color,text_color,text_color]</forecolor>
+		        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="lisitem_pvr_list_1"/>
+                <widget class="listitem" style="default" name="lisitem_pvr_list_2"/>
+                <widget class="listitem" style="default" name="lisitem_pvr_list_3"/>
+                <widget class="listitem" style="default" name="lisitem_pvr_list_4"/>
+                <widget class="listitem" style="default" name="lisitem_pvr_list_5"/>
+                <widget class="listitem" style="default" name="lisitem_pvr_list_6"/>
+                <widget class="listitem" style="default" name="lisitem_pvr_list_7"/>
+                <widget class="listitem" style="default" name="lisitem_pvr_list_8"/>
+            </children>
+        </widget>
+        <widget class="image" style="default" name="img_pvr_midia_info_back">
+            <property>
+                <rect>[576,118,288,124]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win3_l_t</lt_img>
+                <rt_img>s_win3_r_t</rt_img>
+                <lb_img>s_win3_l_b</lb_img>
+                <rb_img>s_win3_r_b</rb_img>
+                <l_img>s_win3_l_m</l_img>
+                <r_img>s_win3_r_m</r_img>
+                <t_img>s_win3_m_t</t_img>
+                <b_img>s_win3_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pvr_midia_info_1">
+            <property>
+                <rect>[600,130,240,28]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pvr_midia_info_2">
+            <property>
+                <rect>[600,166,240,28]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pvr_midia_info_3">
+            <property>
+                <rect>[600,202,240,28]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pvr_media_list_tips">
+            <property>
+                <rect>[80,501,864,46]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win3_l_t</lt_img>
+                <rt_img>s_win3_r_t</rt_img>
+                <lb_img>s_win3_l_b</lb_img>
+                <rb_img>s_win3_r_b</rb_img>
+                <l_img>s_win3_l_m</l_img>
+                <r_img>s_win3_r_m</r_img>
+                <t_img>s_win3_m_t</t_img>
+                <b_img>s_win3_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pvr_media_list_exit">
+            <property>
+                <rect>[115,513,46,25]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[#216BBF,#216BBF,#216BBF]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_exit</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_pvr_media_list_exit">
+            <property>
+                <rect>[164,513,100,25]</rect>
+                <forecolor>[#CEE8FF,#FFFFFF,#CEE8FF]</forecolor>
+                <backcolor>[#111829,window_in_color,window_in_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Exit</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pvr_media_list_ok">
+            <property>
+                <rect>[274,513,46,25]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[#216BBF,#216BBF,#216BBF]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_ok</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_pvr_media_list_play">
+            <property>
+                <rect>[323,513,100,25]</rect>
+                <forecolor>[#CEE8FF,#FFFFFF,#CEE8FF]</forecolor>
+                <backcolor>[#111829,window_in_color,window_in_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Play</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pvr_media_tip_red">
+            <property>
+                <rect>[435,517,16,16]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_red</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pvr_media_tip_red">
+            <property>
+                <rect>[452,513,100,25]</rect>
+                <state>hide</state>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Delete</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pvr_media_tip_blue">
+            <property>
+                <rect>[553,517,16,16]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_blue</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pvr_media_tip_blue">
+            <property>
+                <rect>[571,513,130,25]</rect>
+                <state>hide</state>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Delete All</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pvr_media_tip_move">
+            <property>
+                <rect>[861,509,34,33]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_move</img>
+            </property>
+        </widget>
+    <widget class="image" style="default" name="img_pvr_media_tip_yellow">
+      <property>
+        <rect>[704,517,16,16]</rect>
+	<state>hide</state>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_yellow</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_pvr_media_tip_yellow">
+      <property>
+        <rect>[722,513,130,28]</rect>
+	<state>hide</state>
+        <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+        <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+        <font>font_22</font>
+        <alignment>left|vcentre</alignment>
+        <string>PVR Sort</string>
+        <format>static</format>
+      </property>
+    </widget>
+    </children>
+</widget>

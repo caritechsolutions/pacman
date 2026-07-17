@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_sat_search_opt">
+    <property>
+        <rect>[320,152,384,216]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_satellite_search_create</create>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_sat_search_back">
+          <property>
+              <rect>[0,0,384,216]</rect>
+              <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+              <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+              <mode>multiple</mode>
+              <img></img>
+              <lt_img>s_win_m</lt_img>
+              <rt_img>s_win_m</rt_img>
+              <lb_img>s_win_m</lb_img>
+              <rb_img>s_win_m</rb_img>
+              <l_img>s_win_m</l_img>
+              <r_img>s_win_m</r_img>
+              <t_img>s_win_m</t_img>
+              <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_sat_search_title">
+            <property>
+              <rect>[8,2,368,28]</rect>
+              <forecolor>[text_color,text_color,text_color]</forecolor>
+              <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+              <string>Satellite Search</string>
+              <format>static</format>
+            </property>
+        </widget>
+        <widget class="box" style="default" name="box_sat_search_opt">
+            <property>
+                <rect>[8,30,366,182]</rect>
+              <forecolor>[text_color,text_color,text_color]</forecolor>
+              <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+              <format>vertical</format>
+            </property>
+            <signal>
+                <keypress>app_satellite_search_box_keypress</keypress>
+            </signal>
+            <children>
+                <widget class="boxitem" style="default" name="boxitem_sat_search_mode">
+                    <property>
+                        <rect>[9,0,348,36]</rect>
+                      <forecolor>[text_color,text_color,text_color]</forecolor>
+                      <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                      <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_sat_search_mode">
+                            <property>
+                                <rect>[20,3,160,30]</rect>
+                                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string>Mode</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmb_sat_scan_mode">
+                            <property>
+                                <rect>[183,3,164,30]</rect>
+                                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                            </property>
+                            <signal>
+                                <change>app_search_cmbox_change</change>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_sat_search_fta">
+                    <property>
+                        <rect>[9,36,348,36]</rect>
+                      <forecolor>[text_color,text_color,text_color]</forecolor>
+                      <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                      <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_sat_search_fta">
+                            <property>
+                                <rect>[20,3,160,30]</rect>
+                                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string>FTA Only</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmb_sat_fta_only">
+                            <property>
+                                <rect>[183,3,164,30]</rect>
+                                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_sat_search_channel">
+                    <property>
+                        <rect>[9,72,348,36]</rect>
+                      <forecolor>[text_color,text_color,text_color]</forecolor>
+                      <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                      <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_sat_search_channel">
+                            <property>
+                                <rect>[20,3,160,30]</rect>
+                                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string>TV/Radio</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmb_sat_scan_channel">
+                            <property>
+                                <rect>[183,3,164,30]</rect>
+                                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_sat_search_network">
+                    <property>
+                        <rect>[9,108,348,36]</rect>
+                      <forecolor>[text_color,text_color,text_color]</forecolor>
+                      <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                      <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_sat_search_network">
+                            <property>
+                                <rect>[20,3,160,30]</rect>
+                                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string>Nit Search</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmb_sat_network">
+                            <property>
+                                <rect>[183,3,164,30]</rect>
+                                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_sat_search_search">
+                    <property>
+                        <rect>[9,144,348,36]</rect>
+                        <mirror>disable</mirror>
+                      <forecolor>[text_color,text_color,text_color]</forecolor>
+                      <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                      <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_sat_search_search">
+                            <property>
+                              <rect>[183,3,164,30]</rect>
+                              <forecolor>[text_color,text_color,text_color]</forecolor>
+                              <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                              <string>Search</string>
+                              <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+    </children>
+</widget>

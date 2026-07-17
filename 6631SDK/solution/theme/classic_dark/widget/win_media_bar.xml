@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="win_media_bar">
+    <property>
+        <rect>[0,376,1024,200]</rect>
+        <mirror>disable</mirror>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <service>movie_media_service</service>
+        <keypress>movie_media_view_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="movie_view_image_boxback">
+            <property>
+                <rect>[144,10,736,144]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_movie_view_back">
+            <property>
+                <rect>[160,20,48,48]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>signal</mode>
+                <img>s_menu_icon_media3</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="movie_view_text_name1">
+            <property>
+                <rect>[220,34,640,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="movie_view_img_sliderback">
+            <property>
+                <rect>[208,72,608,24]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="box" style="default" name="movie_view_box">
+            <property>
+                <rect>[286,98,454,48]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <interval>2</interval>
+                <format>horizontal</format>
+            </property>
+            <signal>
+                <keypress>movie_view_box_keypress</keypress>
+            </signal>
+            <children>
+                <widget class="boxitem" style="default" name="movie_view_boxitem1">
+                    <property>
+                        <rect>[2,0,48,48]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="button" style="default" name="movie_view_boxitem1_button">
+                            <property>
+                                <rect>[0,0,48,47]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <focus_img>s_mpicon_previous_focus</focus_img>
+                                <unfocus_img>s_mpicon_previous_unfocus</unfocus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="movie_view_boxitem2">
+                    <property>
+                        <rect>[52,0,48,48]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="button" style="default" name="movie_view_boxitem2_button">
+                            <property>
+                                <rect>[0,0,48,47]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <focus_img>s_mpicon_bspeed_focus</focus_img>
+                                <unfocus_img>s_mpicon_bspeed_unfocus</unfocus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="movie_view_boxitem3">
+                    <property>
+                        <rect>[102,0,48,48]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="button" style="default" name="movie_view_boxitem3_button">
+                            <property>
+                                <rect>[0,0,48,47]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <focus_img>s_mpicon_pause_focus</focus_img>
+                                <unfocus_img>s_mpicon_pause_unfocus</unfocus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="movie_view_boxitem4">
+                    <property>
+                        <rect>[152,0,48,48]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="button" style="default" name="movie_view_boxitem4_button">
+                            <property>
+                                <rect>[0,0,48,47]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <focus_img>s_mpicon_fspeed_focus</focus_img>
+                                <unfocus_img>s_mpicon_fspeed_unfocus</unfocus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="movie_view_boxitem5">
+                    <property>
+                        <rect>[202,0,48,48]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="button" style="default" name="movie_view_boxitem5_button">
+                            <property>
+                                <rect>[0,0,48,47]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <focus_img>s_mpicon_next_focus</focus_img>
+                                <unfocus_img>s_mpicon_next_unfocus</unfocus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="movie_view_boxitem6">
+                    <property>
+                        <rect>[252,0,48,48]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="button" style="default" name="movie_view_boxitem6_button">
+                            <property>
+                                <rect>[0,0,48,47]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <focus_img>s_mpicon_stop_focus</focus_img>
+                                <unfocus_img>s_mpicon_stop_unfocus</unfocus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="movie_view_boxitem7">
+                    <property>
+                        <rect>[302,0,48,48]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="button" style="default" name="movie_view_boxitem7_button">
+                            <property>
+                                <rect>[0,0,48,47]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <focus_img>s_mpicon_set_focus</focus_img>
+                                <unfocus_img>s_mpicon_set_unfocus</unfocus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="movie_view_boxitem8">
+                    <property>
+                        <rect>[352,0,48,48]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="button" style="default" name="movie_view_boxitem8_button">
+                            <property>
+                                <rect>[0,0,48,47]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <focus_img>s_mpicon_vol_focus</focus_img>
+                                <unfocus_img>s_mpicon_vol_unfocus</unfocus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="movie_view_boxitem9">
+                    <property>
+                        <rect>[402,0,48,48]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="button" style="default" name="movie_view_boxitem9_button">
+                            <property>
+                                <rect>[0,0,48,47]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <focus_img>s_mpicon_info_focus</focus_img>
+                                <unfocus_img>s_mpicon_info_unfocus</unfocus_img>
+                           </property>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+        <widget class="sliderbar" style="default" name="movie_view_sliderbar">
+            <property>
+                <rect>[226,78,572,12]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <step>2</step>
+                <fore_image>s_progress3_m</fore_image>
+                <format>normal</format>
+                <cursor_image>s_progress3_m_red</cursor_image>
+            </property>
+            <signal>
+                <keypress>movie_view_sliderbar_keypress</keypress>
+            </signal>
+        </widget>
+        <widget class="text" style="default" name="movie_view_text_start_time">
+            <property>
+                <rect>[160,106,96,32]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="movie_view_text_stop_time">
+            <property>
+                <rect>[770,106,96,32]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="sliderbar" style="default" name="movie_view_sliderbar_cursor">
+            <property>
+                <rect>[226,78,572,12]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <step>2</step>
+                <format>normal</format>
+                <cursor_image>s_progress3_m_red</cursor_image>
+                <keypress_revert>disable</keypress_revert>
+            </property>
+            <signal>
+                <keypress>movie_view_cursor_keypress</keypress>
+            </signal>
+        </widget>
+    </children>
+</widget>

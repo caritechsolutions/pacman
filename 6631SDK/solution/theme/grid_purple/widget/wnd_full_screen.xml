@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_full_screen">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_full_screen_create</create>
+        <destroy>app_full_screen_destroy</destroy>
+        <got_focus>app_full_screen_got_focus</got_focus>
+        <keypress>app_full_screen_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_full_mute">
+            <property>
+                <rect>[891,42,47,45]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_mute</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_full_pause">
+            <property>
+                <rect>[868,88,70,28]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_full_speed">
+            <property>
+                <rect>[876,92,52,22]</rect>
+                <state>hide</state>
+                <mirror>disable</mirror>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>right|vcentre</alignment>
+                <string>X2</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_full_state">
+            <property>
+                <rect>[374,218,276,36]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[theme_color,theme_color,themecolor]</backcolor>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_full_state">
+            <property>
+                <rect>[376,220,272,32]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_full_tms">
+            <property>
+                <rect>[868,120,70,28]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_pvr_tms</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_full_rec">
+            <property>
+                <rect>[868,152,70,28]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_pvr_rec</img>
+            </property>
+        </widget>
+		<widget class="text" style="default" name="txt_full_screen_shortcuts">
+			<property>
+				<rect>[776,112,200,30]</rect>
+				<state>hide</state>
+				<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+    </children>
+</widget>

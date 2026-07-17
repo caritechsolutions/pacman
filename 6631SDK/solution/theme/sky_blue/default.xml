@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="gb2312"?>
+<default>
+    <tree>
+        <item display="language" group="language"/>
+        <item display="common" group="common"/>
+        <item display="scart config" group="scart config"/>
+        <item display="spdif config" group="spdif config"/>
+        <item display="Antenna Power" group="Antenna Power"/>
+        <item display="Country config" group="Country config"/>
+        <item display="TV Standard" group="TV Standard"/>
+        <item display="LCN config" group="LCN config"/>
+        <item display="Tuner loopout" group="Tuner loopout"/>
+        <item display="Standby showtime" group="Standby showtime"/>
+        <item display="PassWord config" group="PassWord config"/>
+        <item display="netapp" group="netapp"/>
+        <item display="system setting" group="system setting"/>
+    </tree>
+    <group name="language">
+        <item display="osd language" value="0">
+            <list value="0" display="English"/>
+            <list value="1" display="Vietnamese"/>
+            <list value="2" display="Arabic"/>
+            <list value="3" display="Russian"/>
+            <list value="4" display="French"/>
+            <list value="5" display="Portuguese"/>
+            <list value="6" display="Turkish"/>
+            <list value="7" display="Spain"/>
+            <list value="8" display="German"/>
+            <list value="9" display="Farsi"/>
+        </item>
+        <item display="kb language" value="0">
+            <list value="0" display="English"/>
+            <list value="1" display="Arabic"/>
+            <list value="2" display="Farsi"/>
+            <list value="3" display="Spanish"/>
+            <list value="4" display="Portuguese"/>
+            <list value="5" display="Turkish"/>
+            <list value="6" display="Vietnamese"/>
+            <list value="7" display="Russian"/>
+            <list value="8" display="Ukrainian"/>
+            <list value="9" display="Thai"/>
+            <list value="10" display="Bulgarain"/>
+        </item>
+    </group>
+    <group name="common">
+        <item display="hardware version" value="GEMINI_MXL608_V1.3"/>
+        <item display="software version" value="DVBT2_SDK_V2.3.0"/>
+        <item display="netapp version" value="V1.2.0"/>
+        <item display="transparence" value="230">
+            <list value="255" display="100%"/>
+        </item>
+        <item display="volume" value="12">
+            <list value="75" display="25"/>
+        </item>
+        <item display="time zone" value="0">
+            <list value="-12" display="-12"/>
+            <list value="-11" display="-11"/>
+            <list value="-10" display="-10"/>
+            <list value="-9" display="-9"/>
+            <list value="-8" display="-8"/>
+            <list value="-7" display="-7"/>
+            <list value="-6" display="-6"/>
+            <list value="-5" display="-5"/>
+            <list value="-4" display="-4"/>
+            <list value="-3" display="-3"/>
+            <list value="-2" display="-2"/>
+            <list value="-1" display="-1"/>
+            <list value="0" display="0"/>
+            <list value="1" display="+1"/>
+            <list value="2" display="+2"/>
+            <list value="3" display="+3"/>
+            <list value="4" display="+4"/>
+            <list value="5" display="+5"/>
+            <list value="6" display="+6"/>
+            <list value="7" display="+7"/>
+            <list value="8" display="+8"/>
+            <list value="9" display="+9"/>
+            <list value="10" display="+10"/>
+            <list value="11" display="+11"/>
+            <list value="12" display="+12"/>
+        </item>
+        <item display="summer time" value="0">
+            <list value="1" display="on"/>
+            <list value="0" display="off"/>
+        </item>
+    </group>
+    <group name="scart config">
+        <item display="SCART" value="0">
+            <list value="0" display="CVBS"/>
+            <list value="1" display="RGB"/>
+            <list value="-1" display="off"/>
+        </item>
+    </group>
+    <group name="spdif config">
+        <item display="SPDIF" value="3">
+            <list value="1" display="AC3 DECODE"/>
+            <list value="2" display="AC3 BYPASS"/>
+            <list value="3" display="AC3 AUTO"/>
+        </item>
+    </group>
+    <group name="Antenna Power">
+        <item display="Antenna_Power" value="1">
+            <list value="1" display="on"/>
+            <list value="0" display="off"/>
+        </item>
+    </group>
+    <group name="Country config">
+        <item display="country select" value="0">
+            <list value="0" display="England"/>
+            <list value="1" display="Russia"/>
+            <list value="2" display="France"/>
+            <list value="3" display="Portugal"/>
+            <list value="4" display="Spain"/>
+            <list value="5" display="Greece"/>
+            <list value="6" display="Italy"/>
+            <list value="7" display="Poland"/>
+            <list value="8" display="Germany"/>
+            <list value="9" display="Thailand"/>
+            <list value="10" display="Australia"/>
+            <list value="11" display="Iran"/>
+            <list value="12" display="Netherlands"/>
+            <list value="13" display="Serbia"/>
+            <list value="14" display="Belgium"/>
+            <list value="15" display="Hungary"/>
+            <list value="16" display="Denmark"/>
+            <list value="17" display="Slovenia"/>
+            <list value="18" display="Luxembourg"/>
+            <list value="19" display="Norway"/>
+            <list value="20" display="Czech"/>
+            <list value="21" display="Sweden"/>
+            <list value="22" display="Austria"/>
+            <list value="23" display="Croatia"/>
+            <list value="24" display="Rumania"/>
+            <list value="25" display="Finland"/>
+            <list value="26" display="Bulgaria"/>
+            <list value="27" display="Vietnam"/>
+            <list value="28" display="Myanmar"/>
+            <list value="29" display="Estonia"/>
+            <list value="30" display="Ireland"/>
+            <list value="31" display="Latvia"/>
+            <list value="32" display="Lithuania"/>
+            <list value="33" display="Slovakia"/>
+            <list value="34" display="Ukraine"/>
+            <list value="35" display="Uzbekistan"/>
+            <list value="36" display="Kazakhstan"/>
+            <list value="37" display="Turkmenistan"/>
+            <list value="38" display="Tajikistan"/>
+            <list value="39" display="Kyrgyzstan"/>
+            <list value="40" display="Colombia"/>
+            <list value="41" display="Lebanon"/>
+            <list value="42" display="Singapore"/>
+            <list value="43" display="Malaysia"/>
+            <list value="44" display="Israel"/>
+            <list value="45" display="Mongolia"/>
+            <list value="46" display="Congo"/>
+            <list value="47" display="Albania"/>
+            <list value="48" display="Bangladesh"/>
+            <list value="49" display="Indonesia"/>
+            <list value="50" display="Afghanistan"/>
+            <list value="51" display="Philippines"/>
+            <list value="52" display="Georgia"/>
+        </item>
+    </group>
+    <group name="TV Standard">
+        <item display="Standard" value="13">
+            <list value="7" display="480I"/>
+            <list value="8" display="480p"/>
+            <list value="9" display="576I"/>
+            <list value="10" display="576p"/>
+            <list value="11" display="720P 50Hz"/>
+            <list value="12" display="720P 60Hz"/>
+            <list value="13" display="1080I 50Hz"/>
+            <list value="14" display="1080P 50Hz"/>
+            <list value="15" display="1080I 60Hz"/>
+            <list value="16" display="1080P 60Hz"/>
+        </item>
+    </group>
+    <group name="LCN config">
+        <item display="LCN" value="0">
+            <list value="1" display="on"/>
+            <list value="0" display="off"/>
+        </item>
+    </group>
+    <group name="Standby showtime">
+        <item display="showtime" value="1">
+            <list value="1" display="on"/>
+            <list value="0" display="off"/>
+        </item>
+    </group>
+    <group name="PassWord config">
+        <item display="PassWord" value="876543"/>
+    </group>
+    <group name="netapp">
+    </group>
+    </default>

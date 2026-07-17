@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default_widget" name="wnd_setting_dm">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_dm_setting_create</create>
+        <destroy>app_dm_destroy</destroy>
+        <got_focus>app_dm_got_focus</got_focus>
+        <lost_focus>app_dm_lost_focus</lost_focus>
+        <keypress>app_dm_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_dm_setting_header">
+            <property>
+                <rect>[94,60,836,450]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_dm_setting_title">
+            <property>
+                <rect>[99,65,826,58]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win3_l_t</lt_img>
+                <rt_img>s_win3_r_t</rt_img>
+                <lb_img>s_win3_l_b</lb_img>
+                <rb_img>s_win3_r_b</rb_img>
+                <l_img>s_win3_l_m</l_img>
+                <r_img>s_win3_r_m</r_img>
+                <t_img>s_win3_m_t</t_img>
+                <b_img>s_win3_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_dm_setting_title">
+            <property>
+                <rect>[272,68,480,52]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <font>font_main</font>
+                <string>Disk Information</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="listview" style="default_widget" name="list_view_dm">
+            <property>
+                <rect>[105,160,814,259]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <roll_time>0</roll_time>
+                <select>0</select>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <item_active_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</item_active_image>
+                <i18n>false</i18n>
+                <item_rect>[0,0,800,37]</item_rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <get_total>app_dm_list_get_total</get_total>
+                <get_data>app_dm_list_get_data</get_data>
+            </signal>
+            <children>
+                <widget class="header" style="default_widget" name="list_head_dm">
+                    <property>
+                        <rect>[0,0,708,0]</rect>
+                        <forecolor>[text_color,text_color,text_color]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <colum_number>6</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="txt_rec_flag">
+                            <property>
+                                <rect>[32,0,32,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default_widget" name="txt_name_dm">
+                            <property>
+                                <rect>[64,0,148,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default_widget" name="txt_used_size_dm">
+                            <property>
+                                <rect>[212,0,148,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default_widget" name="txt_free_size_dm">
+                            <property>
+                                <rect>[360,0,148,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default_widget" name="txt_total_size_dm">
+                            <property>
+                                <rect>[508,0,148,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default_widget" name="txt_type_dm">
+                            <property>
+                                <rect>[656,0,148,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default_widget" name="list_scroll_dm">
+                    <property>
+                        <rect>[800,0,14,259]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default_widget" name="list_item_dm1"/>
+                <widget class="listitem" style="default_widget" name="list_item_dm2"/>
+                <widget class="listitem" style="default_widget" name="list_item_dm3"/>
+                <widget class="listitem" style="default_widget" name="list_item_dm4"/>
+                <widget class="listitem" style="default_widget" name="list_item_dm5"/>
+                <widget class="listitem" style="default_widget" name="list_item_dm6"/>
+                <widget class="listitem" style="default_widget" name="list_item_dm7"/>
+            </children>
+        </widget>
+        <widget class="text" style="default" name="btn_name_dm">
+            <property>
+                <rect>[166,130,148,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>Name</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="btn_used_size_dm">
+            <property>
+                <rect>[313,130,148,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>Used</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="btn_free_size_dm">
+            <property>
+                <rect>[461,130,148,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>Free</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="btn_total_size_dm">
+            <property>
+                <rect>[609,130,148,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>Total</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="btn_type_dm">
+            <property>
+                <rect>[757,130,148,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>System</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_dm_setting_tip_back">
+            <property>
+                <rect>[99,458,826,46]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win3_l_t</lt_img>
+                <rt_img>s_win3_r_t</rt_img>
+                <lb_img>s_win3_l_b</lb_img>
+                <rb_img>s_win3_r_b</rb_img>
+                <l_img>s_win3_l_m</l_img>
+                <r_img>s_win3_r_m</r_img>
+                <t_img>s_win3_m_t</t_img>
+                <b_img>s_win3_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_format_dm">
+            <property>
+                <rect>[183,473,16,16]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_red</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_format_dm">
+            <property>
+                <rect>[206,467,192,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Format</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pvr_set">
+            <property>
+                <rect>[458,473,16,16]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_green</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_pvr_set">
+            <property>
+                <rect>[482,467,192,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>PVR Set</string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

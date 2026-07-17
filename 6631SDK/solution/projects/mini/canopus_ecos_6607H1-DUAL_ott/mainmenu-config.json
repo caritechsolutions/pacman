@@ -1,0 +1,182 @@
+{
+    "mainmenuVersion": 1,
+    "style": "grid",
+    "default": "Last",
+    "member": [
+        {
+            "marker": "position_marker_1",
+            "entry": "APPUI_ENTRY_XTREAM",
+            "image":{
+                "focus": "icon_xtream_focus",
+                "unfcous": "icon_xtream_unfocus"
+            },
+            "state": "show",
+            "keypress": {
+                "up": "position_marker_7",
+                "down": "position_marker_4",
+                "left": "position_marker_3"
+            }
+        },
+        {
+            "marker": "position_marker_2",
+            "entry": "APPUI_ENTRY_IPTV",
+            "image":{
+                "focus": "icon_iptv_focus",
+                "unfcous": "icon_iptv_unfocus"
+            },
+            "state": "hide",
+            "keypress": {
+                "up": "position_marker_10",
+                "down": "position_marker_5"
+            }
+        },
+        {
+            "marker": "position_marker_3",
+            "entry": "APPUI_ENTRY_APPLETS",
+            "image":{
+                "focus": "icon_applets_focus",
+                "unfcous": "icon_applets_unfocus"
+            },
+            "state": "show",
+            "keypress": {
+                "up": "position_marker_13",
+                "down": "position_marker_6",
+                "right": "position_marker_1"
+            }
+       },
+        {
+            "marker": "position_marker_4",
+            "entry": "APPUI_ENTRY_STALKER",
+            "image":{
+                "focus": "icon_stalker_focus",
+                "unfcous": "icon_stalker_unfocus"
+            },
+            "state": "show",
+            "keypress": {
+                "up": "position_marker_1",
+                "down": "position_marker_7",
+                "left": "position_marker_6"
+            }
+        },
+        {
+            "marker": "position_marker_5",
+            "entry": "APPUI_ENTRY_APPLET_WEATHER",
+            "image":{
+                "focus": "icon_weather_focus",
+                "unfcous": "icon_weather_unfocus"
+            },
+            "state": "hide",
+            "keypress": {
+                "up": "position_marker_2",
+                "down": "position_marker_10"
+            }
+        },
+        {
+            "marker": "position_marker_6",
+            "entry": "APPUI_ENTRY_DVBT_DLNA",
+            "image":{
+                "focus": "icon_dmr_focus",
+                "unfcous": "icon_dmr_unfocus"
+            },
+            "state": "show",
+            "keypress": {
+                "up": "position_marker_3",
+                "down": "position_marker_13",
+                "right": "position_marker_4"
+            }
+        },
+        {
+            "marker": "position_marker_7",
+            "entry": "APPUI_ENTRY_SETTING",
+            "image":{
+                "focus": "icon_setting_focus",
+                "unfcous": "icon_setting_unfocus"
+            },
+            "state": "show",
+            "keypress": {
+                "up": "position_marker_4",
+                "down": "position_marker_1",
+                "left": "position_marker_13"
+            }
+        },
+        {
+            "marker": "position_marker_8",
+            "entry": "APPUI_ENTRY_UTILITY",
+            "image":{
+                "focus": "icon_utility_focus",
+                "unfcous": "icon_utility_unfocus"
+            },
+            "state": "show",
+            "keypress": {
+                "up": "position_marker_4",
+                "down": "position_marker_1"
+            }
+        },
+        {
+            "marker": "position_marker_9",
+            "entry": "APPUI_ENTRY_VPN",
+            "image":{
+                "focus": "icon_vpn_focus",
+                "unfcous": "icon_vpn_unfocus"
+            },
+            "state": "show",
+            "keypress": {
+                "up": "position_marker_5",
+                "down": "position_marker_2"
+            }
+        },
+        {
+            "marker": "position_marker_10",
+            "entry": "APPUI_ENTRY_NETWORK",
+            "image":{
+                "focus": "icon_network_focus",
+                "unfcous": "icon_network_unfocus"
+            },
+            "state": "show",
+            "keypress": {
+                "up": "position_marker_5",
+                "down": "position_marker_2"
+            }
+        },
+        {
+            "marker": "position_marker_11",
+            "entry": "APPUI_ENTRY_SOFTUPGRADE",
+            "image":{
+                "focus": "icon_upgrade_focus",
+                "unfcous": "icon_upgrade_unfocus"
+            },
+            "state": "show",
+            "keypress": {
+                "up": "position_marker_5",
+                "down": "position_marker_2"
+            }
+        },
+        {
+            "marker": "position_marker_12",
+            "entry": "APPUI_ENTRY_SOFTINFO",
+            "image":{
+                "focus": "icon_info_focus",
+                "unfcous": "icon_info_unfocus"
+            },
+            "state": "show",
+            "keypress": {
+                "up": "position_marker_6",
+                "down": "position_marker_3"
+            }
+        },
+        {
+            "marker": "position_marker_13",
+            "entry": "APPUI_ENTRY_MEDIA_CENTRE",
+            "image":{
+                "focus": "icon_usb_focus",
+                "unfcous": "icon_usb_unfocus"
+            },
+            "state": "show",
+            "keypress": {
+                "up": "position_marker_6",
+                "down": "position_marker_3",
+                "right": "position_marker_7"
+            }
+        }
+    ]
+}

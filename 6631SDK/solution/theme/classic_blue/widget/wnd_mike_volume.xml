@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_mike_volume">
+    <property>
+        <rect>[250,450,780,156]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_mike_view_create</create>
+        <destroy>app_mike_view_destroy</destroy>
+        <got_focus>app_mike_view_got_focus</got_focus>
+        <lost_focus>app_mike_view_lost_focus</lost_focus>
+        <keypress>app_mike_view_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="text" style="default" name="img_mike_item_focus1">
+            <property>
+                <rect>[0,31,76,42]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[volume_focus_color,volume_focus_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_mike_item_unfocus1">
+            <property>
+                <rect>[3,33,72,38]</rect>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" name="image_usb_volume" style="default">
+            <property>
+                <rect>[177,33,600,45]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <rt_img>s_vol1_r</rt_img>
+               <t_img>s_vol1_m</t_img>
+            </property>
+        </widget>
+        <widget class="progbar" name="usb_progbar_volume" style="default">
+            <property>
+				<rect>[177,45,525,21]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <min>0</min>
+                <max>25</max>
+                <back_image>s_process_grey</back_image>
+                <back_image_l>s_vol2_l</back_image_l>
+                <back_image_m>s_vol2_m</back_image_m>
+                <back_image_r>s_vol2_r</back_image_r>
+                <fore_image>s_process_blue</fore_image>
+                <fore_image_l>s_vol3_l</fore_image_l>
+                <fore_image_m>s_vol3_m</fore_image_m>
+                <fore_image_r>s_vol3_r</fore_image_r>
+                <format>water</format>
+                <text_format>hide</text_format>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="text" name="txt_usb_volume" style="default">
+            <property>
+                <rect>[710,36,60,35]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" name="img_usb_volume" style="default">
+            <property>
+                <rect>[77,0,100,78]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_vol</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="mike_view_text_name1">
+            <property>
+                <rect>[3,33,72,35]</rect>
+                <forecolor>[text_color,text_color,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Voice</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_mike_item_focus2">
+            <property>
+                <rect>[0,109,76,42]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[volume_focus_color,volume_focus_color,window_bg_color]</backcolor>
+                <string>Audio</string>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_mike_item_unfocus2">
+            <property>
+                <rect>[3,111,72,38]</rect>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" name="image_stb_volume" style="default">
+            <property>
+                <rect>[177,111,600,45]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <rt_img>s_vol1_r</rt_img>
+               <t_img>s_vol1_m</t_img>
+            </property>
+        </widget>
+        <widget class="progbar" name="stb_progbar_volume" style="default">
+            <property>
+				<rect>[177,123,525,21]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <min>0</min>
+                <max>25</max>
+                <back_image>s_process_grey</back_image>
+                <back_image_l>s_vol2_l</back_image_l>
+                <back_image_m>s_vol2_m</back_image_m>
+                <back_image_r>s_vol2_r</back_image_r>
+                <fore_image>s_process_blue</fore_image>
+                <fore_image_l>s_vol3_l</fore_image_l>
+                <fore_image_m>s_vol3_m</fore_image_m>
+                <fore_image_r>s_vol3_r</fore_image_r>
+                <format>water</format>
+                <text_format>hide</text_format>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="text" name="txt_stb_volume" style="default">
+            <property>
+                <rect>[710,114,60,35]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" name="img_stb_volume" style="default">
+            <property>
+                <rect>[77,78,100,78]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_vol</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="mike_view_text_name2">
+            <property>
+                <rect>[3,111,72,37]</rect>
+                <forecolor>[text_color,text_color,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Audio</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="mike_view_imag_mute">
+            <property>
+                <rect>[1107,52,77,55]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_mute</img>
+            </property>
+        </widget>
+    </children>
+</widget>

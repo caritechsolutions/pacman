@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_dvb2ip_play">
+    <property>
+        <rect>[0,0,1280,720]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+    </property>
+    <signal>
+        <create>app_dvb2ip_play_create</create>
+        <destroy>app_dvb2ip_play_destroy</destroy>
+        <got_focus>app_dvb2ip_play_got_focus</got_focus>
+        <lost_focus>app_dvb2ip_play_lost_focus</lost_focus>
+        <keypress>app_dvb2ip_play_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="text" style="default" name="dvb2ip_play_text1">
+            <property>
+                <rect>[140,188,1000,62]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <font>font_main</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="dvb2ip_play_text2">
+            <property>
+                <rect>[140,288,1000,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="dvb2ip_play_text3">
+            <property>
+                <rect>[140,326,1000,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="dvb2ip_play_text4">
+            <property>
+                <rect>[140,600,1000,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

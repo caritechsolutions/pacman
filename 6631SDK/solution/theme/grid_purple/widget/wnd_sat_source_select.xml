@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget class="window" style="default" name="wnd_sat_source_select">
+    <property>
+        <rect>[376,104,288,236]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <format>popup</format>
+    </property>
+    <signal>
+        <create>app_satsource_list_create</create>
+        <destroy>app_satsource_list_destroy</destroy>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_satsource_list_back">
+            <property>
+                <rect>[0,0,288,236]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_m</lt_img>
+                <rt_img>s_win_m</rt_img>
+                <lb_img>s_win_m</lb_img>
+                <rb_img>s_win_m</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_satsource_list_title">
+            <property>
+                <rect>[24,1,240,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Satelite Source</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="listview_satsource_list">
+            <property>
+                <rect>[8,34,272,182]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <roll_time>60</roll_time>
+                <format>enable_roll</format>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <item_rect>[0,0,272,36]</item_rect>
+                <i18n>false</i18n>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+            </property>
+            <signal>
+                <create>app_satsource_list_list_create</create>
+                <destroy>app_satsource_list_list_destroy</destroy>
+                <keypress>app_satsource_list_list_keypress</keypress>
+                <get_total>app_satsource_list_list_get_total</get_total>
+                <get_data>app_satsource_list_list_get_data</get_data>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="header_satsource_list">
+                    <property>
+                        <rect>[0,0,272,0]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <colum_number>1</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="header_text_satsource_list">
+                            <property>
+                                <rect>[6,0,260,0]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_satsource_list_1"/>
+                <widget class="listitem" style="default" name="listitem_satsource_list_2"/>
+                <widget class="listitem" style="default" name="listitem_satsource_list_3"/>
+                <widget class="listitem" style="default" name="listitem_satsource_list_4"/>
+                <widget class="listitem" style="default" name="listitem_satsource_list_5"/>
+            </children>
+        </widget>
+    </children>
+</widget>

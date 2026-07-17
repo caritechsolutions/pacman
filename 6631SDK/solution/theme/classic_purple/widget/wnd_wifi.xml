@@ -1,0 +1,619 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_wifi">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+    </property>
+    <signal>
+        <create>app_wifi_create</create>
+        <destroy>app_wifi_destroy</destroy>
+        <keypress>app_wifi_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_wifi_line1">
+            <property>
+                <rect>[120,96,784,2]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_wifi_line2">
+            <property>
+                <rect>[120,138,784,2]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_title">
+            <property>
+                <rect>[112,45,800,44]</rect>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_main</font>
+                <string>Wifi Setting</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_dev">
+            <property>
+                <rect>[400,98,224,40]</rect>
+                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_wifi_l">
+            <property>
+                <rect>[385,108,10,20]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_arrow_l</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_wifi_r">
+            <property>
+                <rect>[629,108,10,20]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_arrow_r</img>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_wifi_gif">
+            <property>
+                <rect>[650,102,32,32]</rect>
+                <state>hide</state>
+                <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="list_wifi">
+            <property>
+                <rect>[130,150,762,306]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <roll_time>0</roll_time>
+                <interval>2</interval>
+                <select>0</select>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <item_active_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</item_active_image>
+                <i18n>false</i18n>
+                <item_rect>[0,0,750,36]</item_rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+                <alignment>left|vcentre</alignment>
+            </property>
+            <signal>
+                <create>app_wifi_list_create</create>
+                <keypress>app_wifi_list_keypress</keypress>
+                <get_total>app_wifi_list_get_total</get_total>
+                <get_data>app_wifi_list_get_data</get_data>
+                <change>app_wifi_list_list_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="listheader_wifi">
+                    <property>
+                        <rect>[0,0,750,0]</rect>
+                        <forecolor>[text_color,text_color,text_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <colum_number>5</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="headertext_wifi_1">
+                            <property>
+                                <rect>[10,0,45,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_wifi_2">
+                            <property>
+                                <rect>[55,0,606,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_wifi_3">
+                            <property>
+                                <rect>[661,0,16,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_wifi_4">
+                            <property>
+                                <rect>[687,0,20,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_wifi_5">
+                            <property>
+                                <rect>[717,0,23,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="scrollbar_wifi">
+                    <property>
+                        <rect>[755,0,9,350]</rect>
+                        <forecolor>[black,black,black]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_wifi0"/>
+                <widget class="listitem" style="default" name="listitem_wifi1"/>
+                <widget class="listitem" style="default" name="listitem_wifi2"/>
+                <widget class="listitem" style="default" name="listitem_wifi3"/>
+                <widget class="listitem" style="default" name="listitem_wifi4"/>
+                <widget class="listitem" style="default" name="listitem_wifi5"/>
+                <widget class="listitem" style="default" name="listitem_wifi6"/>
+                <widget class="listitem" style="default" name="listitem_wifi7"/>
+            </children>
+        </widget>
+        <widget class="image" style="default" name="img_wifi_line3">
+            <property>
+                <rect>[120,460,784,2]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_status_title">
+            <property>
+                <rect>[156,465,405,30]</rect>
+                <forecolor>[text_color,text_color,#424247]</forecolor>
+                <backcolor>[gui_trans,gui_trans,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Status</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_status">
+            <property>
+                <rect>[561,465,315,30]</rect>
+                <forecolor>[text_color,text_color,#424247]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_wifi_set_bk">
+            <property>
+                <rect>[312,160,400,272]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_m</lt_img>
+                <rt_img>s_win_m</rt_img>
+                <lb_img>s_win_m</lb_img>
+                <rb_img>s_win_m</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_wifi_tip_essid">
+            <property>
+                <rect>[327,167,372,36]</rect>
+                <state>hide</state>
+                <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>multiple</mode>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_set0">
+            <property>
+                <rect>[329,170,136,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_disable_color,text_disable_color,text_disable_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>ESSID</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_set1">
+            <property>
+                <rect>[329,205,136,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_disable_color,text_disable_color,text_disable_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>IP Addr</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_set2">
+            <property>
+                <rect>[329,240,136,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_disable_color,text_disable_color,text_disable_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>Mac Addr</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_set3">
+            <property>
+                <rect>[329,275,136,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_disable_color,text_disable_color,text_disable_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>Quality</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_essid">
+            <property>
+                <rect>[465,170,230,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_disable_color,text_disable_color,text_disable_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="button_wifi_essid">
+            <property>
+                <rect>[465,170,230,30]</rect>
+                <state>hide</state>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>app_wifi_button_essid_keypress</keypress>
+            </signal>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_ip">
+            <property>
+                <rect>[465,205,230,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_disable_color,text_disable_color,text_disable_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_mac">
+            <property>
+                <rect>[465,240,230,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_disable_color,text_disable_color,text_disable_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_quality">
+            <property>
+                <rect>[465,275,230,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_disable_color,text_disable_color,text_disable_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_wifi_tip_encryption">
+            <property>
+                <rect>[326,307,372,36]</rect>
+                <state>hide</state>
+                <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>multiple</mode>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_set4">
+            <property>
+                <rect>[329,310,136,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_disable_color,text_disable_color,text_disable_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>Encryption</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_encryption">
+            <property>
+                <rect>[465,310,230,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_disable_color,text_disable_color,text_disable_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="combobox" style="default" name="cmb_wifi_encryption">
+            <property>
+                <rect>[465,310,226,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_focus_color,text_focus_color,#34343c]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <focus_img></focus_img>
+                <unfocus_left_img>s_arrow_l_1</unfocus_left_img>
+                <focus_left_img>s_arrow_l</focus_left_img>
+                <unfocus_right_img>s_arrow_r_1</unfocus_right_img>
+                <focus_right_img>s_arrow_r</focus_right_img>
+                <content></content>
+            </property>
+            <signal>
+                <keypress>app_wifi_cmb_encryption_keypress</keypress>
+                <change>app_wifi_cmb_encryption_change</change>
+            </signal>
+        </widget>
+        <widget class="image" style="default" name="img_wifi_tip_psk">
+            <property>
+                <rect>[327,345,372,36]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,window_bg_color,osd_trans]</backcolor>
+                <mode>multiple</mode>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="button_wifi_set5">
+            <property>
+                <rect>[334,348,126,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>Password</string>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="button_wifi_psk">
+            <property>
+                <rect>[485,348,200,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>app_wifi_button_psk_keypress</keypress>
+            </signal>
+        </widget>
+        <widget class="button" style="default" name="button_wifi_connect">
+            <property>
+                <rect>[329,386,167,36]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+            </property>
+            <signal>
+                <keypress>app_wifi_button_connect_keypress</keypress>
+            </signal>
+        </widget>
+        <widget class="button" style="default" name="button_wifi_cancel">
+            <property>
+                <rect>[510,386,167,36]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <string>Cancel</string>
+            </property>
+            <signal>
+                <keypress>app_wifi_button_cancel_keypress</keypress>
+            </signal>
+        </widget>
+        <widget class="image" style="default" name="img_wifi_link">
+            <property>
+                <rect>[320,200,384,192]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_m</lt_img>
+                <rt_img>s_win_m</rt_img>
+                <lb_img>s_win_m</lb_img>
+                <rb_img>s_win_m</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_link_title">
+            <property>
+                <rect>[332,210,360,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>Tips</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_wifi_bottom_tips">
+            <property>
+                <rect>[0,510,1024,66]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_b2</lt_img>
+                <rt_img>s_win2_r_b2</rt_img>
+                <t_img>s_win2_m_b2</t_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="img_wifi_ok">
+            <property>
+                <rect>[308,525,54,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>T2_64_button_tips</focus_img>
+                <unfocus_img>T2_64_button_tips</unfocus_img>
+                <string>OK</string>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_ok">
+            <property>
+                <rect>[368,521,130,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Setup</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_wifi_move">
+            <property>
+                <rect>[834,525,22,22]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_in_color,window_bg_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_move</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_move">
+            <property>
+                <rect>[866,521,60,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Move</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="img_wifi_exit">
+            <property>
+                <rect>[108,525,54,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>T2_64_button_tips</focus_img>
+                <unfocus_img>T2_64_button_tips</unfocus_img>
+                <string>EXIT</string>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_exit">
+            <property>
+                <rect>[168,521,130,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Exit</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_wifi_refresh">
+            <property>
+                <rect>[674,525,20,20]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_green</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_wifi_refresh">
+            <property>
+                <rect>[698,521,180,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Update</string>
+                <format>static</format>
+            </property>
+        </widget>
+
+        <widget class="text" style="default" name="text_wifi_link_status">
+            <property>
+                <rect>[332,240,360,104]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|top</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_wifi_add">
+            <property>
+                <rect>[508,525,20,20]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[#808080,#808080,#808080]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_red</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_wifi_add">
+            <property>
+                <rect>[534,520,130,28]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_22</font>
+                <string>Add</string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_common_text">
+    <property>
+        <rect>[120,100,784,380]</rect>
+        <forecolor>[gui_trans,gui_trans,gui_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+    </property>
+    <signal>
+        <keypress>app_common_text_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="text" style="default" name="text_common_text_title">
+            <property>
+                <rect>[20,6,744,60]</rect>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="notepad" style="default" name="notepad_common_text">
+            <property>
+                <rect>[20,70,764,300]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|top</alignment>
+                <vertical_margin>0</vertical_margin>
+                <horizontal_margin>40</horizontal_margin>
+            </property>
+            <children>
+                <widget class="scrollbar" style="default" name="scrollbar_common_text">
+                    <property>
+                        <rect>[755,0,9,300]</rect>
+                        <forecolor>[window_bg_color,window_bg_color,window_bg_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+            </children>
+        </widget>
+    </children>
+</widget>

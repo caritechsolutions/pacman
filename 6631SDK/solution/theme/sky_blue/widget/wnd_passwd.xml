@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_passwd">
+    <property>
+        <rect>[280,200,440,125]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_passwd_dlg_create</create>
+        <destroy>app_passwd_dlg_destroy</destroy>
+        <keypress>app_passwd_dlg_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_passwd_back">
+            <property>
+                <rect>[0,0,440,125]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_password_title">
+            <property>
+                <rect>[20,20,400,32]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win3_l_t</lt_img>
+                <rt_img>s_win3_r_t</rt_img>
+                <lb_img>s_win3_l_b</lb_img>
+                <rb_img>s_win3_r_b</rb_img>
+                <l_img>s_win3_l_m</l_img>
+                <r_img>s_win3_r_m</r_img>
+                <t_img>s_win3_m_t</t_img>
+                <b_img>s_win3_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_password_tips">
+            <property>
+                <rect>[46,4,53,53]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_passwd_tips</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_passwd_title">
+            <property>
+                <rect>[100,20,240,32]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Password</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_passwd_tip">
+            <property>
+                <rect>[40,101,360,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|top</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_passwd_input_1">
+            <property>
+                <rect>[66,61,42,39]</rect>
+                <forecolor>[black,text_color,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>s_passwd_button_focus</focus_img>
+                <unfocus_img>s_passwd_button</unfocus_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_passwd_input_2">
+            <property>
+                <rect>[120,61,42,39]</rect>
+                <forecolor>[black,text_color,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>s_passwd_button_focus</focus_img>
+                <unfocus_img>s_passwd_button</unfocus_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_passwd_input_3">
+            <property>
+                <rect>[175,61,42,39]</rect>
+                <forecolor>[black,text_color,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>s_passwd_button_focus</focus_img>
+                <unfocus_img>s_passwd_button</unfocus_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_passwd_input_4">
+            <property>
+                <rect>[230,61,42,39]</rect>
+                <forecolor>[black,text_color,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>s_passwd_button_focus</focus_img>
+                <unfocus_img>s_passwd_button</unfocus_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_passwd_input_5">
+            <property>
+                <rect>[285,61,42,39]</rect>
+                <forecolor>[black,text_color,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>s_passwd_button_focus</focus_img>
+                <unfocus_img>s_passwd_button</unfocus_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_passwd_input_6">
+            <property>
+                <rect>[340,61,42,39]</rect>
+                <forecolor>[black,text_color,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>s_passwd_button_focus</focus_img>
+                <unfocus_img>s_passwd_button</unfocus_img>
+            </property>
+        </widget>
+    </children>
+</widget>

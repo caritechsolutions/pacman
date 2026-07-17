@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default_widget" name="wnd_tetris">
+  <property>
+    <rect>[0,0,1024,576]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+  </property>
+  <signal>
+    <create>app_tetris_create</create>
+    <destroy>app_tetris_destroy</destroy>
+    <keypress>app_tetris_keypress</keypress>
+    <lost_focus>app_tetris_lost_focus</lost_focus>
+  </signal>
+  <children>
+    <widget class="image" style="default_widget" name="img_tetris_top">
+      <property>
+        <rect>[112,22,800,32]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[#808080,#808080,#808080]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>GX6102_G_WIN1_L</lt_img>
+        <rt_img>GX6102_G_WIN1_R</rt_img>
+        <t_img>GX6102_G_WIN1_M</t_img>
+      </property>
+    </widget>
+    <widget class="image" style="default_widget" name="img_tetris_bottom">
+      <property>
+        <rect>[112,522,800,32]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[#808080,#808080,#808080]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>GX6102_G_WIN1_L</lt_img>
+        <rt_img>GX6102_G_WIN1_R</rt_img>
+        <t_img>GX6102_G_WIN1_M</t_img>
+      </property>
+    </widget>
+    <widget class="image" style="default_widget" name="img_tetris_backgroud">
+      <property>
+        <rect>[122,54,780,470]</rect>
+        <forecolor>[#E6F8F8,#E6F8F8,#E6F8F8]</forecolor>
+        <backcolor>[#88a8d8,#88a8d8,#88a8d8]</backcolor>
+        <mode>single</mode>
+        <img></img>
+      </property>
+    </widget>
+    <widget class="button" style="default_widget" name="btn_tetris_status">
+      <property>
+        <rect>[647,312,185,51]</rect>
+        <forecolor>[#1B1A15,#1B1A15,#1B1A15]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+        <focus_img>GX6102_G_BUTTOM5</focus_img>
+        <unfocus_img>GX6102_G_BUTTOM5</unfocus_img>
+        <disable_img>GX6102_G_BUTTOM5</disable_img>
+      </property>
+    </widget>
+    <widget class="box" style="default_widget" name="box_tetris_info">
+      <property>
+        <rect>[637,382,207,117]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <interval>5</interval>
+        <format>vertical</format>
+      </property>
+      <children>
+        <widget class="boxitem" style="default_widget" name="boxitem_tetris_level">
+          <property>
+            <rect>[0,5,207,34]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[#808080,#808080,#808080]</backcolor>
+            <unfocus_image>GX6102_G_BUTTON</unfocus_image>
+            <focus_image>GX6102_G_BUTTON</focus_image>
+            <disable_image>GX6102_G_BUTTON</disable_image>
+            <mirror>disable</mirror>
+          </property>
+          <children>
+            <widget class="text" style="default_widget" name="txt_tetris_level">
+              <property>
+                <rect>[0,0,125,34]</rect>
+                <forecolor>[#1B1A15,#1B1A15,#1B1A15]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Level</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default_widget" name="txt_tetris_level_value">
+              <property>
+                <rect>[120,0,87,34]</rect>
+                <forecolor>[#1B1A15,#1B1A15,#1B1A15]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default_widget" name="boxitem_tetris_score">
+          <property>
+            <rect>[0,44,207,34]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[#808080,#808080,#808080]</backcolor>
+            <unfocus_image>GX6102_G_BUTTON</unfocus_image>
+            <focus_image>GX6102_G_BUTTON</focus_image>
+            <disable_image>GX6102_G_BUTTON</disable_image>
+            <mirror>disable</mirror>
+          </property>
+          <children>
+            <widget class="text" style="default_widget" name="txt_tetris_score">
+              <property>
+                <rect>[0,0,125,34]</rect>
+                <forecolor>[#1B1A15,#1B1A15,#1B1A15]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Score</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default_widget" name="txt_tetris_score_value">
+              <property>
+                <rect>[120,0,87,34]</rect>
+                <forecolor>[#1B1A15,#1B1A15,#1B1A15]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default_widget" name="boxitem_tetris_line">
+          <property>
+            <rect>[0,83,207,34]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[#808080,#808080,#808080]</backcolor>
+            <unfocus_image>GX6102_G_BUTTON</unfocus_image>
+            <focus_image>GX6102_G_BUTTON</focus_image>
+            <disable_image>GX6102_G_BUTTON</disable_image>
+            <mirror>disable</mirror>
+          </property>
+          <children>
+            <widget class="text" style="default_widget" name="txt_tetris_line">
+              <property>
+                <rect>[0,0,125,34]</rect>
+                <forecolor>[#1B1A15,#1B1A15,#1B1A15]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Line</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default_widget" name="txt_tetris_line_value">
+              <property>
+                <rect>[120,0,87,34]</rect>
+                <forecolor>[#1B1A15,#1B1A15,#1B1A15]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+          </children>
+        </widget>
+      </children>
+    </widget>
+    <widget class="image" style="default_widget" name="img_tetris_logo">
+      <property>
+        <rect>[707,77,177,56]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <mode>single</mode>
+        <img>GX6102_G_T_TITLE</img>
+      </property>
+    </widget>
+    <widget class="text" style="default_widget" name="img_tetris_title">
+      <property>
+        <rect>[137,22,300,32]</rect>
+        <forecolor>[#E6F8F8,#E6F8F8,#E6F8F8]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Tetris</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default_widget" name="img_tetris_left">
+      <property>
+        <rect>[762,212,20,18]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[#808080,#808080,#808080]</backcolor>
+        <mode>single</mode>
+        <img>GX6102_G_T_LEFT</img>
+      </property>
+    </widget>
+    <widget class="image" style="default_widget" name="img_tetris_right">
+      <property>
+        <rect>[842,212,20,18]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[#808080,#808080,#808080]</backcolor>
+        <mode>single</mode>
+        <img>GX6102_G_T_RIGHT</img>
+      </property>
+    </widget>
+    <widget class="image" style="default_widget" name="img_tetris_change">
+      <property>
+        <rect>[781,172,61,19]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[#808080,#808080,#808080]</backcolor>
+        <mode>single</mode>
+        <img>GX6102_G_T_CHANGE</img>
+      </property>
+    </widget>
+    <widget class="image" style="default_widget" name="img_tetris_down">
+      <property>
+        <rect>[781,252,61,18]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[#808080,#808080,#808080]</backcolor>
+        <mode>single</mode>
+        <img>GX6102_G_T_DOWN</img>
+      </property>
+    </widget>
+    <widget class="image" style="default_widget" name="img_tetris_arrow_up">
+      <property>
+        <rect>[802,192,19,20]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <mode>single</mode>
+        <img>GX6102_G_ICON_UP</img>
+      </property>
+    </widget>
+    <widget class="image" style="default_widget" name="img_tetris_arrow_down">
+      <property>
+        <rect>[802,231,19,20]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <mode>single</mode>
+        <img>GX6102_G_ICON_DOWN</img>
+      </property>
+    </widget>
+    <widget class="image" style="default_widget" name="img_tetris_arrow_left">
+      <property>
+        <rect>[782,212,20,19]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <mode>single</mode>
+        <img>GX6102_G_ICON_LEFT</img>
+      </property>
+    </widget>
+    <widget class="image" style="default_widget" name="img_tetris_arrow_right">
+      <property>
+        <rect>[822,212,20,19]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <mode>single</mode>
+        <img>GX6102_G_ICON_RIGHT</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_tetris_num_key">
+      <property>
+        <rect>[127,524,80,30]</rect>
+        <forecolor>[#E6F8F8,#E6F8F8,#E6F8F8]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <string>[0 ~ 9]</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_tetris_num_info">
+      <property>
+        <rect>[212,524,170,30]</rect>
+        <forecolor>[#E6F8F8,#E6F8F8,#E6F8F8]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Level</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_tetris_ok_key">
+      <property>
+        <rect>[392,524,60,30]</rect>
+        <forecolor>[#E6F8F8,#E6F8F8,#E6F8F8]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <string>[OK]</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_tetris_ok_info">
+      <property>
+        <rect>[457,524,170,30]</rect>
+        <forecolor>[#E6F8F8,#E6F8F8,#E6F8F8]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Start</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_tetris_exit_key">
+      <property>
+        <rect>[642,524,80,30]</rect>
+        <forecolor>[#E6F8F8,#E6F8F8,#E6F8F8]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <string>[EXIT]</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_tetris_exit_info">
+      <property>
+        <rect>[727,524,170,30]</rect>
+        <forecolor>[#E6F8F8,#E6F8F8,#E6F8F8]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Exit</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="canvas" style="default_widget" name="canvas_main_tetris">
+      <property>
+        <rect>[157,59,420,460]</rect>
+        <backcolor>[#808080,#808080,#808080]</backcolor>
+        <record>enable</record>
+      </property>
+      <signal>
+        <create>app_tetris_main_canvas_create</create>
+      </signal>
+    </widget>
+    <widget class="canvas" style="default_widget" name="canvas_little_tetris">
+      <property>
+        <rect>[632,172,100,100]</rect>
+        <backcolor>[#808080,#808080,#808080]</backcolor>
+        <record>enable</record>
+      </property>
+      <signal>
+        <create>app_tetris_little_canvas_create</create>
+      </signal>
+    </widget>
+  </children>
+</widget>

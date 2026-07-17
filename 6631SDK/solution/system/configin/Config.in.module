@@ -1,0 +1,707 @@
+menu "Module Configuration"
+
+# Network devices and network applications configuration
+source system/configin/Config.in.network
+if (BR2_DEMOD1_DVB_T2 || BR2_DEMOD1_COMBO_T || BR2_DEMOD2_DVB_T2 || BR2_DEMOD2_COMBO_T || BR2_DEMOD3_DVB_T2 || BR2_DEMOD3_COMBO_T || BR2_DEMOD4_DVB_T2 || BR2_DEMOD4_COMBO_T)
+source system/configin/Config.in.area
+endif
+# Output configuration
+menu "Audio and Video configuration"
+
+config BR2_MOD_APP_CVBS_SCALE
+    bool "CVBS Scale Support"
+    help
+
+config BR2_MOD_APP_HDCP_MODE
+    bool "HDCP Support"
+    help
+
+config BR2_MOD_APP_PP_FULL_HD_SUPPORT
+	bool "Full HD PP Mode Support"
+	help
+
+config BR2_MOD_APP_SCART
+	bool "SCART Support"
+
+config BR2_MOD_APP_FLAC
+    bool "Flac Support"
+    help
+
+config BR2_MOD_APP_OGG
+    bool "Ogg Support"
+
+config BR2_MOD_APP_DA
+    bool "Dolby Support"
+    select BR2_SECURE_DMA_MODULE
+
+config BR2_MOD_APP_AUDIO_LANG_QAA2OST_SUPPORT
+    bool "Audio lang qaa2ost Support"
+    depends on (BR2_TUNER_TYPE != "ott")
+    help
+        Support original audio tracks, replace QAA with OST
+
+config BR2_MOD_APP_HIGH_DYNAMIC_RANGE_CONFIG
+    bool "High Dynamic Range Support"
+    depends on ((BR2_CHIP_NAME = "cygnus") && ((BR2_BOARD_NAME = "6706S5") || (BR2_BOARD_NAME = "6706H5") || (BR2_BOARD_NAME = "6706H5-combo") || (BR2_BOARD_NAME = "Cygnus-X5")) || BR2_CHIP_NAME = "canopus" || BR2_CHIP_NAME = "vega") && (!BR2_MOD_APP_CVBS_TEST)
+
+config BR2_MOD_APP_VIDEO_SHARPNESS
+	bool "Video Sharpness Support"
+    depends on !(BR2_CHIP_GX3211 || BR2_CHIP_GX6605S)
+	help
+
+config BR2_MOD_APP_VIDEO_HUE
+	bool "Video Hue Support"
+    depends on !(BR2_CHIP_GX3211 || BR2_CHIP_GX6605S)
+	help
+
+config BR2_MOD_APP_VIDEO_DEINTERLACE
+	bool "Video Deinterlace Support"
+	help
+
+
+endmenu
+
+# Applications configuration
+menu "Function configuration"
+
+if BR2_TUNER_TYPE != "ott"
+config BR2_MOD_APP_NET_SEARCH
+      bool "Net Search"
+
+config BR2_MOD_APP_FILE_SEARCH
+      bool "file search"
+      depends on BR2_MOD_APP_NET_SEARCH
+
+config BR2_MOD_APP_SERVER_SEARCH
+      bool "server search"
+      depends on BR2_MOD_APP_NET_SEARCH && (BR2_MOD_APP_NETWORK && (BR2_MOD_APP_ETH || BR2_MOD_APP_WIFI || BR2_MOD_APP_USB_ETH))
+
+choice
+    prompt "EPG UI Style"
+	default BR2_MOD_EPG_TMLIST
+
+    config BR2_MOD_EPG_TMLIST
+        bool "TimeList Style"
+
+    config BR2_MOD_EPG_LVLIST
+        bool "ListView Style"
+
+endchoice
+
+choice
+	prompt "PVR Recording Style"
+	default BR2_MOD_APP_PVR_RECORDING_LIST_STYLE
+
+    config BR2_MOD_APP_PVR_RECORDING_LIST_STYLE
+        bool "List Style"
+
+    config BR2_MOD_APP_PVR_RECORDING_POSTER_STYLE
+        bool "Poster Style"
+
+endchoice
+
+config BR2_MOD_EPG_REALTIMER_FILTER_DETAIL
+        bool "Real-time filtering EPG detail"
+        help
+            Real time filtering of detailed descriptions of EPG information can save EPG memory usage.
+
+config BR2_MOD_APP_RECALL_LIST
+	bool "Recall List Support"
+	help
+
+config BR2_MOD_APP_AUTO_STANDBY
+	bool "Auto Standby Support"
+	help
+
+config BR2_MOD_APP_MULTIFEED
+    bool "Multifeed List Support"
+    help
+        When there are multiple channels of video in a program, users can select
+
+config BR2_MOD_APP_NO_SIGNAL_AUTO_STANDBY
+	bool "No Signal Auto Standlby Support"
+	help
+        Prompt automatic standby when there is no signal
+
+config BR2_MOD_APP_RICHEPG
+	bool "Richepg Support"
+	select BR2_MOD_APP_PARENTAL_LOCK
+	select BR2_MOD_UI_MIRROR
+	select BR2_MOD_USB_RECOVER
+	select BR2_MOD_APP_USB_TEST
+	select BR2_MOD_APP_ADVANCED_PRINT
+	help
+
+config BR2_MOD_APP_TKGS
+	bool "TKGS Support"
+	help
+
+config BR2_MOD_ADVANCE_BOOK_TIME
+    string "Advance Book Time Unit(s)"
+    default "30"
+
+
+config BR2_MOD_APP_PARENTAL_LOCK
+	bool "Parental Lock Support"
+	select BR2_MOD_PSI_MODULE
+	help
+
+config BR2_MOD_FUNC_CI
+	bool "DVB-CI Support"
+
+config BR2_MOD_FUNC_RECORD_TP
+	bool "Record TP"
+
+config BR2_MOD_FUNC_INDEPEND_RECORD
+	bool "Independent Play and Record"
+    depends on (((BR2_CHIP_NAME="canopus") && (BR2_BOARD_NAME="6631CH1D") || ((BR2_CHIP_NAME="vega") && (BR2_BOARD_NAME="6631CH1D"))) && (BR2_TUNER_TYPE="dvbc"))
+
+config BR2_MOD_BOOT_AD_SUPPORT
+	bool "Boot AD Support"
+	help
+
+config BR2_MOD_BOOT_AD_USER_CONTROL_SUPPORT
+      bool "user control boot ad"
+      depends on BR2_MOD_BOOT_AD_SUPPORT
+
+config BR2_MOD_AUDIO_DESCRIPTION
+    bool "Audio Description Support"
+    help
+
+config BR2_MOD_AD_VOLUME_SET
+    bool "Audio Description Volume set"
+    depends on BR2_MOD_AUDIO_DESCRIPTION
+
+config BR2_MOD_APP_PVR_STANDBY
+	bool "PVR Standby"
+
+config BR2_MOD_APP_PVR_STANDBY_TIPS
+    bool "PVR End goto Standby Tips"
+    depends on BR2_MOD_APP_PVR_STANDBY
+    help
+        After the recording is complete, a pop-up prompts to enter standby.
+
+config BR2_MOD_NO_SIGNAL_ALERT_TIP
+    bool "No Signal Alert tip"
+    depends on BR2_THEME_classic_purple || BR2_THEME_sky_blue
+    help
+        Prompt the user to search again when there is no signal, if there is no response for a period of time, it will automatically shut down
+
+config BR2_MOD_QUICK_SWITCH
+	bool "Quick Switch Support"
+	help
+
+config BR2_MOD_SAT_LIST_MOVE_SORT
+	bool "Sat list move and sort"
+    depends on BR2_THEME_classic_dark || BR2_THEME_classic_blue
+	help
+
+config BR2_MOD_TP_LIST_MOVE_SORT
+	bool "Tp list move and sort"
+    depends on BR2_THEME_classic_dark || BR2_THEME_classic_blue
+	help
+
+config BR2_MOD_FM
+	bool "FM Support"
+    depends on BR2_CHIP_CYGNUS
+	help
+
+config BR2_MOD_FM_FREQ_NAME
+	bool "FM Freq Name Support"
+    depends on BR2_MOD_FM
+	help
+
+config BR2_MOD_APP_MERGE_DB
+	bool "Merge DB Support"
+    help
+
+config BR2_MOD_APP_FACE_DETECT
+    bool "Face Detect Support"
+    depends on ((!BR2_MOD_MINI_MEM_SUPPORT) && (BR2_CHIP_CANOPUS || BR2_CHIP_VEGA))
+    help
+        This feature allows the system to detect faces in the video stream and can be used for applications like parental control or content filtering.
+
+config BR2_MOD_APP_PVR_PREVIEW
+    bool "PVR Review Support"
+    depends on BR2_MOD_APP_PVR_RECORDING_POSTER_STYLE
+    help
+        Focus on the corresponding recording file and play the preview clip
+
+endif
+
+config BR2_MOD_APP_POWERON_CONTROL
+	bool "Power ON Control Support"
+
+config BR2_MOD_LONG_PASSWORD
+    bool "Long Password Support"
+    help
+
+config BR2_MOD_APP_GAME
+	bool "Game Support"
+	help
+
+config BR2_MOD_COMMON_VIEW_V2
+	bool "Common View V2 Support"
+	help
+
+config BR2_MOD_UI_MIRROR
+	bool "UI Mirror Support"
+	help
+
+config BR2_MOD_USB_SAFELY_REMOVE
+	bool "USB Safely Remove"
+    help
+
+config BR2_MOD_NAND_FLASH
+	bool "Nand Flash Support"
+    help
+
+choice
+	prompt "Nand Type"
+	default BR2_MOD_SPI_NAND
+    depends on BR2_MOD_NAND_FLASH
+
+config BR2_MOD_SPI_NAND
+	bool "SPI Nand"
+
+config BR2_MOD_P_NAND
+	bool "Parallel Nand"
+    depends on BR2_OS_LINUX
+
+endchoice
+
+choice
+	prompt "File System"
+	default BR2_MOD_NAND_UBIFS
+    depends on BR2_MOD_NAND_FLASH
+
+config BR2_MOD_NAND_YAFS
+	bool "Nand Yafs"
+    depends on BR2_OS_ECOS
+
+config BR2_MOD_NAND_UBIFS
+	bool "Nand Ubifs"
+    depends on BR2_OS_LINUX
+
+endchoice
+
+config BR2_MOD_MULTIMEDIA_PREVIEW
+    bool "Multimedia Preview Support"
+    help
+         Without entering the playback window, you can preview video, audio and picture files directly on the file directory list.
+
+config BR2_MOD_VOICE_CONTROL
+        bool "Voice Control Support"
+
+config BR2_MOD_APP_SMART_VOLUME
+	bool "Smart Volume Support"
+	help
+
+config BR2_MOD_SHUTDOWN_MODE_SUPPORT
+	bool "Shutdown Mode Support"
+	help
+
+config BR2_MOD_START_CHANNEL_SUPPORT
+	bool "Start Channel Support"
+	help
+
+config BR2_MOD_HDMI_CEC_MODE
+    bool "Hdmi Cec Support"
+    help
+
+config BR2_MOD_LEARN_RCU_SUPPORT
+	bool "Learn RCU support"
+    help
+        You can use this function to match the keys on a new remote control that supports the NEC protocol. After matching the keys, the new remote control can control the current set-top box.
+
+config BR2_MOD_USB_MICROPHONE
+    bool "USB Microphone Support"
+
+config BR2_MOD_PLAYBACK_SPEED_SUPPORT
+	bool "Playback Speed Support"
+    depends on BR2_CHIP_SCORPIO || BR2_CHIP_CANOPUS || BR2_CHIP_VEGA || BR2_CHIP_SCORPIOTAURUS
+endmenu
+
+if BR2_TUNER_TYPE != "ott"
+# DVB search configuration
+menu "Search configuration"
+
+config BR2_MOD_APP_UNICABLE
+	bool "Unicable Support"
+	help
+
+config BR2_MOD_APP_LNBF
+	bool "Multi-Point LNBF Support"
+	help
+
+config BR2_MOD_NO_AVPROG_SAVE
+	bool "No AV Program Save Support"
+	help
+        When searching, no audio or video programs are saved.
+
+config BR2_MOD_RESERVED_SERVICE_NOSAVE
+    bool "Not Save Reserved Service Program Support"
+    help
+        When int sdt table the service type is zero the channel not be saved.
+
+config BR2_MOD_APP_SUPERBLIND
+    bool "Super Blind Support"
+    help
+
+config BR2_MOD_APP_MULTISTREAM
+    bool "Multi-Stream Support"
+    help
+
+config BR2_MOD_APP_PDMX
+    bool "PDMX Support"
+    help
+
+config BR2_MOD_APP_SYS_SAVE_DIRECT
+	bool "System Save Direct"
+	help
+
+config BR2_MOD_PSI_MODULE
+    bool "PSI Module Support"
+    help
+
+config BR2_MOD_APP_BOUQUET
+    bool "Bouquet Support"
+    select BR2_MOD_PSI_MODULE
+    help
+
+config BR2_MOD_APP_BAT_NOTSID_GROUP
+    bool "Bouquet Mismatch Tsid"
+    depends on BR2_MOD_APP_BOUQUET
+    help
+        Only according to service_id grouping.
+
+config BR2_MOD_SDT_SUPPORT
+    bool "SDT Support"
+    select BR2_MOD_PSI_MODULE
+    help
+
+config BR2_MOD_PAT_SUPPORT
+    bool "PAT Support"
+    select BR2_MOD_PSI_MODULE
+    help
+
+config BR2_MOD_PMT_UPDATE_SUPPORT
+    bool "PMT Update Support"
+    help
+        Support updating pmt data when PMT table changes
+
+config BR2_MOD_APP_BACK_UPDATE
+    bool "Auto Update Support"
+    select BR2_MOD_PSI_MODULE
+	help
+
+config BR2_MOD_APP_ALL_VERSION_SUPPORT
+    bool "Full Version Upgrade Support"
+    depends on BR2_MOD_APP_BACK_UPDATE
+    help
+        Support full version upgrade of SDT table and pat table, but it will increase memory and CPU load.
+
+config BR2_MOD_APP_MISMATCH_TSID
+    bool "Auto Update Mismatch Tsid"
+    depends on BR2_MOD_APP_BACK_UPDATE
+    help
+        Support different transport stream id under the same TP Automatic update of ID stream program.
+
+config BR2_MOD_APP_PROPMT_AUTO_UPDATE
+    bool "Auto Update Propmt Support"
+    depends on BR2_MOD_APP_BACK_UPDATE
+    help
+         When the program is playing, the background starts to update the program information, telling the user that the program is being updated.
+
+config BR2_MOD_OTHER_AUTO_UPDATE
+      bool  "Other_Ts_Update Support"
+      depends on BR2_MOD_APP_BACK_UPDATE
+
+config BR2_MOD_LCN_AUTO_UPDATE
+      bool  "LCN Auto Update Support"
+      select BR2_MOD_APP_LCN
+      depends on BR2_MOD_APP_BACK_UPDATE
+
+config BR2_MOD_SEARCH_AUTO_SAVE
+	bool "Search Auto Save Support"
+
+config BR2_MOD_SW_FILTER_SUPPORT
+	bool "Soft Filter Support"
+    depends on BR2_CHIP_GEMINI
+
+config BR2_MOD_TUNER_AUTO_ADAPT
+    bool "Tuner Auto Adapt"
+    depends on BR2_CHIP_GEMINI || BR2_CHIP_CYGNUS
+    help
+        Tuner configuration adaptive
+
+config BR2_MOD_DVBC_TUNE_AUTO
+    bool "DVBC Tune Auto"
+    depends on BR2_DEMOD1_DVB_C || BR2_DEMOD1_COMBO_C || BR2_DEMOD2_DVB_C || BR2_DEMOD2_COMBO_C || BR2_DEMOD3_DVB_C || BR2_DEMOD3_COMBO_C || BR2_DEMOD4_DVB_C || BR2_DEMOD4_COMBO_C
+    help
+        DVBC Auto QAM and SymbolRate support
+
+config BR2_MOD_APP_LCN
+    bool "LCN Support"
+    help
+        when search program, get logic channel num
+
+config BR2_MOD_APP_SEARCH_SHOW_LCN
+    bool "SEARCH_SHOW_LCN_SUPPORT"
+    depends on BR2_MOD_APP_LCN
+    help
+        Display the logical channel number of the program during the search
+
+config BR2_MOD_APP_LCN_VISIBLE_FLAG_SUPPORT
+    bool "LCN Visible Flag Support"
+    depends on BR2_MOD_APP_LCN
+    help
+        when into nit table the visible flag = 0 ,the channel must be saved but the custome can watch only DIGIT directly the LCN Number.
+
+config BR2_MOD_APP_LCN_CONFLICT_HANDLE
+    bool "Handle LCN Conflict Support"
+    help
+        when exist same channel logic num, handle lcn conflict
+    depends on BR2_MOD_APP_LCN
+
+choice
+
+	prompt "LCN Conflict Rule"
+	depends on BR2_MOD_APP_LCN_CONFLICT_HANDLE
+	default BR2_MOD_APP_LCN_CONFLICT_HANDLE_BY_COMMON
+
+	config BR2_MOD_APP_LCN_CONFLICT_HANDLE_BY_USER
+	    bool "Handle LCN Conflict By User Select"
+	    help
+	    	Handling lcn conflict by user select
+
+	config BR2_MOD_APP_LCN_CONFLICT_HANDLE_BY_VIRTUAL_LCN
+	    bool "Handle LCN Conflict By Virtual LCN"
+	    help
+            Keep the first element in the lcn conflict list, and allocate virtual LCNs to others
+
+    config BR2_MOD_APP_LCN_CONFLICT_HANDLE_BY_THROW_AWAY
+        bool "Handle By Conflict By Throw Away"
+        help
+            The same program in the conflict list keeps the first one, and the others are deleted; non-same programs are allocated virtual LCN
+
+endchoice
+
+choice
+
+    prompt "LCN Conflict Sorting Method"
+    depends on BR2_MOD_APP_LCN_CONFLICT_HANDLE
+    default BR2_MOD_APP_LCN_SORTED_BY_SEARCH_ORDER
+
+    config BR2_MOD_APP_LCN_SORTED_BY_SEARCH_ORDER
+        bool "LCN Sorted By Search Order"
+        help
+            The elements in the lcn conflict list are sorted in order of search
+
+    config BR2_MOD_APP_LCN_SORTED_BY_RFCH_SQ_ORDER
+        bool "LCN Sorted By RFCH SQ Order"
+        help
+            The elements in the lcn conflict list are sorted in order of RF strength and quality
+
+    config BR2_MOD_APP_LCN_SORTED_BY_FRE_ORDER
+        bool "LCN Sorted By Frequency Order"
+        help
+            The elements in the lcn conflict list are sorted by their tp frequency
+
+    config BR2_MOD_APP_LCN_SORTED_BY_HD_CHANNEL
+        bool "LCN Sorted By HD Channel"
+        help
+            The elements in the lcn conflict list are sorted by HD Channel
+endchoice
+
+config BR2_MOD_APP_LCN_VALID_CHECK
+    bool "LCN Valid Check"
+    depends on BR2_MOD_APP_LCN_CONFLICT_HANDLE
+    help
+        Whether to conduct LCN legal check
+
+choice
+
+    prompt "LCN Valid Check Rule"
+    depends on BR2_MOD_APP_LCN_VALID_CHECK
+    default BR2_MOD_APP_LCN_ONID_CHECK
+
+    config BR2_MOD_APP_LCN_ONID_CHECK
+        bool "Check By Original Id"
+        help
+            Check whether LCN is valid according to original id
+
+    config BR2_MOD_APP_LCN_NID_CHECK
+        bool "Check By Network id"
+        help
+            Check whether LCN is valid according to network id
+
+endchoice
+
+config BR2_MOD_PRESET_PROG_INFO_CORRECT
+    bool "Preset Program Info Correction"
+    help
+        When the imagetool tool presets the program, some information will be wrong and need to be repaired
+    select BR2_MOD_PSI_MODULE
+
+config BR2_MOD_LNB_SHORT_DETECT
+    bool "LNB Short Circuit Detection"
+    help
+        When board support gpio lnb short circuit detection, it can detect lnb short circuit, then power off lnb
+    depends on (BR2_DEMOD1_DVB_S2 || BR2_DEMOD2_DVB_S2 || BR2_DEMOD3_DVB_S2 || BR2_DEMOD4_DVB_S2 || \
+                BR2_DEMOD1_COMBO_S || BR2_DEMOD2_COMBO_S || BR2_DEMOD3_COMBO_S || BR2_DEMOD4_COMBO_S)
+
+endmenu
+endif
+
+# V
+menu "Peripheral configuration"
+
+config BR2_MOD_PANEL_SETTING_SUPPORT
+    bool "Panel Setting Support"
+    help
+
+config BR2_MOD_STANDBY_SHOW_TIME
+    bool "Stand Show Time Support"
+    help
+
+config BR2_MOD_APP_MTP
+    bool "MTP Support"
+
+if BR2_TUNER_TYPE != "ott"
+config BR2_MOD_RF_MODULATOR
+	bool "Rf Modulator Support"
+
+choice
+	prompt "Rf Modulator"
+	depends on BR2_MOD_RF_MODULATOR
+	default BR2_MOD_FUNC_RT500
+
+    config BR2_MOD_FUNC_RT500
+        bool "RF_RT500"
+
+    config BR2_MOD_FUNC_RT534
+        bool "RF_RT534"
+
+endchoice
+endif
+
+endmenu
+
+# Subtitle and Teletext configuration
+menu "Subtitle and Teletext configuration"
+
+config BR2_MOD_APP_MEDIA_SUBTITLE
+	bool "Media Subtitle Support"
+	help
+
+config BR2_MOD_APP_OSD_SUBTITLE
+    bool "OSD Subtitle"
+    depends on BR2_MOD_APP_MEDIA_SUBTITLE
+
+config BR2_MOD_APP_OSDTRANS_BG
+    bool "OSD Trans Background"
+    depends on BR2_MOD_APP_OSD_SUBTITLE
+
+config BR2_MOD_MEDIA_SUB_DELAY
+    string "Delay Time(x200ms)"
+    default "10"
+    depends on BR2_MOD_APP_MEDIA_SUBTITLE
+
+if BR2_TUNER_TYPE != "ott"
+choice
+    prompt "TTX Modulator"
+	default BR2_MOD_8BIT_COLOR_TTX
+
+config BR2_MOD_8BIT_COLOR_TTX
+    bool "8-bit colorTTX display"
+    help
+        It is suitable for the scheme with tight memory and flash
+
+config BR2_MOD_16BIT_COLOR_TTX
+    bool "16-bit colorTTX display"
+    help
+        When the memory and flash space are enough, this option can be turned on
+endchoice
+
+config BR2_MOD_TTX_PRE_PROCESS
+	bool "Teletext pre-process Support"
+    depends on BR2_MOD_8BIT_COLOR_TTX
+	help
+
+choice
+    prompt "Closed Caption"
+    default BR2_MOD_CC_OFF
+
+config BR2_MOD_CC_OFF
+    bool "Off"
+
+config BR2_MOD_ARIBCC
+	bool "Arib-CC"
+
+config BR2_MOD_ATSCCC
+    bool "Atsc-CC"
+
+endchoice
+endif
+
+endmenu
+
+# System upgrade configuration
+menu "Upgrade configuration"
+
+config BR2_MOD_APP_OTA
+	bool  "OTA Function"
+    depends on (BR2_TUNER_TYPE != "ott")
+
+config BR2_MOD_APP_OTA_MENU
+	bool "Menu OTA Support"
+	depends on BR2_MOD_APP_OTA
+	help
+	  OTA = Over The Air, refers to upgrade stb system software
+	  through DVB ts stream.
+
+config BR2_MOD_APP_NO_OEM_TABLE
+     bool "NO OEM Partitions"
+     depends on BR2_MOD_APP_OTA_MENU
+
+config BR2_MOD_FUNC_OTA_LOADER
+	bool "Loader OTA Support"
+	depends on BR2_MOD_APP_OTA
+
+config BR2_MOD_OTA_BACKEND_POLL
+    bool "OTA back-end trigger"
+    depends on BR2_MOD_APP_OTA
+
+config BR2_MOD_USB_RECOVER
+	bool "Usb Recovery Support"
+
+config BR2_MOD_APP_MAIN_MENU_OBJ
+    bool "Main menu obj Support"
+    help
+
+config BR2_MOD_APP_SKIN
+    bool "SKIN"
+	help
+
+config BR2_MOD_APP_SKUSB
+    bool "SKIN USB"
+    depends on BR2_MOD_APP_SKIN
+    default y
+	help
+
+endmenu
+
+# optimization options
+menu "System optimization options"
+
+config BR2_MENCENT_FREEE_SPACE
+    bool "Free Space"
+    help
+
+config BR2_MOD_MINI_MEM_SUPPORT
+    bool "Mini memory Support"
+
+endmenu
+
+endmenu

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_netvideo_play_number">
+  <property>
+    <rect>[80,48,119,64]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    <format>popup</format>
+  </property>
+  <signal>
+    <create>app_netvideo_play_number_create</create>
+    <destroy>app_netvideo_play_number_destroy</destroy>
+    <keypress>app_netvideo_play_number_keypress</keypress>
+  </signal>
+  <children>
+    <widget class="image" style="default" name="img_netvideo_play_number">
+      <property>
+	<rect>[0,0,96,60]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+	  <mode>multiple</mode>
+	  <img></img>
+	  <lt_img>s_win1_l_u2</lt_img>
+	  <rt_img>s_win1_r_u2</rt_img>
+	  <lb_img>s_win_l_b</lb_img>
+	  <rb_img>s_win_r_b</rb_img>
+	  <l_img>s_win_l_m</l_img>
+	  <r_img>s_win_r_m</r_img>
+	  <t_img>s_win1_u_m2</t_img>
+	  <b_img>s_win_m_b</b_img>
+	</property>
+    </widget>
+    <widget class="text" style="default" name="txt_netvideo_play_number">
+      <property>
+	<rect>[8,16,80,30]</rect>
+        <forecolor>[main_text_color,main_text_color,main_text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+  </children>
+</widget>

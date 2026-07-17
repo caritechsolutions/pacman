@@ -1,0 +1,36 @@
+//Board Mark: GX6622S2_GX1133_Double_Tuner_Demo_V1.0  Louhq_20190403
+//Frontend Info: Taurus(AV2018) GX1133(AV2018)
+
+frontend1_demod_i2c_id = 0
+frontend1_demod_i2c_chip_addr = 0xA4
+frontend1_demod_attach = Taurus_DVBS_ATTACH
+frontend1_tuner_i2c_id = 0
+frontend1_iq = 1
+frontend1_lnb_power_gpio = V_GPIO_LNB_A
+frontend1_lnb_invert = 0
+frontend1_polar_invert = 1
+frontend1_demux_ts_src = DEMUX_TS1
+
+frontend2_demod_i2c_id = 2
+frontend2_demod_i2c_chip_addr = 0xB4
+frontend2_demod_attach = GX1133_ATTACH
+frontend2_tuner_i2c_id = 0xFF
+frontend2_ts_mode = SERIAL
+frontend2_iq = 1
+frontend2_lnb_power_gpio = V_GPIO_LNB_B
+frontend2_lnb_invert = 0
+frontend2_polar_invert = 1
+frontend2_ts_pin_config_00 = CLK
+frontend2_ts_pin_config_01 = SYNC
+frontend2_ts_pin_config_02 = DATA0
+frontend2_ts_pin_config_03 = ERRS
+frontend2_ts_pin_config_04 = ERRS
+frontend2_ts_pin_config_05 = ERRS
+frontend2_ts_pin_config_06 = ERRS
+frontend2_ts_pin_config_07 = ERRS
+frontend2_ts_pin_config_08 = ERRS
+frontend2_ts_pin_config_09 = ERRS
+frontend2_ts_pin_config_10 = ERRS
+frontend2_ts_pin_config_11 = ERRS
+frontend2_demux_ts_src = DEMUX_TS2
+

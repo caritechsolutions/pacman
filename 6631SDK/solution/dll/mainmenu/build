@@ -1,0 +1,83 @@
+#!/bin/bash
+
+GXAPP_SRC_PATH=$(cd `dirname $0`; pwd)
+
+# set_env $ARCH $OS
+function set_env() {
+    ARCH=$1
+    OS=$2
+    CROSS_PATH=$ARCH-$OS
+
+    if [ -z $GXLIB_PATH ]; then
+        GXLIB_PATH=$GXAPP_SRC_PATH/../../../library/goxceed/$CROSS_PATH
+    fi
+    if [ -z $GXSRC_PATH ]; then
+        GXSRC_PATH=$GXAPP_SRC_PATH/../..
+    fi
+
+    export GXLIB_PATH GXSRC_PATH ARCH OS CROSS_PATH
+}
+
+function set_type() {
+    THEME_GRID=$(cat ${GXSRC_PATH}/app/include/app_config.h| grep "THEME_GRID_PURPLE" | grep "1" | wc -l)
+	if [ $THEME_GRID -eq 1 ]; then
+        THEME_USER_TYPE="grid"
+    else
+        THEME_USER_TYPE="classic"
+    fi;
+
+    export THEME_USER_TYPE
+}
+
+
+if [ $# -le 1 ]; then
+        echo "./build <csky|arm> <ecos|linux> [clean|install]"
+        echo "        ./build csky ecos"
+        echo "        ./build csky linux"
+        echo "        ./build csky ecos clean"
+        echo "        ./build csky linux clean"
+        echo "        ./build arm ecos"
+        echo "        ./build arm linux"
+        echo "        ./build arm ecos clean"
+        echo "        ./build arm linux clean"
+    exit 1
+fi
+
+CHIP=$1
+case "$CHIP" in
+	csky)
+		ARCH=csky
+		;;
+	arm)
+		ARCH=arm
+		;;
+	*)
+		echo "EORROR ARCH: $CHIP"
+		exit 1
+		;;
+esac
+
+OS=$2
+case $OS in
+	ecos)
+		;;
+	linux)
+		;;
+	*)
+		echo "EORROR OS: $OS"
+		exit 1
+		;;
+esac
+
+set_env $ARCH $OS
+set_type
+
+# build
+cd $GXAPP_SRC_PATH
+if [ "$3" = "clean" ]; then
+	make -f makefile.gxdll clean
+elif [ "$3" = "install" ]; then
+	make -f makefile.gxdll install
+else
+	make -f makefile.gxdll
+fi

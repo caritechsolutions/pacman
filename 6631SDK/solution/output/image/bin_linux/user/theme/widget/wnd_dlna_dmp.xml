@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_dlna_dmp">
+    <property>
+        <rect>[0,0,1280,720]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+        <back_ground>bg</back_ground>
+    </property>
+    <signal>
+        <create>app_dlna_dmp_create</create>
+        <destroy>app_dlna_dmp_destroy</destroy>
+        <keypress>app_dlna_dmp_keypress</keypress>
+        <lost_focus>app_dlna_dmp_lost_focus</lost_focus>
+        <got_focus>app_dlna_dmp_got_focus</got_focus>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_dlna_play_bg_top">
+            <property>
+                <rect>[0,0,1280,100]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_dlan_play_bg_bottom">
+            <property>
+                <rect>[0,620,1280,100]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+            <widget class="image" style="default" name="img_dlna_play_line_top">
+            <property>
+                <rect>[0,95,1280,5]</rect>
+                <forecolor>[line_bg_color,line_bg_color,line_bg_color]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_dlna_play_line_bottom">
+            <property>
+                <rect>[0,620,1280,5]</rect>
+                <forecolor>[line_bg_color,line_bg_color,line_bg_color]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_line_split">
+            <property>
+                <rect>[420,100,5,520]</rect>
+                <forecolor>[line_bg_color,line_bg_color,line_bg_color]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_dlna_dmp_title">
+            <property>
+                <rect>[190,32,700,60]</rect>
+                <state>show</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_main</font>
+                <alignment>left|bottom</alignment>
+                <string>DLNA Player</string>
+                <format>static</format>
+            </property>
+            </widget>
+            <widget class="image" style="default" name="img_dlna_dmp_title">
+            <property>
+                <rect>[60,32,140,60]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>IPTV</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_dlna_dmp_path1">
+          <property>
+              <rect>[135,652,49,37]</rect>
+              <forecolor>[black,black,black]</forecolor>
+              <backcolor>[#020206,#020206,#020206]</backcolor>
+            <mode>single</mode>
+            <img>MP_ICON_LOGO</img>
+          </property>
+        </widget>
+        <widget class="text" style="default" name="text_dlna_dmp_path1">
+          <property>
+            <rect>[200,652,800,40]</rect>
+            <forecolor>[win_fore_color,win_fore_color,osd_trans]</forecolor>
+            <backcolor>[#020206,#020206,#020206]</backcolor>
+            <font>font_22</font>
+            <alignment>left|vcentre</alignment>
+            <string></string>
+            <time>30</time>
+            <format>fix_r2l</format>
+          </property>
+        </widget>
+        <widget class="text" style="default" name="text_dlna_dmp_listview_index_info">
+          <property>
+            <rect>[1120,652,150,40]</rect>
+            <forecolor>[text_color,text_color,text_color]</forecolor>
+            <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+            <font>font_22</font>
+            <alignment>left|vcentre</alignment>
+            <string></string>
+            <time>30</time>
+            <format>fix_r2l</format>
+          </property>
+        </widget>
+        <widget class="listview" style="default" name="listview_dlna_dmp_filter">
+            <property>
+                <rect>[50,135,335,456]</rect>
+                <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+                <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+                <roll_time>100</roll_time>
+                <format>enable_roll</format>
+                <focus_img>feeds_itembg</focus_img>
+                <item_active_color>#B5DE29</item_active_color>
+                <i18n>false</i18n>
+                <item_rect>[0,0,335,52]</item_rect>
+                <item_fore_color>[text_color,text_focus_color,text_color]</item_fore_color>
+                <item_back_color>[net_bg_color,net_bg_color,net_bg_color]</item_back_color>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>listview_dlna_dmp_filter_keypress</keypress>
+                <get_total>listview_dlna_dmp_filter_get_count</get_total>
+                <get_data>listview_dlna_dmp_filter_get_data</get_data>
+                <change>listview_dlna_dmp_filter_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="listview_dlna_dmp_filter_heads">
+                    <property>
+                        <rect>[0,0,325,0]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <colum_number>2</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="listview_dlna_dmp_filter_head_text0">
+                            <property>
+                                <rect>[5,0,70,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string></string>
+                                <alignment>left|vcentre</alignment>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="listview_dlna_dmp_filter_head_text1">
+                            <property>
+                                <rect>[80,0,245,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string></string>
+                                <alignment>left|vcentre</alignment>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_manage_feeds0"/>
+                <widget class="listitem" style="default" name="item_plugin_manage_feeds1"/>
+                <widget class="listitem" style="default" name="item_plugin_manage_feeds2"/>
+                <widget class="listitem" style="default" name="item_plugin_manage_feeds3"/>
+            </children>
+        </widget>
+        <widget class="listview" style="default" name="listview_dlna_dmp">
+            <property>
+            <rect>[438,138,706,442]</rect>
+            <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+            <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+            <roll_time>100</roll_time>
+            <focus_img>feeds_itembg</focus_img>
+            <item_active_color>#B5DE29</item_active_color>
+            <i18n>false</i18n>
+            <item_rect>[0,0,690,52]</item_rect>
+            <item_fore_color>[text_color,text_focus_color,text_color]</item_fore_color>
+            <item_back_color>[net_bg_color,net_bg_color,net_bg_color]</item_back_color>
+            <alignment>hcentre|vcentre</alignment>
+          </property>
+          <signal>
+            <keypress>listview_dlna_dmp_keypress</keypress>
+            <get_total>listview_dlna_dmp_get_count</get_total>
+            <get_data>listview_dlna_dmp_get_data</get_data>
+            <change>listview_dlna_dmp_change</change>
+          </signal>
+          <children>
+            <widget class="header" style="default" name="listview_dlna_dmp_header">
+              <property>
+                <rect>[0,0,690,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <colum_number>5</colum_number>
+              </property>
+              <children>
+                <widget class="text" style="default" name="listview_dlna_dmp_header_text0">
+                  <property>
+                    <rect>[70,0,30,30]</rect>
+                    <forecolor>[text_color,text_color,text_color]</forecolor>
+                    <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    <alignment>right|vcentre</alignment>
+                    <string></string>
+                    <format>static</format>
+                  </property>
+                </widget>
+                <widget class="text" style="default" name="listview_dlna_dmp_header_text1">
+                  <property>
+                    <rect>[110,0,30,30]</rect>
+                    <forecolor>[text_color,text_color,text_color]</forecolor>
+                    <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    <alignment>right|vcentre</alignment>
+                    <string></string>
+                    <format>static</format>
+                  </property>
+                </widget>
+                <widget class="text" style="default" name="listview_dlna_dmp_header_text2">
+                  <property>
+                    <rect>[150,0,440,30]</rect>
+                    <forecolor>[text_color,text_color,text_color]</forecolor>
+                    <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    <alignment>left|vcentre</alignment>
+                    <string></string>
+                    <format>static</format>
+                  </property>
+                </widget>
+                <widget class="text" style="default" name="listview_dlna_dmp_header_text3">
+                  <property>
+                    <rect>[600,0,90,30]</rect>
+                    <forecolor>[text_color,text_color,text_color]</forecolor>
+                    <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    <alignment>right|vcentre</alignment>
+                    <string></string>
+                    <format>static</format>
+                  </property>
+              </widget>
+              </children>
+            </widget>
+            <widget class="scrollbar" style="default" name="listview_dlna_dmp_scroll">
+              <property>
+                <rect>[477,0,0,442]</rect>
+                <forecolor>[window_bg_color,window_bg_color,window_bg_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <back_img>s_roll_m</back_img>
+                <arrow_up>s_roll_t</arrow_up>
+                <arrow_down>s_roll_d</arrow_down>
+                <fore_img>s_roll_button</fore_img>
+                <format>scroll_hide</format>
+              </property>
+            </widget>
+            <widget class="listitem" style="default" name="listview_dlna_dmp_header_item0"/>
+            <widget class="listitem" style="default" name="listview_dlna_dmp_header_item1"/>
+            <widget class="listitem" style="default" name="listview_dlna_dmp_header_item2"/>
+            <widget class="listitem" style="default" name="listview_dlna_dmp_header_item3"/>
+            <widget class="listitem" style="default" name="listview_dlna_dmp_header_item4"/>
+            <widget class="listitem" style="default" name="listview_dlna_dmp_header_item5"/>
+            <widget class="listitem" style="default" name="listview_dlna_dmp_header_item6"/>
+            <widget class="listitem" style="default" name="listview_dlna_dmp_header_item7"/>
+          </children>
+      </widget>
+        <widget class="file_image" style="default" name="img_dlna_dmp_gif">
+            <property>
+                <rect>[624,40,48,48]</rect>
+                <state>hide</state>
+                <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+    </children>
+</widget>

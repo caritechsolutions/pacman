@@ -1,0 +1,46 @@
+//Board Mark: GX6631SHNF_DVB-S2_DUAL_GX1802_RDA5815M_V1.0 2024-03-15
+//Frontend Info: Canopus(RDA5815M) Pavo131(RDA5815M)
+
+frontend1_demod_i2c_id = 0
+frontend1_demod_i2c_chip_addr = 0xA4
+frontend1_demod_attach = Canopus_DVBS_ATTACH
+frontend1_tuner_i2c_chip_addr = 0x18
+frontend1_tuner_i2c_id = 1
+frontend1_iq = 0
+frontend1_tuner_clock_out = 0
+frontend1_tuner_loop_out = 1
+frontend1_lnb_power_gpio = V_GPIO_LNB_A
+frontend1_lnb_invert = 0
+frontend1_polar_invert = 1
+frontend1_tuner_connection = FE_SINGLE_END //356661 for rda5815m
+frontend1_demux_ts_src = DEMUX_TS1
+
+frontend2_demod_i2c_id = 0
+frontend2_demod_i2c_chip_addr = 0x56
+frontend2_demod_attach = Pavo131_DVBS_ATTACH
+frontend2_tuner_i2c_chip_addr = 0x1C
+frontend2_tuner_i2c_id = 0
+frontend2_iq = 0
+//frontend2_lnb_power_gpio = V_GPIO_LNB_B
+frontend2_lnb_invert = 0
+frontend2_polar_invert = 0
+frontend2_tuner_connection = FE_SINGLE_END //356661 for rda5815m
+frontend2_demux_ts_src = DEMUX_TS2
+frontend2_demod_crystal = 24
+frontend2_ts_mode = SERIAL
+frontend2_ts_pin_config_00 = SYNC 
+frontend2_ts_pin_config_01 = DATA0
+frontend2_ts_pin_config_02 = ERRS
+frontend2_ts_pin_config_03 = ERRS
+frontend2_ts_pin_config_04 = ERRS
+frontend2_ts_pin_config_05 = ERRS
+frontend2_ts_pin_config_06 = ERRS
+frontend2_ts_pin_config_07 = ERRS
+frontend2_ts_pin_config_08 = DATA1
+frontend2_ts_pin_config_09 = ERRS
+frontend2_ts_pin_config_10 = CLK
+frontend2_ts_pin_config_11 = ERRS
+frontend2_agc_gpio = 20 //GX1802对应的GPIO，非芯片GPIO
+//frontend2_hv_sel_gpio = 2
+//frontend2_diseqc_out_gpio = 3
+//frontend2_diseqc_in_gpio = 4

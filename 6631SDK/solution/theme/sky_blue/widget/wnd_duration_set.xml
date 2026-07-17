@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget style="default" name="wnd_duration_set" class="window">
+    <property>
+<rect>[320,256,400,80]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_duration_set_create</create>
+        <destroy>app_duration_set_destroy</destroy>
+        <keypress>app_duration_set_keypress</keypress>
+    </signal>
+    <children>
+        <widget style="default" name="img_duration_set_bg" class="image">
+            <property>
+				<rect>[16,24,366,30]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+           </property>
+        </widget>
+        <widget style="default" name="box_duration_set" class="box">
+            <property>
+				<rect>[16,24,366,30]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <format>vertical</format>
+            </property>
+            <children>
+                <widget style="default" name="boxitem_duration_set" class="boxitem">
+                    <property>
+						<rect>[0,0,366,30]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <unfocus_image>s_bar_choice_blue4</unfocus_image>
+                        <focus_image>s_bar_choice_blue4</focus_image>
+                        <disable_image>s_bar_choice_blue4</disable_image>
+                    </property>
+                    <children>
+                        <widget style="default" name="edit_duration_set" class="edit">
+                            <property>
+								<rect>[183,0,183,30]</rect>
+				<mirror>disable</mirror>
+                                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                                <backcolor>[dur_edit_bg,dur_edit_bg,dur_edit_bg]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <string>02:00</string>
+                                <maxlen>5</maxlen>
+                                <format>edit_time</format>
+                            </property>
+                            <signal>
+                                <reach_end>app_edit_duration_set_reach_end</reach_end>
+                            </signal>
+                        </widget>
+                        <widget style="default" name="text_duration_set" class="text">
+                            <property>
+<rect>[0,0,183,30]</rect>
+                                <forecolor>[text_tag_color,text_tag_color,text_tag_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string>Duration (hh:mm)</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+    </children>
+</widget>

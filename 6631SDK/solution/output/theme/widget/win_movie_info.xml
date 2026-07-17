@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="win_movie_info">
+  <property>
+    <rect>[340,150,600,340]</rect>
+    <forecolor>[win_focus_color,win_focus_color,osd_trans]</forecolor>
+    <backcolor>[win_back_color,win_back_color,win_back_color]</backcolor>
+  </property>
+  <signal>
+    <create>movie_info_init</create>
+    <destroy>movie_info_destroy</destroy>
+    <service>movie_info_service</service>
+    <keypress>movie_info_keypress</keypress>
+  </signal>
+  <children>
+    <widget class="image" style="default" name="music_info_textback">
+      <property>
+        <rect>[0,0,600,340]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,zoom_foreground]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>MP_WIN4_L_U</lt_img>
+        <rt_img>MP_WIN4_R_U</rt_img>
+        <lb_img>MP_WIN4_L_B</lb_img>
+        <rb_img>MP_WIN4_R_B</rb_img>
+        <l_img>MP_WIN4_L_M</l_img>
+        <r_img>MP_WIN4_R_M</r_img>
+        <t_img>MP_WIN4_U_M</t_img>
+        <b_img>MP_WIN4_B_M</b_img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="movie_info_text0">
+      <property>
+        <rect>[36,27,180,40]</rect>
+        <forecolor>[cmb_popup_focus_color,cmb_popup_focus_color,#addd28]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,zoom_foreground]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>File name:</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="movie_info_text1">
+      <property>
+        <rect>[36,66,180,40]</rect>
+        <forecolor>[cmb_popup_focus_color,cmb_popup_focus_color,osd_trans]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,zoom_foreground]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>File Size:</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="movie_info_text2">
+      <property>
+        <rect>[36,105,180,40]</rect>
+        <forecolor>[cmb_popup_focus_color,cmb_popup_focus_color,osd_trans]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,zoom_foreground]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Resolution:</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="movie_info_text3">
+      <property>
+        <rect>[36,144,180,40]</rect>
+        <forecolor>[cmb_popup_focus_color,cmb_popup_focus_color,osd_trans]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,win_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Code format:</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="movie_info_text4">
+      <property>
+        <rect>[36,183,180,40]</rect>
+        <forecolor>[cmb_popup_focus_color,cmb_popup_focus_color,osd_trans]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,win_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Bit rate:</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="movie_info_text5">
+      <property>
+        <rect>[36,222,180,40]</rect>
+        <forecolor>[cmb_popup_focus_color,cmb_popup_focus_color,osd_trans]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,win_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Frame rate:</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="movie_info_text_info0">
+      <property>
+        <rect>[219,27,350,40]</rect>
+        <forecolor>[win_fore_color,win_fore_color,#addd28]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,osd_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="movie_info_text_info1">
+      <property>
+        <rect>[219,66,350,40]</rect>
+        <forecolor>[win_fore_color,win_fore_color,osd_trans]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,default_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="movie_info_text_info2">
+      <property>
+        <rect>[219,105,350,40]</rect>
+        <forecolor>[win_fore_color,win_fore_color,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,default_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="movie_info_text_info3">
+      <property>
+        <rect>[219,144,350,40]</rect>
+        <forecolor>[win_fore_color,win_fore_color,osd_trans]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,default_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="movie_info_text_info4">
+      <property>
+        <rect>[219,183,350,40]</rect>
+        <forecolor>[win_fore_color,win_fore_color,osd_trans]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,default_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="movie_info_text_info5">
+      <property>
+        <rect>[219,222,350,40]</rect>
+        <forecolor>[win_fore_color,win_fore_color,osd_trans]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,default_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="movie_info_button_ok">
+      <property>
+        <rect>[255,261,91,32]</rect>
+        <forecolor>[win_fore_color,cmb_popup_focus_color,osd_trans]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+        <string>OK</string>
+        <focus_img>MP_BUTTON_OK</focus_img>
+        <unfocus_img>MP_BUTTON_OK</unfocus_img>
+      </property>
+    </widget>
+  </children>
+</widget>

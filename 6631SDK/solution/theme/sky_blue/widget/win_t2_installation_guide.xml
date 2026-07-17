@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="win_t2_installation_guide">
+    <property>
+        <rect>[288,87,448,390]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_installation_guide_create</create>
+        <destroy>app_installation_guide_destroy</destroy>
+        <service>app_installation_guide_server</service>
+        <keypress>app_installation_guide_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_installation_guide_bak">
+            <property>
+                <rect>[0,0,448,390]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_installation_guide_title">
+            <property>
+                <rect>[5,5,438,45]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win3_l_t</lt_img>
+                <rt_img>s_win3_r_t</rt_img>
+                <lb_img>s_win3_l_b</lb_img>
+                <rb_img>s_win3_r_b</rb_img>
+                <l_img>s_win3_l_m</l_img>
+                <r_img>s_win3_r_m</r_img>
+                <t_img>s_win3_m_t</t_img>
+                <b_img>s_win3_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_installation_guide_tipsbak">
+            <property>
+                <rect>[4,343,438,42]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win3_l_t</lt_img>
+                <rt_img>s_win3_r_t</rt_img>
+                <lb_img>s_win3_l_b</lb_img>
+                <rb_img>s_win3_r_b</rb_img>
+                <l_img>s_win3_l_m</l_img>
+                <r_img>s_win3_r_m</r_img>
+                <t_img>s_win3_m_t</t_img>
+                <b_img>s_win3_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_installation_guide_return">
+            <property>
+                <rect>[89,352,120,25]</rect>
+                <forecolor>[#CEE8FF,#CEE8FF,#CEE8FF]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Exit</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_installation_guide_udrl">
+            <property>
+                <rect>[389,348,34,33]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_move</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_installation_guide_title">
+            <property>
+                <rect>[24,7,400,40]</rect>
+                <forecolor>[#CEE8FF,#CEE8FF,#CEE8FF]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_main</font>
+                <string>Installation Guide</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_installation_guide_timeout">
+            <property>
+                <rect>[4,52,440,25]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="list_installation_guide">
+            <property>
+                <rect>[4,79,440,259]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <roll_time>0</roll_time>
+                <select>1</select>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <i18n>true</i18n>
+                <item_rect>[0,0,440,37]</item_rect>
+                <item_fore_color>[#f4f4f4,#f4f4f4,#f4f4f4]</item_fore_color>
+                <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>list_installation_guide_keypress</keypress>
+                <get_total>list_installation_guide_get_total</get_total>
+                <get_data>list_installation_guide_get_data</get_data>
+                <change>list_installation_guide_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="win_installation_guide_header9">
+                    <property>
+                        <rect>[0,0,328,0]</rect>
+                        <state>hide</state>
+                        <forecolor>[black,black,black]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <colum_number>4</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="list_installation_guide_name">
+                            <property>
+                                <rect>[0,0,232,0]</rect>
+                                <forecolor>[black,black,black]</forecolor>
+                                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="list_installation_guide_lr">
+                            <property>
+                                <rect>[232,0,20,0]</rect>
+                                <forecolor>[black,black,black]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <mirror>disable</mirror>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="list_installation_guide_context">
+                            <property>
+                                <rect>[252,0,160,0]</rect>
+                                <forecolor>[black,black,black]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="list_installation_guide_rr">
+                            <property>
+                                <rect>[412,0,20,0]</rect>
+                                <forecolor>[black,black,black]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>right|vcentre</alignment>
+                                <string></string>
+                                <mirror>disable</mirror>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="win_installation_guide_scrollbar11">
+                    <property>
+                        <rect>[324,40,0,200]</rect>
+                        <forecolor>[black,black,black]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <format>scroll_hide</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_installation_guide_item0"/>
+                <widget class="listitem" style="default" name="listitem_installation_guide_item1"/>
+                <widget class="listitem" style="default" name="listitem_installation_guide_item2"/>
+                <widget class="listitem" style="default" name="listitem_installation_guide_item3"/>
+                <widget class="listitem" style="default" name="listitem_installation_guide_item4"/>
+		<widget class="listitem" style="default" name="listitem_installation_guide_item5"/>
+		<widget class="listitem" style="default" name="listitem_installation_guide_item6"/>
+            </children>
+        </widget>
+        <widget class="text" style="default" name="txt_t2_installation_guide_ok">
+            <property>
+                <rect>[266,352,120,25]</rect>
+                <state>hide</state>
+                <forecolor>[#CEE8FF,#CEE8FF,#CEE8FF]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>OK</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_t2_installation_guide_exit">
+            <property>
+                <rect>[40,352,46,25]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_exit</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_t2_installation_guide_ok">
+            <property>
+                <rect>[217,352,46,25]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_ok</img>
+            </property>
+        </widget>
+    </children>
+</widget>

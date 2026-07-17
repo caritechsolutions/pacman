@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_upgrade_process">
+    <property>
+        <rect>[200,396,560,80]</rect>
+        <forecolor>[black,black,black]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <format>popup</format>
+    </property>
+    <signal>
+        <create>app_upgrade_progcess_create</create>
+        <destroy>app_upgrade_progcess_destroy</destroy>
+        <keypress>app_upgrade_progcess_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="progbar" style="default" name="progbar_upgrade_process">
+            <property>
+                <rect>[112,6,348,16]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <back_image>s_progress_l1</back_image>
+                <back_image_l>s_progress_l1</back_image_l>
+                <back_image_m>s_progress_m1</back_image_m>
+                <back_image_r>s_progress_r1</back_image_r>
+                <fore_image>s_progress_l2</fore_image>
+                <fore_image_l>s_progress_l2</fore_image_l>
+                <fore_image_m>s_progress_m2</fore_image_m>
+                <fore_image_r>s_progress_r2</fore_image_r>
+                <format>water</format>
+                <text_format>hide</text_format>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_upgrade_process_info1">
+            <property>
+                <rect>[76,27,416,25]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_26_ram</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_upgrade_process_info2">
+            <property>
+                <rect>[76,53,416,25]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_26_ram</font>
+                <alignment>left|top</alignment>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_upgrade_process_process">
+            <property>
+                <rect>[9,1,96,25]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <string>Progress</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_upgrade_process_precent">
+            <property>
+                <rect>[469,1,80,25]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

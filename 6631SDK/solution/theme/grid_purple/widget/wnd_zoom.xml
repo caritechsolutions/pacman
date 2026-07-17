@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+  <widget class="window" style="default" name="wnd_zoom">
+    <property>
+      <rect>[0,0,1024,576]</rect>
+      <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+      <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+      <create>app_zoom_create</create>
+      <destroy>app_zoom_destroy</destroy>
+      <keypress>app_zoom_keypress</keypress>
+    </signal>
+    <children>
+    <widget class="image" style="default" name="wnd_zoom_pop_img_back">
+      <property>
+        <rect>[680,298,280,260]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>s_win_l_t</lt_img>
+        <rt_img>s_win_r_t</rt_img>
+        <lb_img>s_win_l_b</lb_img>
+        <rb_img>s_win_r_b</rb_img>
+        <l_img>s_win_l_m</l_img>
+        <r_img>s_win_r_m</r_img>
+        <t_img>s_win_m_t</t_img>
+        <b_img>s_win_m_b</b_img>
+      </property>
+    </widget>
+      <widget class="image" style="default" name="img_zoom_bak">
+        <property>
+          <rect>[716,366,208,158]</rect>
+          <forecolor>[zoom_foreground,zoom_foreground,zoom_foreground]</forecolor>
+          <backcolor>[zoom_foreground,zoom_foreground,zoom_foreground]</backcolor>
+          <mode>multiple</mode>
+          <opacity>100</opacity>
+          <img/>
+          <lt_img>Icomchoice1</lt_img>
+          <rt_img>Icomchoice1</rt_img>
+          <lb_img>Icomchoice1</lb_img>
+          <rb_img>Icomchoice1</rb_img>
+          <l_img>Icomchoice1</l_img>
+          <r_img>Icomchoice1</r_img>
+          <t_img>Icomchoice1</t_img>
+          <b_img>Icomchoice1</b_img>
+        </property>
+      </widget>
+	  <widget class="canvas" style="default_widget" name="canvas_zoom">
+		<property>
+			<rect>[720,370,200,150]</rect>
+        <backcolor>[zoom_background,zoom_background,zoom_background]</backcolor>
+		</property>
+		<signal>
+		  <create>app_zoom_canvas_create</create>
+		  <show>app_zoom_canvas_show</show>
+		</signal>
+	  </widget>
+    <widget class="image" style="default" name="wnd_zoom_image_up">
+      <property>
+                <rect>[809,348,20,10]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+                <img>s_arrow_u</img>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="wnd_zoom_image_down">
+      <property>
+                <rect>[809,531,20,10]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+                <img>s_arrow_d</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="wnd_zoom_text_title">
+      <property>
+        <rect>[680,298,280,38]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+        <string>ZOOM</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="wnd_zoom_image_left">
+      <property>
+                <rect>[696,435,10,20]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+                <img>s_arrow_l</img>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="wnd_zoom_image_right">
+      <property>
+                <rect>[933,435,10,20]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+                <img>s_arrow_r</img>
+      </property>
+    </widget>
+    </children>
+  </widget>

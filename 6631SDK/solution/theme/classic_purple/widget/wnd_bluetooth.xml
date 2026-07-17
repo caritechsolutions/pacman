@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_bluetooth">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+    </property>
+    <signal>
+        <create>app_bluetooth_create</create>
+        <destroy>app_bluetooth_destroy</destroy>
+        <keypress>app_bluetooth_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_bluetooth_line1">
+            <property>
+                <rect>[120,96,784,2]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_bluetooth_line2">
+            <property>
+                <rect>[120,138,784,2]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+	<widget class="image" style="default" name="img_bluetooth_bottom_tips">
+            <property>
+                <rect>[0,510,1024,66]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_b2</lt_img>
+                <rt_img>s_win2_r_b2</rt_img>
+                <t_img>s_win2_m_b2</t_img>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_bluetooth_gif">
+            <property>
+                <rect>[650,102,32,32]</rect>
+                <state>hide</state>
+                <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_bluetooth_title">
+            <property>
+                <rect>[112,45,800,44]</rect>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_main</font>
+                <string>Bluetooth Setting</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_bluetooth_dev">
+            <property>
+                <rect>[400,98,224,40]</rect>
+                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_bluetooth_l">
+            <property>
+                <rect>[385,108,10,20]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_arrow_l</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_bluetooth_r">
+            <property>
+                <rect>[629,108,10,20]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_arrow_r</img>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="list_bluetooth">
+            <property>
+                <rect>[130,150,762,306]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <roll_time>0</roll_time>
+                <interval>2</interval>
+                <select>0</select>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <item_active_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</item_active_image>
+                <i18n>false</i18n>
+                <item_rect>[0,0,750,36]</item_rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+                <alignment>left|vcentre</alignment>
+            </property>
+            <signal>
+                <create>app_bluetooth_list_create</create>
+                <keypress>app_bluetooth_list_keypress</keypress>
+                <get_total>app_bluetooth_list_get_total</get_total>
+                <get_data>app_bluetooth_list_get_data</get_data>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="listheader_bluetooth">
+                    <property>
+                        <rect>[0,0,750,0]</rect>
+                        <forecolor>[text_color,text_color,text_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <colum_number>4</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="headertext_bluetooth_1">
+                            <property>
+                                <rect>[10,0,45,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_bluetooth_2">
+                            <property>
+                                <rect>[55,0,440,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_bluetooth_3">
+                            <property>
+                                <rect>[520,0,48,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_bluetooth_4">
+                            <property>
+                                <rect>[568,0,120,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="scrollbar_bluetooth">
+                    <property>
+                        <rect>[755,0,9,350]</rect>
+                        <forecolor>[black,black,black]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_bluetooth0">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_bluetooth1">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_bluetooth2">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_bluetooth3">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_bluetooth4">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_bluetooth5">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_bluetooth6"/>
+            </children>
+        </widget>
+	<widget class="image" style="default" name="img_bluetooth_set_bk">
+            <property>
+                <rect>[312,160,400,132]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_m</lt_img>
+                <rt_img>s_win_m</rt_img>
+                <lb_img>s_win_m</lb_img>
+                <rb_img>s_win_m</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_bluetooth_set0">
+            <property>
+                <rect>[329,170,136,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_disable_color,text_disable_color,text_disable_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>ESSID</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_bluetooth_set1">
+            <property>
+                <rect>[329,205,136,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_disable_color,text_disable_color,text_disable_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>Mac Addr</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_bluetooth_essid">
+            <property>
+                <rect>[465,170,230,30]</rect>
+                <state>hide</state>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_bluetooth_mac">
+            <property>
+                <rect>[465,205,230,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_disable_color,text_disable_color,text_disable_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="button_bluetooth_connect">
+            <property>
+                <rect>[329,232,167,36]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+            </property>
+            <signal>
+                <keypress>app_bluetooth_button_connect_keypress</keypress>
+            </signal>
+        </widget>
+        <widget class="button" style="default" name="button_bluetooth_cancel">
+            <property>
+                <rect>[510,232,168,36]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <string>Cancel</string>
+            </property>
+            <signal>
+                <keypress>app_bluetooth_button_cancel_keypress</keypress>
+            </signal>
+        </widget>
+	 <widget class="image" style="default" name="img_bluetooth_link">
+            <property>
+                <rect>[320,200,384,192]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_m</lt_img>
+                <rt_img>s_win_m</rt_img>
+                <lb_img>s_win_m</lb_img>
+                <rb_img>s_win_m</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+
+        <widget class="text" style="default" name="text_bluetooth_link_status">
+            <property>
+                <rect>[336,202,352,104]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|top</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_bluetooth_bottom_tips">
+            <property>
+                <rect>[0,510,1024,66]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_b2</lt_img>
+                <rt_img>s_win2_r_b2</rt_img>
+                <t_img>s_win2_m_b2</t_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="img_wifi_ok">
+            <property>
+                <rect>[308,525,54,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>T2_64_button_tips</focus_img>
+                <unfocus_img>T2_64_button_tips</unfocus_img>
+                <string>OK</string>
+	    </property>
+        </widget>
+        <widget class="text" style="default" name="text_bluetooth_ok">
+            <property>
+                <rect>[372,521,130,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Setup</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_bluetooth_move">
+            <property>
+                <rect>[120,525,22,22]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_in_color,window_bg_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_move</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_bluetooth_move">
+            <property>
+                <rect>[166,521,80,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Move</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_bluetooth_blue">
+            <property>
+                <rect>[760,525,20,20]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_blue</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_bluetooth_ignore">
+            <property>
+                <rect>[786,521,80,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Ignore</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_bluetooth_refresh">
+            <property>
+                <rect>[550,525,20,20]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_green</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_bluetooth_refresh">
+            <property>
+                <rect>[574,521,128,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Update</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_bluetooth_link_title">
+            <property>
+                <rect>[332,163,360,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Tips</string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_tp_detail_info">
+    <property>
+        <rect>[362,67,567,452]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_wnd_tp_detail_info_create</create>
+        <keypress>app_wnd_tp_detail_info_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="image_tp_detail_info">
+            <property>
+                <rect>[0,0,567,452]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_tp_detail_info_title">
+            <property>
+                <rect>[17,45,532,33]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>TP Detail Info</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="box" style="default" name="box_tp_detail_info">
+            <property>
+                <rect>[17,78,532,374]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <format>vertical</format>
+            </property>
+            <children>
+                <widget class="boxitem" style="default" name="boxitem_tp_detail_info_boxitem1">
+                    <property>
+                        <rect>[0,0,532,37]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_tp_detail_info_text1">
+                            <property>
+                                <rect>[87,0,185,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>LNB</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_tp_detail_info_lnb">
+                            <property>
+                                <rect>[272,0,260,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_tp_detail_info_boxitem2">
+                    <property>
+                        <rect>[0,37,532,37]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_tp_detail_info_text3">
+                            <property>
+                                <rect>[87,0,185,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>DiSEqC(10/11)</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_tp_detail_info_diseqc">
+                            <property>
+                                <rect>[272,0,260,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_tp_detail_info_boxitem3">
+                    <property>
+                        <rect>[0,75,532,37]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_tp_detail_info_text5">
+                            <property>
+                                <rect>[87,0,185,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Sat</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_tp_detail_info_sat">
+                            <property>
+                                <rect>[272,0,260,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_tp_detail_info_boxitem4">
+                    <property>
+                        <rect>[0,112,532,37]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_tp_detail_info_text7">
+                            <property>
+                                <rect>[87,0,185,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Frequency</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_tp_detail_info_fre">
+                            <property>
+                                <rect>[272,0,260,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_tp_detail_info_boxitem5">
+                    <property>
+                        <rect>[0,150,532,37]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_tp_detail_info_text9">
+                            <property>
+                                <rect>[87,0,185,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>POL</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_tp_detail_info_pol">
+                            <property>
+                                <rect>[272,0,260,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_tp_detail_info_boxitem6">
+                    <property>
+                        <rect>[0,187,532,37]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_tp_detail_info_text11">
+                            <property>
+                                <rect>[87,0,185,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Symbol</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_tp_detail_info_symbol">
+                            <property>
+                                <rect>[272,0,260,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_tp_detail_info_boxitem7">
+                    <property>
+                        <rect>[0,225,532,37]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_tp_detail_info_text13">
+                            <property>
+                                <rect>[87,0,185,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>PLS</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_tp_detail_info_pls">
+                            <property>
+                                <rect>[272,0,260,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_tp_detail_info_boxitem8">
+                    <property>
+                        <rect>[0,262,532,37]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_tp_detail_info_text15">
+                            <property>
+                                <rect>[87,0,185,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>MTS</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_tp_detail_info_mts">
+                            <property>
+                                <rect>[272,0,260,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_tp_detail_info_boxitem9">
+                    <property>
+                        <rect>[0,300,532,37]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_tp_detail_info_text17">
+                            <property>
+                                <rect>[87,0,185,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>NetworkName</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_tp_detail_info_netname">
+                            <property>
+                                <rect>[272,0,260,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_tp_detail_info_boxitem10">
+                    <property>
+                        <rect>[0,337,532,37]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_tp_detail_info_text19">
+                            <property>
+                                <rect>[87,0,185,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>ProvideName</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_tp_detail_info_proname">
+                            <property>
+                                <rect>[272,0,260,37]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+    </children>
+</widget>

@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="win_music_view">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <mirror>disable</mirror>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>music_view_init</create>
+        <destroy>music_view_destroy</destroy>
+        <got_focus>music_view_got_focus</got_focus>
+        <lost_focus>music_view_lost_focus</lost_focus>
+        <service>music_view_service</service>
+        <keypress>music_view_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="image_win_music_view_back">
+            <property>
+                <rect>[0,0,1024,576]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[black,black,black]</backcolor>
+                <mode>single</mode>
+                <img>bg</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="image_win_music_view_notepad_back">
+            <property>
+                <rect>[144,74,736,328]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[black,black,black]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="notepad" style="default" name="music_view_notepad_lrc">
+            <property>
+                <rect>[144,74,736,328]</rect>
+                <forecolor>[#e0e0e0,##00a8ff,#e0e0e0]</forecolor>
+                <backcolor>[black,black,black]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <vertical_margin>40</vertical_margin>
+                <horizontal_margin>0</horizontal_margin>
+            </property>
+            <children>
+                <widget class="scrollbar" style="default" name="win_music_view_scrollbar22">
+                    <property>
+                        <rect>[726,0,10,328]</rect>
+                        <state>hide</state>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+            </children>
+        </widget>
+        <widget class="image" style="default" name="music_view_image_popmsg">
+            <property>
+                <rect>[880,100,64,24]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+       <widget class="image" style="default" name="music_view_imag_mute">
+            <property>
+                <rect>[886,42,62,44]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_mute</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="music_view_text_boxback">
+            <property>
+                <rect>[144,408,736,144]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="music_view_text_name1">
+            <property>
+                <rect>[220,432,640,38]</rect>
+                <forecolor>[text_color,text_color,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_movie_view_back">
+            <property>
+                <rect>[160,416,48,48]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>signal</mode>
+                <img>s_menu_icon_media3</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="music_view_img_sliderback">
+            <property>
+                <rect>[208,472,608,24]</rect>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="box" style="default" name="music_view_box">
+            <property>
+                <rect>[302,496,420,48]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <interval>4</interval>
+                <format>horizontal</format>
+            </property>
+            <signal>
+                <keypress>music_view_box_keypress</keypress>
+            </signal>
+            <children>
+                <widget class="boxitem" style="default" name="music_view_boxitem0">
+                    <property>
+                        <rect>[4,0,48,48]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="button" style="default" name="music_view_boxitem0_button">
+                            <property>
+                                <rect>[0,0,48,47]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <focus_img>s_mpicon_previous_focus</focus_img>
+                                <unfocus_img>s_mpicon_previous_unfocus</unfocus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="music_view_boxitem2">
+                    <property>
+                        <rect>[56,0,48,48]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="button" style="default" name="music_view_boxitem2_button">
+                            <property>
+                                <rect>[0,0,48,47]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <focus_img>s_mpicon_pause_focus</focus_img>
+                                <unfocus_img>s_mpicon_pause_unfocus</unfocus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="music_view_boxitem4">
+                    <property>
+                        <rect>[108,0,48,48]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="button" style="default" name="music_view_boxitem4_button">
+                            <property>
+                                <rect>[0,0,48,47]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <focus_img>s_mpicon_next_focus</focus_img>
+                                <unfocus_img>s_mpicon_next_unfocus</unfocus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="music_view_boxitem5">
+                    <property>
+                        <rect>[160,0,48,48]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="button" style="default" name="music_view_boxitem5_button">
+                            <property>
+                                <rect>[0,0,48,47]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <focus_img>s_mpicon_stop_focus</focus_img>
+                                <unfocus_img>s_mpicon_stop_unfocus</unfocus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="music_view_boxitem6">
+                    <property>
+                        <rect>[212,0,48,48]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="button" style="default" name="music_view_boxitem6_button">
+                            <property>
+                                <rect>[0,0,48,47]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <focus_img>s_mpicon_lrc_focus</focus_img>
+                                <unfocus_img>s_mpicon_lrc_unfocus</unfocus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="music_view_boxitem7">
+                    <property>
+                        <rect>[264,0,48,48]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="button" style="default" name="music_view_boxitem7_button">
+                            <property>
+                                <rect>[0,0,48,47]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <focus_img>s_mpicon_set_focus</focus_img>
+                                <unfocus_img>s_mpicon_set_unfocus</unfocus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="music_view_boxitem8">
+                    <property>
+                        <rect>[316,0,48,48]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="button" style="default" name="music_view_boxitem8_button">
+                            <property>
+                                <rect>[0,0,48,47]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <focus_img>s_mpicon_vol_focus</focus_img>
+                                <unfocus_img>s_mpicon_vol_unfocus</unfocus_img>
+                           </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="music_view_boxitem9">
+                    <property>
+                        <rect>[368,0,48,48]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="button" style="default" name="music_view_boxitem9_button">
+                            <property>
+                                <rect>[0,0,48,47]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <focus_img>s_mpicon_info_focus</focus_img>
+                                <unfocus_img>s_mpicon_info_unfocus</unfocus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+        <widget class="sliderbar" style="default" name="music_view_sliderbar">
+            <property>
+                <rect>[226,477,572,12]</rect>
+                <forecolor>[#909092,#909092,gui_trans]</forecolor>
+                <backcolor>[#767676,#767676,#767676]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <step>2</step>
+                <fore_image>s_progress3_m</fore_image>
+                <format>normal</format>
+                <cursor_image>s_progress3_m_red</cursor_image>
+            </property>
+            <signal>
+                <keypress>music_view_sliderbar_keypress</keypress>
+            </signal>
+        </widget>
+        <widget class="text" style="default" name="music_view_text_start_time">
+            <property>
+                <rect>[170,504,96,32]</rect>
+                <forecolor>[text_color,text_color,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>00:00:00</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="music_view_text_stop_time">
+            <property>
+                <rect>[758,504,96,32]</rect>
+                <forecolor>[text_color,text_color,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>00:00:00</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="sliderbar" style="default" name="music_view_sliderbar_cursor">
+            <property>
+                <rect>[226,477,572,12]</rect>
+                <forecolor>[#909092,#909092,gui_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <step>2</step>
+                <format>normal</format>
+                <cursor_image>s_progress3_m_red</cursor_image>
+            </property>
+            <signal>
+                <keypress>music_view_cursor_keypress</keypress>
+            </signal>
+        </widget>
+        <widget class="canvas" style="default" name="music_view_canvas_spectrum">
+            <property>
+                <rect>[232,105,560,255]</rect>
+                <state>hide</state>
+                <backcolor>[black,black,black]</backcolor>
+                <record>enable</record>
+            </property>
+            <signal>
+                <create>music_view_canvas_init</create>
+            </signal>
+        </widget>
+        <widget class="text" style="default" name="music_view_text_status">
+            <property>
+                <rect>[232,78,560,32]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[black,black,black]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

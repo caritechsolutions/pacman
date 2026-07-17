@@ -1,0 +1,18 @@
+menu "Advanced Security Feature Configuration"
+
+config BR2_ASF_DUAL_CHANNEL_DESCRAMBLE_SUPPORT
+    bool "At the same time support the dual channel descramble"
+
+config BR2_ASF_EMM_SUPPORT
+	bool "EMM data filter Support"
+
+config BR2_ASF_ECM_SUPPORT
+	bool "ECM data filter Support"
+
+config BR2_ASF_SHARE_EX_SHIFT_SUPPORT
+	bool "Ex Shift Support"
+
+config BR2_ASF_CMM_SUPPORT
+	bool "CMM Support"
+
+endmenu

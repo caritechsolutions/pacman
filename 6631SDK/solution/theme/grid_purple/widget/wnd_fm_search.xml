@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_fm_search">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_fm_search_create</create>
+        <destroy>app_fm_search_destroy</destroy>
+        <service>app_fm_search_service</service>
+        <keypress>app_fm_search_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_fm_search_background">
+            <property>
+                <rect>[0,0,1024,576]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+	<widget class="image" style="default" name="img_fm_search_background_line1">
+            <property>
+                <rect>[120,96,784,2]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_fm_search_title">
+            <property>
+                <rect>[112,45,800,44]</rect>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_main</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_fm_search_progress_title">
+            <property>
+                <rect>[130,445,100,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Progress</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="progbar" style="default" name="progbar_fm_search_progress">
+            <property>
+                <rect>[230,454,608,10]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <back_image>s_progress_m</back_image>
+                <back_image_l>s_progress_l</back_image_l>
+                <back_image_m>s_progress_m</back_image_m>
+                <back_image_r>s_progress_r</back_image_r>
+                <fore_image>s_progress3_m</fore_image>
+                <fore_image_l>s_progress3_l</fore_image_l>
+                <fore_image_m>s_progress3_m</fore_image_m>
+                <fore_image_r>s_progress3_r</fore_image_r>
+                <format>water</format>
+                <text_format>percentage</text_format>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_fm_search_progress_percent">
+            <property>
+                <rect>[848,445,64,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_search_fm_name1">
+            <property>
+                <rect>[430,170,310,32]</rect>
+                <state>show</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_search_fm_name2">
+            <property>
+                <rect>[430,202,310,32]</rect>
+                <state>show</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_search_fm_name3">
+            <property>
+                <rect>[430,234,310,32]</rect>
+                <state>show</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_search_fm_name4">
+            <property>
+                <rect>[430,266,310,32]</rect>
+                <state>show</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_search_fm_name5">
+            <property>
+                <rect>[430,298,310,32]</rect>
+                <state>show</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_search_fm_name6">
+            <property>
+                <rect>[430,330,310,32]</rect>
+                <state>show</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_fm_search_gif">
+            <property>
+                <rect>[500,130,32,32]</rect>
+                <state>hide</state>
+                <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_fm_search_tip_back">
+            <property>
+                <rect>[0,510,1024,66]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_b2</lt_img>
+                <rt_img>s_win2_r_b2</rt_img>
+                <t_img>s_win2_m_b2</t_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_fm_search_exit_btn">
+            <property>
+                <rect>[136,525,54,22]</rect>
+                <forecolor>[main_text_color,main_text_color,main_text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>T2_64_button_tips</focus_img>
+                <unfocus_img>T2_64_button_tips</unfocus_img>
+                <string>EXIT</string>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_fm_search_return_txt">
+            <property>
+                <rect>[200,524,150,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,window_bg_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Exit</string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

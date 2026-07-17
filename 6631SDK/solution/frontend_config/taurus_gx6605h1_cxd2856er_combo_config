@@ -1,0 +1,38 @@
+//Board Mark: TAURUS_CXD2856ER_R848_V1.0  2016-12-13
+//Frontend Info: TAURUS(R848) CXD2856ER(R848) CXD2856ER(R848)
+
+frontend1_demod_i2c_id = 0
+frontend1_demod_i2c_chip_addr = 0xA4
+frontend1_demod_attach = Taurus_DVBS_ATTACH
+frontend1_tuner_i2c_chip_addr = 0xF4
+frontend1_tuner_i2c_id = 0
+frontend1_tuner_connection = FE_SINGLE_END
+frontend1_iq = 1
+frontend1_lnb_power_gpio = V_GPIO_LNB_A
+frontend1_lnb_invert = 1
+frontend1_polar_invert = 1
+frontend1_pol_ctrl_enable = 0
+frontend1_demux_ts_src = DEMUX_TS1
+frontend1_ts4pin_switch = 2,0;3,0
+frontend1_pin1_switch = 21,77,0xff,0 //TSCLK
+frontend1_pin2_switch = 22,78,0xff,0 //TSSYNC
+
+frontend2_demod_i2c_id = 0
+frontend2_demod_i2c_chip_addr = 0xC8
+frontend2_demod_attach = CXD2856_DVBT_ATTACH
+frontend2_tuner_i2c_chip_addr = 0xF4
+frontend2_tuner_i2c_id = 0
+frontend2_demux_ts_src = DEMUX_TS2
+frontend2_ts4pin_switch = 2,1
+frontend2_pin1_switch = 21,77,0xff,2 //TSCLK
+frontend2_pin2_switch = 22,78,0xff,2 //TSSYNC
+
+frontend3_demod_i2c_id = 0
+frontend3_demod_i2c_chip_addr = 0xC8
+frontend3_demod_attach = CXD2856_DVBC_ATTACH
+frontend3_tuner_i2c_chip_addr = 0xF4
+frontend3_tuner_i2c_id = 0
+frontend3_demux_ts_src = DEMUX_TS2
+frontend3_ts4pin_switch = 3,1
+frontend3_pin1_switch = 21,77,0xff,2 //TSCLK
+frontend3_pin2_switch = 22,78,0xff,2 //TSSYNC

@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_epg">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_epg_create</create>
+        <destroy>app_epg_destroy</destroy>
+        <show>app_epg_video_show</show>
+        <got_focus>app_epg_got_focus</got_focus>
+        <lost_focus>app_epg_lost_focus</lost_focus>
+        <keypress>app_epg_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_event_infor_back">
+            <property>
+                <rect>[0,0,1024,576]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+	<widget class="image" style="default" name="img_epg_back_line1">
+            <property>
+                <rect>[120,70,784,2]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+	<widget class="image" style="default" name="img_epg_back_line2">
+            <property>
+                <rect>[120,260,784,2]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+	<widget class="image" style="default" name="img_epg_back_line3">
+            <property>
+                <rect>[120,500,784,2]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_epg_titile">
+            <property>
+                <rect>[412,20,200,45]</rect>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>hcentre|bottom</alignment>
+                <font>font_main</font>
+                <string>EPG</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_epg_sys_ymd">
+            <property>
+                <rect>[694,25,140,40]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <alignment>right|bottom</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_epg_sys_time">
+            <property>
+                <rect>[834,25,70,40]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <alignment>right|bottom</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_epg_for_pp">
+            <property>
+                <rect>[132,80,330,168]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+         <widget class="image" style="default" name="img_epg_frame_for_pp">
+            <property>
+                <rect>[130,78,334,172]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_m</lt_img>
+                <rt_img>s_win_m</rt_img>
+                <lb_img>s_win_m</lb_img>
+                <rb_img>s_win_m</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_epg_signal">
+            <property>
+                <rect>[132,80,330,168]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[channel_edit_video_bg,channel_edit_video_bg,channel_edit_video_bg]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_epg_event_prog_name">
+            <property>
+                <rect>[530,90,374,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <time>80</time>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>fix_r2l</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_epg_event_event_name">
+            <property>
+                <rect>[530,128,374,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <time>40</time>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_epg_event_details_startT1">
+            <property>
+                <rect>[530,166,50,32]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_epg_event_details_interval1">
+            <property>
+                <rect>[580,166,40,32]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_epg_event_details_endT1">
+            <property>
+                <rect>[620,166,50,32]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+	<widget class="text" style="default" name="text_epg_date">
+            <property>
+                <rect>[150,270,320,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+	<widget class="image" style="default" name="img_epg_date_arrow_l">
+            <property>
+                <rect>[130,275,10,20]</rect>
+                <mirror>disable</mirror>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img>s_arrow_l</img>
+            </property>
+        </widget>
+	<widget class="image" style="default" name="img_epg_date_arrow_r">
+            <property>
+                <rect>[480,275,10,20]</rect>
+                <mirror>disable</mirror>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img>s_arrow_r</img>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="listview_epg_prog">
+            <property>
+                <rect>[120,310,390,185]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <roll_time>0</roll_time>
+                <select>0</select>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <item_active_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</item_active_image>
+                <item_active_color>text_color</item_active_color>
+                <i18n>false</i18n>
+                <item_rect>[0,0,370,36]</item_rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>app_epg_prog_list_keypress</keypress>
+                <get_total>app_epg_prog_list_get_total</get_total>
+                <get_data>app_epg_prog_list_get_data</get_data>
+                <change>app_epg_prog_list_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="header_epg_prog_list">
+                    <property>
+                        <rect>[0,0,370,0]</rect>
+                        <forecolor>[text_color,text_color,text_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <colum_number>4</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_epg_prog_header1">
+                            <property>
+                                <rect>[10,0,50,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_epg_prog_header2">
+                            <property>
+                                <rect>[60,0,250,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_epg_prog_header3">
+                            <property>
+                                <rect>[315,0,20,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_epg_prog_header4">
+                            <property>
+                                <rect>[340,0,20,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+        <widget class="listitem" style="default" name="listitem_epg_prog_list1"/>
+        <widget class="listitem" style="default" name="listitem_epg_prog_list2"/>
+        <widget class="listitem" style="default" name="listitem_epg_prog_list3"/>
+        <widget class="listitem" style="default" name="listitem_epg_prog_list4"/>
+	<widget class="listitem" style="default" name="listitem_epg_prog_list5"/>
+                <widget class="scrollbar" style="default" name="scrollbar_epg_prog_lv">
+                    <property>
+                        <rect>[381,0,9,180]</rect>
+                        <forecolor>[black,black,black]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+            </children>
+        </widget>
+        <widget class="listview" style="default" name="listview_epg_event">
+            <property>
+                <rect>[520,270,390,220]</rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+                <roll_time>0</roll_time>
+                <select>0</select>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <disable_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</disable_img>
+                <item_active_color>key_focus_color</item_active_color>
+                <i18n>false</i18n>
+                <item_rect>[0,0,370,36]</item_rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>app_epg_lvlist_keypress</keypress>
+                <get_total>app_epg_lvlist_get_total</get_total>
+                <get_data>app_epg_lvlist_get_data</get_data>
+                <change>app_epg_lvlist_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="header_epg_event_lv_list">
+                    <property>
+                        <rect>[0,0,370,0]</rect>
+                        <forecolor>[text_color,text_color,text_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <colum_number>2</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_epg_event_lv_header1">
+                            <property>
+                                <rect>[10,0,325,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_epg_event_lv_header2">
+                            <property>
+                                <rect>[340,0,20,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_epg_event_lv_list1"/>
+                <widget class="listitem" style="default" name="listitem_epg_event_lv_list2"/>
+                <widget class="listitem" style="default" name="listitem_epg_event_lv_list3"/>
+                <widget class="listitem" style="default" name="listitem_epg_event_lv_list4"/>
+                <widget class="listitem" style="default" name="listitem_epg_event_lv_list5"/>
+                <widget class="listitem" style="default" name="listitem_epg_event_lv_list6"/>
+                <widget class="scrollbar" style="default" name="scrollbar_epg_event_lv">
+                    <property>
+                        <rect>[381,0,9,220]</rect>
+                        <forecolor>[black,black,black]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+            </children>
+        </widget>
+	<widget class="image" style="default" name="image_epg_bottom">
+            <property>
+                <rect>[0,510,1024,66]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_b2</lt_img>
+                <rt_img>s_win2_r_b2</rt_img>
+                <t_img>s_win2_m_b2</t_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_epg_red_tip">
+            <property>
+                <rect>[136,525,20,20]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_red</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_epg_book_tip">
+            <property>
+                <rect>[166,521,100,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+		<font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Book</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_epg_green_tip">
+            <property>
+                <rect>[296,525,20,20]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_green</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_epg_prev_day_tip">
+            <property>
+                <rect>[326,521,100,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+		<font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Day-</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_epg_yellow_tip">
+            <property>
+                <rect>[456,525,20,20]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_yellow</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_epg_next_day_tip">
+            <property>
+                <rect>[486,521,100,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+		<font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Day+</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_epg_blue_tip">
+            <property>
+                <rect>[616,525,20,20]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_blue</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_epg_mode_tip">
+            <property>
+                <rect>[646,521,100,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+		<font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Mode</string>
+                <format>static</format>
+            </property>
+        </widget>
+	<widget class="button" style="default" name="img_epg_show_detail_tip">
+            <property>
+                <rect>[764,525,54,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <font>font_22</font>
+		<alignment>hcentre|vcentre</alignment>
+                <focus_img>T2_64_button_tips</focus_img>
+		<unfocus_img>T2_64_button_tips</unfocus_img>
+		<string>OK</string>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_epg_show_detail_tip">
+            <property>
+                <rect>[820,521,100,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+		<font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Detail</string>
+                <format>static</format>
+            </property>
+        </widget>
+	<widget class="image" style="default" name="img_epg_event_details_back">
+            <property>
+                <rect>[468,78,506,366]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+              <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_m</lt_img>
+                <rt_img>s_win_m</rt_img>
+                <lb_img>s_win_m</lb_img>
+                <rb_img>s_win_m</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+
+	<widget class="image" style="default" name="img_epg_event_details_line5">
+            <property>
+                <rect>[643,78,2,40]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+	<widget class="image" style="default" name="img_epg_event_details_line6">
+            <property>
+                <rect>[468,118,506,2]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="notepad" style="default" name="notepad_epg_event_details">
+            <property>
+                <rect>[488,138,480,230]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+		<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|top</alignment>
+                <vertical_margin>0</vertical_margin>
+                <horizontal_margin>20</horizontal_margin>
+            </property>
+            <children>
+                <widget class="scrollbar" style="default" name="scrollbar_epg_event_details">
+                    <property>
+                        <rect>[471,0,9,230]</rect>
+                        <forecolor>[black,black,black]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+            </children>
+        </widget>
+        <widget class="text" style="default" name="text_epg_event_details_startT">
+            <property>
+                <rect>[488,86,50,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_epg_event_details_interval">
+            <property>
+                <rect>[538,86,40,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>--</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_epg_event_details_endT">
+            <property>
+                <rect>[578,86,50,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_epg_event_details_title">
+            <property>
+                <rect>[658,86,310,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+		<alignment>left|vcentre</alignment>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_epg_event_details_exit">
+            <property>
+                <rect>[603,388,240,36]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <unfocus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</unfocus_img>
+		<string>EXIT</string>
+            </property>
+        </widget>
+    </children>
+</widget>

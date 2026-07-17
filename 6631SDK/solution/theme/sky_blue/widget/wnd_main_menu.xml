@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_main_menu">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <back_ground>bg</back_ground>
+    </property>
+    <signal>
+        <create>app_main_menu_create</create>
+        <destroy>app_main_menu_destroy</destroy>
+        <keypress>app_main_menu_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="image_main_menu_background">
+            <property>
+                <rect>[75,32,874,520]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="image_main_menu_background_line">
+            <property>
+                <rect>[80,40,864,146]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win3_l_t</lt_img>
+                <rt_img>s_win3_r_t</rt_img>
+                <l_img>s_win3_l_m</l_img>
+                <r_img>s_win3_r_m</r_img>
+                <t_img>s_win3_m_t</t_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="image_main_menu_background_down">
+            <property>
+                <rect>[80,133,864,53]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>T2_menu_up_l</lt_img>
+                <rt_img>T2_menu_up_r</rt_img>
+                <t_img>T2_menu_up_m</t_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_title1">
+            <property>
+                <rect>[120,49,112,137]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+                <focus_img>T2_64_menu1_unfocus</focus_img>
+				<unfocus_img>T2_64_menu1_unfocus</unfocus_img>
+				<disable_img>T2_64_menu1</disable_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_title2">
+            <property>
+                <rect>[232,49,112,137]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+                <focus_img>T2_64_menu2_unfocus</focus_img>
+				<unfocus_img>T2_64_menu2_unfocus</unfocus_img>
+				<disable_img>T2_64_menu2</disable_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_title3">
+            <property>
+                <rect>[344,49,112,137]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+                <focus_img>T2_64_menu3_unfocus</focus_img>
+				<unfocus_img>T2_64_menu3_unfocus</unfocus_img>
+				<disable_img>T2_64_menu3</disable_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_title4">
+            <property>
+                <rect>[456,49,112,137]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+                <focus_img>T2_64_menu4_unfocus</focus_img>
+				<unfocus_img>T2_64_menu4_unfocus</unfocus_img>
+				<disable_img>T2_64_menu4</disable_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_title5">
+            <property>
+                <rect>[568,49,112,137]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+                <focus_img>T2_64_menu5_unfocus</focus_img>
+				<unfocus_img>T2_64_menu5_unfocus</unfocus_img>
+				<disable_img>T2_64_menu5</disable_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_title6">
+            <property>
+                <rect>[680,49,112,137]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+                <focus_img>T2_64_menu6_unfocus</focus_img>
+				<unfocus_img>T2_64_menu6_unfocus</unfocus_img>
+				<disable_img>T2_64_menu6</disable_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_title7">
+            <property>
+                <rect>[792,49,112,137]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+		<alignment>hcentre|vcentre</alignment>
+                <focus_img>T2_64_menu7_unfocus</focus_img>
+				<unfocus_img>T2_64_menu7_unfocus</unfocus_img>
+				<disable_img>T2_64_menu7</disable_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="win_t2_main_menu_background_down">
+            <property>
+                <rect>[80,501,864,46]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win3_l_t</lt_img>
+                <rt_img>s_win3_r_t</rt_img>
+                <lb_img>s_win3_l_b</lb_img>
+                <rb_img>s_win3_r_b</rb_img>
+                <l_img>s_win3_l_m</l_img>
+                <r_img>s_win3_r_m</r_img>
+                <t_img>s_win3_m_t</t_img>
+                <b_img>s_win3_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_exit_btn">
+            <property>
+                <rect>[160,513,46,25]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>s_ts_exit</focus_img>
+                <unfocus_img>s_ts_exit</unfocus_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_main_menu_return_txt">
+            <property>
+                <rect>[209,513,150,25]</rect>
+                <forecolor>[#CEE8FF,#CEE8FF,#CEE8FF]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Exit</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_ok">
+            <property>
+                <rect>[462,513,46,25]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>s_ts_ok</focus_img>
+                <unfocus_img>s_ts_ok</unfocus_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_main_menu_ok">
+            <property>
+                <rect>[511,513,150,25]</rect>
+                <forecolor>[#CEE8FF,#CEE8FF,#CEE8FF]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Confirm</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_main_menu_title">
+            <property>
+                <rect>[112,190,800,44]</rect>
+                <forecolor>[#CEE8FF,#CEE8FF,#CEE8FF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <font>font_main</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="image_main_menu_arrow_img">
+            <property>
+                <rect>[800,509,34,33]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_move</img>
+            </property>
+        </widget>
+    </children>
+</widget>

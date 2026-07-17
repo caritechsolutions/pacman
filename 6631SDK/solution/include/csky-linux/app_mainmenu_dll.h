@@ -1,0 +1,30 @@
+#ifndef APP_MAINMENU_DLL_H_20241213
+#define APP_MAINMENU_DLL_H_20241213
+
+#include "app_main_menu_exapi.h"
+
+
+GX_LDR_TABLE_ENTRY(gxapp_exapi_mainmenu_destory_entry, "gxapp_exapi_mainmenu_destory", &gxapp_exapi_mainmenu_destory);
+GX_LDR_TABLE_ENTRY(gxapp_exapi_mainmenu_check_end_entry, "gxapp_exapi_mainmenu_check_end", &gxapp_exapi_mainmenu_check_end);
+GX_LDR_TABLE_ENTRY(gxapp_exapi_mainmenu_exit_entry, "gxapp_exapi_mainmenu_exit", &gxapp_exapi_mainmenu_exit);
+GX_LDR_TABLE_ENTRY(gxapp_exapi_mainmenu_event_key_check_entry, "gxapp_exapi_mainmenu_event_key_check", &gxapp_exapi_mainmenu_event_key_check);
+GX_LDR_TABLE_ENTRY(gxapp_exapi_mainmenu_net_connect_check_entry, "gxapp_exapi_mainmenu_net_connect_check", &gxapp_exapi_mainmenu_net_connect_check);
+GX_LDR_TABLE_ENTRY(gxapp_exapi_mainmenu_media_entry_entry, "gxapp_exapi_mainmenu_media_entry", &gxapp_exapi_mainmenu_media_entry);
+
+GX_LDR_TABLE_ENTRY(gxapp_exapi_mainmenu_sub_create_entry, "gxapp_exapi_mainmenu_sub_create", &gxapp_exapi_mainmenu_sub_create);
+GX_LDR_TABLE_ENTRY(gxapp_exapi_mainmenu_sub_check_entry, "gxapp_exapi_mainmenu_sub_check", &gxapp_exapi_mainmenu_sub_check);
+GX_LDR_TABLE_ENTRY(gxapp_exapi_mainmenu_keypress_entry, "gxapp_exapi_mainmenu_keypress", &gxapp_exapi_mainmenu_keypress);
+GX_LDR_TABLE_ENTRY(gxapp_exapi_mainmenu_get_content_entry, "gxapp_exapi_mainmenu_get_content", &gxapp_exapi_mainmenu_get_content);
+
+GX_LDR_TABLE_ENTRY(gxapp_exapi_passwd_dlg_create_entry, "gxapp_exapi_passwd_dlg_create", &gxapp_exapi_passwd_dlg_create);
+GX_LDR_TABLE_ENTRY(gxapp_exapi_passwd_dlg_offset_x_get_entry, "gxapp_exapi_passwd_dlg_offset_x_get", &gxapp_exapi_passwd_dlg_offset_x_get);
+GX_LDR_TABLE_ENTRY(gxapp_exapi_passwd_dlg_offset_y_get_entry, "gxapp_exapi_passwd_dlg_offset_y_get", &gxapp_exapi_passwd_dlg_offset_y_get);
+GX_LDR_TABLE_ENTRY(gxapp_exapi_config_get_int_entry, "gxapp_exapi_config_get_int", &gxapp_exapi_config_get_int);
+GX_LDR_TABLE_ENTRY(gxapp_exapi_timer_str_get_entry, "gxapp_exapi_timer_str_get", &gxapp_exapi_timer_str_get);
+
+GX_LDR_TABLE_ENTRY(gxapp_exapi_set_entry_uiid_entry, "gxapp_exapi_set_entry_uiid", &gxapp_exapi_set_entry_uiid);
+GX_LDR_TABLE_ENTRY(gxapp_exapi_get_entry_uiid_entry, "gxapp_exapi_get_entry_uiid", &gxapp_exapi_get_entry_uiid);
+GX_LDR_TABLE_ENTRY(gxapp_exapi_set_proc_uiid_entry, "gxapp_exapi_set_proc_uiid", &gxapp_exapi_set_proc_uiid);
+GX_LDR_TABLE_ENTRY(gxapp_exapi_get_proc_uiid_entry, "gxapp_exapi_get_proc_uiid", &gxapp_exapi_get_proc_uiid);
+
+#endif

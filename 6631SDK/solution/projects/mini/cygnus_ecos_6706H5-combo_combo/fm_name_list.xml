@@ -1,0 +1,23 @@
+<?GXxml version="1.0"?>
+<list>
+ <item>
+    <key>88.0</key>
+    <value>name1</value>
+ </item>
+  <item>
+    <key>90.0</key>
+    <value>name2</value>
+ </item>
+  <item>
+    <key>95.0</key>
+    <value>name3</value>
+ </item>
+  <item>
+    <key>100.0</key>
+    <value>name4</value>
+ </item>
+  <item>
+    <key>108.0</key>
+    <value>name5</value>
+ </item>
+</list>

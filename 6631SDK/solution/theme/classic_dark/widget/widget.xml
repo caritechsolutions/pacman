@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<interface>
+  <width>1024</width>
+  <height>576</height>
+  <bpp>16</bpp>
+  <osd_trans>#00FF00</osd_trans>
+  <gui_trans>#FF00FF</gui_trans>
+  <cache_widgets>disable</cache_widgets>
+  <osd_alpha_global>#0000ff</osd_alpha_global>
+  <osd_alpha_color color="#515151">#00009F</osd_alpha_color>
+  <osd_alpha_color color="#080808">#0000BF</osd_alpha_color>
+  <osd_alpha_color color="#181818">#0000FF</osd_alpha_color>
+  <osd_alpha_color color="#1870F3">#0000FF</osd_alpha_color>
+  <widget class="window" style="default" name="wnd_main_menu"/>
+  <widget class="window" style="default" name="wnd_full_screen"/>
+  <widget class="window" style="default" name="wnd_common_select"/>
+  <widget class="window" style="default" name="wnd_common_view"/>
+  <widget class="window" style="default" name="wnd_common_text"/>
+  <widget class="window" style="default" name="wnd_antenna_setting"/>
+  <widget class="window" style="default" name="wnd_tp_list"/>
+  <widget class="window" style="default" name="wnd_tp_source_select"/>
+  <widget class="window" style="default" name="wnd_timer_setting"/>
+  <widget class="window" style="default" name="wnd_search"/>
+  <widget class="window" style="default" name="wnd_sat_search_opt"/>
+  <widget class="window" style="default" name="wnd_tp_search_opt"/>
+  <widget class="window" style="default" name="wnd_search_tip"/>
+  <widget class="window" style="default" name="wnd_mainmenu_tip"/>
+  <widget class="window" style="default" name="wnd_channel_info"/>
+  <widget class="window" style="default" name="wnd_channel_list"/>
+  <widget class="window" style="default" name="wnd_tp_list_popup"/>
+  <widget class="window" style="default" name="wnd_tp_proglist"/>
+  <widget class="window" style="default" name="wnd_tp_detail_info"/>
+  <widget class="window" style="default" name="wnd_system_setting"/>
+  <widget class="window" style="default" name="wnd_satellite_list"/>
+  <widget class="window" style="default" name="wnd_sat_list_popup"/>
+  <widget class="window" style="default" name="wnd_sat_source_select"/>
+  <widget class="window" style="default" name="wnd_satellite_online_list"/>
+  <widget class="window" style="default" name="wnd_plsn_root"/>
+  <widget class="window" style="default" name="wnd_positioner_setting"/>
+  <widget class="window" style="default" name="wnd_pop_fav"/>
+  <widget class="window" style="default" name="wnd_channel_edit"/>
+  <widget class="window" style="default" name="wnd_pop_sort"/>
+  <widget class="window" style="default" name="wnd_pop_tip"/>
+  <widget class="window" style="default" name="wnd_pop_book"/>
+  <widget class="window" style="default" name="wnd_file_list"/>
+  <widget class="window" style="default" name="wnd_timer_channel_list"/>
+  <widget class="window" style="default" name="wnd_upgrade_process"/>
+  <widget class="window" style="default" name="wnd_passwd"/>
+  <widget class="window" style="default" name="wnd_epg"/>
+  <widget class="window" style="default" name="wnd_volume_value"/>
+  <widget class="window" style="default" name="wnd_number"/>
+  <widget class="window" style="default" name="wnd_pvr_bar"/>
+  <widget class="window" style="default" name="win_file_browser"/>
+  <widget class="window" style="default" name="win_pic_view"/>
+  <widget class="window" style="default" name="win_pic_set"/>
+  <widget class="window" style="default" name="win_media_info"/>
+  <widget class="window" style="default" name="win_movie_view"/>
+  <widget class="window" style="default" name="win_movie_set"/>
+  <widget class="window" style="default" name="win_movie_subt"/>
+  <widget class="window" style="default" name="win_music_view"/>
+  <widget class="window" style="default" name="win_music_set"/>
+  <widget class="window" style="default" name="wnd_channel_info_signal"/>
+  <widget class="window" style="default" name="wnd_pop_option_list"/>
+  <widget class="window" style="default" name="wnd_tetris"/>
+  <widget class="window" style="default" name="wnd_snake"/>
+  <widget class="window" style="default" name="wnd_setting_dm"/>
+  <widget class="window" style="default" name="wnd_pvr_media_list"/>
+  <widget class="window" style="default" name="wnd_sleep_set"/>
+  <widget class="window" style="default" name="wnd_ota_upgrade"/>
+  <widget class="window" style="default" name="wnd_pop_ch_pid"/>
+  <widget class="window" style="default" name="wnd_main_menu_item"/>
+  <widget class="window" style="default" name="wnd_factory_test"/>
+  <widget class="window" style="default" name="wnd_keyboard_language"/>
+  <widget class="window" style="default" name="wnd_unicable_set_popup"/>
+  <widget class="window" style="default" name="wnd_system_information"/>
+  <widget class="window" style="default" name="wnd_duration_set"/>
+  <widget class="window" style="default" name="wnd_visible_location"/>
+  <widget class="window" style="default" name="wnd_visiblelocation_popup"/>
+  <widget class="window" style="default" name="wnd_preferred_list"/>
+  <widget class="window" style="default" name="wnd_tkgs_upgrade_process"/>
+  <widget class="window" style="default" name="wnd_video_multifeed"/>
+  <widget class="window" style="default" name="win_media_bar"/>
+  <widget class="window" style="default" name="wnd_merge_db"/>
+  <widget class="window" style="default" name="wnd_hidden_location"/>
+  <widget class="window" style="default" name="wnd_wifi"/>
+  <widget class="window" style="default" name="wnd_network"/>
+  <widget class="window" style="default" name="wnd_apps_netvideo_play"/>
+  <widget class="window" style="default" name="wnd_netvideo_play_number"/>
+  <widget class="window" style="default" name="wnd_iptv_browser"/>
+  <widget class="window" style="default" name="wnd_3g"/>
+  <widget class="window" style="default" name="wnd_netupg_process"/>
+  <widget class="window" style="default" name="wnd_satfinder"/>
+  <widget class="window" style="default" name="wnd_pop_qr"/>
+  <widget class="window" style="default" name="wnd_pop_dialog"/>
+  <widget class="window" style="default" name="wnd_dlna_dmr"/>
+  <widget class="window" style="default" name="wnd_dlna_dmp"/>
+  <widget class="window" style="default" name="wnd_dlna_dms"/>
+  <widget class="window" style="default" name="wnd_dvb2ip_play"/>
+  <widget class="window" style="default" name="wnd_plugin_play_info"/>
+  <widget class="window" style="default" name="wnd_iptv_cloud_input"/>
+  <widget class="window" style="default" name="wnd_weblet"/>
+  <widget class="window" style="default" name="wnd_webapi_netplay"/>
+  <widget class="window" style="default" name="wnd_common_search_setting"/>
+  <widget class="window" style="default" name="wnd_bouquet"/>
+  <widget class="window" style="default" name="wnd_netvideo_subt_setting"/>
+  <widget class="window" style="default" name="wnd_server_list"/>
+  <widget class="window" style="default" name="wnd_usb_test"/>
+  <widget class="window" style="default" name="wnd_iptv_epg"/>
+  <widget class="window" style="default" name="wnd_iptv_account"/>
+  <widget class="window" style="default" name="wnd_iptv_epg_playback"/>
+  <widget class="window" style="default" name="wnd_key_scancode"/>
+  <widget class="window" style="default" name="wnd_supercast"/>
+  <widget class="window" style="default" name="wnd_applets"/>
+  <widget class="window" style="default" name="wnd_cvbs_test"/>
+  <widget class="window" style="default" name="wnd_learn_rcu_key"/>
+  <widget class="window" style="default" name="wnd_netaudio"/>
+  <widget class="window" style="default" name="wnd_bluetooth"/>
+  <widget class="window" style="default" name="wnd_sink_view"/>
+  <widget class="window" style="default" name="wnd_net_upgrade_tip"/>
+  <widget class="window" style="default" name="wnd_mike_volume"/>
+  <widget class="window" style="default" name="wnd_miracast"/>
+  <widget class="window" style="default" name="wnd_miracast_info"/>
+</interface>

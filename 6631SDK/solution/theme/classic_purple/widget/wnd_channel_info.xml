@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_channel_info">
+    <property>
+        <rect>[62,400,900,155]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+    </property>
+    <signal>
+        <create>app_channel_info_create</create>
+        <destroy>app_channel_info_destroy</destroy>
+        <got_focus>app_channel_info_got_focus</got_focus>
+        <lost_focus>app_channel_info_lost_focus</lost_focus>
+        <keypress>app_channel_info_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_channel_info_back">
+            <property>
+                <rect>[0,0,900,155]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_m</lt_img>
+                <rt_img>s_win_m</rt_img>
+                <lb_img>s_win_m</lb_img>
+                <rb_img>s_win_m</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_channel_info_top_bg">
+            <property>
+                <rect>[0,50,900,2]</rect>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[#857BFF,#857BFF,#857BFF]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_bottom_backup">
+            <property>
+                <rect>[2,124,895,28]</rect>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_channel_info_name">
+            <property>
+                <rect>[99,4,560,44]</rect>
+                <forecolor>[#857BFF,#857BFF,#857BFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_main</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_channel_info_current">
+            <property>
+                <rect>[10,54,630,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>No Information</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_channel_info_next">
+            <property>
+                <rect>[10,99,630,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>No Information</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="progbar" style="default" name="progbar_channel_info_event_time">
+            <property>
+                <rect>[10,83,630,10]</rect>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[#293142,#293142,#293142]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <back_image>s_progress_m</back_image>
+                <back_image_l>s_progress_l</back_image_l>
+                <back_image_m>s_progress_m</back_image_m>
+                <back_image_r>s_progress_r</back_image_r>
+                <fore_image>s_progress3_m</fore_image>
+                <fore_image_l>s_progress3_l</fore_image_l>
+                <fore_image_m>s_progress3_m</fore_image_m>
+                <fore_image_r>s_progress3_r</fore_image_r>
+                <format>water</format>
+                <text_format>hide</text_format>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_progbar_scramble">
+            <property>
+                <rect>[848,100,30,24]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_money</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_progbar_lock">
+            <property>
+                <rect>[806,100,30,24]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_lock</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_progbar_subt">
+            <property>
+                <rect>[764,100,30,24]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_subt</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_progbar_ttx">
+            <property>
+                <rect>[722,100,30,24]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_ttx</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_progbar_hd">
+            <property>
+                <rect>[680,100,30,24]</rect>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_hd</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_progbar_hdr">
+            <property>
+                <rect>[640,100,30,24]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_hdr</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_channel_info_time">
+            <property>
+                <rect>[797,4,100,44]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <string>12:00</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_channel_info_name_num">
+            <property>
+                <rect>[9,4,90,44]</rect>
+                <forecolor>[#857BFF,#857BFF,#857BFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <font>font_main</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_channel_info_avformat">
+            <property>
+                <rect>[665,54,90,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_channel_info_sat_tp">
+            <property>
+                <rect>[557,127,336,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <font>font_22</font>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_channel_info_date">
+            <property>
+                <rect>[668,4,130,44]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <string>12:00</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_channel_info_solution">
+            <property>
+                <rect>[759,54,120,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_channel_info_smartcard">
+            <property>
+                <rect>[658,78,240,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_channel_info_providername">
+            <property>
+                <rect>[10,127,300,22]</rect>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

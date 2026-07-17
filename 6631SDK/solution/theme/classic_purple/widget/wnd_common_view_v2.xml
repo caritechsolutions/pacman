@@ -1,0 +1,962 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_common_view">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[gui_trans,gui_trans,gui_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+    </property>
+    <signal>
+        <create>app_common_view_create</create>
+        <destroy>app_common_view_destroy</destroy>
+        <service>app_common_view_service</service>
+        <got_focus>app_common_view_got_focus</got_focus>
+        <lost_focus>app_common_view_lost_focus</lost_focus>
+        <keypress>app_common_view_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_common_view_line_v1">
+            <property>
+                <rect>[120,96,834,2]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_line_v2">
+            <property>
+                <rect>[120,484,834,2]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_common_view_gif">
+            <property>
+                <rect>[590,55,32,32]</rect>
+                <state>hide</state>
+                <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_title">
+            <property>
+                <rect>[180,45,400,44]</rect>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_main</font>
+                <alignment>left|bottom</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_title">
+            <property>
+                <rect>[120,43,48,48]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_date">
+            <property>
+                <rect>[702,65,120,24]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_time">
+            <property>
+                <rect>[824,65,80,24]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="listview_common_view_group">
+            <property>
+                <rect>[120,100,284,380]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <select>0</select>
+                <interval>2</interval>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <item_active_color>key_focus_color</item_active_color>
+                <i18n>false</i18n>
+                <item_rect>[0,0,270,36]</item_rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <get_total>app_common_view_group_list_get_total</get_total>
+                <get_data>app_common_view_group_list_get_data</get_data>
+                <change>app_common_view_group_list_change</change>
+                <keypress>app_common_view_group_list_keypress</keypress>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="header_common_view_group">
+                    <property>
+                        <rect>[0,0,270,0]</rect>
+                        <forecolor>[text_color,text_color,text_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <colum_number>1</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="header_text_common_view_group1">
+                            <property>
+                                <rect>[10,0,260,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="scrollbar_common_view_group">
+                    <property>
+                        <rect>[275,0,9,380]</rect>
+                        <forecolor>[window_bg_color,window_bg_color,window_bg_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_common_view_group1"/>
+                <widget class="listitem" style="default" name="listitem_common_view_group2"/>
+                <widget class="listitem" style="default" name="listitem_common_view_group3"/>
+                <widget class="listitem" style="default" name="listitem_common_view_group4"/>
+                <widget class="listitem" style="default" name="listitem_common_view_group5"/>
+                <widget class="listitem" style="default" name="listitem_common_view_group6"/>
+                <widget class="listitem" style="default" name="listitem_common_view_group7"/>
+                <widget class="listitem" style="default" name="listitem_common_view_group8"/>
+                <widget class="listitem" style="default" name="listitem_common_view_group9"/>
+                <widget class="listitem" style="default" name="listitem_common_view_group10"/>
+            </children>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_item_title">
+            <property>
+                <rect>[418,100,486,36]</rect>
+                <state>hide</state>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="listview_common_view_item">
+            <property>
+                <rect>[418,138,486,342]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <select>0</select>
+                <interval>2</interval>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <item_active_color>key_focus_color</item_active_color>
+                <i18n>false</i18n>
+                <item_rect>[0,0,472,36]</item_rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <get_total>app_common_view_item_list_get_total</get_total>
+                <get_data>app_common_view_item_list_get_data</get_data>
+                <change>app_common_view_item_list_change</change>
+                <keypress>app_common_view_item_list_keypress</keypress>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="header_common_view_item">
+                    <property>
+                        <rect>[0,0,472,0]</rect>
+                        <forecolor>[text_color,text_color,text_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <colum_number>2</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="header_text_common_view_item1">
+                            <property>
+                                <rect>[10,0,60,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="header_text_common_view_item2">
+                            <property>
+                                <rect>[70,0,402,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="scrollbar_common_view_item">
+                    <property>
+                        <rect>[477,0,9,342]</rect>
+                        <forecolor>[window_bg_color,window_bg_color,window_bg_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_common_view_item1"/>
+                <widget class="listitem" style="default" name="listitem_common_view_item2"/>
+                <widget class="listitem" style="default" name="listitem_common_view_item3"/>
+                <widget class="listitem" style="default" name="listitem_common_view_item4"/>
+                <widget class="listitem" style="default" name="listitem_common_view_item5"/>
+                <widget class="listitem" style="default" name="listitem_common_view_item6"/>
+                <widget class="listitem" style="default" name="listitem_common_view_item7"/>
+                <widget class="listitem" style="default" name="listitem_common_view_item8"/>
+                <widget class="listitem" style="default" name="listitem_common_view_item9"/>
+            </children>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_arrow_up">
+            <property>
+                <rect>[670,102,20,10]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img>s_arrow_u</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_arrow_down">
+            <property>
+                <rect>[670,468,20,10]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img>s_arrow_d</img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_common_view_item_page">
+            <property>
+                <rect>[854,98,100,24]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>right|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_common_view_item_bg1">
+            <property>
+                <rect>[428,122,116,80]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_common_view_item_logo1">
+            <property>
+                <rect>[430,124,112,76]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_item_title1">
+            <property>
+                <rect>[423,205,126,24]</rect>
+                <state>hide</state>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_fav1">
+            <property>
+                <rect>[522,124,20,17]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_fav</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_common_view_item_bg2">
+            <property>
+                <rect>[560,122,116,80]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_common_view_item_logo2">
+            <property>
+                <rect>[562,124,112,76]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_item_title2">
+            <property>
+                <rect>[555,205,126,24]</rect>
+                <state>hide</state>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_fav2">
+            <property>
+                <rect>[654,124,20,17]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_fav</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_common_view_item_bg3">
+            <property>
+                <rect>[692,122,116,80]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_common_view_item_logo3">
+            <property>
+                <rect>[694,124,112,76]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_item_title3">
+            <property>
+                <rect>[689,205,126,24]</rect>
+                <state>hide</state>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_fav3">
+            <property>
+                <rect>[786,124,20,17]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_fav</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_common_view_item_bg4">
+            <property>
+                <rect>[824,122,116,80]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_common_view_item_logo4">
+            <property>
+                <rect>[826,124,112,76]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_item_title4">
+            <property>
+                <rect>[819,205,126,24]</rect>
+                <state>hide</state>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_fav4">
+            <property>
+                <rect>[918,124,20,17]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_fav</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_common_view_item_bg5">
+            <property>
+                <rect>[428,234,116,80]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_common_view_item_logo5">
+            <property>
+                <rect>[430,236,112,76]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_item_title5">
+            <property>
+                <rect>[423,317,126,24]</rect>
+                <state>hide</state>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_fav5">
+            <property>
+                <rect>[522,236,20,17]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_fav</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_common_view_item_bg6">
+            <property>
+                <rect>[560,234,116,80]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_common_view_item_logo6">
+            <property>
+                <rect>[562,236,112,76]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_item_title6">
+            <property>
+                <rect>[555,317,126,24]</rect>
+                <state>hide</state>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_fav6">
+            <property>
+                <rect>[654,236,20,17]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_fav</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_common_view_item_bg7">
+            <property>
+                <rect>[692,234,116,80]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_common_view_item_logo7">
+            <property>
+                <rect>[694,236,112,76]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_item_title7">
+            <property>
+                <rect>[689,317,126,24]</rect>
+                <state>hide</state>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_fav7">
+            <property>
+                <rect>[786,236,20,17]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_fav</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_common_view_item_bg8">
+            <property>
+                <rect>[824,234,116,80]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_common_view_item_logo8">
+            <property>
+                <rect>[826,236,112,76]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_item_title8">
+            <property>
+                <rect>[819,317,126,24]</rect>
+                <state>hide</state>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_fav8">
+            <property>
+                <rect>[918,236,20,17]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_fav</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_common_view_item_bg9">
+            <property>
+                <rect>[428,346,116,80]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_common_view_item_logo9">
+            <property>
+                <rect>[430,348,112,76]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_item_title9">
+            <property>
+                <rect>[423,429,126,24]</rect>
+                <state>hide</state>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_fav9">
+            <property>
+                <rect>[522,348,20,17]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_fav</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_common_view_item_bg10">
+            <property>
+                <rect>[560,346,116,80]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_common_view_item_logo10">
+            <property>
+                <rect>[562,348,112,76]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_item_title10">
+            <property>
+                <rect>[555,429,126,24]</rect>
+                <state>hide</state>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_fav10">
+            <property>
+                <rect>[654,348,20,17]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_fav</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_common_view_item_bg11">
+            <property>
+                <rect>[692,346,116,80]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_common_view_item_logo11">
+            <property>
+                <rect>[694,348,112,76]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_item_title11">
+            <property>
+                <rect>[689,429,126,24]</rect>
+                <state>hide</state>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_fav11">
+            <property>
+                <rect>[786,348,20,17]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_fav</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_common_view_item_bg12">
+            <property>
+                <rect>[824,346,116,80]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_common_view_item_logo12">
+            <property>
+                <rect>[826,348,112,76]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_item_title12">
+            <property>
+                <rect>[819,429,126,24]</rect>
+                <state>hide</state>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_fav12">
+            <property>
+                <rect>[918,348,20,17]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_fav</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_common_view_popup">
+            <property>
+                <rect>[498,218,304,144]</rect>
+                <state>hide</state>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[theme_color,theme_color,theme_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_popup">
+            <property>
+                <rect>[500,220,300,140]</rect>
+                <state>hide</state>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_bottom_bg">
+            <property>
+                <rect>[0,510,1024,66]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_b2</lt_img>
+                <rt_img>s_win2_r_b2</rt_img>
+                <t_img>s_win2_m_b2</t_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="img_common_view_exit_tip">
+            <property>
+                <rect>[162,541,54,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <string>EXIT</string>
+                <focus_img>T2_64_button_tips</focus_img>
+                <unfocus_img>T2_64_button_tips</unfocus_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_exit_tip">
+            <property>
+                <rect>[224,540,126,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Exit</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="img_common_view_menu_tip">
+            <property>
+                <rect>[346,541,54,22]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <string>MENU</string>
+                <focus_img>T2_64_button_tips</focus_img>
+                <unfocus_img>T2_64_button_tips</unfocus_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_menu_tip">
+            <property>
+                <rect>[408,540,126,25]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Exit</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="img_common_view_ok_tip">
+            <property>
+                <rect>[529,541,54,22]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <string>OK</string>
+                <focus_img>T2_64_button_tips</focus_img>
+                <unfocus_img>T2_64_button_tips</unfocus_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_ok_tip">
+            <property>
+                <rect>[591,540,126,25]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Confirm</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_move_tip">
+            <property>
+                <rect>[729,541,22,22]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_move</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_move_tip">
+            <property>
+                <rect>[767,540,130,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Move</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_red_tip">
+            <property>
+                <rect>[180,517,20,20]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_red</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_red_tip">
+            <property>
+                <rect>[218,516,130,25]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_green_tip">
+            <property>
+                <rect>[362,517,20,20]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_green</img>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_green_tip">
+            <property>
+                <rect>[400,516,130,25]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_yellow_tip">
+            <property>
+                <rect>[544,517,20,20]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_yellow</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_yellow_tip">
+            <property>
+                <rect>[582,516,130,25]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_common_view_blue_tip">
+            <property>
+                <rect>[730,517,20,20]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_blue</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_common_view_blue_tip">
+            <property>
+                <rect>[768,516,130,25]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

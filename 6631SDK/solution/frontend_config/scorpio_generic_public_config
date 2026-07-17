@@ -1,0 +1,14 @@
+//Board Mark: SCORPIO_DVBC_R850_OnBoard_Demo_V1.0  2019-02028
+//Frontend Info: Scorpio(R850)
+
+frontend1_demod_i2c_id = 0
+frontend1_demod_i2c_chip_addr = 0xA4
+frontend1_demod_attach = Scorpio_DVBC_ATTACH
+frontend1_tuner_i2c_id = 0
+frontend1_tuner_crystal = 24
+frontend1_if_freq = 5000
+frontend1_tuner_xtal_cap = 0
+frontend1_tuner_clock_out = 0
+frontend1_tuner_loop_out = 0
+frontend1_tuner_i2c_chip_addr = 0xF8
+frontend1_demux_ts_src = DEMUX_TS1

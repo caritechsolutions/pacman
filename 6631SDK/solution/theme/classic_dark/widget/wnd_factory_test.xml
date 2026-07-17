@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_factory_test">
+  <property>
+<rect>[0,0,1024,576]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    <back_ground>bg</back_ground>
+  </property>
+  <signal>
+    <create>app_factory_test_create</create>
+    <destroy>app_factory_test_destroy</destroy>
+    <lost_focus>app_factory_test_lost_focus</lost_focus>
+    <got_focus>app_factory_test_got_focus</got_focus>
+    <keypress>app_factory_test_keypress</keypress>
+  </signal>
+  <children>
+   <widget class="image" style="default" name="img_factory_test_back">
+      <property>
+<rect>[144,64,736,405]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>s_win_l_t</lt_img>
+        <rt_img>s_win_r_t</rt_img>
+        <lb_img>s_win_l_b</lb_img>
+        <rb_img>s_win_r_b</rb_img>
+        <l_img>s_win_l_m</l_img>
+        <r_img>s_win_r_m</r_img>
+        <t_img>s_win_m_t</t_img>
+        <b_img>s_win_m_b</b_img>
+	</property>
+</widget>
+<widget class="image" name="img_factory_test_title" style="default">
+	<property>
+		<rect>[160,72,48,48]</rect>
+		<forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+		<backcolor>[#808080,#808080,#808080]</backcolor>
+		<mode>single</mode>
+		<img>s_title_left_utility</img>
+	</property>
+</widget>
+<widget class="text" style="default" name="text_factory_test_title">
+	<property>
+		<rect>[224,74,600,52]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+        <alignment>left|bottom</alignment>
+        <string>Factory Test</string>
+        <format>static</format>
+      </property>
+  </widget>
+  <widget class="image" name="img_factory_test_bottom" style="default">
+	  <property>
+		  <rect>[0,496,1024,80]</rect>
+		  <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+		  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+		  <mode>signal</mode>
+	  </property>
+  </widget>
+
+    <widget class="image" style="default" name="img_factory_test_item_choice1">
+      <property>
+		  <rect>[164,130,348,30]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_factory_test_item_choice2">
+      <property>
+<rect>[164,160,348,30]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_factory_test_item_choice3">
+      <property>
+<rect>[164,190,348,30]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_factory_test_item_choice4">
+      <property>
+<rect>[164,220,348,30]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_factory_test_item_choice5">
+      <property>
+<rect>[164,250,348,30]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_factory_test_item_choice6">
+      <property>
+<rect>[164,280,348,30]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_factory_test_item_choice7">
+      <property>
+<rect>[164,310,348,30]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_factory_test_item_choice8">
+      <property>
+<rect>[164,340,348,30]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_factory_test_item_choice9">
+      <property>
+<rect>[164,370,348,30]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_factory_test_item_choice10">
+      <property>
+<rect>[164,400,348,30]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_factory_test_item_choice11">
+      <property>
+<rect>[164,430,348,30]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="text" style="default" name="text_factory_test_item1">
+      <property>
+<rect>[208,131,288,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_factory_test_item2">
+      <property>
+<rect>[208,161,288,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_factory_test_item3">
+      <property>
+<rect>[208,191,288,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_factory_test_item4">
+      <property>
+<rect>[208,221,288,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_factory_test_item5">
+      <property>
+<rect>[208,251,288,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_factory_test_item6">
+      <property>
+<rect>[208,281,288,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_factory_test_item7">
+      <property>
+<rect>[208,311,288,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_factory_test_item8">
+      <property>
+<rect>[208,341,288,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_factory_test_item9">
+      <property>
+<rect>[208,371,288,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_factory_test_item10">
+      <property>
+<rect>[208,401,288,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_factory_test_item11">
+      <property>
+<rect>[208,431,288,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="combobox" style="default" name="edit_factory_test_opt1">
+      <property>
+<rect>[512,130,348,30]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+        <content>[None,OK]</content>
+      </property>
+    </widget>
+    <widget class="combobox" style="default" name="edit_factory_test_opt2">
+      <property>
+<rect>[512,160,348,30]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+        <content>[None,Tuner1 Short,Tuner2 Short,Tuner1/Tuner2 Short]</content>
+      </property>
+    </widget>
+    <widget class="combobox" style="default" name="cmb_factory_test_opt3">
+      <property>
+<rect>[512,190,348,30]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+        <unfocus_left_img>s_arrow_l</unfocus_left_img>
+        <focus_left_img>s_arrow_l</focus_left_img>
+        <unfocus_right_img>s_arrow_r</unfocus_right_img>
+        <focus_right_img>s_arrow_r</focus_right_img>
+      </property>
+      <signal>
+        <change>app_factory_test_cmb1_change</change>
+      </signal>
+    </widget>
+    <widget class="combobox" style="default" name="cmb_factory_test_opt4">
+      <property>
+<rect>[511,220,348,30]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+        <unfocus_left_img>s_arrow_l</unfocus_left_img>
+        <focus_left_img>s_arrow_l</focus_left_img>
+        <unfocus_right_img>s_arrow_r</unfocus_right_img>
+        <focus_right_img>s_arrow_r</focus_right_img>
+      </property>
+      <signal>
+        <change>app_factory_test_cmb1_change</change>
+      </signal>
+    </widget>
+    <widget class="combobox" style="default" name="cmb_factory_test_opt5">
+      <property>
+<rect>[512,250,348,30]</rect>
+        <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+        <unfocus_left_img>s_arrow_l</unfocus_left_img>
+        <focus_left_img>s_arrow_l</focus_left_img>
+        <unfocus_right_img>s_arrow_r</unfocus_right_img>
+        <focus_right_img>s_arrow_r</focus_right_img>
+      </property>
+      <signal>
+        <change>app_factory_test_cmb1_change</change>
+      </signal>
+    </widget>
+    <widget class="combobox" style="default" name="cmb_factory_test_opt6">
+      <property>
+<rect>[512,280,348,30]</rect>
+        <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+        <unfocus_left_img>s_arrow_l</unfocus_left_img>
+        <focus_left_img>s_arrow_l</focus_left_img>
+        <unfocus_right_img>s_arrow_r</unfocus_right_img>
+        <focus_right_img>s_arrow_r</focus_right_img>
+      </property>
+      <signal>
+        <change>app_factory_test_cmb1_change</change>
+      </signal>
+    </widget>
+    <widget class="edit" style="default" name="edit_factory_test_opt7">
+      <property>
+<rect>[512,310,348,30]</rect>
+        <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+        <string>000.000.000.000</string>
+        <maxlen>15</maxlen>
+        <format>edit_ip</format>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+    </property>
+      <signal>
+        <keypress>app_factory_test_edit3_keypress</keypress>
+        <reach_end>app_factory_test_edit3_reach_end</reach_end>
+      </signal>
+    </widget>
+    <widget class="button" style="default" name="btn_factory_test_opt8">
+      <property>
+<rect>[512,340,348,30]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+        <string>Press OK</string>
+      </property>
+    </widget>
+    <widget class="combobox" style="default" name="cmb_factory_test_opt9">
+      <property>
+<rect>[512,370,348,30]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+        <content>[None]</content>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="edit_factory_test_opt10">
+      <property>
+<rect>[512,400,348,30]</rect>
+        <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+        <string>1.9.0.0+gx3201</string>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+    </property>
+    </widget>
+    <widget class="button" style="default" name="btn_factory_test_opt11">
+      <property>
+<rect>[512,430,348,30]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_facory_test_red">
+      <property>
+<rect>[164,506,16,16]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_red</img>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_facory_test_green">
+      <property>
+<rect>[516,506,16,16]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_green</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_factory_test_red">
+      <property>
+<rect>[188,500,160,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Press to Search</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_factory_test_green">
+      <property>
+<rect>[540,500,160,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_colors]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>To Switch Tuner 2</string>
+        <format>static</format>
+      </property>
+    </widget>
+  </children>
+</widget>

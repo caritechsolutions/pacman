@@ -1,0 +1,114 @@
+From 4c9b07583c7ba82d5a61e6a6a1240df9dd05f8de Mon Sep 17 00:00:00 2001
+From: luyong <luyong@nationalchip.com>
+Date: Tue, 12 Nov 2019 10:28:31 +0800
+Subject: [PATCH] feat: 172827: taurus combo autotest
+
+Change-Id: I6cf1a221f8a8839d6ea9aaa9e21f0971f6e7e23c
+---
+ app/module/autotest/autotest_dvbc.c          |  4 ++--
+ app/module/autotest/autotest_dvbt2.c         |  4 ++--
+ app/module/autotest/common/common_commands.c | 10 ++++++++++
+ app/module/autotest/module/module_frontend.c |  8 ++++++++
+ 4 files changed, 22 insertions(+), 4 deletions(-)
+
+diff --git a/app/module/autotest/autotest_dvbc.c b/app/module/autotest/autotest_dvbc.c
+index 2411fc6f..53babefd 100644
+--- a/app/module/autotest/autotest_dvbc.c
++++ b/app/module/autotest/autotest_dvbc.c
+@@ -219,7 +219,7 @@ static int _parse_tp_para(char *Command, void **ppInOutFrontendInfo, void **ppIn
+ 	p = strstr(Command, KEYWORD_TSSOURCE);
+ 	if(p == NULL)
+ 	{// DEFAULT SOURCE
+-		sg_DvbcTpInfo.TpInfo.DemuxPara.TsSource = 0;// source 0
++		sg_DvbcTpInfo.TpInfo.DemuxPara.TsSource = 1;// source 2
+ 	}
+ 	else
+ 	{// find the keyword
+@@ -232,7 +232,7 @@ static int _parse_tp_para(char *Command, void **ppInOutFrontendInfo, void **ppIn
+ 	p = strstr(Command, KEYWORD_TSSELECT);
+ 	if(p == NULL)
+ 	{// DEFAULT TS SELECT
+-		sg_DvbcTpInfo.TpInfo.TunerSelect = 0; // tuner 1
++		sg_DvbcTpInfo.TpInfo.TunerSelect = 2; // tuner 3
+ 	}
+ 	else
+ 	{// find the keyword
+diff --git a/app/module/autotest/autotest_dvbt2.c b/app/module/autotest/autotest_dvbt2.c
+index e2964b8e..256c8d1e 100644
+--- a/app/module/autotest/autotest_dvbt2.c
++++ b/app/module/autotest/autotest_dvbt2.c
+@@ -268,7 +268,7 @@ static int _parse_tp_para(char *Command, void **ppInOutFrontendInfo, void **ppIn
+ 	p = strstr(Command, KEYWORD_TSSOURCE);
+ 	if(p == NULL)
+ 	{// DEFAULT SOURCE
+-		sg_DvbT2TpInfo.TpInfo.DemuxPara.TsSource = 0;// source 1
++		sg_DvbT2TpInfo.TpInfo.DemuxPara.TsSource = 1;// source 2
+ 	}
+ 	else
+ 	{// find the keyword
+@@ -281,7 +281,7 @@ static int _parse_tp_para(char *Command, void **ppInOutFrontendInfo, void **ppIn
+ 	p = strstr(Command, KEYWORD_TSSELECT);
+ 	if(p == NULL)
+ 	{// DEFAULT TS SELECT
+-		sg_DvbT2TpInfo.TpInfo.TunerSelect = 0; // tuner 1
++		sg_DvbT2TpInfo.TpInfo.TunerSelect = 1; // tuner 2
+ 	}
+ 	else
+ 	{// find the keyword
+diff --git a/app/module/autotest/common/common_commands.c b/app/module/autotest/common/common_commands.c
+index 2e043ada..1bee846e 100644
+--- a/app/module/autotest/common/common_commands.c
++++ b/app/module/autotest/common/common_commands.c
+@@ -36,6 +36,8 @@ enum
+ 
+ static dev_tbl_t *dev_ops = NULL;
+ 
++extern void app_s2_t2_pin_switch(int tuner);
++
+ static signed int do_set_mode(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[], char *orgcmd)
+ {
+     char dev_name[10] = {0};
+@@ -70,6 +72,14 @@ static signed int do_set_mode(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[]
+ 		result_code = PARAMETER_IS_INVALID;
+ 		goto err;
+ 	}
++
++    if(0 == strcmp(dev_name, "dvbs"))
++        app_s2_t2_pin_switch(0);
++    else if(0 == strcmp(dev_name, "dvbt2"))
++        app_s2_t2_pin_switch(1);
++    else if(0 == strcmp(dev_name, "dvbc"))
++        app_s2_t2_pin_switch(1);
++
+ 	pResult = "successful";
+ 	auto_test_reply(cmdtp->name, pResult, result_code, NULL);
+ 	// TODO: reply lock status
+diff --git a/app/module/autotest/module/module_frontend.c b/app/module/autotest/module/module_frontend.c
+index ac4480d1..0869ff23 100644
+--- a/app/module/autotest/module/module_frontend.c
++++ b/app/module/autotest/module/module_frontend.c
+@@ -87,6 +87,7 @@ int _frontend_destroy(int *pFrontendFd,int tuner)
+ 	return ret;
+ }
+ 
++extern int32_t app_gpio_polar_set(uint32_t hv);
+ //
+ int frontend_voltage(int *pFrontendFd, unsigned int voltage)
+ {
+@@ -96,6 +97,13 @@ int frontend_voltage(int *pFrontendFd, unsigned int voltage)
+ 		log_printf("\nTEST, error, %s, %d\n",__FUNCTION__,__LINE__);
+ 		return -1;
+ 	}
++
++    if(SEC_VOLTAGE_13 == voltage)
++        app_gpio_polar_set(0);
++    else if(SEC_VOLTAGE_18 == voltage)
++        app_gpio_polar_set(1);
++    else if(SEC_VOLTAGE_OFF == voltage)
++
+ 	ret = ioctl (*pFrontendFd, FE_SET_VOLTAGE, voltage);
+ 	if(ret < 0)
+ 	{
+-- 
+2.17.1
+

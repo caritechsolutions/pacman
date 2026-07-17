@@ -1,0 +1,11 @@
+//Board Mark: GX6631-SH1D_DVB-S2_RDA5815M_DEMO_V1.0_20230320  2023-3-9
+//Frontend Info: Canopus(RDA5815M)
+
+frontend1_demod_i2c_id = 0
+frontend1_demod_i2c_chip_addr = 0xA4
+frontend1_demod_attach = Canopus_DVBS_ATTACH
+frontend1_iq = 0
+frontend1_lnb_power_gpio = V_GPIO_LNB_A
+frontend1_lnb_invert = 1
+frontend1_polar_invert = 1
+frontend1_tuner_connection = FE_SINGLE_END //356661 for rda5815m

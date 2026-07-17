@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="win_media_centre">
+  <property>
+    <rect>[0,0,1280,720]</rect>
+    <forecolor>[black,black,black]</forecolor>
+    <backcolor>[osd_trans,osd_trans,black]</backcolor>
+    <back_ground>bg</back_ground>
+</property>
+  <signal>
+    <create>media_centre_init</create>
+    <destroy>media_centre_destroy</destroy>
+    <keypress>media_centre_keypress</keypress>
+  </signal>
+  <children>
+    <widget class="image" style="default" name="win_media_centre_image_back">
+      <property>
+        <rect>[0,0,1280,720]</rect>
+        <forecolor>[black,black,black]</forecolor>
+        <backcolor>[black,black,black]</backcolor>
+        <mode>single</mode>
+        <img>mediacenter</img>
+      </property>
+    </widget>
+    <widget class="box" style="default" name="win_media_centre_box_main">
+      <property>
+        <rect>[245,220,800,280]</rect>
+        <forecolor>[black,black,black]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <format>horizontal</format>
+      </property>
+      <signal>
+        <change>media_centre_item_change</change>
+        <keypress>media_centre_box_keypress</keypress>
+      </signal>
+      <children>
+        <widget class="boxitem" style="default" name="win_media_centre_boxitem_file">
+          <property>
+            <rect>[0,0,160,280]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+          </property>
+          <children>
+            <widget class="button" style="default" name="media_centre_button_file_back">
+              <property>
+                <rect>[0,0,149,270]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[black,#42a6de,osd_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+              </property>
+            </widget>
+            <widget class="button" style="default" name="media_centre_button_file">
+              <property>
+                <rect>[4,4,141,262]</rect>
+                <forecolor>[#e0e0e0,#addd28,black]</forecolor>
+                <backcolor>[#020206,#020206,#020206]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>MP_ICON_FILE_A</focus_img>
+                <unfocus_img>MP_ICON_FILE_A</unfocus_img>
+                <link>win_file_browser</link>
+              </property>
+              <signal>
+                <clicked>media_centre_button_file_clicked</clicked>
+              </signal>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="win_media_centre_boxitem_video">
+          <property>
+            <rect>[160,0,160,280]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+          </property>
+          <children>
+            <widget class="button" style="default" name="media_centre_button_video_back">
+              <property>
+                <rect>[0,0,149,270]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[black,#42a6de,osd_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+              </property>
+            </widget>
+            <widget class="button" style="default" name="media_centre_button_video">
+              <property>
+                <rect>[4,4,141,262]</rect>
+                <forecolor>[#e0e0e0,#addd28,black]</forecolor>
+                <backcolor>[black,black,black]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>MP_ICON_MOVICE_A</focus_img>
+                <unfocus_img>MP_ICON_MOVICE_A</unfocus_img>
+                <link>win_file_browser</link>
+              </property>
+              <signal>
+                <clicked>media_centre_button_video_clicked</clicked>
+              </signal>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="win_media_centre_boxitem_music">
+          <property>
+            <rect>[320,0,160,280]</rect>
+            <forecolor>[black,black,black]</forecolor>
+            <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+          </property>
+          <children>
+            <widget class="button" style="default" name="media_centre_button_music_back">
+              <property>
+                <rect>[0,0,149,270]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[black,#42a6de,osd_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+              </property>
+            </widget>
+            <widget class="button" style="default" name="media_centre_button_music">
+              <property>
+                <rect>[4,4,141,262]</rect>
+                <forecolor>[#e0e0e0,#addd28,black]</forecolor>
+                <backcolor>[win_bg_color,win_bg_color,win_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>MP_ICON_MUSIC_A</focus_img>
+                <unfocus_img>MP_ICON_MUSIC_A</unfocus_img>
+                <link>win_file_browser</link>
+              </property>
+              <signal>
+                <clicked>media_centre_button_music_clicked</clicked>
+              </signal>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="win_media_centre_boxitem_pic">
+          <property>
+            <rect>[480,0,160,280]</rect>
+            <forecolor>[black,black,black]</forecolor>
+            <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+          </property>
+          <children>
+            <widget class="button" style="default" name="media_centre_button_pic_back">
+              <property>
+                <rect>[0,0,149,270]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[black,#42a6de,osd_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+              </property>
+            </widget>
+            <widget class="button" style="default" name="media_centre_button_picture">
+              <property>
+                <rect>[4,4,141,262]</rect>
+                <forecolor>[#e0e0e0,#addd28,black]</forecolor>
+                <backcolor>[win_bg_color,win_bg_color,win_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>MP_ICON_PIC_A</focus_img>
+                <unfocus_img>MP_ICON_PIC_A</unfocus_img>
+                <link>win_file_browser</link>
+              </property>
+              <signal>
+                <clicked>media_centre_button_picture_clicked</clicked>
+              </signal>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="win_media_centre_boxitem_text">
+          <property>
+            <rect>[640,0,160,280]</rect>
+            <forecolor>[black,black,black]</forecolor>
+            <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+          </property>
+          <children>
+            <widget class="button" style="default" name="media_centre_button_text_back">
+              <property>
+                <rect>[0,0,149,270]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[black,#42a6de,osd_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+              </property>
+            </widget>
+            <widget class="button" style="default" name="media_centre_button_text">
+              <property>
+                <rect>[4,4,141,262]</rect>
+                <forecolor>[#e0e0e0,#addd28,black]</forecolor>
+                <backcolor>[win_bg_color,win_bg_color,win_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>MP_ICON_TXT_A</focus_img>
+                <unfocus_img>MP_ICON_TXT_A</unfocus_img>
+                <link>win_file_browser</link>
+              </property>
+              <signal>
+                <clicked>media_centre_button_text_clicked</clicked>
+              </signal>
+            </widget>
+          </children>
+        </widget>
+      </children>
+    </widget>
+    <widget class="text" style="default" name="win_media_centre_text_title">
+      <property>
+        <rect>[234,104,812,80]</rect>
+        <forecolor>[main_text_color,main_text_color,main_text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <font>font_main</font>
+        <string>File</string>
+        <format>static</format>
+      </property>
+    </widget>
+  </children>
+</widget>

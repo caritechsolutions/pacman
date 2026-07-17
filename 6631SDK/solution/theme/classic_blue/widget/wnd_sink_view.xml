@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_sink_view">
+    <property>
+        <rect>[0,0,1280,720]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    <back_ground>mediacenter</back_ground>
+    </property>
+    <signal>
+        <create>app_sink_view_create</create>
+        <destroy>app_sink_view_destroy</destroy>
+        <got_focus>app_sink_view_got_focus</got_focus>
+        <lost_focus>app_sink_view_lost_focus</lost_focus>
+        <keypress>app_sink_view_keypress</keypress>
+    </signal>
+    <children>
+        
+        <widget class="image" style="default" name="sink_view_imag_mute">
+            <property>
+                <rect>[1000,34,94,76]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_mute</img>
+            </property>
+        </widget>
+    <widget class="image" style="default" name="sink_view_text_boxback">
+      <property>
+        <rect>[240,500,800,70]</rect>
+        <forecolor>[zoom_foreground,zoom_foreground,zoom_foreground]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,zoom_foreground]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>MP_WIN4_L_U</lt_img>
+        <rt_img>MP_WIN4_R_U</rt_img>
+        <lb_img>MP_WIN4_L_B</lb_img>
+        <rb_img>MP_WIN4_R_B</rb_img>
+        <l_img>MP_WIN4_L_M</l_img>
+        <r_img>MP_WIN4_R_M</r_img>
+        <t_img>MP_WIN4_U_M</t_img>
+        <b_img>MP_WIN4_B_M</b_img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="sink_view_text_name1">
+      <property>
+        <rect>[249,534,600,30]</rect>
+        <forecolor>[win_fore_color,win_fore_color,osd_trans]</forecolor>
+        <backcolor>[win_bg1_color,win_bg1_color,win_bg1_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="sink_view_image_popmsg">
+            <property>
+	     <rect>[1100,56,80,30]</rect>
+
+                <forecolor>[gui_trans,gui_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+    </widget>
+    <widget class="canvas" style="default" name="sink_view_canvas_spectrum">
+            <property>
+                <rect>[290,130,700,350]</rect>
+                <state>hide</state>
+                <backcolor>[black,black,black]</backcolor>
+            </property>
+            <signal>
+                <create>sink_view_canvas_init</create>
+            </signal>
+        </widget>
+    </children>
+</widget>

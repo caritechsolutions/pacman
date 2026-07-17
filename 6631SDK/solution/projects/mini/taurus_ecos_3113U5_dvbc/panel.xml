@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<config>
+	<tree>
+		<item display="board type" group="board type"/>
+		<item display="led converse" group="led converse"/>
+		<item display="led lock" group="led lock"/>
+		<item display="led value" group="led value"/>
+		<item display="key value" group="key value"/>
+		<item display="digtal value" group="digtal value"/>
+	</tree>
+	<group name="board type">
+	<item display="board type" value="0">
+	<list value="0" display="fd650"/>
+	<list value="1" display="1642"/>
+	</item>
+	</group>
+	<group name="led converse">
+	<item display="led converse" value="0">
+	<list value="0" display="0"/>
+	<list value="1" display="1"/>
+	</item>
+	</group>
+	<group name="led lock">
+	<item display="led lock" value="3">
+	<list value="0" display="0"/>
+	<list value="1" display="1"/>
+	<list value="2" display="2"/>
+	<list value="3" display="3"/>
+	</item>
+	</group>
+	<group name="led standby">
+	<item display="led standby" value="2">
+	<list value="0" display="0"/>
+	<list value="1" display="1"/>
+	<list value="2" display="2"/>
+	<list value="3" display="3"/>
+	</item>
+	</group>
+	<group name="led value">
+	<key name="BIT_A">0x01</key>
+	<key name="BIT_B">0x02</key>
+	<key name="BIT_C">0x04</key>
+	<key name="BIT_D">0x08</key>
+	<key name="BIT_E">0x10</key>
+	<key name="BIT_F">0x20</key>
+	<key name="BIT_G">0x40</key>
+	<key name="BIT_P">0x80</key>
+	</group>
+	<group name="key value">
+	<key name="KEY_MENU">79</key>
+	<key name="KEY_DOWN">95</key>
+	<key name="KEY_UP">103</key>
+	<key name="KEY_RIGHT">87</key>
+	<key name="KEY_LEFT">119</key>
+	<key name="KEY_OK">111</key>
+	<key name="KEY_PW">71</key>
+	<key name="KEY_EXIT">102</key>
+	</group>
+	<group name="digtal value">
+	<key name="DIGTAL_0">0x1400</key>
+	<key name="DIGTAL_1">0x1500</key>
+	<key name="DIGTAL_2">0x1600</key>
+	<key name="DIGTAL_3">0x1700</key>
+	</group>
+</config>
+

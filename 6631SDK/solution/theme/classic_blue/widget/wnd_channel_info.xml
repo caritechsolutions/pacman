@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget name="wnd_channel_info" style="default" class="window">
+    <property>
+        <rect>[100,500,1080,185]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_channel_info_create</create>
+        <destroy>app_channel_info_destroy</destroy>
+        <got_focus>app_channel_info_got_focus</got_focus>
+        <lost_focus>app_channel_info_lost_focus</lost_focus>
+        <keypress>app_channel_info_keypress</keypress>
+    </signal>
+    <children>
+        <widget name="img_channel_info_back" style="default" class="image">
+            <property>
+                <rect>[179,0,901,183]</rect>
+                <mirror>disable</mirror>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <rt_img>s_program_r</rt_img>
+                <t_img>s_program_m</t_img>
+            </property>
+        </widget>
+        <widget name="text_channel_info_name" style="default" class="text">
+            <property>
+                <rect>[190,3,520,48]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_sub</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_channel_info_current" style="default" class="text">
+            <property>
+                <rect>[190,92,560,32]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>No Information</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_channel_info_next" style="default" class="text">
+            <property>
+                <rect>[190,135,560,32]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>No Information</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="img_progbar_hdr" style="default" class="image">
+            <property>
+                <rect>[752,135,47,35]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_hdr</img>
+            </property>
+        </widget>
+        <widget name="img_progbar_scramble" style="default" class="image">
+            <property>
+                <rect>[1017,135,47,35]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_money</img>
+            </property>
+        </widget>
+        <widget name="img_progbar_lock" style="default" class="image">
+            <property>
+                <rect>[965,135,47,35]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_lock</img>
+            </property>
+        </widget>
+        <widget name="img_progbar_subt" style="default" class="image">
+            <property>
+                <rect>[858,135,47,35]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_subt</img>
+            </property>
+        </widget>
+        <widget name="img_progbar_ttx" style="default" class="image">
+            <property>
+                <rect>[805,135,47,35]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_ttx</img>
+            </property>
+        </widget>
+        <widget name="img_progbar_tv_radio" style="default" class="image">
+            <property>
+                <rect>[0,0,179,183]</rect>
+                <mirror>disable</mirror>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_tv</img>
+            </property>
+        </widget>
+        <widget name="text_channel_info_time" style="default" class="text">
+            <property>
+                <rect>[965,3,100,48]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_prog</font>
+                <string>12:00</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_channel_info_name_num" style="default" class="text">
+            <property>
+                <rect>[15,120,135,48]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_sub</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="img_progbar_hd" style="default" class="image">
+            <property>
+                <rect>[911,135,47,35]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_hd</img>
+            </property>
+        </widget>
+        <widget name="text_channel_info_avformat" style="default" class="text">
+            <property>
+                <rect>[950,96,110,26]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_channel_info_sat_tp" style="default" class="text" >
+            <property>
+                <rect>[590,63,460,26]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="wnd_channel_info_image245" style="default" class="image">
+            <property>
+                <rect>[925,8,38,41]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_clock</img>
+            </property>
+        </widget>
+        <widget name="wnd_channel_info_image247" style="default" class="image">
+            <property>
+                <rect>[730,6,37,41]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_calendar</img>
+            </property>
+        </widget>
+        <widget name="text_channel_info_date" style="default" class="text">
+            <property>
+                <rect>[770,3,150,48]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_prog</font>
+                <string>12:00</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_channel_info_solution" style="default" class="text">
+            <property>
+                <rect>[795,96,150,26]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+    <widget name="text_channel_info_smartcard" style="default" class="text">
+      <property>
+        <rect>[190,63,386,26]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <font>font_22</font>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget name="img_channel_info_ac3" style="default" class="image">
+      <property>
+        <rect>[670,15,44,30]</rect>
+        <state>hide</state>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <mode>single</mode>
+        <img></img>
+      </property>
+    </widget>
+    </children>
+</widget>

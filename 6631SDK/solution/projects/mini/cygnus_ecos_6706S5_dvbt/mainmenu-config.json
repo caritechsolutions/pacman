@@ -1,0 +1,130 @@
+{
+    "mainmenuVersion": 1,
+    "style": "classic",
+    "operation ladder": {
+        "focus widget": "BTN_MAIN_MENU_ITEM",
+        "enter next key": [
+            "STBK_UP",
+            "STBK_DOWN",
+            "STBK_OK"
+        ],
+        "enter back key": [
+            "STBK_MENU",
+            "STBK_EXIT"
+        ],
+        "next ladder": {
+            "focus widget": "LISTVIEW_MAIN_MENU_ITEM",
+            "enter next key": [
+                "STBK_RIGHT",
+                "STBK_OK"
+            ],
+            "enter back key": [
+                "STBK_MENU",
+                "STBK_EXIT"
+            ]
+        }
+    },
+    "classification change": [
+        "STBK_LEFT",
+        "STBK_RIGHT"
+    ],
+    "default": "Last",
+    "member": {
+        "Program": [
+            "APPUI_ENTRY_CHANNEL_EDIT",
+            "APPUI_ENTRY_RPOGRAM_GUIDE",
+            "APPUI_SETTING_SORT",
+            "APPUI_SETTING_LCN",
+			"APPUI_SETTING_ACU",
+            "APPUI_SETTING_VOLUM_SCOPE",
+            "APPUI_SETTING_POWERON_PLAY"
+        ],
+
+        "Picture": [
+            "APPUI_SETTING_ASPECT_RATIO",
+            "APPUI_SETTING_RESOLUTION",
+            "APPUI_SETTING_TV_FORMAT",
+            "APPUI_SETTING_SCART",
+			"APPUI_ENTRY_RM_MODULATOR_SETTING",
+            "APPUI_ENTRY_T2_OSD_SETTING",
+            "APPUI_ENTRY_T2_PANEL_SETTING",
+            "APPUI_ENTRY_CVBS_TEST_SETTING",
+            "APPUI_SETTING_VIDEO_OUTPUT",
+            "APPUI_SETTING_HDR_MODE"
+        ],
+
+        "Search": [
+            "APPUI_SETTING_SEARCH_MODE",
+            "APPUI_SETTING_FTA_ONLY",
+            "APPUI_ENTRY_DVBT_AUTOSCAN",
+            "APPUI_ENTRY_DVBT_MANUALSCAN",
+            "APPUI_SETTING_COUNTRY",
+            "APPUI_SETTING_ANT_POWER",
+            "APPUI_ENTRY_DVBC_AUTOSCAN",
+            "APPUI_ENTRY_DVBC_MANUALSCAN",
+            "APPUI_ENTRY_DVBC_FULLSCAN",
+			"APPUI_ENTRY_NET_SEARCH"
+        ],
+
+        "Time": [
+            "APPUI_ENTRY_T2_TIME_SETTING",
+            "APPUI_SETTING_SLEEP",
+            "APPUI_ENTRY_PLAY_TIMER_SETTING",
+            "APPUI_ENTRY_POWER_ON_OFF"
+        ],
+
+        "Option": [
+            "APPUI_SETTING_OSD_LAN",
+            "APPUI_SETTING_EPG_LAN",
+            "APPUI_SETTING_SUB_LAN",
+            "APPUI_SETTING_HOH_SUB",
+            "APPUI_SETTING_TTX_LAN",
+            "APPUI_SETTING_FIRST_AUDIO_LAN",
+            "APPUI_SETTING_SECOND_AUDIO_LAN",
+            "APPUI_SETTING_DIGITAL_AUDIO",
+            "APPUI_SETTING_AUDIO_REME",
+            "APPUI_SETTING_AUDIO_DESC",
+            "APPUI_SETTING_AD_VOL_OFFSET",
+            "APPUI_SETTING_NO_SIGNAL_AUTO_STANDBY",
+            "APPUI_SETTING_PVR_END_STANDBY",
+            "APPUI_SETTING_NO_SIGNAL_ALERT_TIP",
+            "APPUI_SETTING_CEC",
+            "APPUI_SETTING_CEC_USE_TV_REMOTE_CONTROL",
+            "APPUI_SETTING_CEC_TV_ON_STB_ACTIVITY",
+            "APPUI_SETTING_CEC_STB_STANDBY_TV_ACTIVITY",
+            "APPUI_SETTING_CEC_SYSTEM_AUDIO"
+        ],
+
+        "System": [
+            "APPUI_ENTRY_DVBT_PARENTAL_GUIDANCE",
+            "APPUI_ENTRY_DVBT_LOCK_CONTROL",
+            "APPUI_ENTRY_FACTORY_RESET",
+            "APPUI_ENTRY_SYSTEM_INFO",
+            "APPUI_ENTRY_T2_SOFTWARE_UPGRADE",
+            "APPUI_ENTRY_LEARN_RCU",
+            "APPUI_ENTRY_SAT2IP_SETTING",
+            "APPUI_ENTRY_DVB2IP_SETTING",
+            "APPUI_ENTRY_NETWORK_SETTING",
+            "APPUI_ENTRY_SOCKS5",
+            "APPUI_SETTING_POWERONCONTROL",
+            "APPUI_ENTRY_CA_SETTING",
+            "APPUI_ENTRY_CASCAM_SETTING",
+            "APPUI_ENTRY_BLUETOOTH_SETTING"
+        ],
+
+        "USB": [
+            "APPUI_ENTRY_DVBT_MEDIA_CENTRE",
+            "APPUI_ENTRY_PVR_MEDIA",
+            "APPUI_ENTRY_DVBT_PVR_MANAGEMENT",
+            "APPUI_ENTRY_DVBT_FM",
+            "APPUI_ENTRY_DVBT_USB_TEST",
+            "APPUI_ENTRY_INTERNET",
+            "APPUI_ENTRY_APPLETS",
+            "APPUI_ENTRY_DVBT_DLNA",
+            "APPUI_ENTRY_SINK",
+            "APPUI_ENTRY_WEBLET",
+            "APPUI_ENTRY_MIRACAST",
+            "APPUI_ENTRY_SUPERCAST"
+        ]
+    }
+}

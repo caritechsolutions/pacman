@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget name="wnd_key_scancode" style="default" class="window">
+    <property>
+        <rect>[320,152,384,120]</rect>
+        <forecolor>[gui_trans,gui_trans,gui_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_key_scancode_create</create>
+        <destroy>app_key_scancode_destroy</destroy>
+        <keypress>app_key_scancode_keypress</keypress>
+    </signal>
+    <children>
+        <widget name="img_key_scancode_back" style="default" class="image">
+            <property>
+                <rect>[0,0,384,120]</rect>
+                <forecolor>[gui_trans,gui_trans,gui_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_t2</lt_img>
+                <rt_img>s_win2_r_t2</rt_img>
+                <lb_img>s_win2_l_b2</lb_img>
+                <rb_img>s_win2_r_b2</rb_img>
+                <l_img>s_win2_l_m</l_img>
+                <r_img>s_win2_r_m</r_img>
+                <t_img>s_win2_m_t2</t_img>
+                <b_img>s_win2_m_b2</b_img>
+            </property>
+        </widget>
+    <widget class="text" style="default" name="text_key_scancode_title">
+      <property>
+        <rect>[10,2,360,30]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <string>Key Scancode</string>
+        <format>static</format>
+      </property>
+    </widget>
+
+    <widget class="box" style="default" name="box_key_scancode">
+      <property>
+	<rect>[8,40,368,72]</rect>
+        <forecolor>[gui_trans,gui_trans,gui_trans]</forecolor>
+        <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+        <format>vertical</format>
+      </property>
+      <signal>
+        <keypress>app_key_scancode_box_keypress</keypress>
+      </signal>
+      <children>
+      <widget class="boxitem" style="default" name="boxitem_key_scancode_text">
+        <property>
+            <rect>[0,0,348,30]</rect>
+            <forecolor>[gui_trans,gui_trans,gui_trans]</forecolor>
+            <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+            <focus_image>s_bar_black_half1</focus_image>
+          </property>
+          <children>
+      <widget class="text" style="default" name="text_key_scancode_title">
+        <property>
+                <rect>[24,0,160,30]</rect>
+                <forecolor>[#000000,text_color,#000000]</forecolor>
+                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+		<string>The KeyCode </string>
+		<format>static</format>
+	      </property>
+	    </widget>
+            <widget name="text_key_scancode_name" style="default" class="text">
+             <property>
+                <rect>[154,0,176,30]</rect>
+                <forecolor>[#000000,#000000,#34343c]</forecolor>
+                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                <string>0x0000</string>
+                <format>static</format>
+             </property>
+            </widget>
+          </children>
+        </widget>
+
+      <widget class="boxitem" style="default" name="boxitem_key_scancode_exit">
+          <property>
+            <rect>[0,32,366,30]</rect>
+            <forecolor>[gui_trans,gui_trans,gui_trans]</forecolor>
+            <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+            <focus_image>s_bar_choice_blue4</focus_image>
+          </property>
+          <children>
+	    <widget class="button" style="default" name="btn_key_scancode_exit">
+              <property>
+                <rect>[152,0,176,30]</rect>
+                <forecolor>[#000000,text_color,#000000]</forecolor>
+                <backcolor>[gui_trans,gui_trans,pop_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+		<string>OK</string>
+              </property>
+            </widget>
+          </children>
+        </widget>
+      </children>
+    </widget>
+  </children>
+</widget>

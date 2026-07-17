@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_weblet">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_weblet_create</create>
+        <destroy>app_weblet_destroy</destroy>
+        <got_focus>app_weblet_got_focus</got_focus>
+        <lost_focus>app_weblet_lost_focus</lost_focus>
+        <keypress>app_weblet_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_weblet_back">
+            <property>
+                <rect>[0,0,1024,510]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+                <lt_img>s_win_m</lt_img>
+                <rt_img>s_win_m</rt_img>
+                <lb_img>s_win_m</lb_img>
+                <rb_img>s_win_m</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weblet_title_back">
+            <property>
+                <rect>[120,96,784,2]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <alignment>left|bottom</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weblet_title">
+            <property>
+                <rect>[300,45,400,44]</rect>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_main</font>
+                <string>Weblet</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_qrcode_left">
+            <property>
+                <rect>[252,105,10,20]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[black,black,black]</backcolor>
+                <mode>single</mode>
+                <img>s_arrow_l</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_qrcode">
+            <property>
+                <rect>[350,189,324,245]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_qrcode_right">
+            <property>
+                <rect>[762,105,10,20]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[black,black,black]</backcolor>
+                <mode>single</mode>
+                <img>s_arrow_r</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_weblet_qrcode_name">
+            <property>
+                <rect>[262,100,500,30]</rect>
+                <forecolor>[#FFFF7F,#FFFF7F,#FFFF7F]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weblet_page_ico1">
+            <property>
+                <rect>[614,591,10,1]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[#808080,#FFFF00,#808080]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weblet_page_ico2">
+            <property>
+                <rect>[646,591,10,1]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[#808080,#808080,#808080]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weblet_tip_back">
+            <property>
+                <rect>[0,510,1024,66]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bot_color,window_bot_color,window_bot_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_b2</lt_img>
+                <rt_img>s_win2_r_b2</rt_img>
+                <t_img>s_win2_m_b2</t_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_exit_btn">
+            <property>
+                <rect>[136,525,54,22]</rect>
+                <forecolor>[main_text_color,main_text_color,main_text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>T2_64_button_tips</focus_img>
+                <unfocus_img>T2_64_button_tips</unfocus_img>
+                <string>EXIT</string>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_weblet_tip_exit">
+            <property>
+                <rect>[200,524,150,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Exit</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_weblet_tip_arrow">
+            <property>
+                <rect>[796,525,22,22]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_move</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_weblet_tip_arrow">
+            <property>
+                <rect>[828,524,150,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Move</string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

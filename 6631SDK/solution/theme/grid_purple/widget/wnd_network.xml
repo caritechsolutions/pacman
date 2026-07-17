@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_network">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+    </property>
+    <signal>
+        <create>app_network_create</create>
+        <destroy>app_network_destroy</destroy>
+        <got_focus>app_network_got_focus</got_focus>
+        <lost_focus>app_network_lost_focus</lost_focus>
+        <keypress>app_network_keypress</keypress>
+    </signal>
+    <children>
+	<widget class="image" style="default" name="img_network_line1">
+            <property>
+                <rect>[120,96,784,2]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+	<widget class="image" style="default" name="img_network_line2">
+            <property>
+                <rect>[120,450,784,2]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_tnetwork_tips">
+            <property>
+                <rect>[0,510,1024,66]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_b2</lt_img>
+                <rt_img>s_win2_r_b2</rt_img>
+                <t_img>s_win2_m_b2</t_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_network_title">
+            <property>
+                <rect>[112,45,800,44]</rect>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_main</font>
+                <string>Network Setting</string>
+                <format>static</format>
+            </property>
+		</widget>
+		<widget class="box" style="default" name="box_network_options">
+            <property>
+                <rect>[136,120,752,328]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<format>vertical</format>
+			</property>
+			<signal>
+				<keypress>app_network_box_keypress</keypress>
+			</signal>
+            <children>
+                <widget class="boxitem" style="default" name="boxitem_network_device">
+                    <property>
+                        <rect>[0,0,752,36]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+					<children>
+						<widget class="text" style="default" name="text_network_device">
+							<property>
+								<rect>[20,2,405,30]</rect>
+                				<forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                				<backcolor>[gui_trans,gui_trans,window_bg_color]</backcolor>
+                				<alignment>left|vcentre</alignment>
+                				<string>Device</string>
+                				<format>static</format>
+							</property>
+						</widget>
+						<widget class="combobox" style="default" name="cmbox_network_device">
+							<property>
+								<rect>[425,2,315,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+								<unfocus_left_img>s_arrow_l</unfocus_left_img>
+								<focus_left_img>s_arrow_l</focus_left_img>
+								<unfocus_right_img>s_arrow_r</unfocus_right_img>
+								<focus_right_img>s_arrow_r</focus_right_img>
+							</property>
+							<signal>
+								<keypress>app_network_cmb_device_keypress</keypress>
+								<change>app_network_cmb_device_change</change>
+							</signal>
+						</widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_network_mode">
+                    <property>
+                        <rect>[0,72,752,36]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+					</property>
+					<children>
+						<widget class="text" style="default" name="text_network_mode">
+							<property>
+								<rect>[20,2,405,30]</rect>
+                				<forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                				<backcolor>[gui_trans,gui_trans,window_bg_color]</backcolor>
+                				<alignment>left|vcentre</alignment>
+                				<string>Mode</string>
+                				<format>static</format>
+							</property>
+						</widget>
+						<widget class="combobox" style="default" name="cmbox_network_mode">
+							<property>
+								<rect>[425,2,315,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+								<unfocus_left_img>s_arrow_l</unfocus_left_img>
+								<focus_left_img>s_arrow_l</focus_left_img>
+								<unfocus_right_img>s_arrow_r</unfocus_right_img>
+								<focus_right_img>s_arrow_r</focus_right_img>
+							</property>
+							<signal>
+								<change>app_network_cmb_mode_change</change>
+							</signal>
+						</widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_network_type">
+                    <property>
+                        <rect>[0,108,752,36]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+					</property>
+					<children>
+						<widget class="text" style="default" name="text_network_type">
+							<property>
+								<rect>[20,2,405,30]</rect>
+                				<forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                				<backcolor>[gui_trans,gui_trans,window_bg_color]</backcolor>
+                				<alignment>left|vcentre</alignment>
+                				<string>Type</string>
+                				<format>static</format>
+							</property>
+						</widget>
+						<widget class="combobox" style="default" name="cmbox_network_type">
+							<property>
+								<rect>[425,2,315,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+								<unfocus_left_img>s_arrow_l</unfocus_left_img>
+								<focus_left_img>s_arrow_l</focus_left_img>
+								<unfocus_right_img>s_arrow_r</unfocus_right_img>
+								<focus_right_img>s_arrow_r</focus_right_img>
+							</property>
+							<signal>
+								<change>app_network_cmb_type_change</change>
+							</signal>
+						</widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_network_ipaddress">
+                    <property>
+                        <rect>[0,144,752,36]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+					</property>
+					<children>
+						<widget class="text" style="default" name="text_network_ip_address">
+							<property>
+								<rect>[20,2,405,30]</rect>
+                				<forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                				<backcolor>[gui_trans,gui_trans,window_bg_color]</backcolor>
+                				<alignment>left|vcentre</alignment>
+                				<string>IP Address</string>
+                				<format>static</format>
+							</property>
+						</widget>
+						<widget class="edit" style="default" name="edit_network_ip_address">
+							<property>
+            				    <rect>[425,2,315,30]</rect>
+            				    <mirror>disable</mirror>
+            				    <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+            				    <alignment>hcentre|vcentre</alignment>
+            				    <string>000.000.000.000</string>
+            				    <maxlen>15</maxlen>
+            				    <format>edit_ip</format>
+                            </property>
+                            <signal>
+                                <reach_end>app_edit_network_ip_address_reach_end</reach_end>
+                            </signal>
+            			</widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_network_mask">
+                    <property>
+                        <rect>[0,180,752,36]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+					</property>
+					<children>
+						<widget class="text" style="default" name="text_network_mask">
+							<property>
+								<rect>[20,2,405,30]</rect>
+                				<forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                				<backcolor>[gui_trans,gui_trans,window_bg_color]</backcolor>
+                				<alignment>left|vcentre</alignment>
+                				<string>Subnet Mask</string>
+                				<format>static</format>
+							</property>
+						</widget>
+						<widget class="edit" style="default" name="edit_network_mask">
+							<property>
+            				    <rect>[425,2,315,30]</rect>
+            				    <mirror>disable</mirror>
+            				    <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+            				    <alignment>hcentre|vcentre</alignment>
+            				    <string>000.000.000.000</string>
+            				    <maxlen>15</maxlen>
+            				    <format>edit_ip</format>
+            				</property>
+                            <signal>
+                                <reach_end>app_edit_network_mask_reach_end</reach_end>
+                            </signal>
+						</widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_network_gate_way">
+                    <property>
+                        <rect>[0,216,752,36]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+					</property>
+					<children>
+						<widget class="text" style="default" name="text_network_gate_way">
+							<property>
+								<rect>[20,2,405,30]</rect>
+                				<forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                				<backcolor>[gui_trans,gui_trans,window_bg_color]</backcolor>
+                				<alignment>left|vcentre</alignment>
+                				<string>Gate Way</string>
+                				<format>static</format>
+							</property>
+						</widget>
+						<widget class="edit" style="default" name="edit_network_gate_way">
+							<property>
+            				    <rect>[425,2,315,30]</rect>
+            				    <mirror>disable</mirror>
+            				    <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+            				    <alignment>hcentre|vcentre</alignment>
+            				    <string>000.000.000.000</string>
+            				    <maxlen>15</maxlen>
+            				    <format>edit_ip</format>
+            				</property>
+                            <signal>
+                                <reach_end>app_edit_network_gate_way_reach_end</reach_end>
+                            </signal>
+						</widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_network_dns1">
+                    <property>
+                        <rect>[0,252,752,36]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+					<children>
+						<widget class="text" style="default" name="text_network_dns1">
+							<property>
+								<rect>[20,2,405,30]</rect>
+                				<forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                				<backcolor>[gui_trans,gui_trans,window_bg_color]</backcolor>
+                				<alignment>left|vcentre</alignment>
+                				<string>DNS1</string>
+                				<format>static</format>
+							</property>
+						</widget>
+						<widget class="edit" style="default" name="edit_network_dns1">
+							<property>
+            				    <rect>[425,2,315,30]</rect>
+            				    <mirror>disable</mirror>
+            				    <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+            				    <alignment>hcentre|vcentre</alignment>
+            				    <string>000.000.000.000</string>
+            				    <maxlen>15</maxlen>
+            				    <format>edit_ip</format>
+            				</property>
+                            <signal>
+                                <reach_end>app_edit_network_dns1_reach_end</reach_end>
+                            </signal>
+						</widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_network_dns2">
+                    <property>
+                        <rect>[0,288,752,36]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+					<children>
+						<widget class="text" style="default" name="text_network_dns2">
+							<property>
+								<rect>[20,2,405,30]</rect>
+                				<forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                				<backcolor>[gui_trans,gui_trans,window_bg_color]</backcolor>
+                				<alignment>left|vcentre</alignment>
+                				<string>DNS2</string>
+                				<format>static</format>
+							</property>
+						</widget>
+						<widget class="edit" style="default" name="edit_network_dns2">
+							<property>
+            				    <rect>[425,2,315,30]</rect>
+            				    <mirror>disable</mirror>
+            				    <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+            				    <alignment>hcentre|vcentre</alignment>
+            				    <string>000.000.000.000</string>
+            				    <maxlen>15</maxlen>
+            				    <format>edit_ip</format>
+            				</property>
+                            <signal>
+                                <reach_end>app_edit_network_dns2_reach_end</reach_end>
+                            </signal>
+						</widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_network_save">
+                    <property>
+                        <rect>[0,324,752,36]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+					<children>
+						<widget class="text" style="default" name="text_network_save">
+							<property>
+								<rect>[20,2,405,30]</rect>
+                				<forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                				<backcolor>[gui_trans,gui_trans,window_bg_color]</backcolor>
+                				<alignment>left|vcentre</alignment>
+                				<string>Save</string>
+                				<format>static</format>
+							</property>
+						</widget>
+						<widget class="button" style="default" name="btn_network_save">
+						<property>
+            			    <rect>[425,2,315,30]</rect>
+            			    <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+							<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+            			    <alignment>hcentre|vcentre</alignment>
+            			    <string>Press OK</string>
+            			</property>
+            			<signal>
+            			    <keypress>app_network_btn_save_keypress</keypress>
+            			</signal>
+						</widget>
+					</children>
+				</widget>
+            </children>
+		</widget>
+        <widget class="text" style="default" name="text_network_item10">
+            <property>
+                <rect>[156,461,405,30]</rect>
+                <forecolor>[text_color,text_color,#424247]</forecolor>
+                <backcolor>[gui_trans,gui_trans,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Status</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_network_opt1">
+            <property>
+                <rect>[561,461,315,30]</rect>
+                <forecolor>[text_color,text_color,#424247]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_network_green">
+            <property>
+                <rect>[486,526,20,20]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_green</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_network_green">
+            <property>
+                <rect>[516,524,150,25]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+		<font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_network_pop_bg">
+            <property>
+                <rect>[320,152,384,192]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_m</lt_img>
+                <rt_img>s_win_m</rt_img>
+                <lb_img>s_win_m</lb_img>
+                <rb_img>s_win_m</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+	    <widget class="text" style="default" name="txt_network_pop_tip">
+            <property>
+                <rect>[332,154,360,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <string>Tips</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_network_pop_info">
+            <property>
+                <rect>[336,200,352,96]</rect>
+                <state>hide</state>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <alignment>left|top</alignment>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+    </children>
+</widget>

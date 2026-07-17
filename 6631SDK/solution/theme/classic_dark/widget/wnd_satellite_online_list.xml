@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_satellite_online_list">
+    <property>
+        <rect>[144,64,736,416]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_sat_online_list_create</create>
+        <destroy>app_sat_online_list_destroy</destroy>
+        <keypress>app_sat_online_list_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_sat_list_online_back">
+            <property>
+                <rect>[0,0,736,416]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_sat_list_online_title">
+            <property>
+                <rect>[128,5,480,52]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <font>font_main</font>
+                <string>Satellite List</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="list_sat_online_list">
+            <property>
+                <rect>[16,80,708,302]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <roll_time>0</roll_time>
+                <focus_img>s_bar_long_focus</focus_img>
+                <item_active_image>s_bar_long_focus</item_active_image>
+                <item_active_color>#000001</item_active_color>
+                <i18n>false</i18n>
+                <item_rect>[0,0,696,30]</item_rect>
+                <item_fore_color>[text_color,#000001,text_color]</item_fore_color>
+                <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+                <alignment>left|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>app_sat_online_list_list_keypress</keypress>
+                <get_total>app_sat_online_list_list_get_total</get_total>
+                <get_data>app_sat_online_list_list_get_data</get_data>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="listheader_sat_online_list">
+                    <property>
+                        <rect>[0,0,708,0]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <colum_number>6</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="headertext_sat_online_choice">
+                            <property>
+                                <rect>[24,0,32,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_sat_online_num">
+                            <property>
+                                <rect>[56,0,48,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_sat_online_name">
+                            <property>
+                                <rect>[104,0,456,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_sat_online_longitude">
+                            <property>
+                                <rect>[560,0,128,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="scrollbar_sat_online_list">
+                    <property>
+                        <rect>[697,0,11,302]</rect>
+                        <forecolor>[window_bg_color,window_bg_color,window_bg_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_online_sat0"/>
+                <widget class="listitem" style="default" name="listitem_online_sat1"/>
+                <widget class="listitem" style="default" name="listitem_online_sat2"/>
+                <widget class="listitem" style="default" name="listitem_online_sat3"/>
+                <widget class="listitem" style="default" name="listitem_online_sat4"/>
+                <widget class="listitem" style="default" name="listitem_online_sat5"/>
+                <widget class="listitem" style="default" name="listitem_online_sat6"/>
+                <widget class="listitem" style="default" name="listitem_online_sat7"/>
+                <widget class="listitem" style="default" name="listitem_online_sat8"/>
+                <widget class="listitem" style="default" name="listitem_online_sat9"/>
+            </children>
+        </widget>
+        <widget class="image" style="default" name="img_satelite_online_tip_bk">
+            <property>
+                <rect>[180,130,320,192]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_t2</lt_img>
+                <rt_img>s_win2_r_t2</rt_img>
+                <lb_img>s_win2_l_b2</lb_img>
+                <rb_img>s_win2_r_b2</rb_img>
+                <l_img>s_win2_l_m</l_img>
+                <r_img>s_win2_r_m</r_img>
+                <t_img>s_win2_m_t2</t_img>
+                <b_img>s_win2_m_b2</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_satelite_online_tip_status">
+            <property>
+                <rect>[190,168,300,140]</rect>
+                <state>hide</state>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+    </children>
+</widget>

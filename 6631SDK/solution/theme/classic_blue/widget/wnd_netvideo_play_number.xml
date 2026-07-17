@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_netvideo_play_number">
+  <property>
+    <rect>[100,60,120,75]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    <format>popup</format>
+  </property>
+  <signal>
+    <create>app_netvideo_play_number_create</create>
+    <destroy>app_netvideo_play_number_destroy</destroy>
+    <keypress>app_netvideo_play_number_keypress</keypress>
+  </signal>
+  <children>
+    <widget class="image" style="default" name="img_netvideo_play_number">
+      <property>
+        <rect>[0,0,120,75]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_number</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_netvideo_play_number">
+      <property>
+        <rect>[10,20,100,35]</rect>
+        <forecolor>[black,black,black]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+  </children>
+</widget>

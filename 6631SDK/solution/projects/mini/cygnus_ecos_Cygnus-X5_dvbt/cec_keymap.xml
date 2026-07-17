@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<ceckeymap>
+	<tree>
+        <item display="cec Key map">
+        <item display="cec Key 1" group="receive"/>
+	<item display="cec Key 2" group="send"/>
+        </item>
+    </tree>
+	<group name="receive">
+	<key name="GUIK_0">0x20</key>
+	<key name="GUIK_1">0x21</key>
+	<key name="GUIK_2">0x22</key>
+	<key name="GUIK_3">0x23</key>
+	<key name="GUIK_4">0x24</key>
+	<key name="GUIK_5">0x25</key>
+	<key name="GUIK_6">0x26</key>
+	<key name="GUIK_7">0x27</key>
+	<key name="GUIK_8">0x28</key>
+	<key name="GUIK_9">0x29</key>
+	<key name="GUIK_M">0x09</key>		<!--menu-->
+	<key name="GUIK_ESCAPE">0x0D</key>	<!--exit-->
+	<key name="GUIK_RETURN">0x00</key>	<!--enter-->
+	<key name="GUIK_UP">0x01</key>
+	<key name="GUIK_DOWN">0x02</key>
+	<key name="GUIK_LEFT">0x03</key>
+	<key name="GUIK_RIGHT">0x04</key>
+	<key name="GUIK_U">0x43</key>		<!--mute-->
+	<key name="GUIK_V">0xa2</key>	<!--tv radio switch-->
+	<key name="GUIK_H">0x40</key>		<!--halt-->
+	<key name="GUIK_R">0x32</key>		<!--recall-->
+	<key name="GUIK_S">0xa1</key>		<!--sat,R/L-->
+	<key name="GUIK_A">0x33</key>		<!--audio, red-->
+	<key name="GUIK_I">0x35</key>		<!--info, -->
+	<key name="GUIK_B">0x51</key>	<!--SUBTITLE,yellow-->
+	<key name="GUIK_T">0x76</key>	<!--TELETEXT-->
+	<key name="GUIK_E">0x53</key>		<!--epg-->
+	<key name="GUIK_F">0xA6</key>		<!--fav-->
+	<key name="GUIK_PAGE_UP">0x37</key>		<!--page up-->
+	<key name="GUIK_PAGE_DOWN">0x38</key>		<!--page down-->
+	<key name="GUIK_F2">0x30</key>        <!--channel up-->
+    <key name="GUIK_F3">0x31</key>        <!--channel down-->
+	 <key name="GUIK_Q">0xA3</key>         <!--P/N-->
+	<key name="GUIK_PRINT">0x47</key>	<!--rec-->
+	<key name="GUIK_SCROLLOCK">0x45</key>	<!--rec stop-->
+	<key name="GUIK_P">0x44</key>   <!--play-->
+	<key name="GUIK_PAUSE">0x46</key>  <!--globle pause, "pvr pause" key is priority-->
+	<key name="GUIK_MINUS">0xA4</key>   <!--backward-->
+	<key name="GUIK_PLUS">0xA5</key>   <!--forward-->
+	<key name="GUIK_HOME">0x10</key>   <!--media-->
+        <key name="GUIK_F5">0x54</key>   <!--timer-->
+	<key name="GUIK_RED">0x72</key>
+	<key name="GUIK_GREEN">0x73</key>
+	<key name="GUIK_YELLOW">0x74</key>
+	<key name="GUIK_BLUE">0x71</key>
+	</group>
+	<group name="send">
+	<key name="GUIK_UP">0x01</key>
+	<key name="GUIK_DOWN">0x02</key>
+	<key name="GUIK_LEFT">0x03</key>
+	<key name="GUIK_RIGHT">0x04</key>
+	<key name="GUIK_U">0x43</key>		<!--mute-->
+	</group>
+</ceckeymap>

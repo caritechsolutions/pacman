@@ -1,0 +1,645 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_applets">
+    <property>
+        <rect>[0,0,1280,720]</rect>
+        <forecolor>[net_bg_color,net_bg_color,net_bg_color]</forecolor>
+        <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+        <back_ground>bg</back_ground>
+    </property>
+    <signal>
+        <create>app_applets_create</create>
+        <destroy>app_applets_destroy</destroy>
+        <got_focus>app_applets_got_focus</got_focus>
+        <lost_focus>app_applets_lost_focus</lost_focus>
+        <keypress>app_applets_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_applets_bg_top">
+            <property>
+                <rect>[0,0,1280,100]</rect>
+                <forecolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_applets_bg_bottom">
+            <property>
+                <rect>[0,620,1280,100]</rect>
+                <forecolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_applets_line_top">
+            <property>
+                <rect>[0,95,1280,5]</rect>
+                <forecolor>[line_bg_color,line_bg_color,line_bg_color]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_applets_line_bottom">
+            <property>
+                <rect>[0,620,1280,5]</rect>
+                <forecolor>[line_bg_color,line_bg_color,line_bg_color]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_applets_line_split">
+            <property>
+                <rect>[360,100,5,520]</rect>
+                <forecolor>[line_bg_color,line_bg_color,line_bg_color]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_title">
+            <property>
+                <rect>[250,37,260,48]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <font>font_sub</font>
+                <alignment>left|vcentre</alignment>
+                <string>Applets</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_page_info">
+            <property>
+                <rect>[750,130,100,36]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_applets_logo">
+            <property>
+                <rect>[80,25,140,60]</rect>
+                <forecolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img>IPTV</img>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="list_applets_group">
+            <property>
+                <rect>[35,190,315,416]</rect>
+                <state>focus</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+                <roll_time>0</roll_time>
+                <focus_img>feeds_item</focus_img>
+                <item_active_color>#B5DE29</item_active_color>
+                <i18n>true</i18n>
+                <item_rect>[0,0,315,52]</item_rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[net_bg_color,net_bg_color,net_bg_color]</item_back_color>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>app_applets_group_list_keypress</keypress>
+                <get_total>app_applets_group_list_get_total</get_total>
+                <get_data>app_applets_group_list_get_data</get_data>
+                <change>app_applets_group_list_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="header_applets_feeds">
+                    <property>
+                        <rect>[0,0,315,0]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <colum_number>1</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="headertext_applets_feeds">
+                            <property>
+                                <rect>[0,0,315,0]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="scrollbar_applets_feeds">
+                    <property>
+                        <rect>[315,0,0,410]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_applets_feeds0">
+                    <property>
+                        <alignment>hcentre|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_applets_feeds1">
+                    <property>
+                        <alignment>hcentre|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_applets_feeds2">
+                    <property>
+                        <alignment>hcentre|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_applets_feeds3">
+                    <property>
+                        <alignment>hcentre|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_applets_feeds4">
+                    <property>
+                        <alignment>hcentre|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_applets_feeds5">
+                    <property>
+                        <alignment>hcentre|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_applets_feeds6">
+                    <property>
+                        <alignment>hcentre|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_applets_feeds7">
+                    <property>
+                         <alignment>hcentre|vcentre</alignment>
+                    </property>
+                </widget>
+            </children>
+        </widget>
+        <widget class="text" style="default" name="img_applets_item_focus1">
+            <property>
+                <rect>[460,200,128,98]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_applets_item_unfocus1">
+            <property>
+                <rect>[464,204,120,90]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_item_title1">
+            <property>
+                <rect>[440,310,168,32]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_item_status1">
+            <property>
+                <rect>[440,342,168,32]</rect>
+                <state>hide</state>
+                <forecolor>[#005577,#005577,#005577]</forecolor>
+                <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_applets_item_focus2">
+            <property>
+                <rect>[730,200,128,98]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_applets_item_unfocus2">
+            <property>
+                <rect>[734,204,120,90]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_item_title2">
+            <property>
+                <rect>[710,310,168,32]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_item_status2">
+            <property>
+                <rect>[710,342,168,32]</rect>
+                <state>hide</state>
+                <forecolor>[#005577,#005577,#005577]</forecolor>
+                <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_applets_item_focus3">
+            <property>
+                <rect>[1000,200,128,98]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_applets_item_unfocus3">
+            <property>
+                <rect>[1004,204,120,90]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_item_title3">
+            <property>
+                <rect>[980,310,168,32]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_item_status3">
+            <property>
+                <rect>[980,342,168,32]</rect>
+                <state>hide</state>
+                <forecolor>[#005577,#005577,#005577]</forecolor>
+                <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_applets_item_focus4">
+            <property>
+                <rect>[460,405,128,98]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_applets_item_unfocus4">
+            <property>
+                <rect>[464,409,120,90]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_item_title4">
+            <property>
+                <rect>[440,515,168,32]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_item_status4">
+            <property>
+                <rect>[440,547,168,32]</rect>
+                <state>hide</state>
+                <forecolor>[#005577,#005577,#005577]</forecolor>
+                <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_applets_item_focus5">
+            <property>
+                <rect>[730,405,128,98]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_applets_item_unfocus5">
+            <property>
+                <rect>[734,409,120,90]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_item_title5">
+            <property>
+                <rect>[710,515,168,32]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_item_status5">
+            <property>
+                <rect>[710,547,168,32]</rect>
+                <state>hide</state>
+                <forecolor>[#005577,#005577,#005577]</forecolor>
+                <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_applets_item_focus6">
+            <property>
+                <rect>[1000,405,128,98]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_applets_item_unfocus6">
+            <property>
+                <rect>[1004,409,120,90]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_item_title6">
+            <property>
+                <rect>[980,515,168,32]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_item_status6">
+            <property>
+                <rect>[980,547,168,32]</rect>
+                <state>hide</state>
+                <forecolor>[#005577,#005577,#005577]</forecolor>
+                <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_applets_gif">
+            <property>
+                <rect>[725,130,48,48]</rect>
+                <state>hide</state>
+                <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_applets_red">
+            <property>
+                <rect>[416,655,22,22]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_red</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_red">
+            <property>
+                <rect>[446,650,120,35]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Setting</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_applets_green">
+            <property>
+                <rect>[576,655,22,22]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_green</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_green">
+            <property>
+                <rect>[606,650,120,35]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Install</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_applets_yellow">
+            <property>
+                <rect>[736,655,22,22]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_yellow</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_yellow">
+            <property>
+                <rect>[766,650,120,35]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Fav</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_applets_ok">
+            <property>
+                <rect>[1056,655,42,24]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_ok</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_ok">
+            <property>
+                <rect>[1106,650,130,35]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Select</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_item_shortdesc">
+            <property>
+                <rect>[6,625,377,90]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_applets_line_top2">
+            <property>
+                <rect>[0,168,360,5]</rect>
+                <forecolor>[line_bg_color,line_bg_color,line_bg_color]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_listview">
+            <property>
+                <rect>[35,120,315,47]</rect>
+                <forecolor>[#E78818,#E78818,#E78818]</forecolor>
+                <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+                <font>font_prog</font>
+                <string>Categories</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_applets_page_arrow_up">
+            <property>
+                <rect>[798,120,28,16]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_menu_arrow_up</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_applets_page_arrow_down">
+            <property>
+                <rect>[798,585,28,16]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_menu_arrow_down</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_applets_popup">
+            <property>
+                <rect>[510,230,460,230]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[net_bg1_color,net_bg1_color,net_bg1_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>L_U</lt_img>
+                <rt_img>R_U</rt_img>
+                <lb_img>L_B</lb_img>
+                <rb_img>R_B</rb_img>
+                <l_img>L_M</l_img>
+                <r_img>R_M</r_img>
+                <t_img>U_M</t_img>
+                <b_img>B_M</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_applets_popup">
+            <property>
+                <rect>[570,275,340,120]</rect>
+                <state>hide</state>
+                <forecolor>[#B5DE29,#B5DE29,#B5DE29]</forecolor>
+                <backcolor>[net_bg1_color,net_bg1_color,net_bg1_color]</backcolor>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_applets_right">
+            <property>
+                <rect>[392,104,60,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_applets_blue">
+            <property>
+                <rect>[896,655,22,22]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_blue</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_applets_blue">
+            <property>
+                <rect>[926,650,120,35]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Update</string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

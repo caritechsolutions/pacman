@@ -1,0 +1,9 @@
+//Board Mark: GX3235H1_ATBM7833_S2X_Cantuner_Demo_V1.0 2019-05-29
+//Frontend Info: ATBM783X(AV2018)
+
+frontend1_demod_i2c_id = 0
+frontend1_demod_i2c_chip_addr = 0x80
+frontend1_demod_attach = ATBM783X_DVBS_ATTACH
+frontend1_iq = 0
+frontend1_ts_mode = SERIAL
+

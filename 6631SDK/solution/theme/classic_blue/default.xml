@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="gb2312"?>
+<default>
+    <tree>
+        <item display="language" group="language"/>
+        <item display="common" group="common"/>
+        <item display="scart config" group="scart config"/>
+        <item display="spdif config" group="spdif config"/>
+        <item display="LCN config" group="LCN config"/>
+        <item display="Standby showtime" group="Standby showtime"/>
+        <item display="PassWord config" group="PassWord config"/>
+    </tree>
+    <group name="language">
+        <item display="osd language" value="0">
+            <list value="0" display="English"/>
+            <list value="1" display="Vietnamese"/>
+            <list value="2" display="Arabic"/>
+            <list value="3" display="Russian"/>
+            <list value="4" display="French"/>
+            <list value="5" display="Portuguese"/>
+            <list value="6" display="Turkish"/>
+            <list value="7" display="Spain"/>
+            <list value="8" display="German"/>
+            <list value="9" display="Farsi"/>
+        </item>
+        <item display="kb language" value="0">
+            <list value="0" display="English"/>
+            <list value="1" display="Arabic"/>
+            <list value="2" display="Farsi"/>
+            <list value="3" display="Spanish"/>
+            <list value="4" display="Portuguese"/>
+            <list value="5" display="Turkish"/>
+            <list value="6" display="Vietnamese"/>
+            <list value="7" display="Russian"/>
+            <list value="8" display="Ukrainian"/>
+            <list value="9" display="Thai"/>
+            <list value="10" display="Bulgarain"/>
+        </item>
+    </group>
+    <group name="common">
+        <item display="hardware version" value="2.0.0.0"/>
+        <item display="software version" value="V1.8.5"/>
+        <item display="netapp version" value="V1.2.0"/>
+        <item display="transparence" value="230">
+            <list value="255" display="100%"/>
+        </item>
+        <item display="volume" value="12">
+            <list value="75" display="25"/>
+        </item>
+        <item display="time zone" value="0">
+            <list value="-12" display="-12"/>
+            <list value="-11" display="-11"/>
+            <list value="-10" display="-10"/>
+            <list value="-9" display="-9"/>
+            <list value="-8" display="-8"/>
+            <list value="-7" display="-7"/>
+            <list value="-6" display="-6"/>
+            <list value="-5" display="-5"/>
+            <list value="-4" display="-4"/>
+            <list value="-3" display="-3"/>
+            <list value="-2" display="-2"/>
+            <list value="-1" display="-1"/>
+            <list value="0" display="0"/>
+            <list value="1" display="+1"/>
+            <list value="2" display="+2"/>
+            <list value="3" display="+3"/>
+            <list value="4" display="+4"/>
+            <list value="5" display="+5"/>
+            <list value="6" display="+6"/>
+            <list value="7" display="+7"/>
+            <list value="8" display="+8"/>
+            <list value="9" display="+9"/>
+            <list value="10" display="+10"/>
+            <list value="11" display="+11"/>
+            <list value="12" display="+12"/>
+        </item>
+        <item display="summer time" value="0">
+            <list value="1" display="on"/>
+            <list value="0" display="off"/>
+        </item>
+    </group>
+    <group name="scart config">
+        <item display="SCART" value="0">
+            <list value="0" display="CVBS"/>
+            <list value="1" display="RGB"/>
+            <list value="-1" display="off"/>
+        </item>
+    </group>
+    <group name="Standby showtime">
+        <item display="showtime" value="0">
+            <list value="1" display="on"/>
+            <list value="0" display="off"/>
+        </item>
+    </group>
+
+    <group name="spdif config">
+        <item display="SPDIF" value="3">
+            <list value="1" display="AC3 DECODE"/>
+            <list value="2" display="AC3 BYPASS"/>
+            <list value="3" display="AC3 AUTO"/>
+        </item>
+    </group>
+    <group name="LCN config">
+        <item display="LCN" value="1">
+            <list value="1" display="on"/>
+            <list value="0" display="off"/>
+        </item>
+    </group>
+    <group name="Standby showtime">
+        <item display="showtime" value="1">
+            <list value="1" display="on"/>
+            <list value="0" display="off"/>
+        </item>
+    </group>
+    <group name="PassWord config">
+        <item display="PassWord" value="876543"/>
+    </group>
+</default>

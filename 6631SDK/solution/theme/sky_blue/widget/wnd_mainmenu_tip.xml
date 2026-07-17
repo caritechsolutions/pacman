@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_mainmenu_tip">
+    <property>
+        <rect>[320,152,384,192]</rect>
+	<forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+	<backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_mainmenu_tip_create</create>
+        <destroy>app_mainmenu_tip_destroy</destroy>
+        <keypress>app_mainmenu_tip_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_mainmenu_tip_bg">
+            <property>
+                <rect>[0,0,384,192]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mainmenu_tip_info1">
+            <property>
+                <rect>[12,36,360,28]</rect>
+                <state>hide</state>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <alignment>left|top</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mainmenu_tip_tv">
+            <property>
+                <rect>[12,36,70,28]</rect>
+                <state>hide</state>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <alignment>left|top</alignment>
+                <string>TV:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mainmenu_tip_tv_num">
+            <property>
+                <rect>[82,36,100,28]</rect>
+                <state>hide</state>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <alignment>left|top</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mainmenu_tip_radio">
+            <property>
+                <rect>[182,36,100,28]</rect>
+                <state>hide</state>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <alignment>left|top</alignment>
+                <string>Radio:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mainmenu_tip_radio_num">
+            <property>
+                <rect>[282,36,90,28]</rect>
+                <state>hide</state>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <alignment>left|top</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mainmenu_tip_title">
+            <property>
+                <rect>[8,1,368,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <string>Tips</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_mainmenu_tip_opt">
+            <property>
+                <rect>[8,148,366,30]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_choice_blue4</img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_mainmenu_tip_cancel">
+            <property>
+                <rect>[56,148,80,30]</rect>
+                <forecolor>[text_tag_color,text_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>Cancel</string>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_mainmenu_tip_ok">
+            <property>
+                <rect>[248,148,80,30]</rect>
+                <forecolor>[text_tag_color,text_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>OK</string>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_mainmenu_tip_info2">
+            <property>
+                <rect>[12,88,360,56]</rect>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <alignment>left|top</alignment>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+    </children>
+</widget>

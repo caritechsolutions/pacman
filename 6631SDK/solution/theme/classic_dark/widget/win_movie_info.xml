@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="win_movie_info">
+    <property>
+        <rect>[222,120,580,272]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>movie_info_init</create>
+        <destroy>movie_info_destroy</destroy>
+        <service>movie_info_service</service>
+        <keypress>movie_info_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="music_info_textback">
+            <property>
+                <rect>[0,0,580,272]</rect>
+                <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_t2</lt_img>
+                <rt_img>s_win2_r_t2</rt_img>
+                <lb_img>s_win2_l_b2</lb_img>
+                <rb_img>s_win2_r_b2</rb_img>
+                <l_img>s_win2_l_m</l_img>
+                <r_img>s_win2_r_m</r_img>
+                <t_img>s_win2_m_t2</t_img>
+                <b_img>s_win2_m_b2</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="movie_info_text0">
+            <property>
+                <rect>[28,40,294,32]</rect>
+                <forecolor>[#000000,#000000,#addd28]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>File name:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="movie_info_text1">
+            <property>
+                <rect>[28,72,294,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#242424]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>File Size:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="movie_info_text2">
+            <property>
+                <rect>[28,104,294,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#242424]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Resolution:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="movie_info_text3">
+            <property>
+                <rect>[28,136,294,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#242424]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Code format:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="movie_info_text4">
+            <property>
+                <rect>[28,168,294,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#242424]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Bit rate:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="movie_info_text5">
+            <property>
+                <rect>[28,200,294,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#242424]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Frame rate:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="movie_info_text_info0">
+            <property>
+                <rect>[306,40,200,32]</rect>
+                <forecolor>[#000000,#000000,#addd28]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="movie_info_text_info1">
+            <property>
+                <rect>[306,72,200,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#808080]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="movie_info_text_info2">
+            <property>
+                <rect>[306,104,200,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#808080]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="movie_info_text_info3">
+            <property>
+                <rect>[306,136,200,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#808080]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="movie_info_text_info4">
+            <property>
+                <rect>[306,168,200,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#808080]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="movie_info_text_info5">
+            <property>
+                <rect>[306,200,200,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#808080]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="movie_info_button_ok">
+            <property>
+                <rect>[270,238,38,19]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[#808080,#808080,#808080]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>s_ts_ok</focus_img>
+                <unfocus_img>s_ts_ok</unfocus_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="movie_info_text_title">
+            <property>
+                <rect>[220,0,140,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

@@ -1,0 +1,655 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget class="window" style="default" name="wnd_positioner_setting">
+  <property>
+<rect>[0,0,1024,576]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+     <back_ground>bg</back_ground>
+  </property>
+  <signal>
+    <create>app_positioner_setting_create</create>
+    <destroy>app_positioner_setting_destroy</destroy>
+    <got_focus>app_positioner_setting_got_focus</got_focus>
+    <lost_focus>app_positioner_setting_lost_focus</lost_focus>
+    <keypress>app_positioner_setting_keypress</keypress>
+  </signal>
+  <children>
+    <widget class="image" style="default" name="img_ppositioner_back">
+      <property>
+<rect>[144,64,736,416]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_positioner_title">
+            <property>
+<rect>[160,72,48,48]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_menu_icon_installation3</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_positioner_title">
+            <property>
+<rect>[224,74,480,52]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_main</font>
+                <string>Positioner Setup</string>
+                <format>static</format>
+            </property>
+        </widget>
+         <widget class="image" style="default" name="img_positioner_box_line">
+            <property>
+<rect>[147,384,730,2]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+            <mode>single</mode>
+            <img></img>
+            </property>
+          </widget>
+        <widget class="text" style="default" name="text_positioner_strength">
+      <property>
+<rect>[152,400,108,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Strength</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_positioner_Quality">
+      <property>
+<rect>[152,436,108,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Quality</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="progbar" style="default" name="progbar_positioner_strength">
+      <property>
+          <rect>[262,408,544,12]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <min>0</min>
+        <max>100</max>
+        <back_image>s_progress_m</back_image>
+        <back_image_l>s_progress_l</back_image_l>
+        <back_image_m>s_progress_m</back_image_m>
+        <back_image_r>s_progress_r</back_image_r>
+        <fore_image>s_progress_blue</fore_image>
+        <fore_image_l>s_progress3_l</fore_image_l>
+        <fore_image_m>s_progress3_m</fore_image_m>
+        <fore_image_r>s_progress3_r</fore_image_r>
+        <format>water</format>
+        <text_format>percentage</text_format>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="progbar" style="default" name="progbar_positioner_quality">
+      <property>
+          <rect>[262,444,544,12]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <min>0</min>
+        <max>100</max>
+        <back_image>s_progress_m</back_image>
+        <back_image_l>s_progress_l</back_image_l>
+        <back_image_m>s_progress_m</back_image_m>
+        <back_image_r>s_progress_r</back_image_r>
+        <fore_image>s_progress_blue</fore_image>
+        <fore_image_l>s_progress3_l</fore_image_l>
+        <fore_image_m>s_progress3_m</fore_image_m>
+        <fore_image_r>s_progress3_r</fore_image_r>
+        <format>water</format>
+        <text_format>percentage</text_format>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_positioner_strength_value">
+      <property>
+<rect>[808,400,64,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>right|vcentre</alignment>
+        <string>0%</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_positioner_quality_value">
+      <property>
+<rect>[808,436,64,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+         <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>right|vcentre</alignment>
+        <string>0%</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_positionaer_botline">
+      <property>
+<rect>[0,504,1024,72]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img></img>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_positioner_item_choice1">
+      <property>
+          <rect>[164,128,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_positioner_item_choice2">
+      <property>
+          <rect>[164,158,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_positioner_item_choice3">
+      <property>
+          <rect>[164,188,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_positioner_item_choice4">
+      <property>
+          <rect>[164,219,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_positioner_item_choice5">
+      <property>
+          <rect>[164,249,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_positioner_item_choice6">
+      <property>
+          <rect>[164,280,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_positioner_item_choice7">
+      <property>
+          <rect>[164,310,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_positioner_item_choice8">
+      <property>
+          <rect>[164,340,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+       <widget class="text" style="default" name="text_positioner_item_title1">
+      <property>
+<rect>[208,130,208,25]</rect>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Satellite</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_positioner_item_title2">
+      <property>
+<rect>[208,160,208,25]</rect>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>TP</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_positioner_item_title3">
+      <property>
+<rect>[208,191,208,25]</rect>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Motor Type</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_positioner_item_title4">
+      <property>
+<rect>[208,221,208,25]</rect>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Fine Drive</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_positioner_item_title5">
+      <property>
+<rect>[208,252,208,25]</rect>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Limit</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_positioner_item_title6">
+      <property>
+<rect>[208,282,208,25]</rect>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Recalculation</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_positioner_item_title7">
+      <property>
+<rect>[208,312,208,25]</rect>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Goto</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_positioner_item_title8">
+      <property>
+<rect>[208,343,208,25]</rect>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Save Position</string>
+        <format>static</format>
+      </property>
+  </widget>
+     <widget class="image" style="default" name="img_positioner_item_ok_choice1">
+        <property>
+            <rect>[452,134,42,18]</rect>
+            <forecolor>[black,black,black]</forecolor>
+            <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+            <mode>single</mode>
+            <state>hide</state>
+            <img>s_button_ok</img>
+        </property>
+    </widget>
+    <widget class="image" style="default" name="img_positioner_item_ok_choice2">
+        <property>
+            <rect>[452,164,42,18]</rect>
+            <forecolor>[black,black,black]</forecolor>
+            <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+            <mode>single</mode>
+            <state>hide</state>
+            <img>s_button_ok</img>
+        </property>
+    </widget>
+    <widget class="image" style="default" name="img_positioner_item_ok_choice3">
+        <property>
+            <rect>[452,194,42,18]</rect>
+            <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <mode>single</mode>
+            <state>hide</state>
+            <img>s_button_ok</img>
+        </property>
+    </widget>
+    <widget class="image" style="default" name="img_positioner_item_ok_choice4">
+        <property>
+            <rect>[452,254,42,18]</rect>
+            <forecolor>[black,black,black]</forecolor>
+            <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+            <mode>single</mode>
+            <state>hide</state>
+            <img>s_button_ok</img>
+        </property>
+    </widget>
+    <widget class="image" style="default" name="img_positioner_item_ok_choice5">
+        <property>
+            <rect>[452,316,42,18]</rect>
+            <forecolor>[black,black,black]</forecolor>
+            <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+            <mode>single</mode>
+            <state>hide</state>
+            <img>s_button_ok</img>
+        </property>
+    </widget>
+
+    <widget class="combobox" style="default" name="cmb_positioner_sat_opt">
+      <property>
+          <rect>[512,128,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+        <unfocus_left_img>s_arrow_l</unfocus_left_img>
+        <focus_left_img>s_arrow_l</focus_left_img>
+        <unfocus_right_img>s_arrow_r</unfocus_right_img>
+        <focus_right_img>s_arrow_r</focus_right_img>
+      </property>
+      <signal>
+        <change>app_positioner_sat_change</change>
+      </signal>
+    </widget>
+    <widget class="combobox" style="default" name="cmb_positioner_tp_opt">
+      <property>
+          <rect>[512,158,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+        <unfocus_left_img>s_arrow_l</unfocus_left_img>
+        <focus_left_img>s_arrow_l</focus_left_img>
+        <unfocus_right_img>s_arrow_r</unfocus_right_img>
+        <focus_right_img>s_arrow_r</focus_right_img>
+      </property>
+      <signal>
+        <change>app_positioner_tp_change</change>
+      </signal>
+    </widget>
+    <widget class="combobox" style="default" name="cmb_positioner_motor_opt">
+      <property>
+          <rect>[512,188,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+        <unfocus_left_img>s_arrow_l</unfocus_left_img>
+        <focus_left_img>s_arrow_l</focus_left_img>
+        <unfocus_right_img>s_arrow_r</unfocus_right_img>
+        <focus_right_img>s_arrow_r</focus_right_img>
+        <content>[Off,DiSEqC1.2,USALS]</content>
+      </property>
+      <signal>
+        <change>app_positioner_motor_type_change</change>
+      </signal>
+    </widget>
+    <widget class="combobox" style="default" name="cmb_positioner_fine_drive">
+      <property>
+          <rect>[512,219,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+        <unfocus_left_img>s_arrow_l</unfocus_left_img>
+        <focus_left_img>s_arrow_l</focus_left_img>
+        <unfocus_right_img>s_arrow_r</unfocus_right_img>
+        <focus_right_img>s_arrow_r</focus_right_img>
+        <content>[Press East / West]</content>
+      </property>
+      <signal>
+        <keypress>app_positioner_fine_drive_keypress</keypress>
+      </signal>
+    </widget>
+    <widget class="button" style="default" name="btn_positioner_longitude">
+      <property>
+          <rect>[512,280,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+    </property>
+    </widget>
+    <widget class="button" style="default" name="btn_positioner_usals_goto">
+      <property>
+          <rect>[512,310,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+        <string>Press OK</string>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+    </property>
+      <signal>
+        <keypress>app_positioner_usals_goto_keypress</keypress>
+      </signal>
+    </widget>
+    <widget class="combobox" style="default" name="cmb_positioner_limit">
+      <property>
+          <rect>[512,249,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+        <unfocus_left_img>s_arrow_l</unfocus_left_img>
+        <focus_left_img>s_arrow_l</focus_left_img>
+        <unfocus_right_img>s_arrow_r</unfocus_right_img>
+        <focus_right_img>s_arrow_r</focus_right_img>
+        <content>[E,W,Off]</content>
+      </property>
+      <signal>
+        <keypress>app_positioner_limit_keypress</keypress>
+      </signal>
+    </widget>
+    <widget class="button" style="default" name="btn_positioner_save">
+      <property>
+          <rect>[512,340,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+        <string>Press OK</string>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+    </property>
+      <signal>
+        <keypress>app_positioner_on_save_keypress</keypress>
+      </signal>
+    </widget>
+    <widget class="combobox" style="default" name="cmb_positioner_diseqc12_goto">
+      <property>
+          <rect>[512,310,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+        <unfocus_left_img>s_arrow_l</unfocus_left_img>
+        <focus_left_img>s_arrow_l</focus_left_img>
+        <unfocus_right_img>s_arrow_r</unfocus_right_img>
+        <focus_right_img>s_arrow_r</focus_right_img>
+        <content>[Position,Zero]</content>
+      </property>
+      <signal>
+        <keypress>app_positioner_diseqc12_goto_keypress</keypress>
+      </signal>
+    </widget>
+    <widget class="box" style="default" name="box_positioner_longitude">
+      <property>
+<rect>[512,219,348,30]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <format>vertical</format>
+      </property>
+      <signal>
+        <keypress>app_positioner_local_keypress</keypress>
+      </signal>
+      <children>
+        <widget class="boxitem" style="default" name="boxitem_positioner_longitude">
+          <property>
+              <rect>[0,0,348,30]</rect>
+            <mirror>disable</mirror>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <unfocus_image>s_bar_half_unfocus_arrow</unfocus_image>
+            <focus_image>s_bar_half_focus_arrow</focus_image>
+            <disable_image>s_bar_half_unfocus</disable_image>
+        </property>
+          <children>
+            <widget class="edit" style="default" name="edit_positioner_longitude">
+              <property>
+                  <rect>[129,0,56,30]</rect>
+                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <maxlen>5</maxlen>
+                <format>edit_float</format>
+              </property>
+              <signal>
+                <keypress>app_positioner_longitude_edit_keypress</keypress>
+                <change>app_positioner_longitude_edit_change</change>
+                <reach_end>app_positioner_longitude_edit_reachend</reach_end>
+              </signal>
+            </widget>
+            <widget class="text" style="default" name="text_positioner_longitude_direct">
+              <property>
+<rect>[185,0,20,30]</rect>
+                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+          </children>
+        </widget>
+      </children>
+    </widget>
+    <widget class="box" style="default" name="box_positioner_latitude">
+      <property>
+<rect>[512,249,348,30]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <format>vertical</format>
+      </property>
+      <signal>
+        <keypress>app_positioner_local_keypress</keypress>
+      </signal>
+      <children>
+        <widget class="boxitem" style="default" name="boxitem_positioner_latitude">
+          <property>
+              <rect>[0,0,348,30]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <unfocus_image>s_bar_half_unfocus_arrow</unfocus_image>
+            <focus_image>s_bar_half_focus_arrow</focus_image>
+            <disable_image>s_bar_half_unfocus</disable_image>
+            <mirror>disable</mirror>
+        </property>
+        <children>
+        <widget class="edit" style="default" name="edit_positioner_latitude">
+              <property>
+<rect>[129,0,56,30]</rect>
+                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <maxlen>4</maxlen>
+                <format>edit_float</format>
+              </property>
+              <signal>
+                <keypress>app_positioner_latitude_edit_keypress</keypress>
+                <change>app_positioner_latitude_edit_change</change>
+                <reach_end>app_positioner_latitude_edit_reachend</reach_end>
+              </signal>
+            </widget>
+            <widget class="text" style="default" name="text_positioner_latitude_direct">
+              <property>
+<rect>[185,0,20,30]</rect>
+                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+         </children>
+        </widget>
+      </children>
+    </widget>
+    <widget class="button" style="default" name="btn_positioner_off_save">
+      <property>
+          <rect>[512,219,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+        <string>Press OK</string>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+    </property>
+      <signal>
+        <keypress>app_positioner_off_save_keypress</keypress>
+      </signal>
+    </widget>
+    <widget class="button" style="default" name="btn_positioner_recalc">
+      <property>
+          <rect>[512,280,348,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+        <string>Press OK</string>
+        <focus_img>s_bar_half_focus_r</focus_img>
+        <unfocus_img>s_bar_half_unfocus</unfocus_img>
+        <disable_img>s_bar_half_unfocus</disable_img>
+    </property>
+      <signal>
+        <keypress>app_positioner_recalc_keypress</keypress>
+      </signal>
+    </widget>
+  </children>
+</widget>
+

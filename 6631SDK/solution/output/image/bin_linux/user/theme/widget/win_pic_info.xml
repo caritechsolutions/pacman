@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="win_pic_info">
+  <property>
+    <rect>[340,150,600,340]</rect>
+    <forecolor>[win_focus_color,win_focus_color,osd_trans]</forecolor>
+    <backcolor>[win_fore_color,win_fore_color,win_fore_color]</backcolor>
+  </property>
+  <signal>
+    <create>pic_info_init</create>
+    <service>pic_info_service</service>
+    <keypress>pic_info_keypress</keypress>
+  </signal>
+  <children>
+    <widget class="image" style="default" name="win_pic_info_image227">
+      <property>
+        <rect>[0,0,600,340]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,zoom_foreground]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>MP_WIN4_L_U</lt_img>
+        <rt_img>MP_WIN4_R_U</rt_img>
+        <lb_img>MP_WIN4_L_B</lb_img>
+        <rb_img>MP_WIN4_R_B</rb_img>
+        <l_img>MP_WIN4_L_M</l_img>
+        <r_img>MP_WIN4_R_M</r_img>
+        <t_img>MP_WIN4_U_M</t_img>
+        <b_img>MP_WIN4_B_M</b_img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="pic_info_text0">
+      <property>
+        <rect>[35,26,190,40]</rect>
+        <forecolor>[cmb_popup_focus_color,cmb_popup_focus_color,#addd28]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,zoom_foreground]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Resolution:</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="pic_info_text1">
+      <property>
+        <rect>[35,65,190,40]</rect>
+        <forecolor>[cmb_popup_focus_color,cmb_popup_focus_color,osd_trans]</forecolor>
+        <backcolor>[win_bg_color,win_bg_color,win_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Date time:</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="pic_info_text2">
+      <property>
+        <rect>[35,104,190,40]</rect>
+        <forecolor>[cmb_popup_focus_color,cmb_popup_focus_color,osd_trans]</forecolor>
+        <backcolor>[win_bg_color,win_bg_color,win_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Camera make:</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="pic_info_text3">
+      <property>
+        <rect>[35,144,190,40]</rect>
+        <forecolor>[cmb_popup_focus_color,cmb_popup_focus_color,osd_trans]</forecolor>
+        <backcolor>[win_bg_color,win_bg_color,win_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Camera model:</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="pic_info_text4">
+      <property>
+        <rect>[35,183,190,40]</rect>
+        <forecolor>[cmb_popup_focus_color,cmb_popup_focus_color,osd_trans]</forecolor>
+        <backcolor>[win_bg_color,win_bg_color,win_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Focal length:</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="pic_info_text5">
+      <property>
+        <rect>[35,222,190,40]</rect>
+        <forecolor>[cmb_popup_focus_color,cmb_popup_focus_color,osd_trans]</forecolor>
+        <backcolor>[win_bg_color,win_bg_color,win_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Exposure time:</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="pic_info_text_info0">
+      <property>
+        <rect>[225,26,350,40]</rect>
+        <forecolor>[win_fore_color,win_fore_color,win_fore_color]</forecolor>
+        <backcolor>[win_bg_color,win_bg_color,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="pic_info_text_info1">
+      <property>
+        <rect>[225,66,350,40]</rect>
+        <forecolor>[win_fore_color,win_fore_color,osd_trans]</forecolor>
+        <backcolor>[win_bg_color,win_bg_color,default_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="pic_info_text_info2">
+      <property>
+        <rect>[225,105,350,40]</rect>
+        <forecolor>[win_fore_color,win_fore_color,osd_trans]</forecolor>
+        <backcolor>[win_bg_color,win_bg_color,default_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="pic_info_text_info3">
+      <property>
+        <rect>[225,143,350,40]</rect>
+        <forecolor>[win_fore_color,win_fore_color,osd_trans]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,default_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="pic_info_text_info4">
+      <property>
+        <rect>[225,184,350,40]</rect>
+        <forecolor>[win_fore_color,win_fore_color,osd_trans]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,default_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="pic_info_text_info5">
+      <property>
+        <rect>[225,222,350,40]</rect>
+        <forecolor>[win_fore_color,win_fore_color,osd_trans]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,default_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="button" style="default" name="pic_info_button_ok">
+      <property>
+        <rect>[255,262,91,32]</rect>
+        <forecolor>[win_fore_color,cmb_popup_focus_color,osd_trans]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+        <string>OK</string>
+        <focus_img>MP_BUTTON_OK</focus_img>
+        <unfocus_img>MP_BUTTON_OK</unfocus_img>
+      </property>
+    </widget>
+  </children>
+</widget>

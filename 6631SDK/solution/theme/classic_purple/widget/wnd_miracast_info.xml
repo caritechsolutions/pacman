@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget name="wnd_miracast_info" style="default" class="window">
+    <property>
+        <rect>[62,400,900,155]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_miracast_info_create</create>
+        <destroy>app_miracast_info_destroy</destroy>
+        <keypress>app_miracast_info_keypress</keypress>
+    </signal>
+    <children>
+        <widget name="img_miracast_info_back" style="default" class="image">
+            <property>
+                <rect>[0,0,900,155]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_m</lt_img>
+                <rt_img>s_win_m</rt_img>
+                <lb_img>s_win_m</lb_img>
+                <rb_img>s_win_m</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_miracast_info_top_bg">
+            <property>
+                <rect>[0,50,900,2]</rect>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[#857BFF,#857BFF,#857BFF]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget name="text_miracast_info_bar_title" style="default" class="text">
+            <property>
+                <rect>[99,4,560,44]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_main</font>
+                <alignment>left|bottom</alignment>
+                <string>SSID</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_miracast_info_date">
+            <property>
+                <rect>[668,4,130,44]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <string>12:00</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_miracast_info_time" style="default" class="text">
+            <property>
+                <rect>[797,4,100,44]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>12:00</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="progbar" style="default" name="progbar_miracast_info_event_time">
+            <property>
+                <rect>[10,83,630,10]</rect>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[#293142,#293142,#293142]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <back_image>s_progress_m</back_image>
+                <back_image_l>s_progress_l</back_image_l>
+                <back_image_m>s_progress_m</back_image_m>
+                <back_image_r>s_progress_r</back_image_r>
+                <fore_image>s_progress3_m</fore_image>
+                <fore_image_l>s_progress3_l</fore_image_l>
+                <fore_image_m>s_progress3_m</fore_image_m>
+                <fore_image_r>s_progress3_r</fore_image_r>
+                <format>water</format>
+                <text_format>hide</text_format>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget name="text_miracast_info_aspect" style="default" class="text">
+            <property>
+                <rect>[755,60,100,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>16:9</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_miracast_info_resolution" style="default" class="text">
+            <property>
+                <rect>[755,90,100,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>1024*576</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_miracast_info_netspeed" style="default" class="text">
+            <property>
+                <rect>[755,120,106,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_miracast_red">
+            <property>
+                <rect>[66,106,20,20]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_red</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_miracast_red">
+            <property>
+                <rect>[92,102,100,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Aspect</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_miracast_green">
+            <property>
+                <rect>[198,106,20,20]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_green</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_miracast_green">
+            <property>
+                <rect>[224,102,100,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Stop</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_miracast_yellow">
+            <property>
+                <rect>[330,106,20,20]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_yellow</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_miracast_yellow">
+            <property>
+                <rect>[356,102,100,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Rotate</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_miracast_blue">
+            <property>
+                <rect>[462,106,20,20]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_blue</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_miracast_blue">
+            <property>
+                <rect>[488,102,100,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Mirror</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_miracast_ts0">
+            <property>
+                <rect>[594,105,54,22]</rect>
+                <forecolor>[main_text_color,main_text_color,main_text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <state>hide</state>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>T2_64_button_tips</focus_img>
+                <unfocus_img>T2_64_button_tips</unfocus_img>
+                <string>0</string>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_miracast_ts0">
+            <property>
+                <rect>[654,102,100,28]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

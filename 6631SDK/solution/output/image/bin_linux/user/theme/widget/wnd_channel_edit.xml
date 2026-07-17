@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_channel_edit">
+  <property>
+    <rect>[0,0,1280,720]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    <back_ground>bg</back_ground>
+    <keypress_revert>disable</keypress_revert>
+  </property>
+  <signal>
+    <create>app_channel_edit_create</create>
+    <destroy>app_channel_edit_destroy</destroy>
+    <show>app_channel_edit_show</show>
+    <got_focus>app_channel_edit_got_focus</got_focus>
+    <keypress>app_channel_edit_keypress</keypress>
+  </signal>
+  <children>
+	 <widget class="image" style="default" name="img_channel_edit_bg_jpg">
+        <property>
+            <rect>[0,0,1280,720]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <mode>single</mode>
+            <img>bg</img>
+        </property>
+	 </widget>
+    <widget class="image" style="default" name="img_channel_edit_top">
+      <property>
+        <rect>[60,40,80,80]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_title_left_channellist</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="img_channel_edit_title">
+      <property>
+        <rect>[155,70,600,48]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <font>font_sub</font>
+        <alignment>left|bottom</alignment>
+        <string>Channel Edit</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_channel_edit_bkline">
+      <property>
+        <rect>[60,150,215,440]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>s_win_l_t</lt_img>
+        <rt_img>s_win_r_t</rt_img>
+        <lb_img>s_win_l_b</lb_img>
+        <rb_img>s_win_r_b</rb_img>
+        <l_img>s_win_l_m</l_img>
+        <r_img>s_win_r_m</r_img>
+        <t_img>s_win_m_t</t_img>
+        <b_img>s_win_m_b</b_img>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="wnd_channel_edit_image211">
+      <property>
+        <rect>[285,150,480,440]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>s_win_l_t</lt_img>
+        <rt_img>s_win_r_t</rt_img>
+        <lb_img>s_win_l_b</lb_img>
+        <rb_img>s_win_r_b</rb_img>
+        <l_img>s_win_l_m</l_img>
+        <r_img>s_win_r_m</r_img>
+        <t_img>s_win_m_t</t_img>
+        <b_img>s_win_m_b</b_img>
+      </property>
+    </widget>
+    <widget class="combobox" style="default" name="cmb_channel_edit_group">
+      <property>
+        <rect>[347,150,372,40]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <focus_img>s_win_t</focus_img>
+        <unfocus_img>s_win_t</unfocus_img>
+        <unfocus_left_img>s_arrow_l</unfocus_left_img>
+        <focus_left_img>s_arrow_l</focus_left_img>
+        <unfocus_right_img>s_arrow_r</unfocus_right_img>
+        <focus_right_img>s_arrow_r</focus_right_img>
+        <content>[All]</content>
+      </property>
+    </widget>
+    <widget class="listview" style="default" name="listview_channel_edit">
+      <property>
+        <rect>[295,198,460,380]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <roll_time>0</roll_time>
+        <focus_img>s_bar_black2</focus_img>
+        <item_active_color>#bbe00b</item_active_color>
+        <item_rect>[0,0,440,38]</item_rect>
+        <item_fore_color>[text_color,text_color,text_tag_color]</item_fore_color>
+        <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+      </property>
+      <signal>
+        <create>app_channel_edit_list_create</create>
+        <keypress>app_channel_edit_list_keypress</keypress>
+        <get_total>app_channel_edit_list_get_total</get_total>
+        <get_data>app_channel_edit_list_get_data</get_data>
+        <change>app_channel_edit_list_change</change>
+      </signal>
+      <children>
+        <widget class="header" style="default" name="header_channel_edit">
+          <property>
+            <rect>[0,0,440,0]</rect>
+            <forecolor>[text_color,text_color,text_color]</forecolor>
+            <backcolor>[default_color,default_color,default_color]</backcolor>
+            <colum_number>8</colum_number>
+          </property>
+          <children>
+            <widget class="text" style="default" name="text_channel_edit_header1">
+              <property>
+                <rect>[20,0,80,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default" name="text_channel_edit_header2">
+              <property>
+                <rect>[100,0,20,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default" name="text_channel_edit_header3">
+              <property>
+                <rect>[120,0,160,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default" name="text_channel_edit_header4">
+              <property>
+                <rect>[290,0,30,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default" name="text_channel_edit_header5">
+              <property>
+                <rect>[320,0,30,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default" name="text_channel_edit_header6">
+              <property>
+                <rect>[350,0,30,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default" name="text_channel_edit_header7">
+              <property>
+                <rect>[380,0,30,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default" name="text_channel_edit_header8">
+              <property>
+                <rect>[410,0,30,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="scrollbar" style="default" name="scrollbar_channel_edit">
+          <property>
+            <rect>[447,0,13,380]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[default_color,default_color,default_color]</backcolor>
+            <back_img>s_roll_m</back_img>
+            <arrow_up>s_roll_t</arrow_up>
+            <arrow_down>s_roll_d</arrow_down>
+            <fore_img>s_roll_button</fore_img>
+            <format>scroll_show</format>
+          </property>
+        </widget>
+        <widget class="listitem" style="default" name="listitem_channel_edit1"/>
+        <widget class="listitem" style="default" name="listitem_channel_edit2"/>
+        <widget class="listitem" style="default" name="listitem_channel_edit3"/>
+        <widget class="listitem" style="default" name="listitem_channel_edit4"/>
+        <widget class="listitem" style="default" name="listitem_channel_edit5"/>
+        <widget class="listitem" style="default" name="listitem_channel_edit6"/>
+        <widget class="listitem" style="default" name="listitem_channel_edit7"/>
+        <widget class="listitem" style="default" name="listitem_channel_edit8"/>
+        <widget class="listitem" style="default" name="listitem_channel_edit9"/>
+        <widget class="listitem" style="default" name="listitem_channel_edit0"/>
+      </children>
+    </widget>
+    <widget class="image" style="default" name="img_channel_edit_bottom">
+      <property>
+        <rect>[0,620,1280,100]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bot_color,window_bot_color,window_bot_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <t_img>s_bar_bg</t_img>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_channel_edit_info">
+      <property>
+        <rect>[780,449,440,140]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>s_win_l_t2</lt_img>
+        <rt_img>s_win_r_t2</rt_img>
+        <lb_img>s_win_l_b</lb_img>
+        <rb_img>s_win_r_b</rb_img>
+        <l_img>s_win_l_m</l_img>
+        <r_img>s_win_r_m</r_img>
+        <t_img>s_win_m_t2</t_img>
+        <b_img>s_win_m_b</b_img>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_ch_edit_tip_red">
+      <property>
+        <rect>[60,633,22,22]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_red</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_ch_edit_tip_red">
+      <property>
+        <rect>[85,626,300,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[win_bar_up_color,win_bar_up_color,win_bar_up_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Sort</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_channel_edit_sat_info">
+      <property>
+        <rect>[807,455,400,32]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_channel_edit_tp_info">
+      <property>
+        <rect>[807,521,400,32]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_channel_edit_pid_info">
+      <property>
+        <rect>[807,555,400,32]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_channel_edit_for_pp">
+      <property>
+        <rect>[780,150,440,274]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_channel_edit_signal">
+      <property>
+        <rect>[780,150,440,274]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[channel_edit_video_bg,channel_edit_video_bg,channel_edit_video_bg]</backcolor>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_channel_edit_prog_info">
+      <property>
+        <rect>[807,488,400,32]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_ch_edit_tip_green">
+      <property>
+        <rect>[390,633,22,22]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_green</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_ch_edit_tip_green">
+      <property>
+        <rect>[415,626,300,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[win_bar_up_color,win_bar_up_color,win_bar_up_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Rename</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_channel_edit_ymd">
+      <property>
+        <rect>[1028,76,200,40]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>right|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_ch_ed_del">
+      <property>
+        <rect>[66,190,206,65]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_channellist_1</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_ch_ed_del">
+      <property>
+        <rect>[171,191,100,64]</rect>
+        <forecolor>[black,black,black]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Delete</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_ch_ed_move">
+      <property>
+        <rect>[66,270,206,65]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_channellist_2</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_ch_ed_move">
+      <property>
+        <rect>[170,270,100,64]</rect>
+        <forecolor>[black,black,black]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Move</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_ch_ed_skip">
+      <property>
+        <rect>[66,350,206,65]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_channellist_3</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_ch_ed_skip">
+      <property>
+        <rect>[171,351,100,64]</rect>
+        <forecolor>[black,black,black]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Skip</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_ch_ed_lock">
+      <property>
+        <rect>[66,430,206,65]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_channellist_4</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_ch_ed_lock">
+      <property>
+        <rect>[171,431,100,64]</rect>
+        <forecolor>[black,black,black]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Lock</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_ch_ed_fav">
+      <property>
+        <rect>[66,510,206,65]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_channellist_5</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_ch_ed_fav">
+      <property>
+        <rect>[171,511,100,64]</rect>
+        <forecolor>[black,black,black]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Fav</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_channel_edit_time">
+      <property>
+        <rect>[1025,34,200,46]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <font>font_sub</font>
+        <alignment>right|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="wnd_channel_edit_image254">
+      <property>
+        <rect>[0,0,0,0]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img></img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="wnd_channel_edit_text483">
+      <property>
+        <rect>[0,0,0,0]</rect>
+        <forecolor>[black,black,black]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_channel_edit_select">
+      <property>
+        <rect>[1050,632,46,24]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_15</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_channel_edit_select">
+      <property>
+        <rect>[1100,626,170,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[win_bar_up_color,win_bar_up_color,win_bar_up_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Mode</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_ch_edit_tip_yellow">
+      <property>
+        <rect>[720,633,22,22]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[win_bar_up_color,win_bar_up_color,win_bar_up_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_yellow</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_ch_edit_tip_yellow">
+      <property>
+        <rect>[745,626,300,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[win_bar_up_color,win_bar_up_color,win_bar_up_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>PID</string>
+        <format>static</format>
+      </property>
+    </widget>
+
+    <widget class="image" style="default" name="img_ch_edit_tip_ok">
+      <property>
+        <rect>[190,632,42,24]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[win_bar_up_color,win_bar_up_color,win_bar_up_color]</backcolor>
+	<state>hide</state>
+        <mode>single</mode>
+        <img>s_ts_ok</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_ch_edit_tip_ok">
+      <property>
+        <rect>[236,626,100,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[win_bar_up_color,win_bar_up_color,win_bar_up_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+	<state>hide</state>
+        <string>Select</string>
+        <format>static</format>
+      </property>
+    </widget>
+
+  </children>
+</widget>

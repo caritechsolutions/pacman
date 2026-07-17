@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget class="window" style="default" name="wnd_satellite_list">
+  <property>
+<rect>[0,0,1024,576]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    <back_ground>bg</back_ground>
+  </property>
+  <signal>
+    <create>app_sat_list_create</create>
+    <destroy>app_sat_list_destroy</destroy>
+    <got_focus>app_sat_list_got_focus</got_focus>
+    <lost_focus>app_sat_list_lost_focus</lost_focus>
+    <keypress>app_sat_list_keypress</keypress>
+  </signal>
+  <children>
+  <widget class="image" style="default" name="img_sat_list_back">
+      <property>
+<rect>[144,64,736,416]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>s_win_l_t</lt_img>
+        <rt_img>s_win_r_t</rt_img>
+        <lb_img>s_win_l_b</lb_img>
+        <rb_img>s_win_r_b</rb_img>
+        <l_img>s_win_l_m</l_img>
+        <r_img>s_win_r_m</r_img>
+        <t_img>s_win_m_t</t_img>
+        <b_img>s_win_m_b</b_img>
+      </property>
+    </widget>
+        <widget class="image" style="default" name="img_sat_list_title">
+            <property>
+<rect>[160,72,48,48]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_menu_icon_installation3</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_sat_list_title">
+            <property>
+				<rect>[224,74,480,52]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_main</font>
+                <string>Satellite List</string>
+                <format>static</format>
+            </property>
+        </widget>
+   <widget class="listview" style="default" name="list_sat_list">
+      <property>
+		  <rect>[156,168,720,212]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <roll_time>0</roll_time>
+        <focus_img>s_bar_long_focus</focus_img>
+        <item_active_image>s_bar_long_focus</item_active_image>
+        <item_active_color>#000001</item_active_color>
+		<item_rect>[0,0,696,30]</item_rect>
+        <item_fore_color>[#f4f4f4,#000001,#f4f4f4]</item_fore_color>
+        <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+        <alignment>left|vcentre</alignment>
+      </property>
+      <signal>
+        <create>app_sat_list_list_create</create>
+        <keypress>app_sat_list_list_keypress</keypress>
+        <get_total>app_sat_list_list_get_total</get_total>
+        <get_data>app_sat_list_list_get_data</get_data>
+        <change>app_sat_list_list_change</change>
+      </signal>
+      <children>
+        <widget class="header" style="default" name="listheader_sat_list">
+          <property>
+<rect>[0,0,708,0]</rect>
+            <forecolor>[text_color,text_color,text_color]</forecolor>
+            <backcolor>[default_color,default_color,default_color]</backcolor>
+            <colum_number>6</colum_number>
+          </property>
+          <children>
+            <widget class="text" style="default" name="headertext_sat_choice">
+              <property>
+<rect>[24,0,32,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default" name="headertext_sat_num">
+              <property>
+<rect>[56,0,48,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default" name="headertext_sat_name">
+              <property>
+<rect>[104,0,256,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default" name="headertext_sat_longitude">
+              <property>
+<rect>[360,0,120,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default" name="headertext_sat_direct">
+              <property>
+<rect>[488,0,96,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default" name="headertext_sat_tuner_select">
+              <property>
+<rect>[592,0,96,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="scrollbar" style="default" name="scrollbar_sat_list">
+          <property>
+<rect>[708,0,11,212]</rect>
+            <forecolor>[window_bg_color,window_bg_color,window_bg_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <fore_img>s_roll_button</fore_img>
+            <format>scroll_show</format>
+          </property>
+        </widget>
+        <widget class="listitem" style="default" name="listitem_sat0"/>
+        <widget class="listitem" style="default" name="listitem_sat1"/>
+        <widget class="listitem" style="default" name="listitem_sat2"/>
+        <widget class="listitem" style="default" name="listitem_sat3"/>
+        <widget class="listitem" style="default" name="listitem_sat4"/>
+        <widget class="listitem" style="default" name="listitem_sat5"/>
+        <widget class="listitem" style="default" name="listitem_sat6"/>
+      </children>
+    </widget>
+    <widget class="image" style="default" name="img_sat_list_tip_back">
+      <property>
+<rect>[0,496,1024,80]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+		<backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img></img>
+      </property>
+    </widget>
+   <widget class="image" style="default" name="img_sat_list_tip_green">
+      <property>
+<rect>[344,539,16,16]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_green</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_sat_list_tip_green">
+      <property>
+		<rect>[370,535,100,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Add</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_sat_list_tip_yellow">
+      <property>
+		<rect>[528,539,16,16]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_yellow</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_sat_list_tip_yellow">
+      <property>
+<rect>[554,535,100,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Edit</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_sat_list_tip_0">
+      <property>
+<rect>[340,501,41,19]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_0</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_sat_list_tip_0">
+      <property>
+		<rect>[390,498,80,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>All</string>
+        <format>static</format>
+      </property>
+  </widget>
+    <widget class="image" style="default" name="img_sat_list_tip_1">
+      <property>
+<rect>[523,501,41,19]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_1</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_sat_list_tip_1">
+      <property>
+		<rect>[575,498,80,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Sort</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_sat_list_tip_2">
+      <property>
+<rect>[707,501,41,19]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_2</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_sat_list_tip_2">
+      <property>
+		<rect>[757,498,80,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Move to</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_sat_list_tip_red">
+      <property>
+<rect>[75,539,16,16]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_red</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_sat_list_tip_red">
+      <property>
+<rect>[101,535,100,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Delete</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_sat_list_tip_blue">
+      <property>
+<rect>[712,539,16,16]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_blue</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_sat_list_tip_blue">
+      <property>
+		<rect>[738,535,100,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Search</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_satellite_tip_info">
+      <property>
+<rect>[70,501,38,19]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_info</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_satellite_tip_info">
+      <property>
+		<rect>[122,498,200,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Antenna Setting</string>
+        <format>static</format>
+      </property>
+    </widget>
+   <widget class="image" style="default" name="img_satlist_box_line">
+    <property>
+<rect>[147,384,730,2]</rect>
+    <forecolor>[default_color,default_color,default_color]</forecolor>
+    <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+    <mode>single</mode>
+    <img></img>
+    </property>
+    </widget>
+    <widget class="text" style="default" name="text_sat_list_strength">
+      <property>
+<rect>[152,400,112,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Strength</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_sat_list_quality">
+      <property>
+<rect>[152,436,112,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Quality</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="progbar" style="default" name="progbar_sat_list_strength">
+      <property>
+          <rect>[262,408,544,12]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <min>0</min>
+        <max>100</max>
+        <back_image>s_progress_m</back_image>
+        <back_image_l>s_progress_l</back_image_l>
+        <back_image_m>s_progress_m</back_image_m>
+        <back_image_r>s_progress_r</back_image_r>
+        <fore_image>s_progress_blue</fore_image>
+        <fore_image_l>s_progress3_l</fore_image_l>
+        <fore_image_m>s_progress3_m</fore_image_m>
+        <fore_image_r>s_progress3_r</fore_image_r>
+        <format>water</format>
+        <text_format>percentage</text_format>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="progbar" style="default" name="progbar_sat_list_quality">
+      <property>
+          <rect>[262,444,544,12]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <min>0</min>
+        <max>100</max>
+        <back_image>s_progress_m</back_image>
+        <back_image_l>s_progress_l</back_image_l>
+        <back_image_m>s_progress_m</back_image_m>
+        <back_image_r>s_progress_r</back_image_r>
+        <fore_image>s_progress_blue</fore_image>
+        <fore_image_l>s_progress3_l</fore_image_l>
+        <fore_image_m>s_progress3_m</fore_image_m>
+        <fore_image_r>s_progress3_r</fore_image_r>
+        <format>water</format>
+        <text_format>percentage</text_format>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_sat_list_strength_value">
+      <property>
+<rect>[808,400,64,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+        <alignment>right|vcentre</alignment>
+        <string>0</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_sat_list_quality_value">
+      <property>
+<rect>[808,436,64,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+        <alignment>right|vcentre</alignment>
+        <string>0</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_satlist_name_title">
+      <property>
+<rect>[176,129,256,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+        <string>SAT Name</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_satlist_longitude_title">
+      <property>
+<rect>[509,129,120,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+        <string>Longitude</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_satlist_direct_title">
+      <property>
+<rect>[638,129,96,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+        <string>Direction</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_satlist_tuner_select">
+      <property>
+<rect>[737,129,96,28]</rect>
+        <state>hide</state>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+        <string>Tuner</string>
+        <format>static</format>
+      </property>
+  </widget>
+  </children>
+</widget>

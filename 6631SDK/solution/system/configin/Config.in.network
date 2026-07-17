@@ -1,0 +1,303 @@
+#
+# Network configuration
+#
+
+menu "Network configuration"
+
+config BR2_MOD_APP_NETWORK
+	bool "Network Support"
+	---help---
+        Network application for IPTV, Video, Map, Weather etc.
+
+menuconfig BR2_MOD_APP_NETDEVICES
+    default y
+    depends on BR2_MOD_APP_NETWORK
+    bool "Network device support"
+
+if BR2_MOD_APP_NETDEVICES
+
+config BR2_MOD_APP_ETH
+	bool "Wired eth network"
+    depends on (((BR2_CHIP_NAME = "gemini") && ((BR2_BOARD_NAME = "6702H1-combo") || (BR2_BOARD_NAME = "6702H1") || (BR2_BOARD_NAME = "6702H5") || (BR2_BOARD_NAME = "6703X5") || (BR2_BOARD_NAME = "generic"))) || ((BR2_CHIP_NAME = "gx3211") && (BR2_BOARD_NAME = "6622-dvbs2")) || ((BR2_CHIP_NAME = "cygnus") && ((BR2_BOARD_NAME = "6706H5") || (BR2_BOARD_NAME = "6706H5-combo") || (BR2_BOARD_NAME = "Cygnus-X5"))) || ((BR2_CHIP_NAME = "taurus") && (BR2_BOARD_NAME = "6615H1")) || ((BR2_CHIP_NAME = "sirius") && ((BR2_BOARD_NAME = "3213H2") || (BR2_BOARD_NAME = "3213H1") || (BR2_BOARD_NAME = "6613H2") || (BR2_BOARD_NAME = "6613H1") || (BR2_BOARD_NAME = "3213H2-NNE") || (BR2_BOARD_NAME = "3213H1-NNE") || (BR2_BOARD_NAME = "6613H2-NNE") || (BR2_BOARD_NAME = "6613H1-NNE")))|| ((BR2_CHIP_NAME = "canopus") && ((BR2_BOARD_NAME = "6607H1-DUAL"))))
+
+config BR2_MOD_APP_WIFI
+	bool "WIFI wireless Lan"
+
+choice
+     prompt "Wifi Type"
+     depends on BR2_OS_ECOS && BR2_MOD_APP_WIFI
+
+    config BR2_MODE_WIFI_TYPE
+        bool "Wifi Custom"
+
+    config BR2_MOD_WIFI_MT7601
+        bool "MT7601"
+        depends on BR2_MODE_WIFI_TYPE
+
+    config BR2_MOD_WIFI_MT7603
+        bool "MT7603"
+        depends on BR2_MODE_WIFI_TYPE
+
+    config BR2_MOD_WIFI_RT5370
+        bool "RT5370"
+        depends on BR2_MODE_WIFI_TYPE
+
+    config BR2_MOD_WIFI_RTL8188FU
+        bool "RTL8188FU"
+        depends on BR2_MODE_WIFI_TYPE
+
+    config BR2_MOD_WIFI_RTL8188EU
+        bool "RTL8188EU"
+        depends on BR2_MODE_WIFI_TYPE
+
+    config BR2_MOD_WIFI_ATBM6032
+        bool "ATBM6032"
+        depends on BR2_MODE_WIFI_TYPE
+
+    config BR2_MOD_WIFI_RTL8192
+        bool "RTL8192"
+        depends on BR2_MODE_WIFI_TYPE
+
+    config BR2_MOD_WIFI_RTL88X1CU
+        bool "RTL88X1CU"
+        depends on BR2_MODE_WIFI_TYPE
+
+    config BR2_MOD_WIFI_RTL88X2BU
+        bool "RTL88X2BU"
+        depends on BR2_MODE_WIFI_TYPE
+
+    config BR2_MOD_WIFI_RTL8733
+        bool "RTL8733"
+        depends on BR2_MODE_WIFI_TYPE
+
+    config BR2_MOD_WIFI_DOUBLE
+        bool  "Double Wifi"
+
+endchoice
+
+config BR2_MOD_WIFI_SUPER_AP
+    bool "Wifi Super AP Support"
+    depends on BR2_MOD_APP_WIFI
+
+config BR2_MOD_WIFI_SUPER_AP_ESSID
+    string "Wifi Super AP Name"
+    default "gxsuperap"
+    depends on BR2_MOD_WIFI_SUPER_AP
+
+config BR2_MOD_WIFI_SUPER_AP_PSK
+    string "Wifi Super AP Password"
+    default "gx12345678"
+    depends on BR2_MOD_WIFI_SUPER_AP
+
+config BR2_MOD_APP_3G
+	bool "3G mobile network"
+
+config BR2_MOD_APP_GPRS
+	bool "GPRS network"
+    depends on BR2_OS_ECOS
+
+config BR2_MOD_APP_USB_ETH
+	bool "usb eth network"
+
+config BR2_MOD_APP_RNDIS
+	bool "Rndis network"
+    depends on BR2_OS_LINUX || (BR2_OS_ECOS && BR2_MOD_APP_USB_ETH)
+
+config BR2_MOD_APP_PPPOE
+    bool "PPPoE Support"
+    depends on BR2_MOD_APP_ETH
+
+config BR2_MOD_APP_VPN
+	bool "VPN Client"
+
+config BR2_MOD_APP_BLUETOOTH
+	bool "Bluetooth network"
+	depends on BR2_OS_ECOS
+
+config BR2_MOD_BT_RTL8761A
+    default y
+    bool "Bluetooth rtl8761a"
+    depends on BR2_MOD_APP_BLUETOOTH
+
+config BR2_MOD_BT_RTL8761BU
+    bool "Bluetooth rtl8761bu"
+    depends on BR2_MOD_APP_BLUETOOTH
+
+config BR2_MOD_BT_RTL8733BU
+    bool "Bluetooth rtl8733bu"
+    depends on BR2_MOD_APP_BLUETOOTH
+
+config BR2_MOD_BT_BCM20702A1
+    bool "Bluetooth bcm20702a1"
+    depends on BR2_MOD_APP_BLUETOOTH
+
+endif
+
+#
+# Network APP configuration
+#
+
+if BR2_MOD_APP_NETWORK
+
+menuconfig BR2_MOD_APP_NETAPPS
+    default y
+    # depends on BR2_MOD_APP_NETWORK && BR2_MOD_APP_NETDEVICES
+	depends on BR2_MOD_APP_ETH || BR2_MOD_APP_3G || BR2_MOD_APP_RNDIS || BR2_MOD_APP_WIFI || BR2_MOD_APP_GPRS || BR2_MOD_APP_USB_ETH
+    bool "Network Apps configuration"
+	---help---
+        Network application for IPTV, Video, Map, Weather etc.
+
+if BR2_MOD_APP_NETAPPS
+
+config BR2_MOD_MPEG_DASH
+	bool "Mpeg Dash Support"
+
+config BR2_MOD_SOCKS5_PROXY_SET
+	bool "SOCKS5 Prxoy support"
+
+config BR2_MOD_COMPOSE_URL
+	bool "Compose Url Support"
+    depends on BR2_MOD_MPEG_DASH
+
+config BR2_MOD_ASSOCIATIONLIBRE_URL
+	bool "Associationlibre Url Support"
+    depends on !BR2_MOD_COMPOSE_URL
+
+config BR2_MOD_NET_TIME_GET
+	bool "Net Time Support"
+
+config BR2_MOD_PROG_NET_GET
+	bool "Program Net Update"
+    depends on (BR2_TUNER_TYPE != "ott")
+
+config BR2_MOD_NET_AUDIO_SUPPORT
+	bool "Net audio support"
+    help
+        Import audio links from the network or USB to synchronize DVB programs.
+
+config BR2_MOD_APP_APPLETS
+        bool "Applets Support"
+    select BR2_MOD_ASSOCIATIONLIBRE_URL
+    select BR2_MOD_APP_QR_POP
+    help
+
+config BR2_MOD_APP_MIRACAST
+    bool "Miracast Support"
+    depends on BR2_OS_LINUX
+    help
+
+config BR2_MOD_APP_APPLETS_AUTO_UPDATE_LIST
+        bool "Applets Auto Update List Support"
+    depends on BR2_MOD_APP_APPLETS
+    help
+
+config BR2_MOD_APP_APPLETS_BUILTIN
+        bool "Applets Builtin Support"
+    depends on BR2_MOD_APP_APPLETS
+    help
+
+config BR2_MOD_APP_APPLETS_FAV
+        bool "Applets Fav  Support"
+    depends on BR2_MOD_APP_APPLETS
+    help
+
+config BR2_MOD_APP_APPLETS_INSTALL
+        bool "Applets Install Support"
+    depends on BR2_MOD_APP_APPLETS
+    help
+
+config BR2_MOD_APP_APPLETS_RECENT
+        bool "Applets Recent List Support"
+    depends on BR2_MOD_APP_APPLETS
+    help
+
+config BR2_MOD_SAT2IP_SERVER
+	bool "Sat>IP Server Support"
+    depends on (BR2_TUNER_TYPE != "ott")
+
+config BR2_MOD_SAT2IP_SERVER_CONFIGURE
+	bool "Sat>IP Server Configure Support"
+    depends on BR2_MOD_SAT2IP_SERVER
+
+config BR2_MOD_DVB2IP_SERVER
+	bool "DVB>IP Server Support"
+    depends on (BR2_TUNER_TYPE != "ott")
+
+config BR2_MOD_DVB2IP_SERVER_SCREEN
+	bool "DVB>IP Server Use Static Screen"
+    depends on BR2_MOD_DVB2IP_SERVER
+
+config BR2_MOD_APP_DLNADMR
+	bool "DLNA DMR"
+
+config BR2_MOD_APP_DLNADMP
+	bool "DLNA DMP"
+
+config BR2_MOD_APP_DLNASAT2IP
+	bool "DLNA SAT2IP"
+    depends on (BR2_TUNER_TYPE != "ott")
+
+config BR2_MOD_APP_DLNADMS
+	bool "DLNA DMS"
+
+config BR2_MOD_APP_QR_POP
+	bool "QR Pop Support"
+
+config BR2_MOD_APP_WEBLET
+	bool "Weblet Support"
+    select BR2_MOD_APP_QR_POP
+    help
+
+config BR2_MOD_APP_WEBAPI
+      bool "Webapi Support"
+
+config BR2_MOD_APP_IPTV_LITE
+	bool "IPTV LITE Support"
+    depends on (BR2_TUNER_TYPE != "ott")
+
+config BR2_MOD_APP_IPTV_ACCOUNT
+	bool "IPTV Account Support"
+
+config BR2_MOD_APP_IPTV_FAV
+	bool "IPTV FAV Support"
+
+config BR2_MOD_APP_IPTV_EPG
+	bool "IPTV EPG Support"
+
+config BR2_MOD_APP_IPTV_EPG_PLAYBACK
+	bool "IPTV EPG Playback Support"
+	depends on BR2_MOD_APP_IPTV_EPG
+
+config BR2_MOD_APP_SAT_FINDER
+	bool "Satellite finder"
+    depends on (BR2_TUNER_TYPE != "ott")
+
+config BR2_MOD_APP_DVB_CLOUD
+	bool "DVB cloud"
+    depends on (BR2_TUNER_TYPE != "ott")
+
+config BR2_MOD_APP_NET_UPGRADE
+	bool "Net upgrade"
+
+if BR2_OS_LINUX
+
+config BR2_MOD_APP_PLUGINSTORE
+	bool "Plugin Store"
+
+config BR2_MOD_APP_PLUGINONLINE
+	bool "Plugin Online"
+	depends on BR2_MOD_APP_PLUGINSTORE
+
+config BR2_MOD_APP_TRANSMISSION
+	bool "BT Download"
+
+config BR2_MOD_APP_SAMBA
+	bool "Samba"
+
+endif
+
+source system/configin/Config.in.netapps
+
+endif
+endif
+endmenu

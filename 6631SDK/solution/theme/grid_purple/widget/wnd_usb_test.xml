@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_usb_test">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+    </property>
+    <signal>
+        <create>app_usb_test_create</create>
+        <destroy>app_usb_test_destroy</destroy>
+        <keypress>app_usb_test_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_usb_test_back">
+            <property>
+                <rect>[144,120,736,190]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_m</lt_img>
+                <rt_img>s_win_m</rt_img>
+                <lb_img>s_win_m</lb_img>
+                <rb_img>s_win_m</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_usb_test_title">
+            <property>
+                <rect>[224,130,600,52]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <font>font_main</font>
+                <string>USB Test</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_usb_test_count_title">
+            <property>
+                <rect>[160,190,106,32]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Count</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="progbar" style="default" name="progbar_usb_test_count">
+            <property>
+                <rect>[268,200,530,10]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[#808080,#808080,#808080]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <back_image>s_progress_m</back_image>
+                <back_image_l>s_progress_l</back_image_l>
+                <back_image_m>s_progress_m</back_image_m>
+                <back_image_r>s_progress_r</back_image_r>
+                <fore_image>s_progress3_m</fore_image>
+                <fore_image_l>s_progress3_l</fore_image_l>
+                <fore_image_m>s_progress3_m</fore_image_m>
+                <fore_image_r>s_progress3_r</fore_image_r>
+                <format>water</format>
+                <text_format>percentage</text_format>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+
+        <widget class="text" style="default" name="text_usb_test_count_value">
+            <property>
+                <rect>[800,190,70,32]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>0%</string>
+                <format>static</format>
+            </property>
+        </widget>
+
+        <widget class="text" style="default" name="text_usb_test_process_title">
+            <property>
+                <rect>[160,230,106,32]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Progress</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="progbar" style="default" name="progbar_usb_test_process">
+            <property>
+                <rect>[268,240,530,10]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[#808080,#808080,#808080]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <back_image>s_progress_m</back_image>
+                <back_image_l>s_progress_l</back_image_l>
+                <back_image_m>s_progress_m</back_image_m>
+                <back_image_r>s_progress_r</back_image_r>
+                <fore_image>s_progress3_m</fore_image>
+                <fore_image_l>s_progress3_l</fore_image_l>
+                <fore_image_m>s_progress3_m</fore_image_m>
+                <fore_image_r>s_progress3_r</fore_image_r>
+                <format>water</format>
+                <text_format>percentage</text_format>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_usb_test_process_value">
+            <property>
+                <rect>[800,230,70,32]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>0%</string>
+                <format>static</format>
+            </property>
+        </widget>
+
+        <widget class="text" style="default" name="text_usb_test_count">
+            <property>
+                <rect>[160,270,150,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_usb_test_speed">
+            <property>
+                <rect>[316,270,160,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_usb_test_info">
+            <property>
+                <rect>[480,270,390,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

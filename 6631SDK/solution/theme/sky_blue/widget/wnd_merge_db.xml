@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_merge_db">
+    <property>
+        <rect>[272,188,480,240]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_merge_db_create</create>
+        <destroy>app_merge_db_destroy</destroy>
+        <keypress>app_merge_db_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_merge_db_back">
+            <property>
+                <rect>[0,0,480,240]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_merge_db_title">
+            <property>
+                <rect>[60,1,360,28]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,osd_trans]</backcolor>
+                <string>Merge DB</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="box" style="default" name="box_merge_db">
+            <property>
+                <rect>[10,48,460,148]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <format>vertical</format>
+            </property>
+            <signal>
+                <keypress>app_merge_db_box_keypress</keypress>
+            </signal>
+            <children>
+                <widget class="boxitem" style="default" name="boxitem_merge_db_type">
+                    <property>
+                        <rect>[0,0,460,37]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_merge_db_type">
+                            <property>
+                                <rect>[0,0,230,37]</rect>
+                                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Upgrade Type</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmb_merge_db_type">
+                            <property>
+                                <rect>[230,0,230,37]</rect>
+                                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                                <content>[Export,Import By USB,Import By Net]</content>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_export_switch">
+                    <property>
+                        <rect>[0,37,460,37]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_export_switch">
+                            <property>
+                                <rect>[0,0,230,37]</rect>
+                                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Switch DB</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmb_export_switch">
+                            <property>
+                                <rect>[230,0,230,37]</rect>
+                                <forecolor>[#f4f4f4,#f4f4f4,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <unfocus_left_img>s_arrow_l_1</unfocus_left_img>
+                                <focus_left_img>s_arrow_l_1</focus_left_img>
+                                <unfocus_right_img>s_arrow_r_1</unfocus_right_img>
+                                <focus_right_img>s_arrow_r_1</focus_right_img>
+                                <content>[User DB,Default DB]</content>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_merge_db_filepath">
+                    <property>
+                        <rect>[0,74,460,37]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_merge_db_filepath">
+                            <property>
+                                <rect>[0,0,230,37]</rect>
+                                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>File Path</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="button" style="default" name="btn_merge_db_filepath">
+                            <property>
+                                <rect>[230,0,230,37]</rect>
+                                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <string>Press OK</string>
+                            </property>
+                            <signal>
+                                <keypress>app_merge_db_path_press</keypress>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_merge_db_start">
+                    <property>
+                        <rect>[0,111,460,37]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_merge_db_start">
+                            <property>
+                                <rect>[0,0,230,37]</rect>
+                                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Start</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="button" style="default" name="btn_merge_db_start">
+                            <property>
+                                <rect>[230,0,230,37]</rect>
+                                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <string>Press OK</string>
+                            </property>
+                            <signal>
+                                <keypress>app_merge_db_start_press</keypress>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+    </children>
+</widget>

@@ -1,0 +1,88 @@
+
+-include  $(GXSRC_PATH)/scripts/inc.Makefile.conf.mak
+
+CFLAGS += -I$(GXSRC_PATH)/app/include
+CFLAGS += -I$(GXSRC_PATH)/app/include/module
+CFLAGS += -I$(GXSRC_PATH)/app/player/include
+CFLAGS += -I$(GXSRC_PATH)/app
+CFLAGS += -I$(GXSRC_PATH)/dll/mainmenu/include
+CFLAGS += -I$(GXLIB_PATH)/include/bus
+CFLAGS += -I$(GXLIB_PATH)/include/bus/module/player/
+CFLAGS += -I$(GXLIB_PATH)/include/bus/gui_core
+CFLAGS += -I$(GXLIB_PATH)/include/bus/service
+
+GXDLL_MAINMENU_SRC_DIR=$(shell pwd)
+GXDLL_MAINMENU_INCLUDE_INSTALL_DIR=$(GXSRC_PATH)/include/$(CROSS_PATH)/
+
+ifeq ($(OS), linux)
+CFLAGS += -fPIC -fvisibility=hidden
+LD_PARAMS = -shared
+else
+LD_PARAMS = -r
+endif
+
+ifeq ($(ARCH), csky)
+CFLAGS += -DDLL_ARCH_CSKY_SUPPORT
+endif
+
+ifeq ($(ARCH), arm)
+CFLAGS += -DDLL_ARCH_ARM_SUPPORT
+endif
+
+ifeq ($(OS), ecos)
+CFLAGS += -DDLL_OS_ECOS_SUPPORT
+endif
+
+ifeq ($(OS), linux)
+CFLAGS += -DDLL_OS_LINUX_SUPPORT
+endif
+
+GXOBJ_MAINMENU_COMMON_APP_DIR=$(GXSRC_PATH)/app
+GXOBJ_MAINMENU_COMMON_STYLE_DIR=$(GXSRC_PATH)/app/mainmenu_style
+
+
+ifeq ($(THEME_USER_TYPE), classic)
+GXOBJ_MAINMENU_ITEM_FILE=$(GXOBJ_MAINMENU_COMMON_STYLE_DIR)/classic/app_classic_style.c
+endif
+
+ifeq ($(THEME_USER_TYPE), grid)
+GXOBJ_MAINMENU_ITEM_FILE=$(GXOBJ_MAINMENU_COMMON_STYLE_DIR)/grid/app_grid_style.c
+endif
+
+clean: target_clean
+
+all: theme_target
+
+.PHONY: theme_target
+
+install:
+	cp -rf include/app_mainmenu_dll.h $(GXDLL_MAINMENU_INCLUDE_INSTALL_DIR)
+	echo "install finish"
+
+theme_target:
+	@echo $(THEME_USER_TYPE); \
+	rm -rf tmp; \
+	rm -rf *.o; \
+	mkdir -p tmp; \
+	mkdir -p out; \
+	cp -rf include/app_mainmenu_dll.h $(GXDLL_MAINMENU_INCLUDE_INSTALL_DIR); \
+	$(CC) $(CFLAGS) -c gxdll_app_mainmenu_api.c; \
+	$(CC) $(CFLAGS) -c $(GXOBJ_MAINMENU_COMMON_APP_DIR)/app_main_menu.c; \
+	$(CC) $(CFLAGS) -c $(GXOBJ_MAINMENU_COMMON_APP_DIR)/app_main_menu_ex.c; \
+	$(CC) $(CFLAGS) -c $(GXOBJ_MAINMENU_COMMON_STYLE_DIR)/app_main_menu_style.c; \
+	$(CC) $(CFLAGS) -c $(GXOBJ_MAINMENU_COMMON_STYLE_DIR)/app_main_menu_theme_config.c; \
+	$(CC) $(CFLAGS) -c $(GXOBJ_MAINMENU_ITEM_FILE); \
+	cp -rf *.o tmp; \
+	$(CROSS_COMPILE)ld $(LD_PARAMS) -o gxdll_mainmenu.o tmp/*.o ; \
+	$(CROSS_COMPILE)strip -g gxdll_mainmenu.o; \
+	cp -rf gxdll_mainmenu.o out; \
+	rm -rf tmp; \
+	rm -rf *.o; \
+	echo "compile finish"
+
+target_clean:
+	@rm -rf out; \
+	rm -rf tmp; \
+	rm -rf *.o
+
+

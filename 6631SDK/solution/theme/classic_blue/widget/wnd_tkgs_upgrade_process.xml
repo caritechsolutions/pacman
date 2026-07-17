@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_tkgs_upgrade_process">
+    <property>
+        <rect>[400,190,480,240]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <format>popup</format>
+    </property>
+    <signal>
+        <create>app_tkgs_upgrade_process_create</create>
+        <destroy>app_tkgs_upgrade_process_destroy</destroy>
+        <keypress>app_tkgs_upgrade_process_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_tkgs_upgrade_process_back">
+            <property>
+                <rect>[0,0,480,240]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_tkgs_upgrade_process_tip">
+            <property>
+                <rect>[11,181,458,38]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_choice_blue4</img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_tkgs_upgrade_process_cancel">
+            <property>
+                <rect>[310,181,100,38]</rect>
+                <forecolor>[text_color,text_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>Cancel</string>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_tkgs_upgrade_process_tip">
+            <property>
+                <rect>[10,2,460,35]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_tkgs_upgrade_process_info1">
+            <property>
+                <rect>[33,67,420,80]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

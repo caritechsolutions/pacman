@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_volume_value">
+    <property>
+        <rect>[232,424,560,62]</rect>
+        <mirror>disable</mirror>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <format>popup</format>
+    </property>
+    <signal>
+        <create>app_volume_value_create</create>
+        <destroy>app_volume_value_destroy</destroy>
+        <keypress>app_volume_value_keypress</keypress>
+        <service>app_volume_value_service</service>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="image_volume">
+            <property>
+                <rect>[80,27,480,35]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <rt_img>s_vol1_r</rt_img>
+                <t_img>s_vol1_m</t_img>
+            </property>
+        </widget>
+        <widget class="progbar" style="default" name="progbar_volume">
+            <property>
+                <rect>[80,36,420,17]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <min>0</min>
+                <max>25</max>
+                <back_image_l>s_vol2_l</back_image_l>
+                <back_image_m>s_vol2_m</back_image_m>
+                <back_image_r>s_vol2_r</back_image_r>
+                <fore_image_l>s_vol3_l</fore_image_l>
+                <fore_image_m>s_vol3_m</fore_image_m>
+                <fore_image_r>s_vol3_r</fore_image_r>
+                <format>water</format>
+                <text_format>hide</text_format>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_volume">
+            <property>
+                <rect>[505,28,48,32]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_volume">
+            <property>
+                <rect>[0,0,80,62]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_vol</img>
+            </property>
+        </widget>
+    </children>
+</widget>

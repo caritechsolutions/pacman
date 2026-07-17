@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget name="wnd_pvr_bar" style="default" class="window">
+    <property>
+        <rect>[100,500,1080,185]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_pvr_bar_create</create>
+        <destroy>app_pvr_bar_destroy</destroy>
+        <keypress>app_pvr_bar_keypress</keypress>
+    </signal>
+    <children>
+        <widget name="img_pvr_bg" style="default" class="image">
+            <property>
+                <rect>[179,0,901,183]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <rt_img>s_program_r</rt_img>
+                <t_img>s_program_m</t_img>
+            </property>
+        </widget>
+        <widget name="img_pvr_head" style="default" class="image">
+            <property>
+                <rect>[0,0,179,183]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget name="img_pvr_state" style="default" class="image">
+            <property>
+                <rect>[0,0,179,183]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_tv</img>
+            </property>
+        </widget>
+        <widget name="slider_pvr_process" style="default" class="sliderbar">
+            <property>
+                <rect>[198,135,630,24]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <step>2</step>
+                <back_image_l>s_pvr_progress_l</back_image_l>
+                <back_image_m>s_pvr_progress_m</back_image_m>
+                <back_image_r>s_pvr_progress_r</back_image_r>
+                <fore_image_l>s_pvr_progress_l2</fore_image_l>
+                <fore_image_m>s_pvr_progress_m2</fore_image_m>
+                <fore_image_r>s_pvr_dot_blue</fore_image_r>
+                <format>water</format>
+                <mirror>disable</mirror>
+                <cursor_image>s_pvr_dot_blue</cursor_image>
+            </property>
+            <signal>
+                <keypress>app_pvr_sliderbar_keypress</keypress>
+            </signal>
+        </widget>
+        <widget name="txt_pvr_total_time" style="default" class="text">
+            <property>
+                <rect>[708,85,120,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <font>font_22</font>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="txt_pvr_seekmin_time" style="default" class="text">
+            <property>
+                <rect>[198,85,120,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <font>font_22</font>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="txt_pvr_cur_time" style="default" class="text">
+            <property>
+                <rect>[453,85,120,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <font>font_22</font>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="img_v_line" style="default" class="image">
+            <property>
+                <rect>[860,58,2,120]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[text_tag_color,text_tag_color,text_tag_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget name="img_percent_0" style="default" class="image">
+            <property>
+                <rect>[905,145,18,10]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_pvr_progress_grey</img>
+            </property>
+        </widget>
+        <widget name="img_percent_1" style="default" class="image">
+            <property>
+                <rect>[933,145,18,10]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_pvr_progress_grey</img>
+            </property>
+        </widget>
+        <widget name="img_percent_2" style="default" class="image">
+            <property>
+                <rect>[961,145,18,10]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_pvr_progress_grey</img>
+            </property>
+        </widget>
+        <widget name="img_percent_3" style="default" class="image">
+            <property>
+                <rect>[990,145,18,10]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_pvr_progress_grey</img>
+            </property>
+        </widget>
+        <widget name="img_percent_4" style="default" class="image">
+            <property>
+                <rect>[1018,145,18,10]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_pvr_progress_grey</img>
+            </property>
+        </widget>
+        <widget name="txt_pvr_percent" style="default" class="text">
+            <property>
+                <rect>[930,85,80,40]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="txt_pvr_prog_name" style="default" class="text">
+            <property>
+                <rect>[190,3,520,48]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_sub</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="txt_pvr_time" style="default" class="text">
+            <property>
+                <rect>[965,3,100,48]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_prog</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="txt_pvr_state" style="default" class="text">
+            <property>
+                <rect>[15,120,135,48]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_sub</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="slider_pvr_seek" style="default" class="sliderbar">
+            <property>
+                <rect>[198,135,630,24]</rect>
+                <state>hide</state>
+                <mirror>disable</mirror>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <step>2</step>
+                <format>normal</format>
+                <cursor_image>s_pvr_dot_grey</cursor_image>
+            </property>
+            <signal>
+                <keypress>app_pvr_seek_slider_keypress</keypress>
+            </signal>
+        </widget>
+    </children>
+</widget>

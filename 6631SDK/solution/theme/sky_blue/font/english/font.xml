@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<fonts>
+    <font>
+      <name>font_main</name>
+      <file>arial.ttf</file>
+      <!--style>bold</style-->
+      <size>32</size>
+  </font>
+  <font>
+      <name>font_22</name>
+      <file>arial.ttf</file>
+      <size>17</size>
+    </font>
+    <font>
+      <name>font_prog</name>
+      <file>arial.ttf</file>
+      <size>21</size>
+    </font>
+</fonts>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_server_list">
+    <property>
+        <rect>[117,102,790,408]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_server_list_create</create>
+        <destroy>app_server_list_destroy</destroy>
+        <keypress>app_server_list_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="wnd_server_list_image">
+            <property>
+                <rect>[0,0,790,408]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+            </property>
+		</widget>
+		<widget class="text" style="default" name="text_server_list_title">
+            <property>
+                <rect>[280,0,200,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_server_list_line1">
+            <property>
+                <rect>[3,38,784,2]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="list_server_list">
+            <property>
+                <rect>[19,60,763,260]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<roll_time>100</roll_time>
+				<enable_roll>true</enable_roll>
+				<format>enable_roll</format>
+                <select>0</select>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+				<item_active_color>key_focus_color</item_active_color>
+                <item_rect>[0,0,745,36]</item_rect>
+				<item_fore_color>[text_color,text_color,text_disable_color]</item_fore_color>
+				<item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+                <alignment>left|vcentre</alignment>
+            </property>
+            <signal>
+                <create>app_server_list_list_create</create>
+                <keypress>app_server_list_list_keypress</keypress>
+                <get_total>app_server_list_list_get_total</get_total>
+                <get_data>app_server_list_list_get_data</get_data>
+                <change>app_server_list_list_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="listheader_server_list">
+                    <property>
+                        <rect>[0,0,745,0]</rect>
+                        <forecolor>[text_color,text_color,text_color]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <colum_number>4</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="headertext_server_choice">
+                            <property>
+                                <rect>[10,0,40,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_server_num">
+                            <property>
+                                <rect>[50,0,60,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_server_name">
+                            <property>
+                                <rect>[110,0,150,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_server_url">
+                            <property>
+                                <rect>[260,0,485,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="scrollbar_tp_list">
+                    <property>
+                        <rect>[752,0,9,260]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+				<widget class="listitem" style="default" name="listitem_server0"/>
+				<widget class="listitem" style="default" name="listitem_server1"/>
+				<widget class="listitem" style="default" name="listitem_server2"/>
+				<widget class="listitem" style="default" name="listitem_server3"/>
+				<widget class="listitem" style="default" name="listitem_server4"/>
+				<widget class="listitem" style="default" name="listitem_server5"/>
+				<widget class="listitem" style="default" name="listitem_server6"/>
+				<widget class="listitem" style="default" name="listitem_server7"/>
+            </children>
+        </widget>
+    </children>
+</widget>

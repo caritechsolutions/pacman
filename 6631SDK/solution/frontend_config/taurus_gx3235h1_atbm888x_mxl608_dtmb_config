@@ -1,0 +1,11 @@
+//Board Mark: GX3235H1_DTMB_ATBM8869T-1_MXL608_DEMO_V1.0  2019-03-28
+//Frontend Info: ATBM888x(MXL608)
+
+frontend1_demod_i2c_id = 0
+frontend1_demod_i2c_chip_addr = 0x80
+frontend1_demod_attach = ATBM888X_DTMB_ATTACH
+frontend1_iq = 0
+frontend1_ts_mode = SERIAL
+frontend1_tuner_crystal = 24
+frontend1_is_oscillator = 1
+frontend1_demux_ts_src = DEMUX_TS2

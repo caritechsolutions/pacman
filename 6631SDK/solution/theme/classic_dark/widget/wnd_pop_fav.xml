@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_pop_fav">
+  <property>
+<rect>[275,120,290,320]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+  </property>
+	<signal>
+	 <keypress>app_pop_fav_keypress</keypress>
+ </signal>
+  <children>
+    <widget class="image" style="default" name="img_pop_fav">
+      <property>
+<rect>[0,0,290,320]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>s_win2_l_t2</lt_img>
+        <rt_img>s_win2_r_t2</rt_img>
+        <lb_img>s_win2_l_b2</lb_img>
+        <rb_img>s_win2_r_b2</rb_img>
+        <l_img>s_win2_l_m</l_img>
+        <r_img>s_win2_r_m</r_img>
+        <t_img>s_win2_m_t2</t_img>
+        <b_img>s_win2_m_b2</b_img>
+      </property>
+    </widget>
+    <widget class="listview" style="default" name="listview_pop_fav">
+      <property>
+		  <rect>[4,36,282,273]</rect>
+		  <forecolor>[default_color,default_color,default_color]</forecolor>
+		  <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+		  <roll_time>0</roll_time>
+          <focus_img>s_bar_black3</focus_img>
+          <item_rect>[0,0,272,30]</item_rect>
+		  <item_fore_color>[pop_title_color,text_focus_color,pop_title_color]</item_fore_color>
+		  <item_back_color>[pop_bg_color,pop_bg_color,pop_bg_color]</item_back_color>
+	  </property>
+      <signal>
+        <create>app_pop_fav_list_create</create>
+        <destroy>app_pop_fav_list_destroy</destroy>
+        <keypress>app_pop_fav_list_keypress</keypress>
+        <get_total>app_pop_fav_list_get_total</get_total>
+        <get_data>app_pop_fav_list_get_data</get_data>
+      </signal>
+      <children>
+		  <widget class="header" style="default" name="listview_pop_fav_header">
+			  <property>
+				  <rect>[0,0,272,0]</rect>
+				  <forecolor>[text_color,text_color,text_color]</forecolor>
+				  <backcolor>[default_color,default_color,default_color]</backcolor>
+				  <colum_number>2</colum_number>
+			  </property>
+			  <children>
+				  <widget class="text" style="default" name="text_pop_fav_header1">
+					  <property>
+						  <rect>[24,0,40,0]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+						  <backcolor>[default_color,default_color,default_color]</backcolor>
+						  <string></string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+				  <widget class="text" style="default" name="text_pop_fav_header2">
+					  <property>
+						  <rect>[64,0,200,0]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+						  <backcolor>[default_color,default_color,default_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+						  <string></string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+			  </children>
+		  </widget>
+		  <widget class="scrollbar" style="default" name="scrollbar_pop_fav">
+			  <property>
+				  <rect>[273,0,9,273]</rect>
+				  <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+				  <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				  <back_img>s_roll_m</back_img>
+				  <arrow_up>s_roll_t</arrow_up>
+				  <arrow_down>s_roll_d</arrow_down>
+				  <fore_img>s_roll_button</fore_img>
+				  <format>scroll_show</format>
+			  </property>
+		  </widget>
+		  <widget class="listitem" style="default" name="listitem_pop_fav_1"/>
+		  <widget class="listitem" style="default" name="listitem_pop_fav_2"/>
+		  <widget class="listitem" style="default" name="listitem_pop_fav_3"/>
+		  <widget class="listitem" style="default" name="listitem_pop_fav_4"/>
+		  <widget class="listitem" style="default" name="listitem_pop_fav_5"/>
+        <widget class="listitem" style="default" name="listitem_pop_fav_6"/>
+        <widget class="listitem" style="default" name="listitem_pop_fav_7"/>
+        <widget class="listitem" style="default" name="listitem_pop_fav_8"/>
+        <widget class="listitem" style="default" name="wnd_pop_fav_listitem86"/>
+      </children>
+    </widget>
+    <widget class="text" style="default" name="text_pop_fav_title">
+      <property>
+		  <rect>[25,1,240,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+        <string>Fav</string>
+        <format>static</format>
+      </property>
+    </widget>
+  </children>
+</widget>

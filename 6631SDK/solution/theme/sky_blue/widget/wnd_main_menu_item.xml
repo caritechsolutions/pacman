@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_main_menu_item">
+    <property>
+        <rect>[112,235,800,265]</rect>
+        <forecolor>[black,black,black]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <keypress_revert>enable</keypress_revert>
+    </property>
+    <signal>
+        <create>app_main_menu_item_create</create>
+        <keypress>app_main_menu_item_keypress</keypress>
+        <got_focus>app_main_menu_item_got_focus</got_focus>
+    </signal>
+    <children>
+        <widget class="listview" style="default" name="wnd_main_menu_item_listview">
+            <property>
+                <rect>[0,0,800,261]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <roll_time>0</roll_time>
+                <select>1</select>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <i18n>true</i18n>
+                <item_rect>[0,0,800,37]</item_rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>listview_main_menu_opt_keypress</keypress>
+                <get_total>listview_main_menu_opt_get_total</get_total>
+                <get_data>listview_main_menu_opt_get_data</get_data>
+                <change>listview_main_menu_opt_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="wnd_main_menu_item_header_list">
+                    <property>
+                        <rect>[0,0,800,0]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <colum_number>4</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="wnd_main_menu_item_list_title1">
+                            <property>
+                                <rect>[10,0,415,0]</rect>
+                                <forecolor>[black,black,black]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="wnd_main_menu_item_title2">
+                            <property>
+                                <rect>[425,0,20,0]</rect>
+                                <forecolor>[black,black,black]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>right|vcentre</alignment>
+                                <string></string>
+                                <mirror>disable</mirror>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="wnd_main_menu_item_title3">
+                            <property>
+                                <rect>[445,0,275,0]</rect>
+                                <forecolor>[black,black,black]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="wnd_main_menu_item_title4">
+                            <property>
+                                <rect>[720,0,20,0]</rect>
+                                <forecolor>[black,black,black]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="wnd_main_menu_item_scrollbar3">
+                    <property>
+                        <rect>[140,40,0,88]</rect>
+                        <state>hide</state>
+                        <forecolor>[black,black,black]</forecolor>
+                        <format>scroll_hide</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="wnd_main_menu_item_list1"/>
+                <widget class="listitem" style="default" name="wnd_main_menu_item_list2"/>
+                <widget class="listitem" style="default" name="wnd_main_menu_item_list3"/>
+                <widget class="listitem" style="default" name="wnd_main_menu_item_list4"/>
+                <widget class="listitem" style="default" name="wnd_main_menu_item_list5"/>
+                <widget class="listitem" style="default" name="wnd_main_menu_item_list6"/>
+                <widget class="listitem" style="default" name="wnd_main_menu_item_list7"/>
+            </children>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_item_focus">
+            <property>
+                <rect>[399,262,3,3]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+    </children>
+</widget>

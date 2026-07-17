@@ -1,0 +1,138 @@
+menu "System hacking"
+
+config BR2_MOD_APP_ADVANCED_PRINT
+	bool "Advanced Print Support"
+	depends on BR2_OS_ECOS
+
+choice
+	prompt "Default Print Output"
+	depends on BR2_MOD_APP_ADVANCED_PRINT
+	default BR2_PRINT_TO_NUL
+	help
+        Select Default Print Output.
+
+    config BR2_PRINT_TO_NUL
+        bool "Close"
+
+    config BR2_PRINT_TO_TTY
+        bool "TTY"
+
+    config BR2_PRINT_TO_USB
+        bool "USB"
+
+    config BR2_PRINT_TO_NET
+        bool "NET"
+
+endchoice
+
+config BR2_MOD_APP_USB_TEST
+    bool "USB Stick Test Support"
+
+config BR2_MOD_APP_FACTORY_TEST
+	bool "Factory Test Support"
+	help
+
+config BR2_MOD_APP_KEY_SCANCODE
+	bool "Key Scancode Support"
+	help
+
+config BR2_MOD_APP_SMART_VOLUME_TEST
+	bool "Smart Volume Test Support"
+        depends on BR2_MOD_APP_SMART_VOLUME
+	help
+
+config BR2_MOD_APP_CVBS_TEST
+	bool "CVBS Target Test Support"
+    depends on !BR2_MOD_APP_SMART_VOLUME
+    default n if BR2_MOD_APP_SMART_VOLUME
+	help
+
+config BR2_MOD_APP_CVBS_AUTOTEST
+	bool "CVBS Auto Test Support"
+	depends on BR2_MOD_APP_CVBS_TEST
+    select BR2_MOD_APP_AUTO_TEST
+
+config BR2_MOD_APP_AUTO_TEST
+	bool "Hardware Auto Test Support"
+    depends on (BR2_TUNER_TYPE != "ott")
+	help
+       used to test the demod hardware
+
+config BR2_MOD_APP_PCDEMO_TEST
+	bool "PCDemo Test Support"
+	depends on BR2_MOD_APP_AUTO_TEST
+
+choice
+    prompt "Serial type select"
+    default BR2_MOD_APP_USB_TO_SERIAL
+    depends on BR2_OS_ECOS && BR2_MOD_APP_AUTO_TEST
+
+    config BR2_MOD_APP_USB_TO_SERIAL
+        bool "USB To Serial"
+
+    config BR2_MOD_APP_SERAIL
+        bool "Serial"
+
+endchoice
+
+config BR2_MOD_APP_DEMOD_INFO
+	bool "Demod Info Support"
+    depends on (BR2_TUNER_TYPE != "ott")
+	help
+
+config BR2_MOD_APP_MEMORY_STABILITY_TEST
+	bool "Memory stability test Support"
+	help
+
+choice
+	prompt "Memory parameter config"
+	depends on BR2_MOD_APP_MEMORY_STABILITY_TEST
+	default BR2_MTEST_DDR2_64MB
+	help
+        Config memory parameter.
+
+    config BR2_MTEST_DDR2_64MB
+        bool "DDR2 64MByte"
+
+    config BR2_MTEST_DDR2_128MB
+        bool "DDR2 128MByte"
+
+    config BR2_MTEST_DDR3_128MB
+        bool "DDR3 128MByte"
+
+    config BR2_MTEST_DDR3_256MB
+        bool "DDR3 256MByte"
+
+    config BR2_MTEST_DDR3_512MB
+        bool "DDR3 512MByte"
+endchoice
+
+choice
+	prompt "Memory test mode config"
+	depends on BR2_MOD_APP_MEMORY_STABILITY_TEST
+	default BR2_MTEST_REPEAT
+	help
+        Config memory mode. Once means test once, Repeat means allways test.
+
+    config BR2_MTEST_ONCE
+        bool "Once"
+
+    config BR2_MTEST_REPEAT
+        bool "Repeat"
+endchoice
+
+choice
+	prompt "Memory test result output config"
+	depends on BR2_MOD_APP_MEMORY_STABILITY_TEST
+	default BR2_MTEST_OSD
+	help
+        Config memory mode. In normal mode, debugging information is only output through the serial port. In OSD mode, Complete information serial port output, OSD display of the result section.
+
+    config BR2_MTEST_NORMAL
+        bool "UART"
+
+    config BR2_MTEST_OSD
+        bool "UART&OSD"
+endchoice
+
+endmenu

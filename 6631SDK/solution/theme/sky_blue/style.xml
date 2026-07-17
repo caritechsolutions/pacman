@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<interface>
+	<style class = "TEXT" name="default_text">
+		<property>					
+		    <rect>[40,40,80,24]</rect>
+			<font>Arial</font>					
+			<alignment>hcentre|vcentre</alignment>					
+			<backcolor>[#FF00FF,#FF00FF,#FF00FF]</backcolor>					
+			<forecolor>[#A44931,#503AfF,#78D53E]</forecolor>					
+		</property>		
+	</style>
+
+	<style class = "TEXT" name="text_style_1">
+		<property>					
+            <rect>[40,40,80,24]</rect>
+			<font>Arial</font>					
+			<alignment>hcentre|vcentre</alignment>					
+			<backcolor>[#FF00FF,#FF00FF,#FF00FF]</backcolor>					
+			<forecolor>[#A44931,#503AfF,#78D53E]</forecolor>					
+		</property>		
+	</style>
+
+	<style class="window" name="win_style_1">
+		<property>
+            <rect>[0,0,1024,576]</rect>
+			<backcolor>[#606060,#C54925,#ee43c0]</backcolor>
+			<image>main_menu_backgroud</image>
+			<!--link>MainMenu</link-->
+		</property>
+	</style>
+
+	<style class = "TEXT" name="text_style_2">
+		<property>					
+            <rect>[40,40,80,24]</rect>
+			<font>Arial</font>					
+			<alignment>hcentre|vcentre</alignment>					
+			<backcolor>[#FF00FF,#FF00FF,#FF00FF]</backcolor>					
+			<forecolor>[#A44931,#503AfF,#78D53E]</forecolor>					
+		</property>		
+	</style>
+
+	<style class="listview" name="default_listview">
+		<property>
+            <rect>[35,112,169,360]</rect>
+			<backcolor>[#67A958,#503A8F,#85347A]</backcolor>								
+			<forecolor>[#1F1F4D,#FDFDFD,#1F1F4D]</forecolor>
+			<unfocus_img>mp_buttongrey1</unfocus_img>	
+			<focus_img>mp_buttonorange1</focus_img>		
+			<disable_img>mp_buttongrey1</disable_img>
+			<item_rect>[0,0,212,45]</item_rect>
+			<item_bak_color>[#67A958,#503A8F,#85347A]</item_bak_color>
+			<item_fore_color>[#1F1F4D,#000011,#1F1F4D]</item_fore_color>
+			<font>Arial</font>													
+			<alignment>left|vcentre</alignment>	
+			<interval>0</interval>
+		</property>
+	</style>
+	
+	<style class="prompt" name="usb_inout_prompt">
+		<property>
+			<rect>[0,0,30,41]</rect>
+            <backcolor>[#ff00ff,#ff00ff,#ff00ff]</backcolor>
+		</property>
+		<children>
+			
+			<widget class="image" style="default" name="usb_inout_image">
+				<property>
+					<rect>[0,0,30,41]</rect>
+                    <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                    <backcolor>[#ff00ff,#ff00ff,#ff00ff]</backcolor>
+					<mode>single</mode>
+					<img></img>
+				</property>
+			</widget>	
+		</children>
+	</style>
+
+	<style class="prompt" name="face_detect_prompt">
+		<property>
+			<rect>[0,0,80,80]</rect>
+            <backcolor>[#ff00ff,#ff00ff,#ff00ff]</backcolor>
+		</property>
+		<children>
+			<widget class="image" style="default" name="face_detect_image">
+				<property>
+					<rect>[0,0,80,80]</rect>
+                    <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                    <backcolor>[#ff00ff,#ff00ff,#ff00ff]</backcolor>
+					<mode>single</mode>
+					<img>s_icon_face_detect</img>
+				</property>
+			</widget>
+		</children>
+	</style>
+
+	<style class="prompt" name="vc_notify_prompt">
+		<property>
+            <rect>[30,0,964,70]</rect>
+			<backcolor>[#080808,#080808,#080808]</backcolor>
+		</property>
+		<children>
+			<widget class="image" style="default" name="img_vc_notify_icon">
+				<property>
+                    <rect>[14,11,52,48]</rect>
+					<forecolor>[#000000,#000000,#000000]</forecolor>
+					<backcolor>[#31314a,#31314a,#31314a]</backcolor>
+					<mode>single</mode>
+					<img>notify</img>
+				</property>
+			</widget>
+			<widget class="text" style="default" name="txt_vc_notify_content">
+				<property>
+                    <rect>[80,9,880,52]</rect>
+					<forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+					<backcolor>[#080808,#080808,#080808]</backcolor>
+					<alignment>left|vcentre</alignment>
+					<font>font_28</font>
+					<format>automatic</format>
+				</property>
+			</widget>
+	</children>
+	</style>
+	<style class="prompt" name="ca_detitle_new_prompt">
+		<property>
+            <rect>[0,0,52,36]</rect>
+			<backcolor>[#ff00ff,#ff00ff,#ff00ff]</backcolor>
+		</property>
+		<children>
+			<widget class="image" style="default" name="ca_img_detitle">
+				<property>
+                    <rect>[0,0,52,36]</rect>
+					<forecolor>[#000000,#000000,#000000]</forecolor>
+					<backcolor>[#31314a,#31314a,#31314a]</backcolor>
+					<mode>single</mode>
+					<img>icon_detitle</img>
+				</property>
+			</widget>
+		</children>
+	</style>
+	<style class="prompt" name="ca_fingerprint_prompt">
+		<property>
+			<rect>[0,0,150,30]</rect>
+			<backcolor>[#ff00ff,#ff00ff,#808080]</backcolor>
+		</property>
+		<children>
+			<widget class="text" style="default" name="txt_fingerprint">
+				<property>
+					<rect>[0,0,150,30]</rect>
+					<forecolor>[#CEE8FF,#FFFFFF,#CEE8FF]</forecolor>
+					<backcolor>[#ff00ff,#ff00ff,#408DD2]</backcolor>
+					<format>static</format>
+				</property>
+			</widget>
+		</children>
+	</style>
+	<style class="prompt" name="ca_email_new_prompt">
+		<property>
+			<rect>[0,0,52,36]</rect>
+			<backcolor>[#00ff00,#00ff00,#ff00ff]</backcolor>
+		</property>
+		<children>
+			<widget class="image" style="default" name="image_unread_email">
+				<property>
+					<rect>[0,0,52,36]</rect>
+					<forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+					<backcolor>[#808080,#808080,#808080]</backcolor>
+					<mode>single</mode>
+					<img>icon_mail</img>
+				</property>
+			</widget>
+		</children>
+	</style>
+	<style class="prompt" name="ca_email_full_prompt">
+		<property>
+			<rect>[0,0,52,36]</rect>
+			<backcolor>[#ff00ff,#ff00ff,#ff00ff]</backcolor>
+		</property>
+		<children>
+			<widget class="image" style="default" name="image_email_box_full">
+				<property>
+					<rect>[0,0,52,36]</rect>
+					<forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+					<backcolor>[#808080,#808080,#808080]</backcolor>
+					<mode>single</mode>
+					<img>icon_mailfull</img>
+				</property>
+			</widget>
+		</children>
+	</style>
+	<style class="prompt" name="ca_notice_prompt">
+		<property>
+			<rect>[320,152,384,220]</rect>
+			<forecolor>[#000000,#000000,#000000]</forecolor>
+			<backcolor>[#ff00ff,#ff00ff,#ff00ff]</backcolor>
+		</property>
+		<children>
+			<widget class="image" style="default" name="image_ca_notice_bg">
+				<property>
+					<rect>[0,0,384,220]</rect>
+					<forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+					<backcolor>[#408DD2,#408DD2,#408DD2]</backcolor>
+					<mode>multiple</mode>
+					<img></img>
+					<lt_img>s_win_l_t</lt_img>
+					<rt_img>s_win_r_t</rt_img>
+					<lb_img>s_win_l_b</lb_img>
+					<rb_img>s_win_r_b</rb_img>
+					<l_img>s_win_l_m</l_img>
+					<r_img>s_win_r_m</r_img>
+					<t_img>s_win_m_t</t_img>
+					<b_img>s_win_m_b</b_img>
+				</property>
+			</widget>
+			<widget class="text" style="default" name="txt_ca_notice">
+				<property>
+					<rect>[16,64,352,96]</rect>
+					<forecolor>[#f4f4f4,#0xf4f4f4,0xf4f4f4]</forecolor>
+					<backcolor>[#ff00ff,#ff00ff,#ff00ff]</backcolor>
+					<format>automatic</format>
+				</property>
+			</widget>
+		</children>
+	</style>
+	<style class="prompt" name="ca_rolling_text_r2l_prompt">
+		<property>
+			<rect>[40,0,944,30]</rect>
+			<backcolor>[#808080,#808080,#808080]</backcolor>
+		</property>
+		<children>
+			<widget class="text" style="default" name="txt_ca_rolling_r2l">
+				<property>
+					<rect>[0,0,944,30]</rect>
+					<forecolor>[#CEE8FF,#FFFFFF,#CEE8FF]</forecolor>
+					<backcolor>[#408DD2,#408DD2,#408DD2]</backcolor>
+					<time>10</time>
+					<format>roll_r2l</format>
+				</property>
+			</widget>
+		</children>
+	</style>
+	<style class="prompt" name="ca_rolling_text_r2l_prompt_1">
+		<property>
+			<rect>[40,0,944,30]</rect>
+			<backcolor>[#808080,#808080,#808080]</backcolor>
+		</property>
+		<children>
+			<widget class="text" style="default" name="txt_ca_rolling_r2l_1">
+				<property>
+					<rect>[0,0,944,30]</rect>
+					<forecolor>[#CEE8FF,#FFFFFF,#CEE8FF]</forecolor>
+					<backcolor>[#408DD2,#408DD2,#408DD2]</backcolor>
+					<time>10</time>
+					<format>roll_r2l</format>
+				</property>
+			</widget>
+		</children>
+	</style>
+	<style class = "prompt" name="ca_force_osd_prompt">
+		<property>
+			<rect>[0,0,680,410]</rect>
+			<forecolor>[#000000,#000000,#000000]</forecolor>
+			<backcolor>[#010101,#010101,#010101]</backcolor>
+		</property>
+		<children>
+			<widget style="default" class="text" name="txt_ca_force_osd">
+				<property>
+					<rect>[0,0,680,380]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#010101,#010101,#010101]</backcolor>
+					<font>font_24</font>
+					<string></string>
+					<format>automatic</format>
+					<alignment>left|vcentre</alignment>
+				</property>
+			</widget>
+			<widget style="default" class="text" name="txt_ca_force_osd_card">
+				<property>
+					<rect>[0,380,220,30]</rect>
+					<forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+					<backcolor>[#010101,#010101,#010101]</backcolor>
+					<font>font_20</font>
+					<string></string>
+					<format>static</format>
+					<alignment>left|vcentre</alignment>
+				</property>
+			</widget>
+		</children>
+	</style>
+</interface>

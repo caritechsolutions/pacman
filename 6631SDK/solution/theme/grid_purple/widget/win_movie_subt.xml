@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="win_movie_subt">
+    <property>
+        <rect>[220,100,584,341]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>movie_subt_init</create>
+        <destroy>movie_subt_destroy</destroy>
+        <service>movie_subt_service</service>
+        <keypress>movie_subt_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="win_movie_subt_image_back">
+            <property>
+                <rect>[0,0,584,341]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_m</lt_img>
+                <rt_img>s_win_m</rt_img>
+                <lb_img>s_win_m</lb_img>
+                <rb_img>s_win_m</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="box" style="default" name="movie_subt_box">
+            <property>
+                <rect>[9,42,566,290]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <format>vertical</format>
+            </property>
+            <children>
+                <widget class="boxitem" style="default" name="movie_subt_boxitem0">
+                    <property>
+                        <rect>[0,0,566,36]</rect>
+                        <forecolor>[osd_trans,osd_trans,text_disable_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="movie_set_txt0">
+                            <property>
+                                <rect>[24,3,200,30]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string>Type</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="movie_subt_combo_type">
+                            <property>
+                                <rect>[246,3,320,30]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                                <content>[Outside,Inside]</content>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="movie_subt_boxitem1">
+                    <property>
+                        <rect>[0,36,566,36]</rect>
+                        <forecolor>[osd_trans,osd_trans,text_disable_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="movie_subt_txt1">
+                            <property>
+                                <rect>[24,3,200,30]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string>File</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="button" style="default" name="movie_subt_button_load">
+                            <property>
+                                <rect>[246,3,320,30]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="movie_subt_boxitem2">
+                    <property>
+                        <rect>[0,72,566,36]</rect>
+                        <forecolor>[osd_trans,osd_trans,text_disable_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="movie_set_txt2">
+                            <property>
+                                <rect>[24,3,200,30]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string>Visibility</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="movie_subt_combo_visibility">
+                            <property>
+                                <rect>[246,3,320,30]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                                <content>[Off,On]</content>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="movie_subt_boxitem3">
+                    <property>
+                        <rect>[0,108,566,36]</rect>
+                        <forecolor>[osd_trans,osd_trans,text_disable_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="movie_subt_txt3">
+                            <property>
+                                <rect>[24,3,200,30]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string>Select</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="movie_subt_combo_select">
+                            <property>
+                                <rect>[246,3,320,30]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                                <content>[Chinese,English]</content>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="movie_subt_boxitem4">
+                    <property>
+                        <rect>[0,144,566,36]</rect>
+                        <forecolor>[osd_trans,osd_trans,text_disable_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="movie_subt_txt4">
+                            <property>
+                                <rect>[24,3,200,30]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string>Delay</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="button" style="default" name="movie_subt_button_delay">
+                            <property>
+                                <rect>[246,3,320,33]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="movie_subt_boxitem5">
+                    <property>
+                        <rect>[0,180,566,36]</rect>
+                        <forecolor>[osd_trans,osd_trans,text_disable_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="movie_subt_txt5">
+                            <property>
+                                <rect>[24,3,200,30]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string>Language</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="movie_subt_combo_Language">
+                            <property>
+                                <rect>[246,3,320,30]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                                <content>[Chinese,English]</content>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="movie_subt_boxitem6">
+                    <property>
+                        <rect>[0,216,566,36]</rect>
+                        <forecolor>[osd_trans,osd_trans,text_disable_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="movie_subt_txt6">
+                            <property>
+                                <rect>[24,3,200,30]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string>Encoding</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="movie_subt_combo_encoding">
+                            <property>
+                                <rect>[246,3,320,30]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                                <content>[ISO8859,Windows125x,UTF8]</content>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="movie_subt_boxitem7">
+                    <property>
+                        <rect>[0,252,566,36]</rect>
+                        <forecolor>[osd_trans,osd_trans,text_disable_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="movie_subt_txt7">
+                            <property>
+                                <rect>[24,3,200,30]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <string>Font Size</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="movie_subt_combo_FontSize">
+                            <property>
+                                <rect>[246,3,320,30]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                                <content>[large,medium,small]</content>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+        <widget class="text" style="default" name="movie_subt_title">
+            <property>
+                <rect>[102,6,380,29]</rect>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>Subtitle</string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

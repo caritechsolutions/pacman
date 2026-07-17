@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget class="window" style="default" name="wnd_tp_list">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+    </property>
+    <signal>
+        <create>app_tp_list_create</create>
+        <destroy>app_tp_list_destroy</destroy>
+        <got_focus>app_tp_list_got_focus</got_focus>
+        <lost_focus>app_tp_list_lost_focus</lost_focus>
+        <keypress>app_tp_list_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_tp_list_back">
+            <property>
+                <rect>[144,64,736,416]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_tp_list_title">
+            <property>
+                <rect>[112,45,800,44]</rect>
+                <forecolor>[theme_color,theme_color,theme_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_main</font>
+                <string>TP List</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_tp_list_box_line">
+            <property>
+                <rect>[120,96,784,2]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[theme_color,theme_color,theme_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+       <widget class="listview" style="default" name="list_tp_list">
+            <property>
+                <rect>[130,144,764,252]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <roll_time>0</roll_time>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <item_active_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</item_active_image>
+                <item_active_color>text_color</item_active_color>
+                <i18n>false</i18n>
+                <item_rect>[0,0,750,36]</item_rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+                <alignment>left|vcentre</alignment>
+            </property>
+            <signal>
+                <create>app_tp_list_list_create</create>
+                <keypress>app_tp_list_list_keypress</keypress>
+                <get_total>app_tp_list_list_get_total</get_total>
+                <get_data>app_tp_list_list_get_data</get_data>
+                <change>app_tp_list_list_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="listheader_tp_list">
+                    <property>
+                        <rect>[0,0,750,0]</rect>
+                        <forecolor>[text_color,text_color,text_color]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <colum_number>5</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="headertext_tp_1">
+                            <property>
+                                <rect>[32,0,48,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_tp_2">
+                            <property>
+                                <rect>[88,0,48,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_tp_3">
+                            <property>
+                                <rect>[144,0,160,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_tp_4">
+                            <property>
+                                <rect>[312,0,160,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_tp_5">
+                            <property>
+                                <rect>[480,0,160,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="scrollbar_tp_list">
+                    <property>
+                        <rect>[750,0,11,212]</rect>
+                        <forecolor>[window_bg_color,window_bg_color,window_bg_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_tp0">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_tp1">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_tp2">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_tp3">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_tp4">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_tp5">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_tp6"/>
+            </children>
+        </widget>
+        <widget class="combobox" style="default" name="cmb_tp_list_sat">
+            <property>
+                <rect>[350,106,348,36]</rect>
+                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <focus_left_img>s_arrow_l</focus_left_img>
+                <focus_right_img>s_arrow_r</focus_right_img>
+                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+            </property>
+            <signal>
+                <keypress>app_tp_list_cmb_sat_keypress</keypress>
+                <change>app_tp_list_cmb_sat_change</change>
+            </signal>
+        </widget>
+        <widget class="text" style="default" name="text_tp_list_strength">
+            <property>
+                <rect>[156,400,114,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Strength</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_tp_list_quality">
+            <property>
+                <rect>[156,430,114,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Quality</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="progbar" style="default" name="progbar_tp_list_strength">
+            <property>
+                <rect>[270,410,530,10]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <back_image>s_progress_m</back_image>
+                <back_image_l>s_progress_l</back_image_l>
+                <back_image_m>s_progress_m</back_image_m>
+                <back_image_r>s_progress_r</back_image_r>
+                <fore_image>s_progress3_m</fore_image>
+                <fore_image_l>s_progress3_l</fore_image_l>
+                <fore_image_m>s_progress3_m</fore_image_m>
+                <fore_image_r>s_progress3_r</fore_image_r>
+                <format>water</format>
+                <mirror>disable</mirror>
+                <text_format>percentage</text_format>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="progbar" style="default" name="progbar_tp_list_quality">
+            <property>
+                <rect>[270,440,530,10]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <back_image>s_progress_m</back_image>
+                <back_image_l>s_progress_l</back_image_l>
+                <back_image_m>s_progress_m</back_image_m>
+                <back_image_r>s_progress_r</back_image_r>
+                <fore_image>s_progress3_m</fore_image>
+                <fore_image_l>s_progress3_l</fore_image_l>
+                <fore_image_m>s_progress3_m</fore_image_m>
+                <fore_image_r>s_progress3_r</fore_image_r>
+                <format>water</format>
+                <mirror>disable</mirror>
+                <text_format>percentage</text_format>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_tp_list_strength_value">
+            <property>
+                <rect>[820,400,80,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>0%</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_tp_list_quality_value">
+            <property>
+                <rect>[820,430,80,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>0%</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_tp_list_botline">
+            <property>
+                <rect>[0,510,1024,66]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_b2</lt_img>
+                <rt_img>s_win2_r_b2</rt_img>
+                <t_img>s_win2_m_b2</t_img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_tp_list_tip_0">
+            <property>
+                <rect>[100,525,54,22]</rect>
+                <forecolor>[main_text_color,main_text_color,main_text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>T2_64_button_tips</focus_img>
+                <unfocus_img>T2_64_button_tips</unfocus_img>
+                <string>0</string>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_tp_list_tip_0">
+            <property>
+                <rect>[160,524,60,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>All</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_tp_list_tip_info">
+            <property>
+                <rect>[221,525,54,22]</rect>
+                <forecolor>[main_text_color,main_text_color,main_text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>T2_64_button_tips</focus_img>
+                <unfocus_img>T2_64_button_tips</unfocus_img>
+                <string>INFO</string>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_tp_list_tip_info">
+            <property>
+                <rect>[281,524,170,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Antenna Setting</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_tp_list_tip_red">
+            <property>
+                <rect>[455,526,20,20]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_red</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_tp_list_tip_red">
+            <property>
+                <rect>[481,524,100,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Delete</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_tp_list_tip_green">
+            <property>
+                <rect>[576,526,20,20]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_green</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_tp_list_tip_green">
+            <property>
+                <rect>[602,524,95,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Add</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_tp_list_tip_yellow">
+            <property>
+                <rect>[697,526,20,20]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_yellow</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_tp_list_tip_yellow">
+            <property>
+                <rect>[723,524,95,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Edit</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_tp_list_tip_blue">
+            <property>
+                <rect>[818,526,20,20]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_blue</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_tp_list_tip_blue">
+            <property>
+                <rect>[844,524,80,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Search</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_tp_list_rec">
+            <property>
+                <rect>[868,144,64,24]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_pvr_rec</img>
+            </property>
+        </widget>
+    </children>
+</widget>

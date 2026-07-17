@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_pop_dialog">
+    <property>
+        <rect>[408,152,464,250]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_pop_dialog_create</create>
+        <destroy>app_pop_dialog_destroy</destroy>
+        <service>app_pop_dialog_set_service</service>
+        <keypress>app_pop_dialog_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_search_tip_bg">
+            <property>
+                <rect>[0,0,464,250]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_pop_dialog_title">
+            <property>
+                <rect>[0,1,464,28]</rect>
+                <forecolor>[pop_title_color,pop_title_color,pop_title_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Tips</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_pop_dialog_content">
+            <property>
+                <rect>[12,36,440,144]</rect>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,gui_trans]</backcolor>
+                <alignment>left|top</alignment>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_pop_dialog_yes">
+            <property>
+                <rect>[12,210,140,30]</rect>
+                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>s_process_blue</focus_img>
+                <string>Yes</string>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_pop_dialog_ok">
+            <property>
+                <rect>[160,210,140,30]</rect>
+                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>s_process_blue</focus_img>
+                <string>OK</string>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_pop_dialog_cancel">
+            <property>
+                <rect>[300,210,140,30]</rect>
+                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>s_process_blue</focus_img>
+                <string>Cancel</string>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_pop_dialog_time">
+            <property>
+                <rect>[320,180,120,30]</rect>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

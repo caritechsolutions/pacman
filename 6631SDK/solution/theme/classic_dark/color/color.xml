@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<colors>
+	<color name="zoom_background"               >#686868</color>
+	<color name="zoom_foreground"               >#191819</color>
+	<color name="spectrum_block"                >#16a2c6</color>
+	<color name="spectrum_top"                  >#a8ca08</color>
+	<color name="spectrum_clear"                >#000000</color>
+	<color name="Mainmenu_item_clear"           >#000000</color>
+	<color name="subt_background"               >#0c0c0c</color>
+	<color name="subt_clear"                    >#00ff00</color>
+    <color name="net_video_focus_color"         >#EF0010</color>
+    <color name="volume_focus_color"            >#FFFF00</color>
+
+    <!--General-->
+	<color name="line_bg_color"                 >#525152</color>
+	<color name="line_bg_color2"                >#303030</color>
+	<color name="black"                         >#000000</color>
+	<color name="white"                         >#ffffff</color>
+	<color name="gui_trans"                     >#ff00ff</color>
+	<color name="osd_trans"                     >#00ff00</color>
+    <color name="default_color"                 >#808080</color>
+
+    <!--Text Color-->
+    <color name="text_color"                    >#f4f4f4</color>
+    <color name="text_focus_color"              >#000000</color>
+    <color name="text_tag_color"                >#96c1f6</color>    <!--某些设置菜单中text标签的颜色-->
+    <color name="text_disable_color"            >#424247</color>
+    <color name="text_golden_color"             >#E78818</color>
+    <color name="text_wifi_bk_color"            >#ffffff</color>
+    <color name="text_wifi_fe_en_color"         >#96C1F6</color>
+    <color name="text_wifi_fe_dis_color"        >#656570</color>
+
+    <!--Tp List-->
+    <color name="sat_focus_color"               >#97e300</color>    <!--Just for tp list-->
+
+    <color name="window_bg_color"               >#202121</color>
+    <color name="window_top_color"              >#00FF00</color>
+    <color name="window_bot_color"              >#00FF00</color>
+
+
+    <color name="search_scrambler_color"        >#747474</color>    <!--Just for search-->
+
+    <!--EPG-->
+    <color name="epg_tmlist_unfocus_bgcolor"    >#4b4b68</color>
+    <color name="epg_tmlist_focus_bgcolor"      >#96C1F6</color>
+    <color name="epg_fileimg_bgcolor"           >#404040</color>
+
+    <color name="game_text_color"               >#E6F8F8</color>    <!--Just for Game and Multiscreen-->
+	<color name="Snake_BG"                      >#1B1A15</color>    <!--Just for Game Sanke and Tetris-->
+	<color name="game_image_BG"                 >#515151</color>
+
+    <!--wnd_keyboard_language-->
+    <color name="keyboard_input_bg_color"       >#8BD243</color>    <!-- #cc9219 -->
+    <color name="keyboard_input_text_color"     >#000000</color>
+    <color name="keyboard_button_dis_color"     >#828686</color>
+
+    <!--wnd_main_menu-->
+    <color name="main_menu_pic_bg_color"        >#181818</color>
+   <color name="main_menu_back_bg_color"        >#000000</color>
+
+    <!--Channel edit-->
+    <color name="channel_edit_video_bg"         >#000000</color>
+
+    <!--Progbar bg color-->
+    <color name="progbar_bg_color"              >#00ff00</color>    <!--Just for wnd_search and wnd_ota_upgrade-->
+
+    <!--Bk-->
+    <color name="bk_bg_color"                 >#000000</color>
+    <color name="bk_item_bg_color"            >#212222</color>
+    <color name="bk_listview_focus_color"     >#0c2ff3</color>
+    <color name="bk_bottom_color"             >#101012</color>
+    <color name="bk_popup_focus_color"        >#bbff00</color>
+    <color name="bk_pmp_set_color"            >#242424</color>
+    <color name="bk_dlna_color"               >#0b0b0c</color>
+    <color name="bk_item_color"               >#303030</color>
+
+	<!--main menu color-->
+    <color name="main_text_color"                    >#f4f4f4</color>
+    <color name="main_text_focus_color"              >#f4f4f4</color>
+
+	<!--popup color-->
+	<color name="pop_bg_color"                  >#f8f8f8</color>
+	<color name="pop_title_color"               >#000000</color>
+	<color name="pop_text_color"                >#000000</color>
+	<color name="pop_text_focus_color"          >#f4f4f4</color>
+	<color name="pop_text_disable_color"        >#7373ab</color>
+	<color name="pop_tag_color"                 >#96c1f6</color>
+	<color name="pop_tag_focus_color"           >#96c1f6</color>
+
+	<!--keyboard color-->
+	<color name="key_focus_color"               >#94287B</color>
+	<color name="key_red"                       >#C81818</color>
+	<color name="key_green"                     >#389818</color>
+	<color name="key_yellow"                    >#F6E426</color>
+	<color name="key_blue"                      >#1843C1</color>
+	<color name="dur_edit_bg"                   >#215dc5</color>
+</colors>

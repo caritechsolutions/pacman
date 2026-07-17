@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_apps_transmission">
+    <property>
+        <rect>[0,0,1280,720]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+        <back_ground>bg</back_ground>
+    </property>
+    <signal>
+        <create>app_transmission_create</create>
+        <destroy>app_transmission_destroy</destroy>
+        <keypress>app_transmission_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_transmission_title_bg">
+            <property>
+                <rect>[0,0,1280,100]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_top_color,window_top_color,window_top_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_transmission_group_bg">
+            <property>
+                <rect>[50,100,300,510]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        	<mode>multiple</mode>
+        	<img></img>
+        	<lt_img>s_win_l_t</lt_img>
+        	<rt_img>s_win_r_t</rt_img>
+        	<lb_img>s_win_l_b</lb_img>
+        	<rb_img>s_win_r_b</rb_img>
+        	<l_img>s_win_l_m</l_img>
+        	<r_img>s_win_r_m</r_img>
+        	<t_img>s_win_m_t</t_img>
+        	<b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_transmission_list_bg">
+            <property>
+                <rect>[359,100,870,510]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_transmission_bg_bottom">
+            <property>
+                <rect>[0,620,1280,100]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bot_color,window_bot_color,window_bot_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <t_img>s_bar_bg</t_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_transmission_title">
+            <property>
+                <rect>[152,20,80,80]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<mode>single</mode>
+				<img>s_title_left_setting</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_transmission_title">
+            <property>
+                <rect>[240,30,250,50]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_sub</font>
+                <alignment>left|bottom</alignment>
+                <string>BitTorrent</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_transmission_date">
+            <property>
+                <rect>[870,50,140,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_transmission_time">
+            <property>
+                <rect>[1028,50,80,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="box" style="default" name="box_transmission_group">
+            <property>
+                <rect>[74,147,250,430]</rect>
+                <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+               <interval>10</interval>
+               <format>vertical</format>
+            </property>
+            <signal>
+                <keypress>app_transmission_box_keypress</keypress>
+            </signal>
+            <children>
+                <widget class="boxitem" style="default" name="boxitem_transmission_group_all_tasks">
+                    <property>
+                        <rect>[5,10,240,50]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="image" style="default" name="img_transmission_group_all_tasks_pic">
+                            <property>
+                                <rect>[6,11,27,27]</rect>
+                                <forecolor>[text_focus_color,text_focus_color,text_focus_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <mode>single</mode>
+                                <img>s_icon_task</img>
+                            </property>
+                        </widget>
+                        <widget class="button" style="default" name="btn_transmission_group_all_tasks_title">
+                            <property>
+                                <rect>[52,6,188,38]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>All tasks</string>
+                                <focus_img>s_bar_blue2_188</focus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_transmission_group_downloading">
+                    <property>
+                        <rect>[5,70,240,50]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="image" style="default" name="img_transmission_group_downloading_pic">
+                            <property>
+                                <rect>[6,11,27,27]</rect>
+                                <forecolor>[text_focus_color,text_focus_color,text_focus_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <mode>single</mode>
+                                <img>s_icon_downloading</img>
+                            </property>
+                        </widget>
+                        <widget class="button" style="default" name="btn_transmission_group_downloading_title">
+                            <property>
+                                <rect>[52,6,188,38]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Downloading</string>
+                                <focus_img>s_bar_blue2_188</focus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_transmission_group_finished">
+                    <property>
+                        <rect>[5,130,240,50]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="image" style="default" name="img_transmission_group_finished_pic">
+                            <property>
+                                <rect>[6,11,27,27]</rect>
+                                <forecolor>[text_focus_color,text_focus_color,text_focus_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <mode>single</mode>
+                                <img>s_icon_finish</img>
+                            </property>
+                        </widget>
+                        <widget class="button" style="default" name="btn_transmission_group_finished_title">
+                            <property>
+                                <rect>[52,6,188,38]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Finished</string>
+                                <focus_img>s_bar_blue2_188</focus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_transmission_group_setting">
+                    <property>
+                        <rect>[5,190,240,50]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="image" style="default" name="img_transmission_group_setting_pic">
+                            <property>
+                                <rect>[6,11,27,27]</rect>
+                                <forecolor>[text_focus_color,text_focus_color,text_focus_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <mode>single</mode>
+                                <img>s_icon_setting</img>
+                            </property>
+                        </widget>
+                        <widget class="button" style="default" name="btn_transmission_group_setting_title">
+                            <property>
+                                <rect>[52,6,188,38]</rect>
+                                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Setting</string>
+                                <focus_img>s_bar_blue2_188</focus_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+        <widget class="file_image" style="default" name="img_transmission_gif">
+            <property>
+                <rect>[624,50,48,48]</rect>
+                <state>hide</state>
+                <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_transmission_red">
+            <property>
+                <rect>[363,634,22,22]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_red</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_transmission_red">
+            <property>
+                <rect>[393,630,150,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Start</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_transmission_green">
+            <property>
+                <rect>[559,633,22,22]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_green</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_transmission_green">
+            <property>
+                <rect>[609,630,150,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Pause</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_transmission_yellow">
+            <property>
+                <rect>[789,633,22,22]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_yellow</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_transmission_yellow">
+            <property>
+                <rect>[839,630,150,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Stop</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_transmission_blue">
+            <property>
+                <rect>[1019,633,22,22]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_blue</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_transmission_blue">
+            <property>
+                <rect>[1069,630,150,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Delete</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_transmission_add">
+            <property>
+                <rect>[63,633,30,24]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_0</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_transmission_add">
+            <property>
+                <rect>[134,630,200,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Add new task</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_transmission_title_state">
+            <property>
+                <rect>[363,105,70,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>left|vcentre</alignment>
+                <string>State</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_apps_transmission_filename">
+            <property>
+                <rect>[441,105,300,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+                <string>File name</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_apps_transmission_size">
+            <property>
+                <rect>[747,106,120,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+                <string>Size</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_apps_transmission_seed">
+            <property>
+                <rect>[872,106,120,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>left|vcentre</alignment>
+                <string>Seed</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_apps_transmission_speed">
+            <property>
+                <rect>[997,106,120,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>left|vcentre</alignment>
+                <string>Speed</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_apps_transmission_percent">
+            <property>
+                <rect>[1121,106,100,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+				<alignment>left|vcentre</alignment>
+                <string>Percent</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="list_spps_transmission_list">
+            <property>
+                <rect>[365,160,860,300]</rect>
+                <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <roll_time>0</roll_time>
+                <interval>4</interval>
+                <focus_img>s_bar_blue2_846</focus_img>
+                <item_active_image>s_bar_blue2_846</item_active_image>
+                <i18n>false</i18n>
+                <item_rect>[0,0,846,38]</item_rect>
+                <item_fore_color>[text_color,text_focus_color,text_color]</item_fore_color>
+                <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+        		<alignment>left|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>app_transmission_list_keypress</keypress>
+                <get_total>app_transmission_list_get_total</get_total>
+                <get_data>app_transmission_list_get_data</get_data>
+                <change>app_transmission_list_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="listheader_transmission_list">
+                    <property>
+                        <rect>[0,0,845,0]</rect>
+                        <forecolor>[text_color,text_color,text_color]</forecolor>
+                        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                        <colum_number>6</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="headertext_transmission_state">
+                            <property>
+                            <rect>[5,6,17,20]</rect>
+                 			<forecolor>[text_color,text_color,text_color]</forecolor>
+                        	<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                			<alignment>left|vcentre</alignment>
+                			<font>font_22</font>
+                            <string></string>
+                            <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_transmission_filename">
+                            <property>
+                            <rect>[50,0,375,0]</rect>
+                        	<forecolor>[text_color,text_color,text_color]</forecolor>
+                        	<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                			<alignment>left|vcentre</alignment>
+                			<font>font_22</font>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_transmission_size">
+                            <property>
+                            <rect>[430,0,115,0]</rect>
+                        	<forecolor>[text_color,text_color,text_color]</forecolor>
+                        	<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                			<alignment>left|vcentre</alignment>
+                			<font>font_22</font>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_transmission_seed">
+                            <property>
+                                <rect>[545,0,90,0]</rect>
+                        	<forecolor>[text_color,text_color,text_color]</forecolor>
+                        	<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                			<alignment>left|vcentre</alignment>
+                			<font>font_22</font>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_transmission_speed">
+                            <property>
+                                <rect>[640,0,115,0]</rect>
+                        	<forecolor>[text_color,text_color,text_color]</forecolor>
+                        	<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                			<alignment>left|vcentre</alignment>
+                			<font>font_22</font>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_transmission_percent">
+                            <property>
+                            <rect>[760,0,85,0]</rect>
+                        	<forecolor>[text_color,text_color,text_color]</forecolor>
+                        	<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                			<alignment>left|vcentre</alignment>
+                			<font>font_22</font>
+                            <string></string>
+                            <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="scrollbar_transmission_list">
+                    <property>
+                        <rect>[846,0,14,300]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_transmission_list0">
+                    <property>
+                        <font>font_22</font>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_transmission_list1">
+                    <property>
+                        <font>font_22</font>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_transmission_list2">
+                    <property>
+                        <font>font_22</font>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_transmission_list3">
+                    <property>
+                        <font>font_22</font>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_transmission_list4">
+                    <property>
+                        <font>font_22</font>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_transmission_list5">
+                    <property>
+                        <font>font_22</font>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_transmission_list6">
+                    <property>
+                        <font>font_22</font>
+                    </property>
+                </widget>
+            </children>
+        </widget>
+        <widget class="text" style="default" name="txt_apps_transmission_title_1">
+            <property>
+                <rect>[371,493,150,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_apps_transmission_title_2">
+            <property>
+                <rect>[371,556,150,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_apps_transmission_info_1">
+            <property>
+                <rect>[535,493,150,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_apps_transmission_info_2">
+            <property>
+                <rect>[537,556,150,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_apps_transmission_title_3">
+            <property>
+                <rect>[737,493,150,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_apps_transmission_title_4">
+            <property>
+                <rect>[737,556,150,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_apps_transmission_info_3">
+            <property>
+                <rect>[898,493,150,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_apps_transmission_info_4">
+            <property>
+                <rect>[898,556,150,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_apps_transmission_usb">
+            <property>
+                <rect>[1127,483,36,49]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_usb</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_apps_transmission_usb_info">
+            <property>
+                <rect>[1073,558,150,30]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_transmission_popup">
+            <property>
+                <rect>[410,221,400,250]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[net_bg1_color,net_bg1_color,net_bg1_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>L_U</lt_img>
+                <rt_img>R_U</rt_img>
+                <lb_img>L_B</lb_img>
+                <rb_img>R_B</rb_img>
+                <l_img>L_M</l_img>
+                <r_img>R_M</r_img>
+                <t_img>U_M</t_img>
+                <b_img>B_M</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_transmission_popup">
+            <property>
+                <rect>[435,263,350,200]</rect>
+                <state>hide</state>
+                <forecolor>[#B5DE29,#B5DE29,#B5DE29]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+    </children>
+</widget>

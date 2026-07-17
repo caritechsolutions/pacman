@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_timer_setting">
+    <property>
+        <rect>[75,179,874,374]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_timer_setting_create</create>
+        <destroy>app_timer_setting_destroy</destroy>
+        <got_focus>app_timer_setting_got_focus</got_focus>
+        <lost_focus>app_timer_setting_lost_focus</lost_focus>
+        <keypress>app_timer_setting_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_timer_list_back">
+            <property>
+                <rect>[0,0,874,374]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_timer_setting_tip_back">
+            <property>
+                <rect>[5,322,864,46]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win3_l_t</lt_img>
+                <rt_img>s_win3_r_t</rt_img>
+                <lb_img>s_win3_l_b</lb_img>
+                <rb_img>s_win3_r_b</rb_img>
+                <l_img>s_win3_l_m</l_img>
+                <r_img>s_win3_r_m</r_img>
+                <t_img>s_win3_m_t</t_img>
+                <b_img>s_win3_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_timer_list_back1">
+            <property>
+                <rect>[25,56,824,260]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win3_l_t</lt_img>
+                <rt_img>s_win3_r_t</rt_img>
+                <lb_img>s_win3_l_b</lb_img>
+                <rb_img>s_win3_r_b</rb_img>
+                <l_img>s_win3_l_m</l_img>
+                <r_img>s_win3_r_m</r_img>
+                <t_img>s_win3_m_t</t_img>
+                <b_img>s_win3_m_b</b_img>
+            </property>
+        </widget>
+	<widget class="image" style="default" name="img_timer_setting_title1">
+            <property>
+                <rect>[5,11,864,44]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_timer_setting_title">
+            <property>
+                <rect>[5,11,864,44]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win3_l_t</lt_img>
+                <rt_img>s_win3_r_t</rt_img>
+                <lb_img>s_win3_l_b</lb_img>
+                <rb_img>s_win3_r_b</rb_img>
+                <l_img>s_win3_l_m</l_img>
+                <r_img>s_win3_r_m</r_img>
+                <t_img>s_win3_m_t</t_img>
+                <b_img>s_win3_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_timer_setting_title">
+            <property>
+                <rect>[99,11,677,44]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_main</font>
+                <string>Timer Setting</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="list_timer_setting_timer">
+            <property>
+                <rect>[30,85,814,228]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <roll_time>0</roll_time>
+                <interval>1</interval>
+                <select>0</select>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <item_active_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</item_active_image>
+                <i18n>true</i18n>
+                <item_rect>[0,0,800,37]</item_rect>
+                <item_fore_color>[#CEE8FF,#FFFFFF,#CEE8FF]</item_fore_color>
+                <item_back_color>[#384051,#1c242f,#1c242f]</item_back_color>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <get_total>app_timer_list_get_total</get_total>
+                <get_data>app_timer_list_get_data</get_data>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="header_timer_setting_timer">
+                    <property>
+                        <rect>[0,0,800,0]</rect>
+                        <forecolor>[text_color,text_color,text_color]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <colum_number>5</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_timer_setting_list_1">
+                            <property>
+                                <rect>[20,0,180,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_timer_setting_list_2">
+                            <property>
+                                <rect>[200,0,160,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_timer_setting_list_3">
+                            <property>
+                                <rect>[360,0,240,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_timer_setting_list_4">
+                            <property>
+                                <rect>[600,0,100,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_timer_setting_list_5">
+                            <property>
+                                <rect>[700,0,100,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="scrollbar_timer_setting_list">
+                    <property>
+                        <rect>[800,0,14,228]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_timer1"/>
+                <widget class="listitem" style="default" name="listitem_timer2"/>
+                <widget class="listitem" style="default" name="listitem_timer3"/>
+                <widget class="listitem" style="default" name="listitem_timer4"/>
+                <widget class="listitem" style="default" name="listitem_timer5"/>
+                <widget class="listitem" style="default" name="listitem_timer6"/>
+            </children>
+        </widget>
+        <widget class="text" style="default" name="text_timer_setting_header1">
+            <property>
+                <rect>[50,57,180,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Start Time</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_timer_setting_header2">
+            <property>
+                <rect>[230,57,160,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Event</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_timer_setting_header3">
+            <property>
+                <rect>[390,57,240,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>CH.</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_timer_setting_header4">
+            <property>
+                <rect>[630,57,100,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Duration</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_timer_setting_header5">
+            <property>
+                <rect>[730,57,100,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Mode</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_timer_setting_tip_red">
+            <property>
+                <rect>[61,337,16,16]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_red</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_timer_setting_tip_red">
+            <property>
+                <rect>[78,331,180,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Delete</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_timer_setting_tip_green">
+            <property>
+                <rect>[274,337,16,16]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_green</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_timer_setting_tip_green">
+            <property>
+                <rect>[289,331,180,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Add</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_timer_setting_tip_yellow">
+            <property>
+                <rect>[486,337,16,16]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_yellow</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_timer_setting_tip_yellow">
+            <property>
+                <rect>[502,331,180,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Edit</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_timer_setting_tip_blue">
+            <property>
+                <rect>[698,331,160,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Delete All</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_timer_setting_tip_blue">
+            <property>
+                <rect>[682,337,16,16]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_blue</img>
+            </property>
+        </widget>
+    </children>
+</widget>

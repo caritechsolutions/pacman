@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_3g">
+    <property>
+        <rect>[0,0,1280,720]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>On_3g_create</create>
+        <got_focus>On_3g_got_focus</got_focus>
+        <lost_focus>On_3g_lost_focus</lost_focus>
+        <keypress>On_3g_keypress</keypress>
+        <destroy>On_3g_destroy</destroy>
+    </signal>
+    <children>
+		<widget class="image" style="default" name="img_3g_bg_jpg">
+            <property>
+                <rect>[0,0,1280,720]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>bg</img>
+            </property>
+		</widget>
+        <widget class="image" style="default" name="img_3g_title">
+            <property>
+                <rect>[100,40,80,80]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_title_left_setting</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_3g_title">
+            <property>
+                <rect>[195,70,600,48]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <font>font_sub</font>
+                <alignment>left|bottom</alignment>
+                <string>3G Setting</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_3g_back">
+            <property>
+                <rect>[180,145,920,400]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_3g_status_bg">
+            <property>
+                <rect>[180,570,455,38]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="box" style="default" name="box_3g_set_para">
+            <property>
+                <rect>[200,190,880,350]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <format>vertical</format>
+            </property>
+            <signal>
+                <keypress>On_box_3g_set_para_keypress</keypress>
+            </signal>
+            <children>
+                <widget class="boxitem" style="default" name="boxitem_3g_set_type">
+                    <property>
+                        <rect>[5,0,870,38]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>s_bar_long_focus</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_3g_set_item_type">
+                            <property>
+                                <rect>[60,0,260,38]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Type</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmb_3g_set_Type">
+                            <property>
+                                <rect>[435,0,435,38]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                                <content>[Auto,Manual]</content>
+                            </property>
+                            <signal>
+                                <change>On_3g_set_cmb_type_change</change>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_3g_set_area">
+                    <property>
+                        <rect>[5,38,870,38]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>s_bar_long_focus</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_3g_set_item_area">
+                            <property>
+                                <rect>[60,0,260,38]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Area</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmb_3g_set_area">
+                            <property>
+                                <rect>[435,0,435,38]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                            </property>
+                            <signal>
+                                <change>On_3g_set_cmb_area_change</change>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_3g_set_operator">
+                    <property>
+                        <rect>[5,76,870,38]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>s_bar_long_focus</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_3g_set_item_operator">
+                            <property>
+                                <rect>[60,0,260,38]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Operator</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmb_3g_set_operator">
+                            <property>
+                                <rect>[435,0,435,38]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                            </property>
+                            <signal>
+                                <change>On_3g_set_cmb_operator_change</change>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_3g_set_apn">
+                    <property>
+                        <rect>[5,114,870,38]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>s_bar_long_focus</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_3g_set_item_apn">
+                            <property>
+                                <rect>[60,0,260,38]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>APN</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="button" style="default" name="btn_3g_set_apn_ok">
+                            <property>
+                                <rect>[380,6,42,24]</rect>
+                                <forecolor>[black,black,black]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_img>s_ts_ok</focus_img>
+                            </property>
+                        </widget>
+                        <widget class="button" style="default" name="btn_3g_set_apn">
+                            <property>
+                                <rect>[435,0,435,38]</rect>
+                                <forecolor>[text_color,text_color,#424247]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <mirror>disable</mirror>
+                                <alignment>hcentre|vcentre</alignment>
+                                <unfocus_img>s_bar_half_unfocus</unfocus_img>
+                                <focus_img>s_bar_half_focus_r</focus_img>
+                                <disable_img>s_bar_half_unfocus</disable_img>
+                            </property>
+                            <signal>
+                                <keypress>On_btn_3g_set_apn_keypress</keypress>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_3g_set_phone">
+                    <property>
+                        <rect>[5,152,870,38]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>s_bar_long_focus</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_3g_set_item_phone">
+                            <property>
+                                <rect>[60,0,260,38]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Dial Number</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="button" style="default" name="btn_3g_set_phone_ok">
+                            <property>
+                                <rect>[380,6,42,24]</rect>
+                                <forecolor>[black,black,black]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_img>s_ts_ok</focus_img>
+                            </property>
+                        </widget>
+                        <widget class="button" style="default" name="btn_3g_set_phone">
+                            <property>
+                                <rect>[435,0,435,38]</rect>
+                                <forecolor>[text_color,text_color,#424247]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <mirror>disable</mirror>
+                                <alignment>hcentre|vcentre</alignment>
+                                <unfocus_img>s_bar_half_unfocus</unfocus_img>
+                                <focus_img>s_bar_half_focus_r</focus_img>
+                                <disable_img>s_bar_half_unfocus</disable_img>
+                            </property>
+                            <signal>
+                                <keypress>On_btn_3g_set_phone_keypress</keypress>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_3g_set_username">
+                    <property>
+                        <rect>[5,190,870,38]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>s_bar_long_focus</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_3g_set_item_username">
+                            <property>
+                                <rect>[60,0,260,38]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Username</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="button" style="default" name="btn_3g_set_username_ok">
+                            <property>
+                                <rect>[380,6,42,24]</rect>
+                                <forecolor>[black,black,black]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_img>s_ts_ok</focus_img>
+                            </property>
+                        </widget>
+                        <widget class="button" style="default" name="btn_3g_set_username">
+                            <property>
+                                <rect>[435,0,435,38]</rect>
+                                <forecolor>[text_color,text_color,#424247]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <mirror>disable</mirror>
+                                <alignment>hcentre|vcentre</alignment>
+                                <unfocus_img>s_bar_half_unfocus</unfocus_img>
+                                <focus_img>s_bar_half_focus_r</focus_img>
+                                <disable_img>s_bar_half_unfocus</disable_img>
+                            </property>
+                            <signal>
+                                <keypress>On_btn_3g_set_username_keypress</keypress>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_3g_set_passwd">
+                    <property>
+                        <rect>[5,228,870,38]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>s_bar_long_focus</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_3g_set_item_passwd">
+                            <property>
+                                <rect>[60,0,260,38]</rect>
+                                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Password</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="button" style="default" name="btn_3g_set_passwd_ok">
+                            <property>
+                                <rect>[380,6,42,24]</rect>
+                                <forecolor>[black,black,black]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_img>s_ts_ok</focus_img>
+                            </property>
+                        </widget>
+                        <widget class="button" style="default" name="btn_3g_set_passwd">
+                            <property>
+                                <rect>[435,0,435,38]</rect>
+                                <forecolor>[text_color,text_color,#424247]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <mirror>disable</mirror>
+                                <alignment>hcentre|vcentre</alignment>
+                                <unfocus_img>s_bar_half_unfocus</unfocus_img>
+                                <focus_img>s_bar_half_focus_r</focus_img>
+                                <disable_img>s_bar_half_unfocus</disable_img>
+                            </property>
+                            <signal>
+                                <keypress>On_btn_3g_set_passwd_keypress</keypress>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_3g_set_save">
+                    <property>
+                        <rect>[5,268,870,38]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>s_bar_long_focus</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_3g_set_save">
+                            <property>
+                                <rect>[60,0,260,38]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Save</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="button" style="default" name="btn_3g_set_ok">
+                            <property>
+                                <rect>[434,0,435,38]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <string>Press OK</string>
+                            </property>
+                            <signal>
+                                <keypress>On_3g_btn_ok_keypress</keypress>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+        <widget class="text" style="default" name="text_3g_status">
+            <property>
+                <rect>[260,570,260,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_colo,osd_trans]</backcolor>
+                <string>Status</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_3g_status_value">
+            <property>
+                <rect>[635,570,465,38]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_3g_pop_bg">
+            <property>
+                <rect>[400,190,480,220]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_3g_pop_info">
+            <property>
+                <rect>[421,240,440,120]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|top</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_3g_pop_tip">
+            <property>
+                <rect>[415,192,450,31]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[#29283a,#29283a,#29283a]</backcolor>
+                <string>Tips</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_3g_bottom">
+            <property>
+                <rect>[0,620,1280,100]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bot_color,window_bot_color,window_bot_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <t_img>s_bar_bg</t_img>
+            </property>
+        </widget>
+    </children>
+</widget>

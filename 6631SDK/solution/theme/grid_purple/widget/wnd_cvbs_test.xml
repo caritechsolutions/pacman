@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_cvbs_test">
+  <property>
+<rect>[0,0,1024,576]</rect>
+        <forecolor>[black,black,black]</forecolor>
+	<backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+  </property>
+  <signal>
+    <create>app_cvbs_test_create</create>
+    <destroy>app_cvbs_test_destroy</destroy>
+    <lost_focus>app_cvbs_test_lost_focus</lost_focus>
+    <got_focus>app_cvbs_test_got_focus</got_focus>
+    <keypress>app_cvbs_test_keypress</keypress>
+  </signal>
+  <children>
+   <widget class="image" style="default" name="img_cvbs_test_back">
+      <property>
+<rect>[113,100,800,386]</rect>
+                <forecolor>[black,black,black]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+                <lt_img>s_win_m</lt_img>
+                <rt_img>s_win_m</rt_img>
+                <lb_img>s_win_m</lb_img>
+                <rb_img>s_win_m</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+	</property>
+</widget>
+        <widget class="image" style="default" name="img_system_setting_opt_back">
+            <property>
+                <rect>[118,102,790,295]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+	<widget class="image" style="default" name="img_cvbs_setting_back">
+            <property>
+                <rect>[120,480,784,2]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+<widget class="text" style="default" name="text_cvbs_test_title">
+	<property>
+		<rect>[224,74,600,52]</rect>
+<state>hide</state>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|bottom</alignment>
+	<font>font_main</font>
+        <string>CVBS Test</string>
+        <format>static</format>
+      </property>
+  </widget>
+  <widget class="image" name="img_cvbs_test_bottom" style="default">
+	  <property>
+		  <rect>[0,496,1024,80]</rect>
+		  <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+		  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+		  <mode>signal</mode>
+	  </property>
+  </widget>
+
+    <widget class="image" style="default" name="img_cvbs_test_item_choice1">
+      <property>
+		  <rect>[164,120,348,36]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_cvbs_test_item_choice2">
+      <property>
+<rect>[164,156,348,36]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_cvbs_test_item_choice3">
+      <property>
+<rect>[164,192,348,36]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_cvbs_test_item_choice4">
+      <property>
+<rect>[164,228,348,36]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_cvbs_test_item_choice5">
+      <property>
+<rect>[164,264,348,36]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_cvbs_test_item_choice6">
+      <property>
+<rect>[164,300,348,36]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_cvbs_test_item_choice7">
+      <property>
+<rect>[164,336,348,36]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_cvbs_test_item_choice8">
+      <property>
+          <rect>[164,372,348,36]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="image" style="default" name="img_cvbs_test_item_choice9">
+      <property>
+<rect>[164,408,348,36]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_half_unfocus</img>
+    </property>
+    </widget>
+    <widget class="text" style="default" name="text_cvbs_test_item1">
+      <property>
+<rect>[208,122,288,32]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_cvbs_test_item2">
+      <property>
+<rect>[208,158,288,32]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_cvbs_test_item3">
+      <property>
+<rect>[208,194,288,32]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_cvbs_test_item4">
+      <property>
+<rect>[208,230,288,32]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_cvbs_test_item5">
+      <property>
+<rect>[208,266,288,32]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_cvbs_test_item6">
+      <property>
+<rect>[208,302,288,32]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_cvbs_test_item7">
+      <property>
+<rect>[208,338,288,32]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_cvbs_test_item8">
+      <property>
+<rect>[208,374,288,32]</rect>
+
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+<widget class="text" style="default" name="text_cvbs_test_item9">
+      <property>
+<rect>[208,410,288,32]</rect>
+
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="combobox" style="default" name="cmb_cvbs_test_opt1">
+      <property>
+<rect>[512,120,348,36]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>[T2_64_button_menu_m,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+        <focus_left_img>s_arrow_l</focus_left_img>
+        <focus_right_img>s_arrow_r</focus_right_img>
+      </property>
+      <signal>
+        <keypress>app_cvbs_test_set_cmb1_keypress</keypress>
+        <change>app_cvbs_test_cmb1_change</change>
+      </signal>
+    </widget>
+    <widget class="combobox" style="default" name="cmb_cvbs_test_opt2">
+      <property>
+<rect>[512,156,348,36]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>[T2_64_button_menu_m,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+        <focus_left_img>s_arrow_l</focus_left_img>
+        <focus_right_img>s_arrow_r</focus_right_img>
+      </property>
+      <signal>
+        <keypress>app_cvbs_test_set_cmb1_keypress</keypress>
+        <change>app_cvbs_test_cmb1_change</change>
+      </signal>
+
+    </widget>
+    <widget class="combobox" style="default" name="cmb_cvbs_test_opt3">
+      <property>
+<rect>[512,192,348,36]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>[T2_64_button_menu_m,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+        <focus_left_img>s_arrow_l</focus_left_img>
+        <focus_right_img>s_arrow_r</focus_right_img>
+      </property>
+      <signal>
+        <keypress>app_cvbs_test_set_cmb1_keypress</keypress>
+        <change>app_cvbs_test_cmb1_change</change>
+      </signal>
+    </widget>
+    <widget class="combobox" style="default" name="cmb_cvbs_test_opt4">
+      <property>
+<rect>[511,228,348,36]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>[T2_64_button_menu_m,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+        <focus_left_img>s_arrow_l</focus_left_img>
+        <focus_right_img>s_arrow_r</focus_right_img>
+      </property>
+      <signal>
+        <keypress>app_cvbs_test_set_cmb1_keypress</keypress>
+        <change>app_cvbs_test_cmb1_change</change>
+      </signal>
+    </widget>
+    <widget class="combobox" style="default" name="cmb_cvbs_test_opt5">
+      <property>
+<rect>[511,264,348,36]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>[T2_64_button_menu_m,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+        <focus_left_img>s_arrow_l</focus_left_img>
+        <focus_right_img>s_arrow_r</focus_right_img>
+      </property>
+      <signal>
+        <keypress>app_cvbs_test_set_cmb1_keypress</keypress>
+        <change>app_cvbs_test_cmb1_change</change>
+      </signal>
+    </widget>
+    <widget class="combobox" style="default" name="cmb_cvbs_test_opt6">
+      <property>
+<rect>[512,300,348,36]</rect>
+        <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>[T2_64_button_menu_m,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+        <focus_left_img>s_arrow_l</focus_left_img>
+        <focus_right_img>s_arrow_r</focus_right_img>
+      </property>
+      <signal>
+        <keypress>app_cvbs_test_set_cmb1_keypress</keypress>
+        <change>app_cvbs_test_cmb1_change</change>
+      </signal>
+    </widget>
+     <widget class="combobox" style="default" name="cmb_cvbs_test_opt7">
+      <property>
+<rect>[512,336,348,36]</rect>
+        <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>[T2_64_button_menu_m,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+        <focus_left_img>s_arrow_l</focus_left_img>
+        <focus_right_img>s_arrow_r</focus_right_img>
+      </property>
+      <signal>
+        <keypress>app_cvbs_test_set_cmb1_keypress</keypress>
+        <change>app_cvbs_test_cmb1_change</change>
+      </signal>
+    </widget>
+    <widget class="combobox" style="default" name="cmb_cvbs_test_opt8">
+      <property>
+<rect>[512,372,348,36]</rect>
+        <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <focus_img>[T2_64_button_menu_m,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+        <content>[Press OK]</content>
+      </property>
+      <signal>
+        <change>app_cvbs_test_cmb1_change</change>
+      </signal>
+    </widget>
+
+    <widget class="button" style="default" name="btn_cvbs_test_opt9">
+      <property>
+<rect>[512,408,348,36]</rect>
+         <mirror>disable</mirror>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+        <string></string>
+      </property>
+    </widget>
+<widget class="button" style="default" name="btn_cvbs_test_opt10">
+      <property>
+<rect>[512,444,348,36]</rect>
+         <mirror>disable</mirror>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+        <string></string>
+      </property>
+    </widget>
+        <widget class="image" style="default" name="img_cvbs_test_red">
+      <property>
+<rect>[124,506,20,20]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_red</img>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_cvbs_test_green">
+      <property>
+<rect>[328,506,20,20]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_green</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_cvbs_test_red">
+      <property>
+<rect>[148,502,160,25]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Import</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_cvbs_test_green">
+      <property>
+<rect>[352,502,160,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Export</string>
+        <format>static</format>
+      </property>
+  </widget>
+        <widget class="image" style="default" name="img_weather_blue">
+            <property>
+                <rect>[760,506,20,20]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_blue</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_weather_blue">
+            <property>
+                <rect>[784,502,160,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Hide/Show OSD</string>
+                <format>static</format>
+            </property>
+        </widget>
+
+  </children>
+</widget>

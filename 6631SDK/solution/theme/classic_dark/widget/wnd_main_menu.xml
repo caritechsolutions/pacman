@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_main_menu">
+	<property>
+		<rect>[0,0,1024,576]</rect>
+		<forecolor>[#E6F8F8,#E6F8F8,osd_trans]</forecolor>
+		<backcolor>[main_menu_back_bg_color,main_menu_back_bg_color,main_menu_back_bg_color]</backcolor>
+		<back_ground>bg</back_ground>
+	</property>
+	<signal>
+		<create>app_main_menu_create</create>
+		<destroy>app_main_menu_destroy</destroy>
+		<keypress>app_main_menu_keypress</keypress>
+	</signal>
+	<children>
+		<widget class="image" style="default" name="img_main_menu_background">
+			<property>
+				<rect>[0,0,1024,576]</rect>
+				<forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+				<backcolor>[main_menu_back_bg_color,main_menu_back_bg_color,main_menu_back_bg_color]</backcolor>
+				<mode>single</mode>
+				<img></img>
+			</property>
+		</widget>
+		<widget class="canvas" style="default_widget" name="canvas_main_item">
+			<property>
+				<rect>[0,244,1024,294]</rect>
+				<backcolor>[main_menu_back_bg_color,main_menu_back_bg_color,main_menu_back_bg_color]</backcolor>
+			</property>
+			<signal>
+				<show>app_main_item_canvas_show</show>
+			</signal>
+		</widget>
+		<widget class="button" style="default" name="btn_main_menu_title1">
+			<property>
+				<rect>[164,93,120,120]</rect>
+				<forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+				<backcolor>[main_menu_pic_bg_color,main_menu_pic_bg_color,main_menu_pic_bg_color]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<focus_img>s_menu_icon_channeledit</focus_img>
+				<unfocus_img>s_menu_icon_channeledit</unfocus_img>
+				<disable_img>s_menu_icon_channeledit</disable_img>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_main_menu_title2">
+			<property>
+				<rect>[308,93,120,120]</rect>
+				<forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+				<backcolor>[main_menu_pic_bg_color,main_menu_pic_bg_color,main_menu_pic_bg_color]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<focus_img>s_menu_icon_setting</focus_img>
+				<unfocus_img>s_menu_icon_setting</unfocus_img>
+				<disable_img>s_menu_icon_setting</disable_img>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_main_menu_title4">
+			<property>
+				<rect>[596,93,120,120]</rect>
+				<forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+				<backcolor>[main_menu_pic_bg_color,main_menu_pic_bg_color,main_menu_pic_bg_color]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<focus_img>s_menu_icon_utility</focus_img>
+				<unfocus_img>s_menu_icon_utility</unfocus_img>
+				<disable_img>s_menu_icon_utility</disable_img>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_main_menu_title5">
+			<property>
+				<rect>[740,93,120,120]</rect>
+				<forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+				<backcolor>[main_menu_pic_bg_color,main_menu_pic_bg_color,main_menu_pic_bg_color]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<focus_img>s_menu_icon_media</focus_img>
+				<unfocus_img>s_menu_icon_media</unfocus_img>
+				<disable_img>s_menu_icon_media</disable_img>
+			</property>
+		</widget>
+		<widget class="button" style="default" name="btn_main_menu_title3">
+			<property>
+				<rect>[452,93,120,120]</rect>
+				<state>enable</state>
+				<forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+				<backcolor>[main_menu_pic_bg_color,main_menu_pic_bg_color,main_menu_pic_bg_color]</backcolor>
+				<alignment>hcentre|vcentre</alignment>
+				<focus_img>s_menu_icon_installation</focus_img>
+				<unfocus_img>s_menu_icon_installation</unfocus_img>
+				<disable_img>s_menu_icon_installation</disable_img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_main_menu_title">
+			<property>
+				<rect>[160,30,704,52]</rect>
+				<forecolor>[main_text_color,main_text_color,main_text_color]</forecolor>
+				<backcolor>[main_menu_back_bg_color,main_menu_back_bg_color,main_menu_back_bg_color]</backcolor>
+                <font>font_main</font>
+				<string></string>
+				<format>static</format>
+			</property>
+		</widget>
+	</children>
+</widget>

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_unicable_set_popup">
+  <property>
+<rect>[320,152,384,216]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+  </property>
+  <signal>
+    <create>app_unicable_set_popup_create</create>
+    <destroy>app_unicable_set_popup_destroy</destroy>
+    <keypress>app_unicable_set_popup_keypress</keypress>
+  </signal>
+  <children>
+    <widget class="image" style="default" name="img_unicable_popup_back">
+      <property>
+		  <rect>[0,0,384,216]</rect>
+		  <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+		  <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+		  <mode>multiple</mode>
+		  <img></img>
+		  <lt_img>s_win2_l_t2</lt_img>
+		  <rt_img>s_win2_r_t2</rt_img>
+		  <lb_img>s_win2_l_b2</lb_img>
+		  <rb_img>s_win2_r_b2</rb_img>
+		  <l_img>s_win2_l_m</l_img>
+		  <r_img>s_win2_r_m</r_img>
+		  <t_img>s_win2_m_t2</t_img>
+		  <b_img>s_win2_m_b2</b_img>
+	  </property>
+  </widget>
+  <widget class="image" style="default" name="img_unicablie_popup_ok_back">
+	  <property>
+		  <rect>[8,180,366,30]</rect>
+		  <state>hide</state>
+		  <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+		  <backcolor>[default_color,default_color,default_color]</backcolor>
+		  <mode>single</mode>
+		  <img>s_bar_choice_blue4</img>
+	  </property>
+  </widget>
+  <widget class="text" style="default" name="text_unicable_popup_title">
+	  <property>
+		  <rect>[15,0,360,28]</rect>
+		  <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+		  <string></string>
+		  <format>static</format>
+	  </property>
+  </widget>
+  <widget class="box" style="default" name="box_unicable_popup_para">
+	  <property>
+		  <rect>[8,48,366,160]</rect>
+		  <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+		  <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+        <format>vertical</format>
+      </property>
+      <signal>
+        <keypress>app_unicable_popup_box_keypress</keypress>
+      </signal>
+      <children>
+        <widget class="boxitem" style="default" name="boxitem_unicable_popup_lnb_fre">
+          <property>
+			  <rect>[9,0,348,30]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+            <focus_image>s_bar_black_half1</focus_image>
+        </property>
+          <children>
+            <widget class="text" style="default" name="text_unicable_popup_lnb_fre">
+              <property>
+				  <rect>[24,0,126,30]</rect>
+                <forecolor>[text_focus_color,text_color,text_focus_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,#646c74]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>LNB Frequency</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="cmb_unicable_lnb_freq_choice">
+              <property>
+				  <rect>[150,5,38,19]</rect>
+				  <forecolor>[text_focus_color,text_color,text_focus_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <focus_img>s_ts_ok</focus_img>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="cmbox_unicable_lnb_freq">
+              <property>
+				  <rect>[183,0,164,30]</rect>
+				  <forecolor>[#000000,#000000,#000000]</forecolor>
+				  <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+				  <unfocus_left_img>s_arrow_l</unfocus_left_img>
+				  <focus_left_img>s_arrow_l</focus_left_img>
+				  <unfocus_right_img>s_arrow_r</unfocus_right_img>
+				  <focus_right_img>s_arrow_r</focus_right_img>
+			  </property>
+			  <signal>
+				  <change>app_unicable_cmb_lnb_freq_change</change>
+			  </signal>
+		  </widget>
+	  </children>
+  </widget>
+  <widget class="boxitem" style="default" name="boxitem_unicable_popup_if_channel">
+          <property>
+<rect>[9,30,348,30]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+            <focus_image>s_bar_black_half1</focus_image>
+        </property>
+          <children>
+            <widget class="text" style="default" name="text_unicable_popup_if_channel">
+              <property>
+<rect>[24,0,150,30]</rect>
+                <forecolor>[text_focus_color,text_color,text_focus_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,#646c74]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>IF Channel</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="cmb_unicable_popup_if_channel">
+              <property>
+				  <rect>[183,0,164,30]</rect>
+                <forecolor>[text_focus_color,text_color,text_focus_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+				<unfocus_left_img>s_arrow_l</unfocus_left_img>
+				<focus_left_img>s_arrow_l</focus_left_img>
+				<unfocus_right_img>s_arrow_r</unfocus_right_img>
+                <focus_right_img>s_arrow_r</focus_right_img>
+              </property>
+              <signal>
+                <change>app_unicable_cmb_if_channel_num_change</change>
+              </signal>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="boxitem_unicable_popup_centre_fre">
+          <property>
+			  <rect>[9,60,348,30]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+            <focus_image>s_bar_black_half1</focus_image>
+        </property>
+          <children>
+            <widget class="text" style="default" name="text_unicable_popup_">
+              <property>
+				  <rect>[24,0,150,30]</rect>
+                <forecolor>[text_focus_color,text_color,text_focus_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,#646c74]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Centre Frequency</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="edit" style="default" name="edit_unicable_popup_centre_freq">
+              <property>
+				  <rect>[183,0,164,30]</rect>
+                <forecolor>[text_focus_color,text_color,text_focus_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <maxlen>4</maxlen>
+                <format>edit_digit</format>
+              </property>
+              <signal>
+                <change>app_unicable_edit_if_fre_change</change>
+                <change>app_edit_unicable_popup_centre_freq_reach_end</change>
+              </signal>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="boxitem_unicable_popup_sat_position">
+          <property>
+			  <rect>[9,91,348,30]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+            <focus_image>s_bar_black_half1</focus_image>
+        </property>
+          <children>
+            <widget class="text" style="default" name="text_unicable_popup_sat_pos">
+              <property>
+				  <rect>[24,0,150,30]</rect>
+                <forecolor>[text_focus_color,text_color,text_focus_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,#646c74]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Satellite Position</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="cmb_unicable_popup_sat_pos">
+              <property>
+				  <rect>[183,0,164,30]</rect>
+                <forecolor>[text_focus_color,text_color,text_focus_color]</forecolor>
+				<backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+				<unfocus_left_img>s_arrow_l</unfocus_left_img>
+				<focus_left_img>s_arrow_l</focus_left_img>
+				<unfocus_right_img>s_arrow_r</unfocus_right_img>
+                <focus_right_img>s_arrow_r</focus_right_img>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="boxitem_unicable_popup_save">
+          <property>
+			  <rect>[0,121,366,30]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+            <focus_image>s_bar_choice_blue4</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="text_unicable_popup_ok">
+              <property>
+				  <rect>[209,0,139,30]</rect>
+                <forecolor>[text_focus_color,text_color,text_focus_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Save</string>
+                <format>static</format>
+              </property>
+            </widget>
+          </children>
+        </widget>
+      </children>
+    </widget>
+  </children>
+</widget>

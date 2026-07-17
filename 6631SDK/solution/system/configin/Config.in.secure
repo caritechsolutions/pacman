@@ -1,0 +1,117 @@
+menu "Secure Configuration"
+
+choice
+	prompt "Encryption chip type"
+    default BR2_MOD_CHIP_NNN
+    depends on (BR2_CHIP_SIRIUS || BR2_CHIP_CANOPUS || BR2_CHIP_VEGA)
+    help
+        Select the encryption chip type used by the current hardware.
+
+config BR2_MOD_CHIP_NNN
+    bool "NNN"
+
+config BR2_MOD_CHIP_NNE
+    bool "NNE"
+
+config BR2_MOD_CHIP_NNM
+    bool "NNM"
+
+endchoice
+
+config BR2_MOD_SECURE_PVR
+    bool "Secure PVR"
+    help
+        Use secure PVR
+
+config BR2_MOD_FUNC_CAS
+	bool "CA Support"
+    help
+       This configure is mainly used for hardware descrambler.
+
+config BR2_MOD_CASCAM
+	bool "CASCAM Support"
+	help
+       CA systerm application for Cdcas, Dvtcas, Abvcas etc.
+
+choice
+    prompt "CAS Type"
+	depends on BR2_MOD_CASCAM
+config BR2_MOD_CASCAM_CRYPTOGUARDCAS
+bool "cryptoguardcas"
+
+config BR2_MOD_CASCAM_CDCAS
+    bool "Novel-Super"
+
+endchoice
+
+choice
+    prompt "Secure Module"
+	default BR2_SECURE_COMBINATION_MODULE if BR2_OS_ECOS
+
+config BR2_SECURE_COMBINATION_MODULE
+    bool "Combination Secure Module Support"
+    depends on BR2_OS_ECOS
+
+config BR2_SECURE_FULL_MODULE
+    bool "Full Secure Module Support"
+
+endchoice
+
+
+config BR2_SECURE_FIREWALL_MODULE
+    bool "Content Protection Support"
+    depends on BR2_SECURE_COMBINATION_MODULE
+    help
+         Firewall technology is mainly used to isolate and protect data, and record and detect all operations to ensure the security of data. Such as Content Protection.
+
+config BR2_SECURE_DGST_MODULE
+    bool "Hash Algorithm Support"
+    depends on (BR2_SECURE_COMBINATION_MODULE && ((BR2_CHIP_NAME = "sirius") || (BR2_CHIP_NAME = "canopus") || (BR2_CHIP_NAME = "vega")))
+    help
+        The most important purpose of hash algorithm is to add encryption protection to the content with high security coefficient such as certificate, document and password.
+
+config BR2_SECURE_IRDETO_MODUL
+    bool "KeyLadder Of Irdeto Support"
+    depends on (BR2_SECURE_COMBINATION_MODULE && ((BR2_CHIP_NAME = "sirius") || (BR2_CHIP_NAME = "canopus") || (BR2_CHIP_NAME = "vega")))
+    help
+        Irdeto CA system need to be selected.
+
+config BR2_SECURE_ACPU_MODULE
+    bool "KeyLadder Of Generic Support"
+    default y if (BR2_MOD_CASCAM || BR2_MOD_FUNC_CAS)
+    depends on (BR2_SECURE_COMBINATION_MODULE && ((BR2_CHIP_NAME = "sirius") || (BR2_CHIP_NAME = "canopus") || (BR2_CHIP_NAME = "vega") || (BR2_CHIP_NAME = "gx6605s") || (BR2_CHIP_NAME = "gx3211")))
+    help
+         Geniric encryption algorithm of national chip
+
+config BR2_SECURE_SCPU_MODULE
+    bool "KeyLadder Of SCPU Support"
+    default y if (BR2_MOD_CASCAM || BR2_MOD_FUNC_CAS)
+    depends on (BR2_SECURE_COMBINATION_MODULE && ((BR2_CHIP_NAME = "sirius") || (BR2_CHIP_NAME = "canopus") || (BR2_CHIP_NAME = "vega") || (BR2_CHIP_NAME = "gemini") || (BR2_CHIP_NAME = "taurus") || (BR2_CHIP_NAME = "cygnus")))
+    help
+         National chip advanced encryption algorithm with separate firmware.
+
+config BR2_SECURE_DMA_MODULE
+    bool "Memory Data Encryption/Decryption (m2m) Support"
+    depends on BR2_SECURE_COMBINATION_MODULE
+    help
+        The module is used to memory data encryption/decryption, it is mainly used for video stream decryption.
+
+config BR2_SECURE_RNG_MODULE
+    bool "Random Number Generator Support"
+    depends on (BR2_SECURE_COMBINATION_MODULE && ((BR2_CHIP_NAME = "sirius") || (BR2_CHIP_NAME = "canopus") || (BR2_CHIP_NAME = "vega") || (BR2_CHIP_NAME = "gemini") || (BR2_CHIP_NAME = "gx3211") || (BR2_CHIP_NAME = "taurus") || (BR2_CHIP_NAME = "cygnus")))
+    help
+         Generation of random number from hardware module
+
+config BR2_SECURE_SCI_MODULE
+    bool "Smart Card Module Support"
+    depends on BR2_SECURE_COMBINATION_MODULE
+    help
+        Smart card driver register
+
+config BR2_SECURE_TEE_MODULE
+    bool "TEE & TEEpriv Module Support"
+    depends on BR2_SECURE_COMBINATION_MODULE
+    help
+        TEE & TEEpriv driver register
+
+endmenu

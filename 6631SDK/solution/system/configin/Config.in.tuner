@@ -1,0 +1,82 @@
+menu "Tuner Configuration"
+
+config BR2_TUNER_AV2018
+	bool "TUNER_AV2018"
+	help
+
+config BR2_TUNER_RDA5815M
+	bool "TUNER_RDA5815M"
+	help
+
+config BR2_TUNER_TDA18250
+	bool "TUNER_TDA18250"
+	help
+
+config BR2_TUNER_R836_T
+	bool "TUNER_R836_T"
+	help
+
+config BR2_TUNER_R836_C
+	bool "TUNER_R836_C"
+	help
+
+config BR2_TUNER_R836_DTMB
+	bool "TUNER_R836_DTMB"
+	help
+config BR2_TUNER_TDA18250A
+	bool "TUNER_TDA18250A"
+	help
+
+config BR2_TUNER_MXL608_DTMB
+	bool "TUNER_MXL608_DTMB"
+	help
+
+config BR2_TUNER_MXL608_T
+	bool "TUNER_MXL608_T"
+	help
+
+config BR2_TUNER_MXL608_C
+	bool "TUNER_MXL608_C"
+	help
+
+config BR2_TUNER_R910_T
+	bool "TUNER_R910_T"
+	help
+
+config BR2_TUNER_ATBM2030
+	bool "TUNER_ATBM2030"
+	help
+
+config BR2_TUNER_ATBM2040_T
+	bool "TUNER_ATBM2040_T"
+	help
+
+config BR2_TUNER_ATBM2040_C
+	bool "TUNER_ATBM2040_C"
+	help
+
+config BR2_TUNER_ATBM253_T
+	bool "TUNER_ATBM253_T"
+	help
+
+config BR2_TUNER_ATBM253_C
+	bool "TUNER_ATBM253_C"
+	help
+
+config BR2_TUNER_SI2141_T
+	bool "TUNER_SI2141_T"
+	help
+
+config BR2_TUNER_SHARP7306
+	bool "TUNER_SHARP7306"
+	help
+
+config BR2_TUNER_TS6011
+	bool "TUNER_TS6011"
+	help
+
+config BR2_TUNER_M3031
+	bool "TUNER_M3031"
+	help
+
+endmenu

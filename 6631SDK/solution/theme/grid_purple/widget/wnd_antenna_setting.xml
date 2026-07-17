@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget class="window" style="default" name="wnd_antenna_setting">
+	<property>
+		<rect>[0,0,1024,576]</rect>
+		<forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+		<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+	</property>
+	<signal>
+		<create>app_antenna_setting_create</create>
+		<destroy>app_antenna_setting_destroy</destroy>
+		<got_focus>app_antenna_setting_got_focus</got_focus>
+		<lost_focus>app_antenna_setting_lost_focus</lost_focus>
+		<keypress>app_antenna_setting_keypress</keypress>
+	</signal>
+	<children>
+	<widget class="image" style="default" name="img_antenna_box_back">
+			<property>
+                <rect>[117,102,790,286]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_antenna_box_line">
+			<property>
+                <rect>[120,96,784,2]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[theme_color,theme_color,theme_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+			</property>
+		</widget>
+		<widget class="progbar" style="default" name="progbar_antenna_strength">
+			<property>
+                <rect>[270,410,530,10]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <back_image>s_progress_m</back_image>
+                <back_image_l>s_progress_l</back_image_l>
+                <back_image_m>s_progress_m</back_image_m>
+                <back_image_r>s_progress_r</back_image_r>
+                <fore_image>s_progress3_m</fore_image>
+                <fore_image_l>s_progress3_l</fore_image_l>
+                <fore_image_m>s_progress3_m</fore_image_m>
+                <fore_image_r>s_progress3_r</fore_image_r>
+                <format>water</format>
+                <mirror>disable</mirror>
+                <text_format>percentage</text_format>
+                <alignment>hcentre|vcentre</alignment>
+			</property>
+		</widget>
+		<widget class="progbar" style="default" name="progbar_antenna_quality">
+			<property>
+                <rect>[270,440,530,10]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <back_image>s_progress_m</back_image>
+                <back_image_l>s_progress_l</back_image_l>
+                <back_image_m>s_progress_m</back_image_m>
+                <back_image_r>s_progress_r</back_image_r>
+                <fore_image>s_progress3_m</fore_image>
+                <fore_image_l>s_progress3_l</fore_image_l>
+                <fore_image_m>s_progress3_m</fore_image_m>
+                <fore_image_r>s_progress3_r</fore_image_r>
+                <format>water</format>
+                <mirror>disable</mirror>
+                <text_format>percentage</text_format>
+                <alignment>hcentre|vcentre</alignment>
+		</property>
+		</widget>
+		<widget class="text" style="default" name="text_antenna_strength">
+			<property>
+                <rect>[156,400,114,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Strength</string>
+                <format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_antenna_quality">
+			<property>
+                <rect>[156,430,114,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Quality</string>
+                <format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_antenna_strength_value">
+			<property>
+                <rect>[820,400,80,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_antenna_quality_value">
+			<property>
+                <rect>[820,430,80,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+			</property>
+		</widget>
+        <widget class="text" style="default" name="text_antenna_title">
+			<property>
+                <rect>[112,45,800,44]</rect>
+                <forecolor>[theme_color,theme_color,theme_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_main</font>
+				<string>Antenna Setting</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="box" style="default" name="box_antenna_options">
+			<property>
+                <rect>[136,106,752,290]</rect>
+				<forecolor>[default_color,default_color,default_color]</forecolor>
+				<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+				<format>vertical</format>
+			</property>
+			<signal>
+				<keypress>app_atn_box_keypress</keypress>
+			</signal>
+			<children>
+				<widget class="boxitem" style="default" name="boxitem_antenna_satellite">
+					<property>
+						<rect>[0,0,752,36]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+					<children>
+						<widget class="text" style="default" name="text_antenna_satellite_l">
+							<property>
+								<rect>[20,3,405,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+								<alignment>left|vcentre</alignment>
+								<string>Satellite</string>
+								<format>static</format>
+							</property>
+						</widget>
+						<widget class="combobox" style="default" name="cmbox_antenna_sat">
+							<property>
+								<rect>[425,3,315,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+								<unfocus_left_img>s_arrow_l</unfocus_left_img>
+								<focus_left_img>s_arrow_l</focus_left_img>
+								<unfocus_right_img>s_arrow_r</unfocus_right_img>
+								<focus_right_img>s_arrow_r</focus_right_img>
+								<content>[NONE]</content>
+							</property>
+							<signal>
+								<change>app_atn_cmb_sat_change</change>
+							</signal>
+						</widget>
+					</children>
+				</widget>
+				<widget class="boxitem" style="default" name="boxitem_antenna_lnbpower">
+					<property>
+						<rect>[0,36,752,36]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+					<children>
+						<widget class="text" style="default" name="text_antenna_lnbpower_l">
+							<property>
+								<rect>[20,3,405,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+								<alignment>left|vcentre</alignment>
+								<string>LNB Power</string>
+								<format>static</format>
+							</property>
+						</widget>
+						<widget class="combobox" style="default" name="cmbox_antenna_lnb_power">
+							<property>
+								<rect>[425,3,315,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+								<unfocus_left_img>s_arrow_l</unfocus_left_img>
+								<focus_left_img>s_arrow_l</focus_left_img>
+								<unfocus_right_img>s_arrow_r</unfocus_right_img>
+								<focus_right_img>s_arrow_r</focus_right_img>
+							</property>
+							<signal>
+								<change>app_atn_cmb_lnb_power_change</change>
+							</signal>
+						</widget>
+					</children>
+				</widget>
+				<widget class="boxitem" style="default" name="boxitem_antenna_lnbfreq">
+					<property>
+						<rect>[0,72,752,36]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+					<children>
+						<widget class="text" style="default" name="text_antenna_lnbfreq_l">
+							<property>
+								<rect>[20,3,405,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+								<alignment>left|vcentre</alignment>
+								<string>LNB Frequency</string>
+								<format>static</format>
+							</property>
+						</widget>
+						<widget class="combobox" style="default" name="cmbox_antenna_lnb_freq">
+							<property>
+								<rect>[425,3,315,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+								<unfocus_left_img>s_arrow_l</unfocus_left_img>
+								<focus_left_img>s_arrow_l</focus_left_img>
+								<unfocus_right_img>s_arrow_r</unfocus_right_img>
+								<focus_right_img>s_arrow_r</focus_right_img>
+							</property>
+							<signal>
+								<change>app_atn_cmb_lnb_freq_change</change>
+							</signal>
+						</widget>
+					</children>
+				</widget>
+				<widget class="boxitem" style="default" name="boxitem_antenna_22k">
+					<property>
+						<rect>[0,108,752,36]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+					<children>
+						<widget class="text" style="default" name="text_antenna_22k_l">
+							<property>
+								<rect>[20,3,405,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+								<alignment>left|vcentre</alignment>
+								<string>22K</string>
+								<format>static</format>
+							</property>
+						</widget>
+						<widget class="combobox" style="default" name="cmbox_antenna_22k">
+							<property>
+								<rect>[425,3,315,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+								<unfocus_left_img>s_arrow_l</unfocus_left_img>
+								<focus_left_img>s_arrow_l</focus_left_img>
+								<unfocus_right_img>s_arrow_r</unfocus_right_img>
+								<focus_right_img>s_arrow_r</focus_right_img>
+							</property>
+							<signal>
+								<change>app_atn_cmb_22k_change</change>
+							</signal>
+						</widget>
+					</children>
+				</widget>
+				<widget class="boxitem" style="default" name="boxitem_antenna_diseqc10">
+					<property>
+						<rect>[0,144,752,36]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+					<children>
+						<widget class="text" style="default" name="text_antenna_diseqc10_l">
+							<property>
+								<rect>[20,3,405,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+								<alignment>left|vcentre</alignment>
+								<string>DiSEqC 1.0</string>
+								<format>static</format>
+							</property>
+						</widget>
+						<widget class="combobox" style="default" name="cmbox_antenna_diseqc10">
+							<property>
+								<rect>[425,3,315,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+								<unfocus_left_img>s_arrow_l</unfocus_left_img>
+								<focus_left_img>s_arrow_l</focus_left_img>
+								<unfocus_right_img>s_arrow_r</unfocus_right_img>
+								<focus_right_img>s_arrow_r</focus_right_img>
+							</property>
+							<signal>
+								<change>app_atn_cmb_diseqc10_change</change>
+							</signal>
+						</widget>
+					</children>
+				</widget>
+				<widget class="boxitem" style="default" name="boxitem_antenna_diseqc11">
+					<property>
+						<rect>[0,180,752,36]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+					<children>
+						<widget class="text" style="default" name="text_antenna_diseqc11_l">
+							<property>
+								<rect>[20,3,405,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+								<alignment>left|vcentre</alignment>
+								<string>DiSEqC 1.1</string>
+								<format>static</format>
+							</property>
+						</widget>
+						<widget class="combobox" style="default" name="cmbox_antenna_diseqc11">
+							<property>
+								<rect>[425,3,315,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+								<unfocus_left_img>s_arrow_l</unfocus_left_img>
+								<focus_left_img>s_arrow_l</focus_left_img>
+								<unfocus_right_img>s_arrow_r</unfocus_right_img>
+								<focus_right_img>s_arrow_r</focus_right_img>
+							</property>
+							<signal>
+								<change>app_atn_cmb_diseqc11_change</change>
+							</signal>
+						</widget>
+					</children>
+				</widget>
+				<widget class="boxitem" style="default" name="boxitem_antenna_tp">
+					<property>
+						<rect>[0,216,752,36]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+					<children>
+						<widget class="text" style="default" name="text_antenna_tp_l">
+							<property>
+								<rect>[20,3,405,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+								<alignment>left|vcentre</alignment>
+								<string>TP</string>
+								<format>static</format>
+							</property>
+						</widget>
+						<widget class="combobox" style="default" name="cmbox_antenna_tp">
+							<property>
+								<rect>[425,3,315,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,window_bg_color]</backcolor>
+								<unfocus_left_img>s_arrow_l</unfocus_left_img>
+								<focus_left_img>s_arrow_l</focus_left_img>
+								<unfocus_right_img>s_arrow_r</unfocus_right_img>
+								<focus_right_img>s_arrow_r</focus_right_img>
+								<content>[NONE]</content>
+							</property>
+							<signal>
+								<change>app_atn_cmb_tp_change</change>
+							</signal>
+						</widget>
+					</children>
+				</widget>
+				<widget class="boxitem" style="default" name="boxitem_antenna_search">
+					<property>
+						<rect>[0,252,752,36]</rect>
+						<forecolor>[default_color,default_color,default_color]</forecolor>
+						<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+                    </property>
+					<children>
+						<widget class="text" style="default" name="text_antenna_search_l">
+							<property>
+								<rect>[20,3,405,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+								<alignment>left|vcentre</alignment>
+								<string>Start Search</string>
+								<format>static</format>
+							</property>
+						</widget>
+						<widget class="combobox" style="default" name="cmbox_antenna_search">
+							<property>
+								<rect>[425,3,315,30]</rect>
+								<forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+								<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+								<unfocus_left_img>s_arrow_l</unfocus_left_img>
+								<focus_left_img>s_arrow_l</focus_left_img>
+								<unfocus_right_img>s_arrow_r</unfocus_right_img>
+								<focus_right_img>s_arrow_r</focus_right_img>
+							</property>
+						</widget>
+					</children>
+				</widget>
+			</children>
+		</widget>
+		<widget class="image" style="default" name="img_antenna_botline">
+			<property>
+                <rect>[0,510,1024,66]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_b2</lt_img>
+                <rt_img>s_win2_r_b2</rt_img>
+                <t_img>s_win2_m_b2</t_img>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_antenna_setting_tip_red">
+			<property>
+                <rect>[133,523,20,20]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,window_bg_color,osd_trans]</backcolor>
+                <mode>single</mode>
+				<img>s_ts_red</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_antenna_setting_tip_red">
+			<property>
+                <rect>[154,516,150,35]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,window_bg_color,osd_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+				<string>Satellite List</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_antenna_setting_tip_green">
+			<property>
+                <rect>[400,523,20,20]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,window_bg_color,osd_trans]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_green</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_antenna_setting_tip_green">
+			<property>
+                <rect>[432,516,140,35]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,window_bg_color,osd_trans]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>TP List</string>
+				<format>static</format>
+			</property>
+		</widget>
+		<widget class="image" style="default" name="img_antenna_setting_tip_blue">
+			<property>
+                <rect>[672,523,20,20]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,window_bg_color,osd_trans]</backcolor>
+				<mode>single</mode>
+				<img>s_ts_blue</img>
+			</property>
+		</widget>
+		<widget class="text" style="default" name="text_antenna_setting_tip_blue">
+			<property>
+                <rect>[704,516,160,35]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,window_bg_color,osd_trans]</backcolor>
+				<alignment>left|vcentre</alignment>
+				<string>Super Search</string>
+				<format>static</format>
+			</property>
+		</widget>
+	</children>
+</widget>

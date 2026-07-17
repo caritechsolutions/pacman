@@ -1,0 +1,164 @@
+# Blacker, liujh@nationalchip.com
+# Copyleft (C) 2013, 2014, HangZhou Nationalchip Tech
+# Fork from Opensource Project [BUILDROOT]
+# thanks to Opensource Code Website, such as github.com
+
+mainmenu "NationalChip DVB-S2 HD STB Application Configuration"
+
+config BR2_HAVE_DOT_CONFIG
+	bool
+	default y
+
+config BR2_VERSION
+	string
+	option env="BR2_VERSION_FULL"
+
+config BR2_HOSTARCH
+	string
+	option env="HOSTARCH"
+
+choice
+	prompt "STB Decoder Chip"
+	default BR2_CHIP_GX3201
+	help
+	  Select a decoder chip of NatioinalChip.
+
+#   config BR2_CHIP_GX6602
+#       bool "GX6602"
+#       help
+#       This is the 2nd generation STB HD decoder chip.
+#       For twin tuner, DVB-S/S2 enhanced applications
+#       DVB-S2 integrated
+#       DDR3 16bits
+#       USB X 3
+#       SmartCard X 1
+#       HDMI&CVBS&YPbPr output
+#       10/100M Ethernet
+#       Nand&SPI Flash
+#       55nm LQFP216
+#
+#   config BR2_CHIP_GX6601
+#       bool "GX6601"
+#       help
+#       This is the 2nd generation STB HD decoder chip.
+#       For DVB-S/S2 basic applications
+#       DVB-S2 integrated
+#       DDR3 16bits
+#       USB X 2
+#       SmartCard X 1
+#       HDMI&CVBS output
+#       SPI Flash
+#       5GPIO
+#       55nm LQFP128
+
+config BR2_CHIP_GX3201
+	bool "GX3201"
+	help
+	  This is the 2nd generation STB HD decoder chip.
+	  For DVB-C basic applications
+	  55nm LQFP128
+
+config BR2_CHIP_GX3211
+	bool "GX3211"
+
+config BR2_CHIP_SIRIUS
+	bool "SIRIUS"
+
+config BR2_CHIP_CANOPUS
+	bool "CANOPUS"
+
+config BR2_CHIP_VEGA
+	bool "VEGA"
+
+config BR2_CHIP_TAURUS
+	bool "TAURUS"
+
+config BR2_CHIP_SCORPIO
+	bool "SCORPIO"
+
+config BR2_CHIP_SCORPIOTAURUS
+	bool "SCORPIO-TAURUS"
+
+config BR2_CHIP_GEMINI
+	bool "GEMINI"
+
+config BR2_CHIP_CYGNUS
+	bool "CYGNUS"
+
+config BR2_CHIP_GX6605S
+	bool "GX6605S"
+
+endchoice
+
+config BR2_CHIP_NAME
+	string
+	#default "gx6602" if BR2_CHIP_GX6602
+	#default "gx6601" if BR2_CHIP_GX6601
+	default "gx3211" if BR2_CHIP_GX3211
+	default "sirius" if BR2_CHIP_SIRIUS
+    default "canopus" if BR2_CHIP_CANOPUS
+	default "vega"   if BR2_CHIP_VEGA
+	default "scorpio" if BR2_CHIP_SCORPIO
+	default "taurus" if BR2_CHIP_TAURUS
+	default "gemini" if BR2_CHIP_GEMINI
+	default "cygnus" if BR2_CHIP_CYGNUS
+	default "gx3201" if BR2_CHIP_GX3201
+	default "gx6605s" if BR2_CHIP_GX6605S
+	default "scorpio-taurus" if BR2_CHIP_SCORPIOTAURUS
+	#default "gx3113" if BR2_CHIP_GX3113
+
+choice
+	prompt "Operating System"
+	default BR2_OS_LINUX
+	help
+	  Select an OS for the application.
+
+config BR2_OS_ECOS
+	bool "eCOS"
+	help
+	  eCOS Operating System
+
+config BR2_OS_LINUX
+	bool "Linux"
+	help
+	  Linux Operating System
+
+endchoice
+
+config BR2_OS_NAME
+	string
+	default "ecos" if BR2_OS_ECOS
+	default "linux" if BR2_OS_LINUX
+
+
+# Project Definition
+source system/configin/Config.in
+
+#choice
+#	prompt "Terminal Type"
+#	default BR2_TYPE_STB
+#	help
+#	  Select device type.
+
+#config BR2_TYPE_STB
+#	bool "STB"
+#	help
+#	  Device - Set Top Box
+
+#config BR2_TYPE_IPTV
+#	bool "IPTV"
+#	help
+#	  Device - IPTV
+
+#config BR2_TYPE_NETPLAYER
+#	bool "NetPlayer"
+#	help
+#	  Device - Net Player
+
+#config BR2_TYPE_MEDIAPLAYER
+#	bool "MediaPlayer"
+#	help
+#	  Device - Media Player
+
+#endchoice
+

@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_pop_ch_pid">
+  <property>
+    <rect>[400,190,480,316]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+  </property>
+  <signal>
+    <create>app_pop_ch_pid_create</create>
+    <destroy>app_pop_ch_pid_destroy</destroy>
+    <keypress>app_pop_ch_pid_keypress</keypress>
+  </signal>
+  <children>
+    <widget class="image" style="default" name="img_pop_ch_pid_back">
+      <property>
+        <rect>[0,0,480,316]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>s_win_l_t</lt_img>
+        <rt_img>s_win_r_t</rt_img>
+        <lb_img>s_win_l_b</lb_img>
+        <rb_img>s_win_r_b</rb_img>
+        <l_img>s_win_l_m</l_img>
+        <r_img>s_win_r_m</r_img>
+        <t_img>s_win_m_t</t_img>
+        <b_img>s_win_m_b</b_img>
+      </property>
+    </widget>
+    <widget class="box" style="default" name="box_pop_ch_pid_opt">
+      <property>
+        <rect>[11,60,458,230]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <format>vertical</format>
+      </property>
+      <signal>
+        <keypress>app_ch_pid_box_keypress</keypress>
+      </signal>
+      <children>
+        <widget class="boxitem" style="default" name="boxitem_ch_type_v">
+          <property>
+              <rect>[0,0,458,38]</rect>
+              <forecolor>[default_color,default_color,default_color]</forecolor>
+              <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+              <focus_image>s_bar_choice_blue4</focus_image>
+          </property>
+          <children>
+              <widget class="text" style="default" name="text_ch_type_v">
+                  <property>
+                      <rect>[30,0,200,38]</rect>
+                      <forecolor>[pop_tag_color,pop_tag_focus_color,pop_tag_color]</forecolor>
+                      <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                      <string>Video Type</string>
+                      <format>static</format>
+                  </property>
+              </widget>
+              <widget class="combobox" style="default" name="cmb_ch_type_v">
+                  <property>
+                      <rect>[239,0,219,38]</rect>
+                      <forecolor>[pop_text_color,pop_text_focus_color,pop_text_color]</forecolor>
+                      <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                      <focus_left_img>s_arrow_l</focus_left_img>
+                      <focus_right_img>s_arrow_r</focus_right_img>
+                      <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                      <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                      <content>[MPEG2,AVS,H.264,H.265,MPEG4]</content>
+                  </property>
+              </widget>
+          </children>
+      </widget>
+      <widget class="boxitem" style="default" name="boxitem_ch_pid_v">
+          <property>
+              <rect>[0,38,458,38]</rect>
+              <forecolor>[default_color,default_color,default_color]</forecolor>
+              <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+              <focus_image>s_bar_choice_blue4</focus_image>
+          </property>
+          <children>
+              <widget class="text" style="default" name="text_ch_pid_v">
+                  <property>
+                      <rect>[30,0,200,38]</rect>
+                      <forecolor>[text_tag_color,text_tag_color,text_tag_color]</forecolor>
+                      <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                      <string>Video</string>
+                      <format>static</format>
+                  </property>
+              </widget>
+              <widget class="edit" style="default" name="edit_ch_pid_v">
+                  <property>
+                      <rect>[239,0,219,38]</rect>
+                      <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                      <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                      <alignment>hcentre|vcentre</alignment>
+                      <string>0000</string>
+                      <maxlen>4</maxlen>
+                      <format>edit_digit</format>
+                  </property>
+                    <signal>
+                        <reach_end>app_edit_ch_pid_v_reach_end</reach_end>
+                    </signal>
+              </widget>
+          </children>
+      </widget>
+        <widget class="boxitem" style="default" name="boxitem_ch_type_a">
+          <property>
+            <rect>[0,76,458,38]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+            <focus_image>s_bar_choice_blue4</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="text_ch_type_a">
+              <property>
+                  <rect>[30,0,200,38]</rect>
+                  <forecolor>[pop_tag_color,pop_tag_focus_color,pop_tag_color]</forecolor>
+                  <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                  <string>Audio Type</string>
+                  <format>static</format>
+              </property>
+            </widget>
+			<widget class="combobox" style="default" name="cmb_ch_type_a">
+				<property>
+					<rect>[239,0,219,38]</rect>
+					<forecolor>[pop_text_color,pop_text_focus_color,pop_text_color]</forecolor>
+					<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+					<focus_left_img>s_arrow_l</focus_left_img>
+					<focus_right_img>s_arrow_r</focus_right_img>
+					<unfocus_left_img>s_arrow_l</unfocus_left_img>
+					<unfocus_right_img>s_arrow_r</unfocus_right_img>
+					 <content>[MPEG-1,MPEG-2,AAC-L,AC3,AAC-A,EAC3,LPCM,DTS,DOLBY,AC3-P,DTS-HD,DTS-MA,AC3-P,DTS-HD-S]</content>
+				</property>
+			</widget>
+		</children>
+	</widget>
+        <widget class="boxitem" style="default" name="boxitem_ch_pid_a">
+          <property>
+			  <rect>[0,114,458,38]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+            <focus_image>s_bar_choice_blue4</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="text_ch_pid_a">
+              <property>
+                <rect>[30,0,200,38]</rect>
+                <forecolor>[text_tag_color,text_tag_color,text_tag_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Audio</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="edit" style="default" name="edit_ch_pid_a">
+              <property>
+                <rect>[239,0,219,38]</rect>
+                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>0000</string>
+                <maxlen>4</maxlen>
+                <format>edit_digit</format>
+              </property>
+            <signal>
+                <reach_end>app_edit_ch_pid_a_reach_end</reach_end>
+            </signal>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="boxitem_ch_pid_pcr">
+          <property>
+            <rect>[0,152,458,38]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+            <focus_image>s_bar_choice_blue4</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="text_ch_pid_pcr">
+              <property>
+                <rect>[30,0,200,38]</rect>
+                <forecolor>[text_tag_color,text_tag_color,text_tag_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>PCR</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="edit" style="default" name="edit_ch_pid_pcr">
+              <property>
+                <rect>[239,0,219,38]</rect>
+                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>0000</string>
+                <maxlen>4</maxlen>
+                <format>edit_digit</format>
+              </property>
+            <signal>
+                <reach_end>app_edit_ch_pid_pcr_reach_end</reach_end>
+            </signal>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="boxitem_ch_pid_save">
+          <property>
+            <rect>[0,190,458,38]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+            <focus_image>s_bar_choice_blue4</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="text_ch_pid_save">
+              <property>
+                <rect>[239,0,219,38]</rect>
+                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Save</string>
+                <format>static</format>
+              </property>
+            </widget>
+          </children>
+        </widget>
+      </children>
+    </widget>
+    <widget class="text" style="default" name="text_pop_ch_pid">
+      <property>
+        <rect>[10,2,460,35]</rect>
+        <forecolor>[pop_title_color,pop_title_color,pop_title_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <string>PID</string>
+        <format>static</format>
+      </property>
+    </widget>
+  </children>
+</widget>

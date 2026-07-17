@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="win_music_set">
+    <property>
+        <rect>[320,152,384,192]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>music_set_init</create>
+        <destroy>music_set_destroy</destroy>
+        <service>music_set_service</service>
+        <keypress>music_set_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="win_music_set_image220">
+            <property>
+                <rect>[0,0,384,192]</rect>
+                <forecolor>[#16161c,#16161c,#16161c]</forecolor>
+                <backcolor>[#f8f8f8,#f8f8f8,#16161c]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_t2</lt_img>
+                <rt_img>s_win2_r_t2</rt_img>
+                <lb_img>s_win2_l_b2</lb_img>
+                <rb_img>s_win2_r_b2</rb_img>
+                <l_img>s_win2_l_m</l_img>
+                <r_img>s_win2_r_m</r_img>
+                <t_img>s_win2_m_t2</t_img>
+                <b_img>s_win2_m_b2</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="music_set_text_title">
+            <property>
+                <rect>[15,0,360,28]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Setting</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="box" style="default" name="music_set_box">
+            <property>
+                <rect>[8,48,366,128]</rect>
+                <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                <backcolor>[#f8f8f8,#f8f8f8,#242424]</backcolor>
+                <interval>2</interval>
+                <format>vertical</format>
+            </property>
+            <children>
+                <widget class="boxitem" style="default" name="music_set_boxitem0">
+                    <property>
+                        <rect>[0,2,366,30]</rect>
+                        <mirror>disable</mirror>
+                        <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                        <backcolor>[#f8f8f8,#f8f8f8,#242424]</backcolor>
+                        <focus_image>s_bar_choice_blue4</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="music_set_text0">
+                            <property>
+                                <rect>[24,0,160,30]</rect>
+                                <forecolor>[#000000,#f4f4f4,#00FF00]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string>Play Mode</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="music_set_combo_play_sequence">
+                            <property>
+                                <rect>[191,0,175,30]</rect>
+                                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                                <content>[Only once,Repeat one,Sequence]</content>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="music_set_boxitem1">
+                    <property>
+                        <rect>[0,34,366,30]</rect>
+                        <mirror>disable</mirror>
+                        <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                        <backcolor>[#f8f8f8,#f8f8f8,#242424]</backcolor>
+                        <focus_image>s_bar_choice_blue4</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="music_set_text1">
+                            <property>
+                                <rect>[24,0,160,30]</rect>
+                                <forecolor>[#000000,#f4f4f4,#00FF00]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string>View mode</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="music_set_combo_view_mode">
+                            <property>
+                                <rect>[191,0,175,30]</rect>
+                                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                                <content>[Lyric,Spectrum]</content>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="music_set_boxitem2">
+                    <property>
+                        <rect>[0,66,366,30]</rect>
+                        <mirror>disable</mirror>
+                        <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                        <backcolor>[#f8f8f8,#f8f8f8,#242424]</backcolor>
+                        <focus_image>s_bar_choice_blue4</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="music_set_text2">
+                            <property>
+                                <rect>[24,0,160,30]</rect>
+                                <forecolor>[#000000,#f4f4f4,#00FF00]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string>Language</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="music_set_combo_language">
+                            <property>
+                                <rect>[191,0,175,30]</rect>
+                                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="music_set_boxitem3">
+                    <property>
+                        <rect>[0,98,366,30]</rect>
+                        <mirror>disable</mirror>
+                        <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                        <backcolor>[#f8f8f8,#f8f8f8,#242424]</backcolor>
+                        <focus_image>s_bar_choice_blue4</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="music_set_text3">
+                            <property>
+                                <rect>[24,0,160,30]</rect>
+                                <forecolor>[#000000,#f4f4f4,#00FF00]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string>Encoding</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="music_set_combo_charset">
+                            <property>
+                                <rect>[191,0,175,30]</rect>
+                                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                                <content>[ISO8859,Windows125x,UTF8]</content>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+    </children>
+</widget>

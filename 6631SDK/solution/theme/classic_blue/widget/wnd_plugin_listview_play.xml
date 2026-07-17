@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_plugin_listview_play">
+    <property>
+        <rect>[0,0,1280,720]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <back_ground>null</back_ground>
+    </property>
+    <signal>
+        <create>app_plugin_listview_play_create</create>
+        <destroy>app_plugin_listview_play_destroy</destroy>
+        <got_focus>app_plugin_listview_play_got_focus</got_focus>
+        <lost_focus>app_plugin_listview_play_lost_focus</lost_focus>
+        <keypress>app_plugin_listview_play_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_plugin_listview_state">
+            <property>
+                <rect>[440,270,400,50]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t2</lt_img>
+                <rt_img>s_win_r_t2</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t2</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_plugin_listview_state">
+            <property>
+                <rect>[470,275,340,40]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="fimg_plugin_listview_play_gif">
+            <property>
+                <rect>[624,60,48,48]</rect>
+                <state>hide</state>
+                <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_plugin_listview_play_mute">
+            <property>
+                <rect>[1057,40,94,76]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_mute</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="list_plugin_listview1_play_group_back_img">
+            <property>
+                <rect>[50,110,285,550]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+                <state>hide</state>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win21_l_u</lt_img>
+                <rt_img>s_win21_r_u</rt_img>
+                <lb_img>s_win21_l_b</lb_img>
+                <rb_img>s_win21_r_b</rb_img>
+                <l_img>s_win21_l_m</l_img>
+                <r_img>s_win21_r_m</r_img>
+                <t_img>s_win21_u_m</t_img>
+                <b_img>s_win21_b_m</b_img>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="list_plugin_listview1_play_group">
+            <property>
+                <rect>[60,135,265,500]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+                <roll_time>60</roll_time>
+                <format>enable_roll</format>
+                <focus_img>new_focus_item</focus_img>
+                <item_active_color>#B5DE29</item_active_color>
+                <i18n>false</i18n>
+                <item_rect>[0,0,265,50]</item_rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[main_bg1_color,main_bg1_color,main_bg1_color]</item_back_color>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>app_plugin_listview1_play_group_list_keypress</keypress>
+                <get_total>app_plugin_listview1_play_group_list_get_total</get_total>
+                <get_data>app_plugin_listview1_play_group_list_get_data</get_data>
+                <change>app_plugin_listview1_play_group_list_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="header_plugin_listview1_play_feeds">
+                    <property>
+                        <rect>[0,0,265,0]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+                        <colum_number>1</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="headertext_plugin_listview1_play_feeds1">
+                            <property>
+                                <rect>[10,0,220,0]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+                                <string></string>
+                                <alignment>left|vcentre</alignment>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview1_play_feeds0">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview1_play_feeds1">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview1_play_feeds2">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview1_play_feeds3">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview1_play_feeds4">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview1_play_feeds5">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview1_play_feeds6">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview1_play_feeds7">
+                    <property>
+                         <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview1_play_feeds8">
+                    <property>
+                         <alignment>left|vcentre</alignment>
+                     </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview1_play_feeds9">
+                    <property>
+                         <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+            </children>
+        </widget>
+        <widget class="image" style="default" name="list_plugin_listview2_play_group_back_img">
+            <property>
+                <rect>[337,110,420,550]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+                <state>hide</state>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win21_l_u</lt_img>
+                <rt_img>s_win21_r_u</rt_img>
+                <lb_img>s_win21_l_b</lb_img>
+                <rb_img>s_win21_r_b</rb_img>
+                <l_img>s_win21_l_m</l_img>
+                <r_img>s_win21_r_m</r_img>
+                <t_img>s_win21_u_m</t_img>
+                <b_img>s_win21_b_m</b_img>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="list_plugin_listview2_play_group">
+            <property>
+                <rect>[347,135,400,500]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+                <roll_time>60</roll_time>
+                <format>enable_roll</format>
+                <focus_img>new_focus_item</focus_img>
+                <item_active_color>#B5DE29</item_active_color>
+                <i18n>false</i18n>
+                <item_rect>[0,0,400,50]</item_rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[main_bg1_color,main_bg1_color,main_bg1_color]</item_back_color>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>app_plugin_listview2_play_group_list_keypress</keypress>
+                <get_total>app_plugin_listview2_play_group_list_get_total</get_total>
+                <get_data>app_plugin_listview2_play_group_list_get_data</get_data>
+                <change>app_plugin_listview2_play_group_list_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="header_plugin_listview2_play_feeds">
+                    <property>
+                        <rect>[0,0,400,0]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+                        <colum_number>2</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="headertext_plugin_listview2_play_feeds1">
+                            <property>
+                                <rect>[2,0,70,0]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+                                <string></string>
+                                <alignment>left|vcentre</alignment>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_plugin_listview2_play_feeds2">
+                            <property>
+                                <rect>[80,0,315,0]</rect>
+                                <alignment>left|vcentre</alignment>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview2_play_feeds0">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview2_play_feeds1">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview2_play_feeds2">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview2_play_feeds3">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview2_play_feeds4">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview2_play_feeds5">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview2_play_feeds6">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview2_play_feeds7">
+                    <property>
+                         <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview2_play_feeds8">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview2_play_feeds9">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+            </children>
+        </widget>
+        <widget class="image" style="default" name="list_plugin_listview3_play_group_back_img">
+            <property>
+                <rect>[759,110,420,550]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+                <state>hide</state>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win21_l_u</lt_img>
+                <rt_img>s_win21_r_u</rt_img>
+                <lb_img>s_win21_l_b</lb_img>
+                <rb_img>s_win21_r_b</rb_img>
+                <l_img>s_win21_l_m</l_img>
+                <r_img>s_win21_r_m</r_img>
+                <t_img>s_win21_u_m</t_img>
+                <b_img>s_win21_b_m</b_img>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="list_plugin_listview3_play_group">
+            <property>
+                <rect>[769,135,400,500]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+                <roll_time>60</roll_time>
+                <format>enable_roll</format>
+                <focus_img>new_focus_item</focus_img>
+                <item_active_color>#B5DE29</item_active_color>
+                <i18n>false</i18n>
+                <item_rect>[0,0,400,50]</item_rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[main_bg1_color,main_bg1_color,main_bg1_color]</item_back_color>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>app_plugin_listview3_play_group_list_keypress</keypress>
+                <get_total>app_plugin_listview3_play_group_list_get_total</get_total>
+                <get_data>app_plugin_listview3_play_group_list_get_data</get_data>
+                <change>app_plugin_listview3_play_group_list_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="header_plugin_listview3_play_feeds">
+                    <property>
+                        <rect>[0,0,400,0]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+                        <colum_number>2</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="headertext_plugin_listview3_play_feeds1">
+                            <property>
+                                <rect>[2,0,30,0]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+                                <string></string>
+                                <alignment>left|vcentre</alignment>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_plugin_listview3_play_feeds2">
+                            <property>
+                                <rect>[40,0,355,0]</rect>
+                                <alignment>left|vcentre</alignment>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview3_play_feeds0">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview3_play_feeds1">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview3_play_feeds2">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview3_play_feeds3">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview3_play_feeds4">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview3_play_feeds5">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview3_play_feeds6">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview3_play_feeds7">
+                    <property>
+                         <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview3_play_feeds8">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_plugin_listview3_play_feeds9">
+                    <property>
+                        <alignment>left|vcentre</alignment>
+                    </property>
+                </widget>
+            </children>
+        </widget>
+    </children>
+</widget>

@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_system_information">
+  <property>
+<rect>[0,0,1024,576]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    <back_ground>bg</back_ground>
+  </property>
+  <signal>
+    <got_focus>app_system_info_got_focus</got_focus>
+    <lost_focus>app_system_info_lost_focus</lost_focus>
+    <keypress>app_system_info_keypress</keypress>
+  </signal>
+  <children>
+    <widget class="image" style="default" name="img_system_info_opt_back">
+      <property>
+<rect>[144,64,736,356]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>s_win_l_t</lt_img>
+        <rt_img>s_win_r_t</rt_img>
+        <lb_img>s_win_l_b</lb_img>
+        <rb_img>s_win_r_b</rb_img>
+        <l_img>s_win_l_m</l_img>
+        <r_img>s_win_r_m</r_img>
+        <t_img>s_win_m_t</t_img>
+        <b_img>s_win_m_b</b_img>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_system_info_title">
+      <property>
+<rect>[160,72,48,48]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_title_left_utility</img>
+      </property>
+    </widget>
+	<widget class="text" style="default" name="text_system_info_title">
+		<property>
+			<rect>[224,74,600,52]</rect>
+			<forecolor>[text_color,text_color,text_color]</forecolor>
+			<backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+			<font>font_main</font>
+			<alignment>left|bottom</alignment>
+			<string>System Inforation</string>
+			<format>static</format>
+		</property>
+	</widget>
+	<widget class="image" style="default" name="img_system_setting_bottom">
+      <property>
+		  <rect>[0,496,1024,80]</rect>
+		  <forecolor>[default_color,default_color,default_color]</forecolor>
+		  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+		  <mode>signal</mode>
+	  </property>
+  </widget>
+  <widget class="box" style="default" name="box_system_info_para">
+      <property>
+<rect>[160,140,704,277]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <format>vertical</format>
+      </property>
+      <signal>
+        <keypress>app_system_info_box_keypress</keypress>
+      </signal>
+      <children>
+		  <widget class="boxitem" style="default" name="boxitem_system_info_loader">
+			  <property>
+				  <rect>[0,0,696,30]</rect>
+				  <forecolor>[default_color,default_color,default_color]</forecolor>
+				  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+			  </property>
+			  <children>
+				  <widget class="text" style="default" name="text_system_info_item1">
+					  <property>
+						  <rect>[48,0,216,30]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+						  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+						  <string></string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+				  <widget class="text" style="default" name="text_system_info_item10">
+					  <property>
+						  <rect>[364,0,292,30]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+				  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+						  <string></string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+			  </children>
+		  </widget>
+		  <widget class="boxitem" style="default" name="boxitem_system_info_boot_ota">
+			  <property>
+				  <rect>[0,30,696,30]</rect>
+				  <forecolor>[default_color,default_color,default_color]</forecolor>
+				  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+			  </property>
+			  <children>
+				  <widget class="text" style="default" name="text_system_info_item2">
+					  <property>
+						  <rect>[48,0,216,30]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+						  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+						  <string>Update</string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+				  <widget class="text" style="default" name="text_system_info_item11">
+					  <property>
+						  <rect>[364,0,292,30]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+				  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+                          <string></string>
+                           <time>60</time>
+						  <format>static</format>
+					  </property>
+				  </widget>
+			  </children>
+		  </widget>
+		  <widget class="boxitem" style="default" name="boxitem_system_info_kernel">
+			  <property>
+				  <rect>[0,60,696,30]</rect>
+				  <forecolor>[default_color,default_color,default_color]</forecolor>
+				  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+			  </property>
+			  <children>
+				  <widget class="text" style="default" name="text_system_info_item3">
+					  <property>
+						  <rect>[48,0,216,30]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+						  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+						  <string>Kernel</string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+				  <widget class="text" style="default" name="text_system_info_item12">
+					  <property>
+						  <rect>[364,0,292,30]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+				  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+						  <string></string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+			  </children>
+		  </widget>
+		  <widget class="boxitem" style="default" name="boxitem_system_info_lib">
+			  <property>
+				  <rect>[0,91,696,30]</rect>
+				  <forecolor>[default_color,default_color,default_color]</forecolor>
+				  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+			  </property>
+			  <children>
+				  <widget class="text" style="default" name="text_system_info_item4">
+					  <property>
+						  <rect>[48,0,216,30]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+						  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+						  <string>Lib</string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+				  <widget class="text" style="default" name="text_system_info_item13">
+					  <property>
+						  <rect>[364,0,292,30]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+				  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+						  <string></string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+			  </children>
+		  </widget>
+		  <widget class="boxitem" style="default" name="boxitem_system_info_app">
+			  <property>
+				  <rect>[0,121,696,30]</rect>
+				  <forecolor>[default_color,default_color,default_color]</forecolor>
+				  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+			  </property>
+			  <children>
+				  <widget class="text" style="default" name="text_system_info_item5">
+					  <property>
+						  <rect>[48,0,216,30]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+						  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+						  <string></string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+				  <widget class="text" style="default" name="text_system_info_item14">
+					  <property>
+						  <rect>[364,0,292,30]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+				  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+						  <string></string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+			  </children>
+		  </widget>
+		  <widget class="boxitem" style="default" name="wnd_system_info_hardware">
+			  <property>
+				  <rect>[0,152,696,30]</rect>
+				  <forecolor>[default_color,default_color,default_color]</forecolor>
+				  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+			  </property>
+			  <children>
+				  <widget class="text" style="default" name="text_system_info_item6">
+					  <property>
+						  <rect>[48,0,216,30]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+						  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+						  <string></string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+				  <widget class="text" style="default" name="text_system_info_item15">
+					  <property>
+						  <rect>[364,0,292,30]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+				  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+						  <string></string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+			  </children>
+		  </widget>
+		  <widget class="boxitem" style="default" name="wnd_system_info_defaultdb">
+			  <property>
+				  <rect>[0,183,696,30]</rect>
+				  <forecolor>[default_color,default_color,default_color]</forecolor>
+				  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+			  </property>
+			  <children>
+				  <widget class="text" style="default" name="text_system_info_item7">
+					  <property>
+						  <rect>[48,0,216,30]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+						  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+						  <string></string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+				  <widget class="text" style="default" name="text_system_info_item16">
+					  <property>
+						  <rect>[364,0,292,30]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+				  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+						  <string></string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+			  </children>
+		  </widget>
+		  <widget class="boxitem" style="default" name="boxitem_system_info_sw_info">
+			  <property>
+				  <rect>[0,214,696,30]</rect>
+				  <forecolor>[default_color,default_color,default_color]</forecolor>
+				  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+			  </property>
+			  <children>
+				  <widget class="text" style="default" name="text_system_info_item8">
+					  <property>
+						  <rect>[48,0,216,30]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+						  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+						  <string></string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+				  <widget class="text" style="default" name="text_system_info_item17">
+					  <property>
+						  <rect>[364,0,292,30]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+				  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+						  <string></string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+			  </children>
+		  </widget>
+		  <widget class="boxitem" style="default" name="boxitem_system_info_build_time">
+			  <property>
+				  <rect>[0,245,696,30]</rect>
+				  <forecolor>[default_color,default_color,default_color]</forecolor>
+				  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+			  </property>
+			  <children>
+				  <widget class="text" style="default" name="text_system_info_item9">
+					  <property>
+						  <rect>[48,0,216,30]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+						  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+						  <string></string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+				  <widget class="text" style="default" name="text_system_info_item18">
+					  <property>
+						  <rect>[364,0,292,30]</rect>
+						  <forecolor>[text_color,text_color,text_color]</forecolor>
+				  <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+						  <alignment>left|vcentre</alignment>
+						  <string></string>
+						  <format>static</format>
+					  </property>
+				  </widget>
+			  </children>
+		  </widget>
+
+	  </children>
+  </widget>
+  </children>
+</widget>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="win_pic_info">
+    <property>
+        <rect>[272,120,480,272]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>pic_info_init</create>
+        <service>pic_info_service</service>
+        <keypress>pic_info_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="pic_info_bg">
+            <property>
+                <rect>[0,0,480,272]</rect>
+                <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_t2</lt_img>
+                <rt_img>s_win2_r_t2</rt_img>
+                <lb_img>s_win2_l_b2</lb_img>
+                <rb_img>s_win2_r_b2</rb_img>
+                <l_img>s_win2_l_m</l_img>
+                <r_img>s_win2_r_m</r_img>
+                <t_img>s_win2_m_t2</t_img>
+                <b_img>s_win2_m_b2</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="pic_info_text0">
+            <property>
+                <rect>[28,40,144,32]</rect>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Resolution:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="pic_info_text1">
+            <property>
+                <rect>[28,72,144,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#242424]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Date time:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="pic_info_text2">
+            <property>
+                <rect>[28,104,144,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#242424]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Camera make:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="pic_info_text3">
+            <property>
+                <rect>[28,136,144,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#242424]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Camera model:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="pic_info_text4">
+            <property>
+                <rect>[28,168,144,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#242424]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Focal length:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="pic_info_text5">
+            <property>
+                <rect>[28,200,144,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#242424]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Exposure time:</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="pic_info_text_info0">
+            <property>
+                <rect>[176,40,280,32]</rect>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,osd_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="pic_info_text_info1">
+            <property>
+                <rect>[176,72,280,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#808080]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="pic_info_text_info2">
+            <property>
+                <rect>[176,104,280,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#808080]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="pic_info_text_info3">
+            <property>
+                <rect>[176,136,280,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#808080]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="pic_info_text_info4">
+            <property>
+                <rect>[176,168,280,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#808080]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="pic_info_text_info5">
+            <property>
+                <rect>[176,200,280,32]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,#808080]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="pic_info_button_ok">
+            <property>
+                <rect>[220,238,38,19]</rect>
+                <forecolor>[#000000,#000000,#00FF00]</forecolor>
+                <backcolor>[#808080,#808080,#808080]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>s_ts_ok</focus_img>
+                <unfocus_img>s_ts_ok</unfocus_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="pic_info_text_title">
+            <property>
+                <rect>[170,0,140,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <string>Picture Info</string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

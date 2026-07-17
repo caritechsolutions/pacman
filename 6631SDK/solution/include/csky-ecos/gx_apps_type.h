@@ -1,0 +1,15 @@
+#ifndef _GX_APPS_TYPE_H
+#define _GX_APPS_TYPE_H
+
+typedef enum gxapps_ret_e
+{
+	GXAPPS_SUCCESS = 0,
+	GXAPPS_UNKNOWN_ERROR = -1,
+	GXAPPS_INTERNAL_ERROR = -2,
+	GXAPPS_NETWORK_ERROR = -3,
+	GXAPPS_SERVER_ERROR = -4,
+	GXAPPS_AUTH_ERROR = -5,
+	GXAPPS_MEMORY_ERROR = -6,
+} gxapps_ret_t;
+
+#endif

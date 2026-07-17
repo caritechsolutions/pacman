@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="win_text_view">
+  <property>
+    <rect>[0,0,1280,720]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[black,black,win_bg_color]</backcolor>
+  </property>
+  <signal>
+    <create>text_view_init</create>
+    <destroy>text_view_destroy</destroy>
+    <service>text_view_service</service>
+    <keypress>text_view_keypress</keypress>
+  </signal>
+  <children>
+    <widget class="notepad" style="default" name="text_view_notepad">
+      <property>
+        <rect>[50,38,1150,600]</rect>
+        <forecolor>[win_fore_color,win_fore_color,win_file_fore_color]</forecolor>
+        <backcolor>[black,black,win_bg_color]</backcolor>
+        <alignment>left|top</alignment>
+        <vertical_margin>0</vertical_margin>
+        <horizontal_margin>50</horizontal_margin>
+      </property>
+      <children>
+        <widget class="scrollbar" style="default" name="text_view_scrollbar">
+          <property>
+            <rect>[1131,0,19,600]</rect>
+            <forecolor>[win_focus_color,win_focus_color,win_focus_color]</forecolor>
+            <backcolor>[win_bg_color,win_bg_color,win_bg_color]</backcolor>
+            <back_img>HDMP_SCROLL_MIDDLE</back_img>
+            <arrow_up>HDMP_SCROLL_UP</arrow_up>
+            <arrow_down>HDMP_SCROLL_DOWN</arrow_down>
+            <fore_img>HDMP_SCROLL_MIDDLE2</fore_img>
+            <format>scroll_show</format>
+          </property>
+        </widget>
+      </children>
+  </widget>
+    <widget class="image" style="default" name="text_view_bottom_line">
+      <property>
+        <rect>[50,650,1126,5]</rect>
+        <forecolor>[black,black,black]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>HDMP_LINE_PART</lt_img>
+        <rt_img>HDMP_LINE_PART</rt_img>
+        <t_img>HDMP_LINE_PART</t_img>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="text_view_image_set">
+      <property>
+        <rect>[1014,664,22,22]</rect>
+        <state>show</state>
+        <forecolor>[black,black,black]</forecolor>
+        <backcolor>[#020206,#020206,#020206]</backcolor>
+        <mode>single</mode>
+        <img>MP_ICON_RED</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_view_text_setting">
+      <property>
+        <rect>[1043,658,150,40]</rect>
+        <state>show</state>
+        <forecolor>[win_fore_color,win_fore_color,osd_trans]</forecolor>
+        <backcolor>[#020206,#020206,#020206]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Setting</string>
+        <format>static</format>
+      </property>
+    </widget>
+  </children>
+</widget>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="win_pic_set">
+  <property>
+    <rect>[230,160,820,290]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[win_fore_color,win_fore_color,win_fore_color]</backcolor>
+  </property>
+  <signal>
+    <create>pic_set_init</create>
+    <destroy>pic_set_destroy</destroy>
+    <service>pic_set_service</service>
+    <keypress>pic_set_keypress</keypress>
+  </signal>
+  <children>
+    <widget class="image" style="default" name="win_pic_set_image220">
+      <property>
+        <rect>[0,0,820,290]</rect>
+        <forecolor>[win_fore_color,win_fore_color,win_fore_color]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,zoom_foreground]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>MP_WIN4_L_U</lt_img>
+        <rt_img>MP_WIN4_R_U</rt_img>
+        <lb_img>MP_WIN4_L_B</lb_img>
+        <rb_img>MP_WIN4_R_B</rb_img>
+        <l_img>MP_WIN4_L_M</l_img>
+        <r_img>MP_WIN4_R_M</r_img>
+        <t_img>MP_WIN4_U_M</t_img>
+        <b_img>MP_WIN4_B_M</b_img>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="pic_set_image_logo">
+      <property>
+        <rect>[350,42,126,30]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[win_bg_color,win_bg_color,win_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>MP_SETTING</img>
+      </property>
+    </widget>
+    <widget class="box" style="default" name="pic_set_box">
+      <property>
+        <rect>[34,115,750,130]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,win_bg_color]</backcolor>
+        <interval>2</interval>
+        <format>vertical</format>
+      </property>
+      <children>
+        <widget class="boxitem" style="default" name="pic_set_boxitem0">
+          <property>
+            <rect>[0,2,750,40]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[zoom_foreground,zoom_foreground,win_bg_color]</backcolor>
+            <focus_image>MP_BUTTON3</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="pic_set_text0">
+              <property>
+                <rect>[72,0,300,40]</rect>
+                <forecolor>[win_focus_color,win_file_fore_color,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Duration</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="pic_set_combo_switch_duration">
+              <property>
+                <rect>[486,0,170,40]</rect>
+                <forecolor>[win_focus_color,win_file_fore_color,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <focus_left_img>MP_ICON_ARROW_L</focus_left_img>
+                <focus_right_img>MP_ICON_ARROW_R</focus_right_img>
+                <content>[3s,5s,7s,10s]</content>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="pic_set_boxitem2">
+          <property>
+            <rect>[0,42,750,40]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[zoom_foreground,zoom_foreground,win_bg_color]</backcolor>
+            <focus_image>MP_BUTTON3</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="pic_set_txt2">
+              <property>
+                <rect>[72,0,300,40]</rect>
+                <forecolor>[win_focus_color,win_file_fore_color,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Play Mode</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="pic_set_combo_play_sequence">
+              <property>
+                <rect>[429,0,287,40]</rect>
+                <forecolor>[win_focus_color,win_file_fore_color,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <focus_left_img>MP_ICON_ARROW_L</focus_left_img>
+                <focus_right_img>MP_ICON_ARROW_R</focus_right_img>
+                <content>[Repeat all,Random]</content>
+              </property>
+            </widget>
+          </children>
+        </widget>
+         <widget class="boxitem" style="default" name="pic_set_boxitem3">
+          <property>
+            <rect>[0,84,750,40]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[zoom_foreground,zoom_foreground,win_bg_color]</backcolor>
+            <focus_image>MP_BUTTON3</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="pic_set_txt3">
+              <property>
+                <rect>[72,0,300,40]</rect>
+                <forecolor>[win_focus_color,win_file_fore_color,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Play Effects</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="pic_set_combo_special_effects">
+              <property>
+                <rect>[420,0,287,40]</rect>
+                <forecolor>[win_focus_color,win_file_fore_color,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <focus_left_img>MP_ICON_ARROW_L</focus_left_img>
+                <focus_right_img>MP_ICON_ARROW_R</focus_right_img>
+                <content>[no effects,slide_left,slide_right,slide_top,slide_bottom,diag_tl,diag_tr,diag_bl,diag_br,hstep_tl,hstep_tr,hstep_bl,hstep_br,checkerboard]</content>
+              </property>
+            </widget>
+          </children>
+        </widget>
+     </children>
+    </widget>
+    <widget class="image" style="default" name="win_pic_set_image223">
+      <property>
+        <rect>[247,79,350,2]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>MP_LINE</img>
+      </property>
+    </widget>
+  </children>
+</widget>

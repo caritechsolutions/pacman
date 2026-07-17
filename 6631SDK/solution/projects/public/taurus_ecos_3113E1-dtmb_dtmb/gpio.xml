@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<config>
+	<tree>
+		<item display="powercut" group="powercut"/>
+		<item display="panel" group="panel"/>
+		<item display="mute" group="mute"/>
+	</tree>
+	<group name="powercut">
+    <item display="powercut" value="1,0">
+	</item>
+	</group>
+	<group name="panel">
+	<item display="panel" value="3,2">
+	</item>
+	</group>
+	<group name="mute">
+        <item display="mute" value="enable">
+    </item>
+    </group>
+    <group name="remote led">
+        <item display="remote led" value="disable">
+    </item>
+    </group>
+	<group name="xtal">
+    <item display="xtal" value="24000000">
+	</item>
+    </group>
+    <group name="gpio level">
+        <key name="mute">1</key>
+        <key name="remote led on">0</key>
+    </group>
+   <group name="port">
+    <item display="port" value="4:1">
+	</item>
+	</group>
+
+</config>
+

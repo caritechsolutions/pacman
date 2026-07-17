@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget class="window" style="default_widget" name="wnd_setting_dm">
+  <property>
+    <rect>[0,0,1280,720]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+  </property>
+  <signal>
+    <create>app_dm_setting_create</create>
+    <destroy>app_dm_destroy</destroy>
+    <got_focus>app_dm_got_focus</got_focus>
+    <lost_focus>app_dm_lost_focus</lost_focus>
+    <keypress>app_dm_keypress</keypress>
+  </signal>
+  <children>
+    <widget name="img_dm_setting_bg_jpg" style="default" class="image">
+        <property>
+        <rect>[0,0,1280,720]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>single</mode>
+        <img>bg</img>
+        </property>
+    </widget>
+    <widget class="image" style="default" name="img_dm_setting_tip_back">
+      <property>
+        <rect>[0,620,1280,100]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bot_color,window_bot_color,window_bot_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <t_img>s_bar_bg</t_img>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_dm_setting_title">
+      <property>
+        <rect>[100,40,80,80]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_title_left_setting</img>
+        <lt_img>s_title_left_setting</lt_img>
+        <rt_img>s_title_right</rt_img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_dm_setting_title">
+      <property>
+        <rect>[195,72,600,48]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|bottom</alignment>
+        <string>Disk Information</string>
+        <font>font_sub</font>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_format_dm">
+      <property>
+        <rect>[107,633,22,22]</rect>
+        <state>hide</state>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_red</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_format_dm">
+      <property>
+        <rect>[135,626,240,35]</rect>
+        <state>hide</state>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Format</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_pvr_set">
+      <property>
+        <rect>[450,633,22,22]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_green</img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="txt_pvr_set">
+      <property>
+        <rect>[480,626,240,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>PVR Set</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <!--widget class="image" style="default" name="img_usb_speed_test">
+      <property>
+        <rect>[730,633,22,22]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_ts_yellow</img>
+      </property>
+    </widget-->
+    <!--widget class="text" style="default" name="txt_pvr_set">
+      <property>
+        <rect>[760,626,240,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>USB Speed Test</string>
+        <format>static</format>
+      </property>
+    </widget-->
+
+    <widget class="image" style="default" name="img_dm_setting_header">
+      <property>
+        <rect>[180,188,920,325]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>s_win_l_t</lt_img>
+        <rt_img>s_win_r_t</rt_img>
+        <lb_img>s_win_l_b</lb_img>
+        <rb_img>s_win_r_b</rb_img>
+        <l_img>s_win_l_m</l_img>
+        <r_img>s_win_r_m</r_img>
+        <t_img>s_win_m_t</t_img>
+        <b_img>s_win_m_b</b_img>
+      </property>
+    </widget>
+    <widget class="listview" style="default_widget" name="list_view_dm">
+      <property>
+        <rect>[195,238,900,266]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <roll_time>0</roll_time>
+        <focus_img>s_bar_long_focus</focus_img>
+        <item_active_image>s_bar_long_focus</item_active_image>
+        <item_rect>[0,0,870,38]</item_rect>
+        <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+        <item_back_color>[window_bg_color,window_bg_color,window_bg_color]</item_back_color>
+      </property>
+      <signal>
+        <get_total>app_dm_list_get_total</get_total>
+        <get_data>app_dm_list_get_data</get_data>
+        <keypress>app_dm_list_keypress</keypress>
+      </signal>
+      <children>
+        <widget class="header" style="default_widget" name="list_head_dm">
+          <property>
+            <rect>[0,0,886,0]</rect>
+            <forecolor>[text_color,text_color,text_color]</forecolor>
+            <backcolor>[default_color,default_color,default_color]</backcolor>
+            <colum_number>6</colum_number>
+          </property>
+          <children>
+            <widget class="text" style="default" name="txt_rec_flag">
+              <property>
+                <rect>[20,0,40,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default_widget" name="txt_name_dm">
+              <property>
+                <rect>[60,0,161,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default_widget" name="txt_used_size_dm">
+              <property>
+                <rect>[221,0,161,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default_widget" name="txt_free_size_dm">
+              <property>
+                <rect>[382,0,161,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default_widget" name="txt_total_size_dm">
+              <property>
+                <rect>[543,0,161,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default_widget" name="txt_type_dm">
+              <property>
+                <rect>[704,0,161,0]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="scrollbar" style="default_widget" name="list_scroll_dm">
+          <property>
+            <rect>[886,0,14,266]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[default_color,default_color,default_color]</backcolor>
+            <back_img>s_roll_m</back_img>
+            <arrow_up>s_roll_t</arrow_up>
+            <arrow_down>s_roll_d</arrow_down>
+            <fore_img>s_roll_button</fore_img>
+            <format>scroll_show</format>
+          </property>
+        </widget>
+        <widget class="listitem" style="default_widget" name="list_item_dm1"/>
+        <widget class="listitem" style="default_widget" name="list_item_dm2"/>
+        <widget class="listitem" style="default_widget" name="list_item_dm3"/>
+        <widget class="listitem" style="default_widget" name="list_item_dm4"/>
+        <widget class="listitem" style="default_widget" name="list_item_dm5"/>
+        <widget class="listitem" style="default_widget" name="list_item_dm6"/>
+        <widget class="listitem" style="default_widget" name="list_item_dm7"/>
+      </children>
+    </widget>
+    <widget class="text" style="default" name="btn_name_dm">
+      <property>
+        <rect>[255,190,161,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <string>Name</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="btn_used_size_dm">
+      <property>
+        <rect>[416,190,161,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <string>Used</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="btn_free_size_dm">
+      <property>
+        <rect>[577,190,161,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <string>Free</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="btn_total_size_dm">
+      <property>
+        <rect>[738,190,161,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <string>Total</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="btn_type_dm">
+      <property>
+        <rect>[899,190,161,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <string>System</string>
+        <format>static</format>
+      </property>
+    </widget>
+  </children>
+</widget>

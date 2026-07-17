@@ -1,0 +1,90 @@
+{
+    "xtream": {
+        "APP_ID": "xtream", 
+        "MENUCONFIG_ID": "BR2_MOD_APP_XTREAM", 
+        "MENUCONFIG_NAME": "Xtream Support", 
+        "MACRO_DEFINE": "XTREAM_SUPPORT", 
+        "MENU_EXEC": "app_create_xtream_menu", 
+        "MENU_TITLE_STR": "Xtream", 
+        "MENU_ATTR": "MENU_NETWORK_CHECK", 
+        "APPUI_ENTRY": "APPUI_ENTRY_XTREAM", 
+        "MENU_CHECK_FUNC": "NULL", 
+        "SUB_DEFINES": [
+            {
+                "MACRO_DEFINE": "XTREAM_SERIES_SUPPORT", 
+                "MENUCONFIG_ID": "BR2_MOD_APP_XTREAM_SERIES", 
+                "MENUCONFIG_NAME": "Xtream Series Support"
+            }
+        ]
+    }, 
+    "subt_trans": {
+        "APP_ID": "subttrans", 
+        "MENUCONFIG_ID": "BR2_MOD_APP_SUBTTRANS", 
+        "MENUCONFIG_NAME": "Subttrans Support", 
+        "MACRO_DEFINE": "SUBTTRANS_SUPPORT", 
+        "MENU_EXEC": "app_subttrans_setting_menu_exec", 
+        "MENU_TITLE_STR": "Subtitle Translation", 
+        "MENU_ATTR": "MENU_NETWORK_CHECK", 
+        "APPUI_ENTRY": "APPUI_ENTRY_SUBTTRANS_SETTING", 
+        "MENU_CHECK_FUNC": "NULL", 
+        "DEFAULT_CLOSE": "yes"
+    }, 
+    "stalker": {
+        "APP_ID": "stalker", 
+        "MENUCONFIG_ID": "BR2_MOD_APP_STALKER", 
+        "MENUCONFIG_NAME": "Stalker Support", 
+        "MACRO_DEFINE": "STALKER_SUPPORT", 
+        "MENU_EXEC": "app_create_stalker_menu", 
+        "MENU_TITLE_STR": "Stalker", 
+        "MENU_ATTR": "MENU_NETWORK_CHECK", 
+        "APPUI_ENTRY": "APPUI_ENTRY_STALKER", 
+        "MENU_CHECK_FUNC": "NULL", 
+        "SUB_DEFINES": [
+            {
+                "MACRO_DEFINE": "STALKER_SERIES_SUPPORT", 
+                "MENUCONFIG_ID": "BR2_MOD_APP_STALKER_SERIES", 
+                "MENUCONFIG_NAME": "Stalker Series Support"
+            }
+        ]
+    }, 
+    "rss": {
+        "APP_ID": "rss", 
+        "MENUCONFIG_ID": "BR2_MOD_APP_RSS", 
+        "MENUCONFIG_NAME": "Rss", 
+        "MACRO_DEFINE": "RSS_SUPPORT", 
+        "MENU_EXEC": "app_rss_create_dialog", 
+        "MENU_TITLE_STR": "RSS", 
+        "MENU_ATTR": "MENU_NETWORK_CHECK", 
+        "APPUI_ENTRY": "APPUI_ENTRY_RSS", 
+        "MENU_CHECK_FUNC": "NULL"
+    }, 
+    "gxiptv": {
+        "APP_ID": "gxiptv", 
+        "MENUCONFIG_ID": "BR2_MOD_APP_IPTV", 
+        "MENUCONFIG_NAME": "GXIPTV Support", 
+        "MACRO_DEFINE": "IPTV_SUPPORT", 
+        "MENU_EXEC": "app_create_gxiptv_menu", 
+        "MENU_TITLE_STR": "IPTV", 
+        "MENU_ATTR": "MENU_NONE_ATTR", 
+        "APPUI_ENTRY": "APPUI_ENTRY_IPTV", 
+        "MENU_CHECK_FUNC": "NULL", 
+        "SUB_DEFINES": [
+            {
+                "MACRO_DEFINE": "IPTV_CLOUD_SUPPORT", 
+                "MENUCONFIG_ID": "BR2_MOD_APP_IPTV_CLOUD", 
+                "MENUCONFIG_NAME": "IPTV CLOUD Support"
+            }
+        ]
+    }, 
+    "freeiptv": {
+        "APP_ID": "freeiptv", 
+        "MENUCONFIG_ID": "BR2_MOD_APP_FREEIPTV", 
+        "MENUCONFIG_NAME": "Free Iptv Support", 
+        "MACRO_DEFINE": "FREEIPTV_SUPPORT", 
+        "MENU_EXEC": "app_create_freeiptv_menu", 
+        "MENU_TITLE_STR": "Free IPTV", 
+        "MENU_ATTR": "MENU_NONE_ATTR", 
+        "APPUI_ENTRY": "APPUI_ENTRY_FREEIPTV", 
+        "MENU_CHECK_FUNC": "NULL"
+    }
+}

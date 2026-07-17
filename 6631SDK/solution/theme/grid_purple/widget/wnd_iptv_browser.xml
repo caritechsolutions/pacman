@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_iptv_browser">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[gui_trans,gui_trans,gui_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <keypress_revert>enable</keypress_revert>
+    </property>
+    <signal>
+        <create>app_iptv_browser_create</create>
+        <destroy>app_iptv_browser_destroy</destroy>
+        <keypress>app_iptv_browser_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_iptv_browser_line_v1">
+            <property>
+                <rect>[120,96,784,2]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_iptv_browser_line_v2">
+            <property>
+                <rect>[120,484,784,2]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[key_focus_color,key_focus_color,key_focus_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_iptv_browser_title">
+            <property>
+                <rect>[300,45,400,44]</rect>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_main</font>
+                <string>IPTV</string>
+                <format>static</format>
+            </property>
+        </widget>
+
+        <widget class="text" style="default" name="img_iptv_browser_item_focus1">
+            <property>
+                <rect>[278,150,116,80]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[net_video_focus_color,net_video_focus_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_iptv_browser_item_unfocus1">
+            <property>
+                <rect>[280,152,112,76]</rect>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_iptv_browser_item_title1">
+            <property>
+                <rect>[260,250,152,30]</rect>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_iptv_browser_item_focus2">
+            <property>
+                <rect>[438,150,116,80]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[net_video_focus_color,net_video_focus_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_iptv_browser_item_unfocus2">
+            <property>
+                <rect>[440,152,112,76]</rect>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_iptv_browser_item_title2">
+            <property>
+                <rect>[420,250,152,30]</rect>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_iptv_browser_item_focus3">
+            <property>
+                <rect>[598,150,116,80]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[net_video_focus_color,net_video_focus_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_iptv_browser_item_unfocus3">
+            <property>
+                <rect>[600,152,112,76]</rect>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_iptv_browser_item_title3">
+            <property>
+                <rect>[580,250,152,30]</rect>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+
+        <widget class="text" style="default" name="img_iptv_browser_item_focus4">
+            <property>
+                <rect>[278,310,116,80]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[net_video_focus_color,net_video_focus_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_iptv_browser_item_unfocus4">
+            <property>
+                <rect>[280,312,112,76]</rect>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_iptv_browser_item_title4">
+            <property>
+                <rect>[260,410,152,30]</rect>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_iptv_browser_item_focus5">
+            <property>
+                <rect>[438,310,116,80]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[net_video_focus_color,net_video_focus_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_iptv_browser_item_unfocus5">
+            <property>
+                <rect>[440,312,112,76]</rect>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_iptv_browser_item_title5">
+            <property>
+                <rect>[420,410,152,30]</rect>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="img_iptv_browser_item_focus6">
+            <property>
+                <rect>[598,310,116,80]</rect>
+                <state>hide</state>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[net_video_focus_color,net_video_focus_color,window_bg_color]</backcolor>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_iptv_browser_item_unfocus6">
+            <property>
+                <rect>[600,312,112,76]</rect>
+                <forecolor>[#FFFFFF,#FFFFFF,#FFFFFF]</forecolor>
+                <backcolor>[#0B0B0C,#0B0B0C,#0B0B0C]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_iptv_browser_item_title6">
+            <property>
+                <rect>[580,410,152,30]</rect>
+                <forecolor>[key_focus_color,key_focus_color,key_focus_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+
+        <widget class="image" style="default" name="img_iptv_browser_bottom_bg">
+            <property>
+                <rect>[0,510,1024,66]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_b2</lt_img>
+                <rt_img>s_win2_r_b2</rt_img>
+                <t_img>s_win2_m_b2</t_img>
+            </property>
+        </widget>
+
+        <widget class="button" style="default" name="img_iptv_browser_exit">
+            <property>
+                <rect>[116,515,54,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <font>font_22</font>
+                <string>EXIT</string>
+                <focus_img>T2_64_button_tips</focus_img>
+                <unfocus_img>T2_64_button_tips</unfocus_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_iptv_browser_exit">
+            <property>
+                <rect>[180,514,150,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_22</font>
+                <string>Exit</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="img_iptv_browser_menu">
+            <property>
+                <rect>[336,515,54,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <font>font_22</font>
+                <string>MENU</string>
+                <focus_img>T2_64_button_tips</focus_img>
+                <unfocus_img>T2_64_button_tips</unfocus_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_iptv_browser_menu">
+            <property>
+                <rect>[400,514,150,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_22</font>
+                <string>Return</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="img_iptv_browser_ok">
+            <property>
+                <rect>[556,515,54,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <font>font_22</font>
+                <string>OK</string>
+                <focus_img>T2_64_button_tips</focus_img>
+                <unfocus_img>T2_64_button_tips</unfocus_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_iptv_browser_ok">
+            <property>
+                <rect>[620,514,150,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_22</font>
+                <string>Select</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_iptv_browser_move">
+            <property>
+                <rect>[776,515,22,22]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_move</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_iptv_browser_move">
+            <property>
+                <rect>[808,514,150,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_22</font>
+                <string>Move</string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

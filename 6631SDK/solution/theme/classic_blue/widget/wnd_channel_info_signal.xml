@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_channel_info_signal">
+  <property>
+    <rect>[200,120,880,330]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+  </property>
+  <signal>
+    <create>app_channel_info_signal_create</create>
+    <destroy>app_channel_info_signal_destroy</destroy>
+    <keypress>app_channel_info_signal_keypress</keypress>
+    <got_focus>app_channel_info_signal_got_focus</got_focus>
+    <lost_focus>app_channel_info_signal_lost_focus</lost_focus>
+  </signal>
+  <children>
+    <widget class="image" style="default" name="img_signal_head">
+      <property>
+        <rect>[0,0,880,330]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>s_win_l_t</lt_img>
+        <rt_img>s_win_r_t</rt_img>
+        <lb_img>s_win_l_b</lb_img>
+        <rb_img>s_win_r_b</rb_img>
+        <l_img>s_win_l_m</l_img>
+        <r_img>s_win_r_m</r_img>
+        <t_img>s_win_m_t</t_img>
+        <b_img>s_win_m_b</b_img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_signal_title">
+      <property>
+        <rect>[0,2,880,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <string>Signal Indicator</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="progbar" style="default" name="progbar_signal_strength">
+      <property>
+        <rect>[192,65,480,16]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <min>0</min>
+        <max>100</max>
+        <back_image>s_progress_m</back_image>
+        <back_image_l>s_progress_l</back_image_l>
+        <back_image_m>s_progress_m</back_image_m>
+        <back_image_r>s_progress_r</back_image_r>
+        <fore_image>s_progress_blue</fore_image>
+        <fore_image_l>s_progress3_l</fore_image_l>
+        <fore_image_m>s_progress3_m</fore_image_m>
+        <fore_image_r>s_progress3_r</fore_image_r>
+        <format>water</format>
+        <mirror>disable</mirror>
+        <text_format>percentage</text_format>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="progbar" style="default" name="progbar_signal_quality">
+      <property>
+        <rect>[192,111,480,16]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <min>0</min>
+        <max>100</max>
+        <back_image>s_progress_m</back_image>
+        <back_image_l>s_progress_l</back_image_l>
+        <back_image_m>s_progress_m</back_image_m>
+        <back_image_r>s_progress_r</back_image_r>
+        <fore_image>s_progress_blue</fore_image>
+        <fore_image_l>s_progress3_l</fore_image_l>
+        <fore_image_m>s_progress3_m</fore_image_m>
+        <fore_image_r>s_progress3_r</fore_image_r>
+        <format>water</format>
+        <mirror>disable</mirror>
+        <text_format>percentage</text_format>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="progbar" style="default" name="progbar_signal_snr">
+      <property>
+        <rect>[192,155,480,16]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <min>0</min>
+        <max>100</max>
+        <back_image>s_progress_m</back_image>
+        <back_image_l>s_progress_l</back_image_l>
+        <back_image_m>s_progress_m</back_image_m>
+        <back_image_r>s_progress_r</back_image_r>
+        <fore_image>s_progress_blue</fore_image>
+        <fore_image_l>s_progress3_l</fore_image_l>
+        <fore_image_m>s_progress3_m</fore_image_m>
+        <fore_image_r>s_progress3_r</fore_image_r>
+        <format>water</format>
+        <mirror>disable</mirror>
+        <text_format>percentage</text_format>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_signal_strength_value">
+      <property>
+        <rect>[672,55,160,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>right|vcentre</alignment>
+        <string>0</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_signal_quality_value">
+      <property>
+        <rect>[672,100,160,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>right|vcentre</alignment>
+        <string>0</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_signal_snr_value">
+      <property>
+        <rect>[672,145,160,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>right|vcentre</alignment>
+        <string>0</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_signal_strength">
+      <property>
+        <rect>[50,55,140,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Strength</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_signal_quality">
+      <property>
+        <rect>[50,100,140,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Quality</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_signal_snr">
+      <property>
+        <rect>[51,145,140,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>BER</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_signal_modulation">
+    <property>
+        <rect>[50,200,300,38]</rect>
+        <rect_fix>enable</rect_fix>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Modulation Parameters:</string>
+        <format>static</format>
+    </property>
+    </widget>
+    <widget class="text" style="default" name="text_signal_parameters">
+        <property>
+        <rect>[370,200,320,38]</rect>
+        <rect_fix>enable</rect_fix>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>hcentre|vcentre</alignment>
+        <format>static</format>
+        </property>
+    </widget>
+    <widget class="text" style="default" name="text_signal_format_title">
+        <property>
+        <rect>[50,248,100,38]</rect>
+        <rect_fix>enable</rect_fix>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Format:</string>
+        <format>static</format>
+        </property>
+    </widget>
+    <widget class="text" style="default" name="text_signal_format_value">
+        <property>
+        <rect>[160,248,328,38]</rect>
+        <rect_fix>enable</rect_fix>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string></string>
+        <font>font_22</font>
+        <format>static</format>
+        </property>
+    </widget>
+    <widget class="text" style="default" name="text_signal_pid_title">
+        <property>
+        <rect>[496,248,56,38]</rect>
+        <rect_fix>enable</rect_fix>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>PID:</string>
+        <format>static</format>
+        </property>
+    </widget>
+    <widget class="text" style="default" name="text_signal_pid_value">
+        <property>
+        <rect>[560,248,240,38]</rect>
+        <rect_fix>enable</rect_fix>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <font>font_22</font>
+        <string></string>
+        <format>static</format>
+        </property>
+    </widget>
+    </children>
+</widget>

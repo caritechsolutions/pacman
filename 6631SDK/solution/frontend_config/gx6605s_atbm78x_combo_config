@@ -1,0 +1,39 @@
+//Board Mark: GX6605S_ATBM7820_R848_V1.0  2016-12-13
+//Frontend Info: GX6605S(R848) ATBM7820(R848)
+
+frontend1_demod_i2c_id = 0
+frontend1_demod_i2c_chip_addr = 0
+frontend1_demod_attach = GX3211_ATTACH
+frontend1_tuner_i2c_chip_addr = 0xF4
+frontend1_tuner_i2c_id = 0
+frontend1_tuner_connection = FE_DIFFERENTIAL
+frontend1_iq = 0
+frontend1_polar_invert = 1
+frontend1_pol_ctrl_enable = 0
+frontend1_demux_ts_src = DEMUX_TS1
+frontend1_ts4pin_switch = 2,0
+frontend1_pin1_switch = 10,37,69,1 //port10,LNB POWER
+frontend1_pin2_switch = 11,38,0xff,0 //HVSEL
+frontend1_pin3_switch = 13,40,0xff,0 //AGC
+
+frontend2_demod_i2c_id = 0
+frontend2_demod_i2c_chip_addr = 0x80
+frontend2_demod_attach = ATBM78X_ATTACH
+frontend2_tuner_i2c_chip_addr = 0xF4
+frontend2_tuner_i2c_id = 0
+frontend2_demux_ts_src = DEMUX_TS2
+frontend2_ts4pin_switch = 2,1
+frontend2_pin1_switch = 10,37,69,2 //TSI1 DATA5
+frontend2_pin2_switch = 11,38,0xff,2 //TSI1 DATA6
+frontend2_pin3_switch = 13,40,0xff,2 //TSI1 CLK
+
+frontend3_demod_i2c_id = 0
+frontend3_demod_i2c_chip_addr = 0x80
+frontend3_demod_attach = ATBM78X_DVBC_ATTACH
+frontend3_tuner_i2c_chip_addr = 0xF4
+frontend3_tuner_i2c_id = 0
+frontend3_demux_ts_src = DEMUX_TS2
+frontend3_ts4pin_switch = 2,1
+frontend3_pin1_switch = 10,37,69,2 //TSI1 DATA5
+frontend3_pin2_switch = 11,38,0xff,2 //TSI1 DATA6
+frontend3_pin3_switch = 13,40,0xff,2 //TSI1 CLK

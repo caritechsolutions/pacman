@@ -1,0 +1,22 @@
+//Board Mark: GX3235H1_DTMB_GX1503B-NF_R850_DEMO_V1.0  2022-02-16
+//Frontend Info: 1503-NF
+
+frontend1_demod_i2c_id = 0
+frontend1_demod_i2c_chip_addr = 0x60
+frontend1_demod_attach = GX1503B_DTMB_ATTACH
+frontend1_ts_mode = SERIAL
+frontend1_tuner_crystal = 24
+frontend1_is_oscillator = 1
+frontend1_demux_ts_src = DEMUX_TS2
+frontend1_tuner_i2c_id = 0
+frontend1_tuner_i2c_chip_addr = 0xF8
+
+frontend2_demod_i2c_id = 0
+frontend2_demod_i2c_chip_addr = 0x60
+frontend2_demod_attach = GX1503B_DVBC_ATTACH
+frontend2_ts_mode = SERIAL
+frontend2_tuner_crystal = 24
+frontend2_is_oscillator = 1
+frontend2_demux_ts_src = DEMUX_TS2
+frontend2_tuner_i2c_id = 0
+frontend2_tuner_i2c_chip_addr = 0xF8

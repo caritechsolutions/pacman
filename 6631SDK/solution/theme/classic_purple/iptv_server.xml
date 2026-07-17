@@ -1,0 +1,12 @@
+<?xml version="1.0"  encoding="utf-8"?>
+<list>
+
+    <item>
+        <key>Iptv server1</key>
+        <value>http://192.168.1.132/TV3nbexd.m3u</value>
+    </item>
+    <item>
+        <key>Iptv server2</key>
+        <value>https://pastebin.com/raw/TV3nbexd</value>
+    </item>
+</list>

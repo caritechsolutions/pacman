@@ -1,0 +1,236 @@
+menu  "Target Board Configuration"
+
+comment "DRAM Config"
+
+choice
+	prompt "DDR DRAM Size"
+	default BR2_BOARD_DRAM_128MB
+	help
+
+config BR2_BOARD_DRAM_64MB
+	bool "64MB"
+
+config BR2_BOARD_DRAM_128MB
+	bool "128MB"
+
+config BR2_BOARD_DRAM_256MB
+	bool "256MB"
+
+config BR2_BOARD_DRAM_512MB
+	bool "512MB"
+
+endchoice
+
+config BR2_BOARD_DRAM_SIZE
+	hex 
+	default 0x4000000 if BR2_BOARD_DRAM_64MB
+	default 0x8000000 if BR2_BOARD_DRAM_128MB
+	default 0x10000000 if BR2_BOARD_DRAM_256MB
+	default 0x20000000 if BR2_BOARD_DRAM_512MB
+
+comment "NVRAM Config"
+
+choice
+	prompt "SPI Flash Size"
+	default BR2_BOARD_FLASH_SPI_8MB
+	help
+	  Select SPI Flash Size
+
+config BR2_BOARD_FLASH_SPI_4MB
+	bool "4MB"
+	help
+
+config BR2_BOARD_FLASH_SPI_8MB
+	bool "8MB"
+	help
+
+config BR2_BOARD_FLASH_SPI_16MB
+	bool "16MB"
+	help
+
+config BR2_BOARD_FLASH_SPI_NONE
+	bool "none"
+	help
+
+endchoice
+
+config BR2_BOARD_FLASH_SPI_SIZE
+	hex
+	default 0x400000 if BR2_BOARD_FLASH_SPI_4MB
+	default 0x800000 if BR2_BOARD_FLASH_SPI_8MB
+	default 0x1000000 if BR2_BOARD_FLASH_SPI_16MB
+
+if !BR2_BOARD_FLASH_SPI_NONE
+
+menu "Flash Partition Configuration"
+
+config BR2_MTDPART_SPI_BOOT_SELECTED
+	bool "Boot Partition"
+
+config BR2_MTDPART_SPI_TABLE_SELECTED
+	bool "Table Partition"
+
+config BR2_MTDPART_SPI_UPDATE_SELECTED
+	bool "Update Partitioin"
+
+config BR2_MTDPART_SPI_LOGO_SELECTED
+	bool "Logo Partition"
+
+config BR2_MTDPART_SPI_KERNEL_SELECTED
+	bool "Kernel Partition"
+
+config BR2_MTDPART_SPI_ROOTFS_SELECTED
+	bool "Rootfs Partition"
+
+config BR2_MTDPART_SPI_DATA_SELECTED
+	bool "Data Partition"
+
+config BR2_MTDPART_SPI_USER_SELECTED
+	bool "User Partition"
+	
+config BR2_MTDPART_SPI_OEM_SELECTED
+	bool "OEM Partition"
+
+menu "Partition Size Setting"
+
+config BR2_MTDPART_SPI_BOOT_SIZE
+	hex "Boot partitions size"
+	depends on BR2_MTDPART_SPI_BOOT_SELECTED
+	default 0x40000
+
+config BR2_MTDPART_SPI_TABLE
+	hex "Table partition size"
+	depends on BR2_MTDPART_SPI_TABLE_SELECTED
+	default 0x10000
+
+config BR2_MTDPART_SPI_UPDATE
+	hex "Update partition size"
+	depends on BR2_MTDPART_SPI_UPDATE_SELECTED
+	default 0xa0000
+
+config BR2_MTDPART_SPI_LOGO
+	hex "Logo partitions size"
+	depends on BR2_MTDPART_SPI_LOGO_SELECTED
+	default 0x80000
+
+config BR2_MTDPART_SPI_KERNEL
+	hex "Kernel partition size"
+	depends on BR2_MTDPART_SPI_KERNEL_SELECTED
+	default 0x200000
+
+config BR2_MTDPART_SPI_ROOTFS
+	hex "Rootfs partition size"
+	depends on BR2_MTDPART_SPI_ROOTFS_SELECTED
+	default 0x400000
+
+config BR2_MTDPART_SPI_DATA
+	hex "Data partition size"
+	depends on BR2_MTDPART_SPI_DATA_SELECTED
+	default 0x100000
+
+config BR2_MTDPART_SPI_USER
+	hex "User partition size"
+	depends on BR2_MTDPART_SPI_DATA_SELECTED
+	default 0x100000
+
+config BR2_MTDPART_SPI_OEM
+	hex "OEM partition size"
+	depends on BR2_MTDPART_SPI_OEM_SELECTED
+	default 0x10000
+
+endmenu
+
+endmenu
+
+endif 
+
+choice
+	prompt "Nand Flash Size"
+	default BR2_BOARD_FLASH_NAND_NONE
+	help
+
+config BR2_BOARD_FLASH_NAND_128MB
+	bool "128MB"
+	help
+
+config BR2_BOARD_FLASH_NAND_256MB
+	bool "256MB"
+	help
+
+config BR2_BOARD_FLASH_NAND_512MB
+	bool "512MB"
+	help
+
+config BR2_BOARD_FLASH_NAND_NONE
+	bool "none"
+	help
+
+endchoice
+
+if !BR2_BOARD_FLASH_NAND_NONE
+
+config BR2_MTDPART_NAND_BOOT
+	hex "Boot partition size"
+	default 0x80000
+
+config BR2_MTDPART_NAND_TABLE
+	hex "Partition table size"
+	default 0x10000
+
+config BR2_MTDPART_NAND_KERNEL
+	hex "Kernel partition size"
+	default 0x400000
+
+config BR2_MTDPART_NAND_ROOTFS
+	hex "Rootfs partition size"
+	default 0x0
+
+endif
+
+comment "IR Config"
+
+choice 
+	prompt "IR Controller"
+	default BR2_BOARD_IR_PUBLIC
+	help
+
+config BR2_BOARD_IR_PUBLIC
+	bool "Public"
+
+config BR2_BOARD_IR_CUSTOMER_A
+	bool "Customer A"
+
+endchoice
+
+comment "Panel Config"
+
+choice
+	prompt "Front Panel"
+	default BR2_BOARD_PANEL_FD650
+	help
+
+config BR2_BOARD_PANEL_FD650
+	bool "FD650"
+
+config BR2_BOARD_PANEL_FD688
+	bool "FD688"
+
+
+endchoice
+
+
+comment "GPIO Config"
+
+config BR2_BOARD_GPIO
+	bool "GPIO Setting"
+
+#config BR2_BOARD_SCART_OUT
+#	bool "SCART output"
+
+#config BR2_BOARD_SPDIF_OUT
+#	bool "SPDIF output"
+
+
+source system/projects/Config.in.fe
+
+endmenu

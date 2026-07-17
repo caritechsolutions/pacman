@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_passwd">
+    <property>
+        <rect>[312,200,400,108]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_passwd_dlg_create</create>
+        <destroy>app_passwd_dlg_destroy</destroy>
+        <keypress>app_passwd_dlg_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_passwd_back">
+            <property>
+                <rect>[0,0,400,108]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+			    <mode>multiple</mode>
+			    <img></img>
+			    <lt_img>s_win_l_t</lt_img>
+			    <rt_img>s_win_r_t</rt_img>
+			    <lb_img>s_win_l_b</lb_img>
+			    <rb_img>s_win_r_b</rb_img>
+			    <l_img>s_win_m</l_img>
+			    <r_img>s_win_m</r_img>
+			    <t_img>s_win_m</t_img>
+			    <b_img>s_win_m</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_password_tips">
+            <property>
+                <rect>[30,23,45,62]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>T2_64_password_icon</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_passwd_title">
+            <property>
+                <rect>[80,10,300,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>Password</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_passwd_tip">
+            <property>
+                <rect>[80,80,300,22]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|top</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_passwd_input_1">
+            <property>
+                <rect>[125,45,30,30]</rect>
+                <forecolor>[black,text_color,black]</forecolor>
+        	<backcolor>[text_color,key_focus_color,text_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_passwd_input_2">
+            <property>
+                <rect>[165,45,30,30]</rect>
+                <forecolor>[black,text_color,black]</forecolor>
+        	<backcolor>[text_color,key_focus_color,text_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_passwd_input_3">
+            <property>
+                <rect>[205,45,30,30]</rect>
+                <forecolor>[black,text_color,black]</forecolor>
+        	<backcolor>[text_color,key_focus_color,text_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_passwd_input_4">
+            <property>
+                <rect>[245,45,30,30]</rect>
+                <forecolor>[black,text_color,black]</forecolor>
+        	<backcolor>[text_color,key_focus_color,text_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_passwd_input_5">
+            <property>
+                <rect>[285,45,30,30]</rect>
+                <forecolor>[black,text_color,black]</forecolor>
+        	<backcolor>[text_color,key_focus_color,text_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_passwd_input_6">
+            <property>
+                <rect>[325,45,30,30]</rect>
+                <forecolor>[black,text_color,black]</forecolor>
+        	<backcolor>[text_color,key_focus_color,text_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+    </children>
+</widget>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_pop_tip">
+    <property>
+        <rect>[320,200,384,192]</rect>
+        <forecolor>[gui_trans,gui_trans,gui_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <format>popup</format>
+    </property>
+    <signal>
+        <create>app_popdlg_create</create>
+        <destroy>app_popdlg_destroy</destroy>
+        <service>app_popdlg_set_service</service>
+        <keypress>app_popdlg_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_pop_tip_bg">
+            <property>
+                <rect>[0,0,384,192]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_pop_tip_title">
+            <property>
+                <rect>[12,1,360,28]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Tips</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_pop_tip">
+            <property>
+                <rect>[16,36,352,96]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|top</alignment>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pop_tip_opt">
+            <property>
+                <rect>[8,156,366,30]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_choice_blue4</img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_pop_tip_ok">
+            <property>
+                <rect>[248,156,80,30]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>OK</string>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_pop_tip_cancel">
+            <property>
+                <rect>[56,156,80,30]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>Cancel</string>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_pop_time">
+            <property>
+                <rect>[208,120,120,25]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

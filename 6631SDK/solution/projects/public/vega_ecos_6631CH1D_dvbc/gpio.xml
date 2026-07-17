@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<config>
+	<tree>
+		<item display="powercut" group="powercut"/>
+		<item display="panel" group="panel"/>
+		<item display="mute" group="mute"/>
+	</tree>
+	<group name="powercut">
+    <item display="powercut" value="17,0">
+        <!--pmu port,level-->
+    </item>
+	</group>
+	<group name="panel">
+	<item display="panel" value="8,7">
+        <!--pmu port,level-->
+	</item>
+	</group>
+	<group name="mute">
+        <item display="mute" value="enable">
+        <!--gpio config mute-->
+    </item>
+    </group>
+    <group name="remote led">
+        <item display="remote led" value="enable">
+    </item>
+    </group>
+    <group name="gpio level">
+        <key name="mute">1</key>
+        <!--mute level-->
+        <key name="remote led on">0</key>
+    </group>
+</config>
+

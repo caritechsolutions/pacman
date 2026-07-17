@@ -1,0 +1,9 @@
+//Board Mark: GX6605S_RDA5815M_OnBoard_Demo_V1.0  Mayb_2015-11-10
+//Frontend Info: GX6605S(RDA5815M)
+
+frontend1_demod_i2c_id = 0
+frontend1_demod_i2c_chip_addr = 0
+frontend1_demod_attach = GX3211_ATTACH
+frontend1_iq = 1
+frontend1_polar_invert = 1
+

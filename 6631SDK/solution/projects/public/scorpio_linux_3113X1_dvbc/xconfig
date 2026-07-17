@@ -1,0 +1,13 @@
+#
+# Automatically generated make config: don't edit
+# Buildroot Configuration
+#
+
+#
+# Advanced Security Feature Configuration
+#
+# BR2_ASF_DUAL_CHANNEL_DESCRAMBLE_SUPPORT is not set
+# BR2_ASF_EMM_SUPPORT is not set
+# BR2_ASF_ECM_SUPPORT is not set
+# BR2_ASF_SHARE_EX_SHIFT_SUPPORT is not set
+# BR2_ASF_CMM_SUPPORT is not set

@@ -1,0 +1,639 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_ota_upgrade">
+  <property>
+    <rect>[75,179,874,373]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+  </property>
+  <signal>
+    <create>app_ota_upgrade_create</create>
+    <destroy>app_ota_upgrade_destroy</destroy>
+    <keypress>app_ota_upgrade_keypress</keypress>
+  </signal>
+  <children>
+   <widget class="image" style="default" name="img_ota_box_back">
+      <property>
+          <rect>[0,0,874,373]</rect>
+          <forecolor>[default_color,default_color,default_color]</forecolor>
+          <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+          <mode>multiple</mode>
+          <img></img>
+          <lt_img>s_win_l_t</lt_img>
+          <rt_img>s_win_r_t</rt_img>
+          <lb_img>s_win_l_b</lb_img>
+          <rb_img>s_win_r_b</rb_img>
+          <l_img>s_win_l_m</l_img>
+          <r_img>s_win_r_m</r_img>
+          <t_img>s_win_m_t</t_img>
+          <b_img>s_win_m_b</b_img>
+      </property>
+  </widget>
+  <widget class="image" style="default" name="img_ota_upgrade_bottom">
+      <property>
+          <rect>[5,322,864,46]</rect>
+          <forecolor>[black,black,black]</forecolor>
+          <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+          <mode>multiple</mode>
+          <img></img>
+          <lt_img>s_win3_l_t</lt_img>
+          <rt_img>s_win3_r_t</rt_img>
+          <lb_img>s_win3_l_b</lb_img>
+          <rb_img>s_win3_r_b</rb_img>
+          <l_img>s_win3_l_m</l_img>
+          <r_img>s_win3_r_m</r_img>
+          <t_img>s_win3_m_t</t_img>
+          <b_img>s_win3_m_b</b_img>
+      </property>
+  </widget>
+  <widget class="text" style="default" name="text_ota_title">
+      <property>
+          <rect>[37,11,800,44]</rect>
+          <forecolor>[text_color,text_color,text_color]</forecolor>
+          <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+          <alignment>left|vcentre</alignment>
+          <font>font_main</font>
+          <string>OTA Upgrade</string>
+          <format>static</format>
+      </property>
+  </widget>
+  <widget class="text" style="default" name="text_ota_notice_info1">
+      <property>
+        <rect>[10,210,720,24]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <string></string>
+        <format>static</format>
+      </property>
+  </widget>
+  <widget class="text" style="default" name="text_ota_strength">
+      <property>
+          <rect>[10,265,112,28]</rect>
+          <forecolor>[text_color,text_color,text_color]</forecolor>
+          <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+          <alignment>left|vcentre</alignment>
+          <string>Strength</string>
+          <format>static</format>
+      </property>
+  </widget>
+  <widget class="progbar" style="default" name="progbar_ota_strength">
+      <property>
+          <rect>[134,273,600,12]</rect>
+          <forecolor>[default_color,default_color,default_color]</forecolor>
+          <backcolor>[default_color,default_color,default_color]</backcolor>
+          <min>0</min>
+          <max>100</max>
+          <back_image>s_progress_m</back_image>
+          <back_image_l>s_progress_l</back_image_l>
+          <back_image_m>s_progress_m</back_image_m>
+          <back_image_r>s_progress_r</back_image_r>
+          <fore_image>s_process_blue</fore_image>
+          <fore_image_l>s_progress3_l</fore_image_l>
+          <fore_image_m>s_progress3_m</fore_image_m>
+          <fore_image_r>s_progress3_r</fore_image_r>
+          <format>water</format>
+          <mirror>disable</mirror>
+          <text_format>percentage</text_format>
+          <alignment>hcentre|vcentre</alignment>
+      </property>
+  </widget>
+  <widget class="text" style="default" name="text_ota_quality">
+      <property>
+		<rect>[10,295,112,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Quality</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="progbar" style="default" name="progbar_ota_quality">
+      <property>
+		<rect>[134,303,600,12]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <min>0</min>
+        <max>100</max>
+        <back_image>s_progress_m</back_image>
+        <back_image_l>s_progress_l</back_image_l>
+        <back_image_m>s_progress_m</back_image_m>
+        <back_image_r>s_progress_r</back_image_r>
+        <fore_image>s_process_blue</fore_image>
+        <fore_image_l>s_progress3_l</fore_image_l>
+        <fore_image_m>s_progress3_m</fore_image_m>
+        <fore_image_r>s_progress3_r</fore_image_r>
+        <format>water</format>
+        <mirror>disable</mirror>
+        <text_format>percentage</text_format>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_ota_strength_value">
+      <property>
+<rect>[754,265,64,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>right|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_ota_quality_value">
+      <property>
+<rect>[754,295,64,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>right|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="progbar" style="default" name="progbar_ota_upgrade">
+      <property>
+<rect>[134,237,600,24]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <min>0</min>
+        <max>100</max>
+        <back_image>s_process_grey</back_image>
+        <fore_image>s_process_blue</fore_image>
+        <format>normal</format>
+        <text_format>hide</text_format>
+        <alignment>hcentre|vcentre</alignment>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_ota_upgrade_value">
+      <property>
+          <rect>[754,235,64,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>right|vcentre</alignment>
+        <string>0%</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_ota_upgrade_progress">
+      <property>
+          <rect>[10,235,112,28]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>Progress</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="box" style="default" name="box_ota_upgrade_options">
+      <property>
+        <rect>[18,56,800,150]</rect>
+		<state>hide</state>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <format>vertical</format>
+      </property>
+      <signal>
+        <keypress>app_ota_box_keypress</keypress>
+      </signal>
+      <children>
+        <widget class="boxitem" style="default" name="boxitem_ota_sat">
+          <property>
+            <rect>[0,0,800,37]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+        </property>
+          <children>
+            <widget class="text" style="default" name="text_ota_sat">
+              <property>
+                <rect>[48,0,280,37]</rect>
+                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Sat</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="cmbox_ota_sat_choice">
+              <property>
+                  <rect>[330,8,46,25]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <focus_img>s_ts_ok</focus_img>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="cmbox_ota_sat">
+              <property>
+                  <rect>[404,0,348,37]</rect>
+                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                <focus_left_img>s_arrow_l</focus_left_img>
+                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                <focus_right_img>s_arrow_r</focus_right_img>
+                <content>[NONE]</content>
+              </property>
+              <signal>
+                <change>app_ota_cmb_sat_change</change>
+              </signal>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="boxitem_ota_tp">
+          <property>
+<rect>[0,37,800,37]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+        </property>
+          <children>
+            <widget class="text" style="default" name="text_ota_tp">
+              <property>
+                <rect>[48,0,280,37]</rect>
+                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>TP</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="cmbox_ota_tp_choice">
+              <property>
+                <rect>[330,8,46,25]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <focus_img>s_ts_ok</focus_img>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="cmbox_ota_tp">
+              <property>
+                <rect>[404,0,348,37]</rect>
+                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                <backcolor>[window_bg_color,gui_trans,window_bg_color]</backcolor>
+                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                <focus_left_img>s_arrow_l</focus_left_img>
+                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                <focus_right_img>s_arrow_r</focus_right_img>
+                <content>[NONE]</content>
+              </property>
+              <signal>
+                <change>app_ota_cmb_tp_change</change>
+              </signal>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="boxitem_ota_segment">
+          <property>
+              <rect>[0,74,800,37]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+        </property>
+          <children>
+            <widget class="text" style="default" name="text_ota_segment">
+              <property>
+<rect>[48,0,280,37]</rect>
+                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>PID</string>
+                <format>static</format>
+              </property>
+            </widget>
+			<widget class="edit" style="default" name="edit_ota_pid">
+				<property>
+					<rect>[404,0,348,37]</rect>
+					<mirror>disable</mirror>
+					<forecolor>[text_color,text_focus_color,text_color]</forecolor>
+					<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+					<alignment>hcentre|vcentre</alignment>
+					<maxlen>4</maxlen>
+					<format>edit_digit</format>
+                </property>
+                <signal>
+                    <reach_end>app_edit_ota_pid</reach_end>
+                </signal>
+			</widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="boxitem_ota_ok">
+          <property>
+			<rect>[0,111,800,37]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+        </property>
+          <children>
+            <widget class="text" style="default" name="text_ota_ok_tip">
+              <property>
+				<rect>[48,0,208,37]</rect>
+                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Start</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default" name="text_ota_ok_tip2">
+              <property>
+				<rect>[404,0,348,37]</rect>
+                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Press OK</string>
+                <format>static</format>
+              </property>
+            </widget>
+          </children>
+        </widget>
+     </children>
+    </widget>
+    <widget class="box" style="default" name="box_dvbc_ota_upgrade_options">
+      <property>
+		<rect>[18,56,800,190]</rect>
+        <state>hide</state>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <format>vertical</format>
+      </property>
+      <signal>
+        <keypress>app_dvbc_ota_box_keypress</keypress>
+      </signal>
+      <children>
+        <widget class="boxitem" style="default" name="boxitem_dvbc_ota_frequency">
+          <property>
+			<rect>[0,0,800,37]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+        </property>
+          <children>
+            <widget class="text" style="default" name="text_dvbc_ota_freq">
+              <property>
+                <rect>[48,0,280,37]</rect>
+                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Frequency(MHz)</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="edit" style="default" name="edit_dvbc_ota_freq">
+              <property>
+			    <rect>[404,0,348,37]</rect>
+                <mirror>disable</mirror>
+                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <maxlen>5</maxlen>
+                <format>edit_float</format>
+              </property>
+                <signal>
+                    <reach_end>app_edit_dvbc_ota_freq_reach_end</reach_end>
+                </signal>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="boxitem_dvbc_ota_sym">
+          <property>
+			<rect>[0,37,800,37]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+        </property>
+          <children>
+            <widget class="text" style="default" name="text_dvbc_ota_sym">
+              <property>
+                <rect>[48,0,280,37]</rect>
+                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Symbol Rate(KS/s)</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="edit" style="default" name="edit_dvbc_ota_sym">
+             <property>
+				<rect>[404,0,348,37]</rect>
+                <mirror>disable</mirror>
+                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>6875</string>
+                <maxlen>4</maxlen>
+                <format>edit_digit</format>
+              </property>
+                <signal>
+                    <reach_end>app_edit_dvbc_ota_sym_reach_end</reach_end>
+                </signal>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="boxitem_dvbc_ota_qam">
+          <property>
+            <rect>[0,74,800,37]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="text_dvbc_ota_qam">
+              <property>
+                <rect>[48,0,280,37]</rect>
+                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>QAM</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="cmbox_dvbc_ota_qam">
+              <property>
+				<rect>[404,0,348,37]</rect>
+                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                <focus_left_img>s_arrow_l</focus_left_img>
+                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                <focus_right_img>s_arrow_r</focus_right_img>
+                <content>[16QAM,32QAM,64QAM,128QAM,256QAM]</content>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="boxitem_dvbc_ota_pid">
+          <property>
+			<rect>[0,111,800,37]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+        </property>
+          <children>
+            <widget class="text" style="default" name="text_dvbc_ota_pid">
+              <property>
+                <rect>[48,0,280,37]</rect>
+                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>PID</string>
+                <format>static</format>
+              </property>
+            </widget>
+			<widget class="edit" style="default" name="edit_dvbc_ota_pid">
+				<property>
+					<rect>[404,0,348,37]</rect>
+					<mirror>disable</mirror>
+					<forecolor>[text_color,text_focus_color,text_color]</forecolor>
+					<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+					<alignment>hcentre|vcentre</alignment>
+					<maxlen>4</maxlen>
+					<format>edit_digit</format>
+				</property>
+                <signal>
+                    <reach_end>app_edit_dvbc_ota_pid_reach_end</reach_end>
+                </signal>
+			</widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="boxitem_dvbc_ota_ok">
+          <property>
+			<rect>[0,148,800,37]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+        </property>
+          <children>
+            <widget class="text" style="default" name="text_dvbc_ota_ok_tip">
+              <property>
+                <rect>[48,0,280,37]</rect>
+                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Start</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default" name="text_dvbc_ota_ok_tip2">
+              <property>
+				<rect>[404,0,348,37]</rect>
+                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Press OK</string>
+                <format>static</format>
+              </property>
+            </widget>
+          </children>
+        </widget>
+     </children>
+    </widget>
+    <widget class="box" style="default" name="box_dtmb_ota_upgrade_options">
+      <property>
+		<rect>[18,56,800,190]</rect>
+        <state>hide</state>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <format>vertical</format>
+      </property>
+      <signal>
+        <keypress>app_dtmb_ota_box_keypress</keypress>
+      </signal>
+      <children>
+        <widget class="boxitem" style="default" name="boxitem_dtmb_ota_frequency">
+          <property>
+			<rect>[0,37,800,37]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+        </property>
+          <children>
+            <widget class="text" style="default" name="text_dtmb_ota_freq">
+              <property>
+                <rect>[48,0,280,37]</rect>
+                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Frequency(MHz)</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="edit" style="default" name="edit_dtmb_ota_freq">
+              <property>
+				<rect>[404,0,348,37]</rect>
+                <mirror>disable</mirror>
+                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <maxlen>5</maxlen>
+                <format>edit_float</format>
+              </property>
+                <signal>
+                    <reach_end>app_edit_dtmb_ota_freq_reach_end</reach_end>
+                </signal>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="boxitem_dtmb_ota_pid">
+          <property>
+			<rect>[0,37,800,37]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+        </property>
+          <children>
+            <widget class="text" style="default" name="text_dtmb_ota_pid">
+              <property>
+                <rect>[48,0,280,37]</rect>
+                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>PID</string>
+                <format>static</format>
+              </property>
+            </widget>
+			<widget class="edit" style="default" name="edit_dtmb_ota_pid">
+				<property>
+					<rect>[404,0,348,37]</rect>
+					<mirror>disable</mirror>
+					<forecolor>[text_color,text_focus_color,text_color]</forecolor>
+					<backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+					<alignment>hcentre|vcentre</alignment>
+					<maxlen>4</maxlen>
+					<format>edit_digit</format>
+				</property>
+                <signal>
+                    <reach_end>app_edit_dtmb_ota_pid_reach_end</reach_end>
+                </signal>
+			</widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="boxitem_dtmb_ota_ok">
+          <property>
+            <rect>[0,74,800,37]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <focus_image>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_image>
+        </property>
+          <children>
+            <widget class="text" style="default" name="text_dtmb_ota_ok_tip">
+              <property>
+                <rect>[48,0,280,37]</rect>
+                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Start</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="text" style="default" name="text_dtmb_ota_ok_tip2">
+              <property>
+					<rect>[404,0,348,37]</rect>
+                <forecolor>[text_color,text_focus_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Press OK</string>
+                <format>static</format>
+              </property>
+            </widget>
+          </children>
+        </widget>
+     </children>
+    </widget>
+  </children>
+</widget>

@@ -1,0 +1,12 @@
+#
+# Automatically generated make config: don't edit
+# Buildroot Configuration
+#
+###############################################################################
+# create system info version
+###############################################################################
+CONFIG_VERSION_UPDATE       = y     BOOT_OTA_VER        "V1.2.0.0"
+CONFIG_VERSION_KERNEL       = y     LINUX_KERNEL_VER    "V4.9"
+CONFIG_VERSION_LIB          = y     PLATFORM_LIB_VER    "V3.10.0"
+CONFIG_VERSION_APP          = y     APP_VER             "SDK_V2.10.0"
+CONFIG_VERSION_HARDWARE     = y     HARDWARE_VER        "GX6607H1_GX1137_RDA5815M"

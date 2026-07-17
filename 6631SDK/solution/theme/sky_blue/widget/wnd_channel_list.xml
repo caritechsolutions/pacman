@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_channel_list">
+    <property>
+        <rect>[80,32,390,490]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_channel_list_create</create>
+        <destroy>app_channel_list_destroy</destroy>
+        <got_focus>app_channel_list_got_focus</got_focus>
+        <lost_focus>app_channel_list_lost_focus</lost_focus>
+        <keypress>app_channel_list_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_cl_body">
+            <property>
+                <rect>[0,0,390,420]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="combobox" style="default" name="cmb_channel_list_group">
+            <property>
+                <rect>[26,9,338,37]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                <focus_left_img>s_arrow_l</focus_left_img>
+                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                <focus_right_img>s_arrow_r</focus_right_img>
+            </property>
+            <signal>
+                <change>app_channel_list_group_change</change>
+            </signal>
+        </widget>
+        <widget class="image" style="default" name="img_cl_bottom">
+            <property>
+                <rect>[0,420,390,70]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win3_l_t</lt_img>
+                <rt_img>s_win3_r_t</rt_img>
+                <lb_img>s_win3_l_b</lb_img>
+                <rb_img>s_win3_r_b</rb_img>
+                <l_img>s_win3_l_m</l_img>
+                <r_img>s_win3_r_m</r_img>
+                <t_img>s_win3_m_t</t_img>
+                <b_img>s_win3_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="listview_channel_list">
+            <property>
+                <rect>[9,46,376,343]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+		<backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+		<accelerate>enable</accelerate>
+                <roll_time>50</roll_time>
+                <interval>1</interval>
+                <select>0</select>
+                <focus_img>[T2_64_button_menu_l,T2_64_button_menu_m,T2_64_button_menu_r]</focus_img>
+                <item_active_color>#bbe00b</item_active_color>
+                <i18n>false</i18n>
+                <item_rect>[0,0,362,37]</item_rect>
+                <item_fore_color>[#CEE8FF,#FFFFFF,#CEE8FF]</item_fore_color>
+                <item_back_color>[#384051,#1c242f,#1c242f]</item_back_color>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>app_channel_list_list_keypress</keypress>
+                <get_total>app_channel_list_list_get_total</get_total>
+                <get_data>app_channel_list_list_get_data</get_data>
+                <change>app_channel_list_list_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="header_channel_list">
+                    <property>
+                        <rect>[0,0,362,0]</rect>
+                        <forecolor>[text_color,text_color,text_color]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <colum_number>5</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="header_text_channel_num">
+                            <property>
+                                <rect>[4,0,64,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="header_text_channel_name">
+                            <property>
+                                <rect>[68,0,226,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="header_text_channel_scramble">
+                            <property>
+                                <rect>[294,0,22,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="header_text_channel_lock">
+                            <property>
+                                <rect>[316,0,22,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="header_text_channel_hd">
+                            <property>
+                                <rect>[338,0,24,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="scrollbar_channel_list">
+                    <property>
+                        <rect>[362,0,14,343]</rect>
+                        <forecolor>[window_bg_color,window_bg_color,window_bg_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="listitem_channel_1"/>
+                <widget class="listitem" style="default" name="listitem_channel_2"/>
+                <widget class="listitem" style="default" name="listitem_channel_3"/>
+                <widget class="listitem" style="default" name="listitem_channel_4"/>
+                <widget class="listitem" style="default" name="listitem_channel_5"/>
+                <widget class="listitem" style="default" name="listitem_channel_6"/>
+                <widget class="listitem" style="default" name="listitem_channel_7"/>
+                <widget class="listitem" style="default" name="listitem_channel_8"/>
+                <widget class="listitem" style="default" name="listitem_channel_9"/>
+            </children>
+        </widget>
+        <widget class="text" style="default" name="text_channel_list_tp">
+            <property>
+                <rect>[9,388,360,32]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_group_sat_fav">
+            <property>
+                <rect>[58,9,274,37]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_cl_green">
+            <property>
+                <rect>[5,434,16,16]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_green</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_cl_green">
+            <property>
+                <rect>[24,427,140,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Find</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_cl_yellow">
+            <property>
+                <rect>[230,434,16,16]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_yellow</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_cl_yellow">
+            <property>
+                <rect>[248,427,106,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,osd_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Edit</string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

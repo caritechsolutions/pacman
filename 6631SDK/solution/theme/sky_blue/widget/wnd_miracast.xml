@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_miracast">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[#292D31,#292D31,#292D31]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <back_ground>null</back_ground>
+    </property>
+    <signal>
+        <create>app_miracast_create</create>
+        <destroy>app_miracast_destroy</destroy>
+        <got_focus>app_miracast_got_focus</got_focus>
+        <lost_focus>app_miracast_lost_focus</lost_focus>
+        <service>app_miracast_service</service>
+        <keypress>app_miracast_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="file_image" style="default" name="img_miracast_gif">
+            <property>
+                <rect>[488,60,48,48]</rect>
+                <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+                <backcolor>[bk_dlna_color,bk_dlna_color,bk_dlna_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_miracast_mute">
+            <property>
+                <rect>[891,42,47,45]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_mute</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_miracast_pause">
+            <property>
+                <rect>[868,120,70,28]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_pause</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_miracast_popup">
+            <property>
+                <rect>[320,150,384,192]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_miracast_popup">
+            <property>
+                <rect>[335,188,240,28]</rect>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <alignment>left|top</alignment>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_miracast_device">
+            <property>
+                <rect>[590,188,100,28]</rect>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <alignment>left|top</alignment>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_miracast_popup_detail">
+            <property>
+                <rect>[332,222,360,32]</rect>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_miracast_popup_ap">
+            <property>
+                <rect>[332,262,360,28]</rect>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_miracast_popup_select">
+            <property>
+                <rect>[342,314,16,16]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_red</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_miracast_popup_select">
+            <property>
+                <rect>[372,306,122,32]</rect>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_22</font>
+                <string>Wi-Fi Select</string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_miracast_popup_rename">
+            <property>
+                <rect>[536,314,16,16]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_green</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_miracast_popup_rename">
+            <property>
+                <rect>[560,306,140,32]</rect>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Rename</string>
+                <format>automatic</format>
+            </property>
+        </widget>
+   </children>
+</widget>

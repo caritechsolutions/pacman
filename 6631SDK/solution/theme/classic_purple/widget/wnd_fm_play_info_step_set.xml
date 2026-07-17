@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget style="default" name="wnd_fm_play_info_step_set" class="window">
+    <property>
+        <rect>[362,256,300,100]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_fm_play_info_step_set_create</create>
+        <destroy>app_fm_play_info_step_set_destroy</destroy>
+        <keypress>app_fm_play_info_step_set_keypress</keypress>
+    </signal>
+    <children>
+        <widget style="default" name="img_fm_play_info_step_set_bg" class="image">
+            <property>
+                <rect>[0,0,300,100]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_m</lt_img>
+                <rt_img>s_win_m</rt_img>
+                <lb_img>s_win_m</lb_img>
+                <rb_img>s_win_m</rb_img>
+                <l_img>s_win_m</l_img>
+                <r_img>s_win_m</r_img>
+                <t_img>s_win_m</t_img>
+                <b_img>s_win_m</b_img>
+           </property>
+        </widget>
+        <widget style="default" name="img_fm_play_info_step_set_line" class="image">
+            <property>
+                <rect>[0,40,300,2]</rect>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[#857BFF,#857BFF,#857BFF]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget style="default" name="txt_fm_play_info_step_set_title" class="text">
+            <property>
+                <rect>[20,5,260,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>Step Setting (0.1-1MHz) </string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget style="default" name="box_fm_play_info_step_set_set" class="box">
+            <property>
+                <rect>[70,50,160,40]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <format>vertical</format>
+            </property>
+            <children>
+                <widget style="default" name="boxitem_fm_play_info_step_set" class="boxitem">
+                    <property>
+                        <rect>[0,0,160,40]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget style="default" name="edit_fm_play_info_step_set" class="edit">
+                            <property>
+                                <rect>[10,5,70,30]</rect>
+                                <mirror>disable</mirror>
+                                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <alignment>right|vcentre</alignment>
+                                <string></string>
+                                <maxlen>3</maxlen>
+                                <format>edit_float</format>
+                            </property>
+                            <signal>
+                                <reach_end>app_fm_play_info_step_set_reach_end</reach_end>
+                            </signal>
+                        </widget>
+                        <widget style="default" name="text_fm_play_info_step_set" class="text">
+                            <property>
+                                <rect>[90,5,60,30]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>MHz</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+    </children>
+</widget>

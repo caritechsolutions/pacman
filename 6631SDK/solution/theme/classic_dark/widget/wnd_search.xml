@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget name="wnd_search" style="default" class="window">
+    <property>
+<rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_search_create</create>
+        <destroy>app_search_destroy</destroy>
+        <service>app_search_service</service>
+        <keypress>app_search_keypress</keypress>
+    </signal>
+    <children>
+       <widget name="img_search_tip_back" style="default" class="image">
+            <property>
+<rect>[0,496,1024,80]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_search_box_back">
+        <property>
+<rect>[80,64,864,416]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <mode>multiple</mode>
+            <img></img>
+            <lt_img>s_win_l_t</lt_img>
+            <rt_img>s_win_r_t</rt_img>
+            <lb_img>s_win_l_b</lb_img>
+            <rb_img>s_win_r_b</rb_img>
+            <l_img>s_win_l_m</l_img>
+            <r_img>s_win_r_m</r_img>
+            <t_img>s_win_m_t</t_img>
+            <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_search_box_line1">
+	        <property>
+<rect>[82,174,858,2]</rect>
+	        <forecolor>[default_color,default_color,default_color]</forecolor>
+	        <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+	        <mode>single</mode>
+	        <img></img>
+            </property>
+         </widget>
+        <widget class="image" style="default" name="img_search_box_line4">
+	        <property>
+<rect>[81,214,858,2]</rect>
+	        <forecolor>[default_color,default_color,default_color]</forecolor>
+	        <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+	        <mode>single</mode>
+	        <img></img>
+            </property>
+         </widget>
+           <widget class="image" style="default" name="img_search_box_line2">
+	        <property>
+<rect>[510,176,2,222]</rect>
+	        <forecolor>[default_color,default_color,default_color]</forecolor>
+	        <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+	        <mode>single</mode>
+	        <img></img>
+            </property>
+         </widget>
+         <widget class="image" style="default" name="img_search_box_line3">
+	        <property>
+<rect>[82,396,858,2]</rect>
+	        <forecolor>[default_color,default_color,default_color]</forecolor>
+	        <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+	        <mode>single</mode>
+	        <img></img>
+            </property>
+         </widget>
+        <widget class="image" style="default" name="img_search_title">
+            <property>
+<rect>[96,72,48,48]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_menu_icon_installation3</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_search_title">
+            <property>
+<rect>[160,74,600,52]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_main</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+       <widget name="text_search_sat" style="default" class="text">
+            <property>
+<rect>[88,136,341,27]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_tp" style="default" class="text">
+            <property>
+				<rect>[430,136,480,27]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_tv_title" style="default" class="text">
+            <property>
+<rect>[120,185,344,27]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>TV</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_radio_title" style="default" class="text">
+            <property>
+<rect>[560,185,344,27]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>Radio</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="progbar_search_progress" style="default" class="progbar">
+            <property>
+<rect>[209,444,645,24]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <back_image>s_process_grey</back_image>
+                <fore_image>s_process_blue</fore_image>
+                <format>normal</format>
+                <text_format>hide</text_format>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget name="progbar_search_strength" style="default" class="progbar">
+            <property>
+<rect>[184,420,256,12]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <back_image>s_progress_m</back_image>
+                <back_image_l>s_progress_l</back_image_l>
+                <back_image_m>s_progress_m</back_image_m>
+                <back_image_r>s_progress_r</back_image_r>
+                <fore_image>s_progress_blue</fore_image>
+                <fore_image_l>s_progress3_l</fore_image_l>
+                <fore_image_m>s_progress3_m</fore_image_m>
+                <fore_image_r>s_progress3_r</fore_image_r>
+                <format>water</format>
+                <mirror>disable</mirror>
+                <text_format>percentage</text_format>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget name="text_search_strength" style="default" class="text">
+            <property>
+<rect>[82,412,102,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>Strength</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_strength_value" style="default" class="text">
+            <property>
+<rect>[440,412,64,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_quality" style="default" class="text">
+            <property>
+<rect>[520,412,104,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>Quality</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="progbar_search_quality" style="default" class="progbar">
+            <property>
+<rect>[624,420,256,12]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <back_image>s_progress_m</back_image>
+                <back_image_l>s_progress_l</back_image_l>
+                <back_image_m>s_progress_m</back_image_m>
+                <back_image_r>s_progress_r</back_image_r>
+                <fore_image>s_progress_blue</fore_image>
+                <fore_image_l>s_progress3_l</fore_image_l>
+                <fore_image_m>s_progress3_m</fore_image_m>
+                <fore_image_r>s_progress3_r</fore_image_r>
+                <format>water</format>
+                <mirror>disable</mirror>
+                <text_format>percentage</text_format>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget name="text_search_quality_value" style="default" class="text">
+            <property>
+                <rect>[880,412,60,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_progress_title" style="default" class="text">
+            <property>
+<rect>[82,442,104,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string>Progress</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_tv_name1" style="default" class="text">
+            <property>
+<rect>[119,221,301,27]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_tv_name2" style="default" class="text">
+            <property>
+<rect>[119,251,301,27]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_tv_name3" style="default" class="text">
+            <property>
+<rect>[119,280,301,27]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_tv_name4" style="default" class="text">
+            <property>
+<rect>[119,310,301,27]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_tv_name5" style="default" class="text">
+            <property>
+<rect>[119,340,301,27]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_tv_name6" style="default" class="text">
+            <property>
+<rect>[119,369,301,27]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_radio_name1" style="default" class="text">
+            <property>
+<rect>[558,222,301,27]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_radio_name2" style="default" class="text">
+            <property>
+<rect>[558,251,301,27]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_radio_name3" style="default" class="text">
+            <property>
+<rect>[558,280,301,27]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_radio_name4" style="default" class="text">
+            <property>
+<rect>[558,310,301,27]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_radio_name5" style="default" class="text">
+            <property>
+<rect>[558,339,301,27]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_radio_name6" style="default" class="text">
+            <property>
+<rect>[558,368,301,27]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_progress_percent" style="default" class="text">
+            <property>
+<rect>[878,442,64,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_scrambler1" style="default" class="text">
+            <property>
+<rect>[428,222,24,27]</rect>
+                <forecolor>[search_scrambler_color,search_scrambler_color,search_scrambler_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_scrambler2" style="default" class="text">
+            <property>
+<rect>[428,252,24,27]</rect>
+                <forecolor>[search_scrambler_color,search_scrambler_color,search_scrambler_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_scrambler3" style="default" class="text">
+            <property>
+<rect>[428,282,24,27]</rect>
+                <forecolor>[search_scrambler_color,search_scrambler_color,search_scrambler_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_scrambler4" style="default" class="text">
+            <property>
+<rect>[428,311,24,27]</rect>
+                <forecolor>[search_scrambler_color,search_scrambler_color,search_scrambler_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_scrambler5" style="default" class="text">
+            <property>
+<rect>[428,340,24,27]</rect>
+                <forecolor>[search_scrambler_color,search_scrambler_color,search_scrambler_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_scrambler6" style="default" class="text">
+            <property>
+<rect>[428,369,24,27]</rect>
+                <forecolor>[search_scrambler_color,search_scrambler_color,search_scrambler_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_scrambler7" style="default" class="text">
+            <property>
+<rect>[868,223,24,27]</rect>
+                <forecolor>[search_scrambler_color,search_scrambler_color,search_scrambler_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_scrambler8" style="default" class="text">
+            <property>
+<rect>[868,252,24,27]</rect>
+                <forecolor>[search_scrambler_color,search_scrambler_color,search_scrambler_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_scrambler9" style="default" class="text">
+            <property>
+<rect>[868,281,24,27]</rect>
+                <forecolor>[search_scrambler_color,search_scrambler_color,search_scrambler_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_scrambler10" style="default" class="text">
+            <property>
+<rect>[868,310,24,27]</rect>
+                <forecolor>[search_scrambler_color,search_scrambler_color,search_scrambler_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+		<widget name="text_search_scrambler11" style="default" class="text">
+            <property>
+<rect>[868,339,24,27]</rect>
+                <forecolor>[search_scrambler_color,search_scrambler_color,search_scrambler_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_search_scrambler12" style="default" class="text">
+            <property>
+<rect>[868,369,24,27]</rect>
+                <forecolor>[search_scrambler_color,search_scrambler_color,search_scrambler_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_scan_tp_info" style="default" class="text">
+            <property>
+<rect>[430,136,208,27]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_scan_tp_value" style="default" class="text">
+            <property>
+<rect>[638,136,80,27]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

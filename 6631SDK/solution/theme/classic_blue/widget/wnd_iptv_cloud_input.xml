@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_iptv_cloud_input">
+    <property>
+        <rect>[340,200,600,180]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+    </property>
+    <signal>
+        <create>app_iptv_cloud_input_create</create>
+        <destroy>app_iptv_cloud_input_destroy</destroy>
+        <keypress>app_iptv_cloud_input_keypress</keypress>
+    </signal>
+    <children>
+     <widget class="image" style="default" name="img_iptv_cloud_input_bg">
+            <property>
+                <rect>[0,0,600,180]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="box" style="default" name="box_iptv_cloud_input">
+            <property>
+                <rect>[11,53,580,90]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_in_color,window_in_color,window_in_color]</backcolor>
+                <interval>10</interval>
+                <format>vertical</format>
+            </property>
+            <children>
+                <widget class="boxitem" style="default" name="boxitem_iptv_cloud_input_name">
+                    <property>
+                        <rect>[0,10,580,30]</rect>
+                        <forecolor>[window_top_color,window_top_color,window_top_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_iptv_cloud_input_name_title">
+                            <property>
+                                <rect>[0,0,155,30]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Server name</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_iptv_cloud_input_name_content">
+                            <property>
+                                <rect>[160,0,410,30]</rect>
+                                <forecolor>[text_focus_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,keyboard_input_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_iptv_cloud_input_url">
+                    <property>
+                        <rect>[0,50,580,30]</rect>
+                        <forecolor>[window_top_color,window_top_color,window_top_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_iptv_cloud_input_url_title">
+                            <property>
+                                <rect>[0,0,155,30]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string>Server URL</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_iptv_cloud_input_url_content">
+                            <property>
+                                <rect>[160,0,410,30]</rect>
+                                <forecolor>[text_focus_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,keyboard_input_bg_color,window_bg_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+        <widget class="text" style="default" name="text_iptv_cloud_input_title">
+            <property>
+                <rect>[11,4,580,37]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>Input</string>
+                <format>static</format>
+            </property>
+        </widget>
+
+        <widget class="text" style="default" name="text_iptv_cloud_input_help_cancel">
+            <property>
+                <rect>[63,147,120,30]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Cancel</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_iptv_cloud_input_help_input">
+            <property>
+                <rect>[274,147,120,30]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>input</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_iptv_cloud_input_help_ok">
+            <property>
+                <rect>[455,147,120,30]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Confirm</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_iptv_cloud_input_help_cancel">
+            <property>
+                <rect>[37,150,22,22]</rect>
+                <forecolor>[#CBCBCD,#CBCBCD,#CBCBCD]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_yellow</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_iptv_cloud_input_help_ok">
+            <property>
+                <rect>[427,150,22,22]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_blue</img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="img_iptv_cloud_input_help_input">
+            <property>
+                <rect>[212,150,42,24]</rect>
+                <forecolor>[#CBCBCD,#CBCBCD,#CBCBCD]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <font>font_22</font>
+                <string>OK</string>
+                <focus_img>s_ts_ok</focus_img>
+                <unfocus_img>s_ts_ok</unfocus_img>
+            </property>
+        </widget>
+    </children>
+</widget>

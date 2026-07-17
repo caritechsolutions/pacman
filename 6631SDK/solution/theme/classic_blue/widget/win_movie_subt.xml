@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="win_movie_subt">
+  <property>
+    <rect>[245,159,800,335]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[win_back_color,win_back_color,win_back_color]</backcolor>
+  </property>
+  <signal>
+    <create>movie_subt_init</create>
+    <destroy>movie_subt_destroy</destroy>
+    <service>movie_subt_service</service>
+    <keypress>movie_subt_keypress</keypress>
+  </signal>
+  <children>
+    <widget class="image" style="default" name="win_movie_subt_image_back">
+      <property>
+        <rect>[0,0,800,335]</rect>
+        <forecolor>[win_back_color,win_back_color,win_back_color]</forecolor>
+        <backcolor>[zoom_foreground,zoom_foreground,zoom_foreground]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>MP_WIN4_L_U</lt_img>
+        <rt_img>MP_WIN4_R_U</rt_img>
+        <lb_img>MP_WIN4_L_B</lb_img>
+        <rb_img>MP_WIN4_R_B</rb_img>
+        <l_img>MP_WIN4_L_M</l_img>
+        <r_img>MP_WIN4_R_M</r_img>
+        <t_img>MP_WIN4_U_M</t_img>
+        <b_img>MP_WIN4_B_M</b_img>
+      </property>
+    </widget>
+    <widget class="box" style="default" name="movie_subt_box">
+      <property>
+        <rect>[34,86,750,210]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[black,black,win_bg_color]</backcolor>
+        <interval>2</interval>
+        <format>vertical</format>
+      </property>
+      <children>
+        <widget class="boxitem" style="default" name="movie_subt_boxitem0">
+          <property>
+            <rect>[0,2,750,40]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[zoom_foreground,zoom_foreground,zoom_foreground]</backcolor>
+            <focus_image>MP_BUTTON3</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="movie_set_txt0">
+              <property>
+                <rect>[72,2,155,36]</rect>
+                <forecolor>[win_fore_color,cmb_popup_focus_color,#656570]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Type</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="movie_subt_combo_type">
+              <property>
+                <rect>[450,4,210,32]</rect>
+                <forecolor>[win_fore_color,cmb_popup_focus_color,#656570]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <focus_left_img>MP_ICON_ARROW_L</focus_left_img>
+                <focus_right_img>MP_ICON_ARROW_R</focus_right_img>
+                <content>[Outside,Inside]</content>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="movie_subt_boxitem1">
+          <property>
+            <rect>[0,44,750,40]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[zoom_foreground,zoom_foreground,zoom_foreground]</backcolor>
+            <focus_image>MP_BUTTON3</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="movie_subt_txt1">
+              <property>
+                <rect>[72,2,155,36]</rect>
+                <forecolor>[win_fore_color,cmb_popup_focus_color,#656570]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>File</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="button" style="default" name="movie_subt_button_load">
+              <property>
+                <rect>[250,4,450,32]</rect>
+                <forecolor>[win_fore_color,cmb_popup_focus_color,#656570]</forecolor>
+                <backcolor>[zoom_foreground,zoom_foreground,zoom_foreground]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="movie_subt_boxitem2">
+          <property>
+            <rect>[0,86,750,40]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[zoom_foreground,zoom_foreground,win_bg_color]</backcolor>
+            <focus_image>MP_BUTTON3</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="movie_set_txt2">
+              <property>
+                <rect>[72,2,155,36]</rect>
+                <forecolor>[win_fore_color,cmb_popup_focus_color,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Visibility</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="movie_subt_combo_visibility">
+              <property>
+                <rect>[500,4,110,32]</rect>
+                <forecolor>[win_fore_color,cmb_popup_focus_color,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <focus_left_img>MP_ICON_ARROW_L</focus_left_img>
+                <focus_right_img>MP_ICON_ARROW_R</focus_right_img>
+                <content>[Off,On]</content>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="movie_subt_boxitem3">
+          <property>
+            <rect>[0,128,750,40]</rect>
+            <forecolor>[black,black,black]</forecolor>
+            <backcolor>[zoom_foreground,zoom_foreground,zoom_foreground]</backcolor>
+            <focus_image>MP_BUTTON3</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="movie_subt_txt3">
+              <property>
+                <rect>[72,2,155,36]</rect>
+                <forecolor>[win_fore_color,cmb_popup_focus_color,#656570]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Select</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="movie_subt_combo_select">
+              <property>
+                <rect>[450,4,210,32]</rect>
+                <forecolor>[win_fore_color,cmb_popup_focus_color,#656570]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <focus_left_img>MP_ICON_ARROW_L</focus_left_img>
+                <focus_right_img>MP_ICON_ARROW_R</focus_right_img>
+                <alignment>hcentre|vcentre</alignment>
+                <content>[Chinese,English]</content>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="movie_subt_boxitem4">
+          <property>
+            <rect>[0,170,750,40]</rect>
+            <forecolor>[black,black,black]</forecolor>
+            <backcolor>[zoom_foreground,zoom_foreground,zoom_foreground]</backcolor>
+            <focus_image>MP_BUTTON3</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="movie_subt_txt4">
+              <property>
+                <rect>[72,2,155,36]</rect>
+                <forecolor>[win_fore_color,cmb_popup_focus_color,#656570]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Delay</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="button" style="default" name="movie_subt_button_delay">
+              <property>
+                <rect>[500,4,110,32]</rect>
+                <forecolor>[win_fore_color,cmb_popup_focus_color,#656570]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+              </property>
+            </widget>
+          </children>
+        </widget>
+      </children>
+    </widget>
+    <widget class="text" style="default" name="movie_subt_title">
+        <property>
+            <rect>[220,22,380,42]</rect>
+            <forecolor>[win_fore_color,win_fore_color,win_fore_color]</forecolor>
+            <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+            <font>font_sub</font>
+            <string>Subtitle</string>
+            <format>static</format>
+        </property>
+    </widget>
+    <widget class="image" style="default" name="win_movie_set_image_line">
+      <property>
+        <rect>[235,65,350,2]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>MP_LINE</img>
+      </property>
+    </widget>
+  </children>
+</widget>

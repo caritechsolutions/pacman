@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_main_menu">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_main_menu_create</create>
+        <destroy>app_main_menu_destroy</destroy>
+        <keypress>app_main_menu_keypress</keypress>
+        <got_focus>app_main_menu_got_focus</got_focus>
+        <lost_focus>app_main_menu_lost_focus</lost_focus>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_main_menu_background">
+            <property>
+                <rect>[0,0,1024,576]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_main_menu_ymd">
+            <property>
+                <rect>[694,64,140,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string>2024/10/14</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_main_menu_time">
+            <property>
+                <rect>[834,64,70,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <alignment>right|vcentre</alignment>
+                <string>15:54</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_opt1">
+            <property>
+                <rect>[113,117,189,180]</rect>
+                <state>show</state>
+                <mirror>disable</mirror>
+                <forecolor>[text_color,black,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <string_rect>[118,247,179,30]</string_rect>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_opt2">
+            <property>
+                <rect>[301,117,385,180]</rect>
+                <state>show</state>
+                <mirror>disable</mirror>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <string_rect>[305,247,375,30]</string_rect>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_opt3">
+            <property>
+                <rect>[685,117,228,180]</rect>
+                <state>show</state>
+                <mirror>disable</mirror>
+                <forecolor>[text_color,black,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <string_rect>[688,247,218,30]</string_rect>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_opt4">
+            <property>
+                <rect>[113,295,189,120]</rect>
+                <state>show</state>
+                <mirror>disable</mirror>
+                <forecolor>[text_color,black,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <string_rect>[118,375,179,30]</string_rect>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_opt5">
+            <property>
+                <rect>[301,295,385,120]</rect>
+                <state>show</state>
+                <mirror>disable</mirror>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <string_rect>[305,375,375,30]</string_rect>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_opt6">
+            <property>
+                <rect>[685,295,228,120]</rect>
+                <state>show</state>
+                <mirror>disable</mirror>
+                <forecolor>[text_color,black,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <string_rect>[688,375,218,30]</string_rect>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_opt7">
+            <property>
+                <rect>[113,413,116,100]</rect>
+                <state>show</state>
+                <mirror>disable</mirror>
+                <forecolor>[text_color,black,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <string_rect>[118,483,106,24]</string_rect>
+                <font>font_22</font>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_opt8">
+            <property>
+                <rect>[227,413,116,100]</rect>
+                <state>show</state>
+                <mirror>disable</mirror>
+                <forecolor>[text_color,black,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <string_rect>[232,483,106,24]</string_rect>
+                <font>font_22</font>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_opt9">
+            <property>
+                <rect>[341,413,116,100]</rect>
+                <state>show</state>
+                <mirror>disable</mirror>
+                <forecolor>[text_color,black,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <string_rect>[346,483,106,24]</string_rect>
+                <font>font_22</font>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_opt10">
+            <property>
+                <rect>[455,413,116,100]</rect>
+                <state>show</state>
+                <mirror>disable</mirror>
+                <forecolor>[text_color,black,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <string_rect>[460,483,106,24]</string_rect>
+                <font>font_22</font>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_opt11">
+            <property>
+                <rect>[569,413,116,100]</rect>
+                <state>show</state>
+                <mirror>disable</mirror>
+                <forecolor>[text_color,black,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <string_rect>[574,483,106,24]</string_rect>
+                <font>font_22</font>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_opt12">
+            <property>
+                <rect>[683,413,116,100]</rect>
+                <state>show</state>
+                <mirror>disable</mirror>
+                <forecolor>[text_color,black,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <string_rect>[688,483,106,24]</string_rect>
+                <font>font_22</font>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_main_menu_opt13">
+            <property>
+                <rect>[797,413,116,100]</rect>
+                <state>show</state>
+                <mirror>disable</mirror>
+                <forecolor>[text_color,black,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,osd_trans]</backcolor>
+                <string_rect>[802,483,106,24]</string_rect>
+                <font>font_22</font>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

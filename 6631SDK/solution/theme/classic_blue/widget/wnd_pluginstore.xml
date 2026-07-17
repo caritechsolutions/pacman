@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_pluginstore">
+    <property>
+        <rect>[0,0,1280,720]</rect>
+        <forecolor>[net_bg_color,net_bg_color,net_bg_color]</forecolor>
+        <backcolor>[net_bg_color,net_bg_color,net_bg_color]</backcolor>
+        <back_ground>bg</back_ground>
+    </property>
+    <signal>
+        <create>app_pluginstore_create</create>
+        <destroy>app_pluginstore_destroy</destroy>
+        <keypress>app_pluginstore_keypress</keypress>
+        <lost_focus>app_pluginstore_lost_focus</lost_focus>
+        <got_focus>app_pluginstore_got_focus</got_focus>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_pluginstore_bg_top">
+            <property>
+                <rect>[0,0,1280,100]</rect>
+                <forecolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pluginstorebg_bottom">
+            <property>
+                <rect>[0,620,1280,100]</rect>
+                <forecolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pluginstore_line_top">
+            <property>
+                <rect>[0,95,1280,5]</rect>
+                <forecolor>[line_bg_color,line_bg_color,line_bg_color]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pluginstore_line_bottom">
+            <property>
+                <rect>[0,620,1280,5]</rect>
+                <forecolor>[line_bg_color,line_bg_color,line_bg_color]</forecolor>
+                <backcolor>[line_bg_color,line_bg_color,line_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pluginstore_synopsis">
+            <property>
+                <rect>[100,625,840,90]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pluginstore_title">
+            <property>
+                <rect>[250,37,260,48]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <font>font_sub</font>
+                <alignment>left|vcentre</alignment>
+                <string>Plugin Portal</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pluginstore_logo">
+            <property>
+                <rect>[80,25,140,60]</rect>
+                <forecolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img>IPTV</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pluginstore_exit">
+            <property>
+                <rect>[1100,655,42,24]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_exit</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pluginstore_exit">
+            <property>
+                <rect>[1150,650,80,35]</rect>
+                <state>show</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Exit</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_pluginstore_item_focus1">
+            <property>
+                <rect>[120,150,168,128]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>feeds_item_focus_big</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pluginstore_item_unfocus1">
+            <property>
+                <rect>[124,154,160,120]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[#009966,#008866,#008462]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pluginstore_item_title1">
+            <property>
+                <rect>[120,300,160,60]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_pluginstore_item_focus2">
+            <property>
+                <rect>[350,150,168,128]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>feeds_item_focus_big</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pluginstore_item_unfocus2">
+            <property>
+                <rect>[354,154,160,120]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[#009966,#008866,#008462]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pluginstore_item_title2">
+            <property>
+                <rect>[350,300,160,60]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <string>plugin2</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_pluginstore_item_focus3">
+            <property>
+                <rect>[580,150,170,130]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>feeds_item_focus_big</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pluginstore_item_unfocus3">
+            <property>
+                <rect>[584,154,160,120]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[#009966,#008866,#008462]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pluginstore_item_title3">
+            <property>
+                <rect>[580,300,160,60]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <string>plugin3</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_pluginstore_item_focus4">
+            <property>
+                <rect>[810,150,168,128]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>feeds_item_focus_big</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pluginstore_item_unfocus4">
+            <property>
+                <rect>[814,154,160,120]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[#009966,#008866,#008462]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pluginstore_item_title4">
+            <property>
+                <rect>[810,300,160,60]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <string>plugin4</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_pluginstore_item_focus5">
+            <property>
+                <rect>[1040,150,168,128]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>feeds_item_focus_big</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pluginstore_item_unfocus5">
+            <property>
+                <rect>[1044,154,160,120]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[#009966,#008866,#008462]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pluginstore_item_title5">
+            <property>
+                <rect>[1040,300,160,60]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <string>plugin5</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_pluginstore_item_focus6">
+            <property>
+                <rect>[120,390,168,128]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>feeds_item_focus_big</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pluginstore_item_unfocus6">
+            <property>
+                <rect>[124,394,160,120]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[#009966,#008866,#008462]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pluginstore_item_title6">
+            <property>
+                <rect>[120,540,160,60]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <string>plugin6</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_pluginstore_item_focus7">
+            <property>
+                <rect>[350,390,168,128]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>feeds_item_focus_big</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pluginstore_item_unfocus7">
+            <property>
+                <rect>[354,394,160,120]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[#009966,#008866,#008462]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pluginstore_item_title7">
+            <property>
+                <rect>[350,540,160,60]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <string>plugin7</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_pluginstore_item_focus8">
+            <property>
+                <rect>[580,390,168,128]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>feeds_item_focus_big</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pluginstore_item_unfocus8">
+            <property>
+                <rect>[584,394,160,120]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[#009966,#008866,#008462]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pluginstore_item_title8">
+            <property>
+                <rect>[580,540,160,60]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <string>plugin8</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_pluginstore_item_focus9">
+            <property>
+                <rect>[810,390,168,128]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>feeds_item_focus_big</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pluginstore_item_unfocus9">
+            <property>
+                <rect>[814,394,160,120]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[#009966,#008866,#008462]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pluginstore_item_title9">
+            <property>
+                <rect>[810,540,160,60]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <string>plugin9</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_pluginstore_item_focus10">
+            <property>
+                <rect>[1040,390,168,128]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+                <mode>single</mode>
+                <img>feeds_item_focus_big</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pluginstore_item_unfocus10">
+            <property>
+                <rect>[1044,394,160,120]</rect>
+                <state>hide</state>
+                <forecolor>[white,white,white]</forecolor>
+                <backcolor>[#009966,#008866,#008462]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pluginstore_item_title10">
+            <property>
+                <rect>[1040,540,160,60]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <string>plugin10</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pluginstore_page_info">
+            <property>
+                <rect>[625,110,100,36]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>hcentre|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_pluginstore_red">
+            <property>
+                <rect>[940,657,22,22]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_red</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_pluginstore_red">
+            <property>
+                <rect>[970,650,120,35]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string>Setting</string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

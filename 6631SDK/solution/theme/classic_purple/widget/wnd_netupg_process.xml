@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_netupg_process">
+    <property>
+        <rect>[232,350,700,80]</rect>
+        <forecolor>[black,black,black]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <format>popup</format>
+    </property>
+    <signal>
+        <create>app_netupg_progcess_create</create>
+        <destroy>app_netupg_progcess_destroy</destroy>
+        <service>app_netupg_progcess_service</service>
+        <keypress>app_netupg_progcess_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="progbar" style="default" name="progbar_netupg_process">
+            <property>
+                <rect>[100,7,400,10]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <back_image>s_progress_m</back_image>
+                <back_image_l>s_progress_l</back_image_l>
+                <back_image_m>s_progress_m</back_image_m>
+                <back_image_r>s_progress_r</back_image_r>
+                <fore_image>s_progress3_m</fore_image>
+                <fore_image_l>s_progress3_l</fore_image_l>
+                <fore_image_m>s_progress3_m</fore_image_m>
+                <fore_image_r>s_progress3_r</fore_image_r>
+                <format>water</format>
+                <text_format>hide</text_format>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_netupg_process_info1">
+            <property>
+                <rect>[10,25,580,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_26_ram</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_netupg_process_info2">
+            <property>
+                <rect>[10,50,580,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_26_ram</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_netupg_process_process">
+            <property>
+                <rect>[10,0,90,25]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|top</alignment>
+                <string>Progress</string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

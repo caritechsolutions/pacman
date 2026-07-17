@@ -1,0 +1,44 @@
+//Board Mark: GX6702H1_DVB-T2&S2_MXL608_RDA5815M_DEMO_V1.0  2020-04-02  Power:12V
+//Frontend Info: Gemini DVBT/T2/C(MXL608) GX1133_DVBS/S2(RDA5815M)
+
+frontend1_demod_i2c_id = 0
+frontend1_demod_i2c_chip_addr = 0xB4
+frontend1_demod_attach = GX1133_ATTACH
+frontend1_tuner_i2c_id = 0
+frontend1_ts_mode = SERIAL
+frontend1_iq = 1
+frontend1_lnb_power_gpio = V_GPIO_LNB_B
+frontend1_lnb_invert = 1
+frontend1_polar_invert = 1
+frontend1_ts_pin_config_00 = ERRS
+frontend1_ts_pin_config_01 = ERRS
+frontend1_ts_pin_config_02 = ERRS
+frontend1_ts_pin_config_03 = ERRS
+frontend1_ts_pin_config_04 = VALID
+frontend1_ts_pin_config_05 = SYNC
+frontend1_ts_pin_config_06 = CLK
+frontend1_ts_pin_config_07 = DATA0
+frontend1_ts_pin_config_08 = ERRS
+frontend1_ts_pin_config_09 = ERRS
+frontend1_ts_pin_config_10 = ERRS
+frontend1_ts_pin_config_11 = ERRS
+frontend1_demux_ts_src = DEMUX_TS2
+
+frontend2_demod_i2c_id = 0
+frontend2_demod_i2c_chip_addr = 0xE4
+frontend2_demod_attach = Gemini_DVBT_ATTACH
+frontend2_tuner_i2c_id = 0
+frontend2_if_freq = 4500
+frontend2_tuner_crystal = 24
+frontend2_tuner_xtal_cap = 0
+frontend2_demux_ts_src = DEMUX_TS1
+
+frontend3_demod_i2c_id = 0
+frontend3_demod_i2c_chip_addr = 0xE4
+frontend3_demod_attach = Gemini_DVBC_ATTACH
+frontend3_tuner_i2c_id = 0
+frontend3_if_freq = 4500
+frontend3_tuner_crystal = 24
+frontend3_tuner_xtal_cap = 0
+frontend3_demux_ts_src = DEMUX_TS1
+

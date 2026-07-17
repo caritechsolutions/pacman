@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="wnd_main_menu_item">
+  <property>
+    <rect>[112,316,360,368]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    <format>movable</format>
+    <keypress_revert>enable</keypress_revert>
+  </property>
+  <signal>
+    <create>app_main_menu_item_create</create>
+    <keypress>app_main_menu_item_keypress</keypress>
+    <got_focus>app_main_menu_item_got_focus</got_focus>
+  </signal>
+  <children>
+    <widget class="image" style="default" name="wnd_main_menu_item_img_arrow">
+      <property>
+        <rect>[163,0,34,18]</rect>
+        <forecolor>[osd_trans,osd_trans,black]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <mode>single</mode>
+        <img>s_arrow_up</img>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="wnd_main_item_back_img">
+      <property>
+        <rect>[0,10,360,358]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>s_win21_l_u</lt_img>
+        <rt_img>s_win21_r_u</rt_img>
+        <lb_img>s_win21_l_b</lb_img>
+        <rb_img>s_win21_r_b</rb_img>
+        <l_img>s_win21_l_m</l_img>
+        <r_img>s_win21_r_m</r_img>
+        <t_img>s_win21_u_m</t_img>
+        <b_img>s_win21_b_m</b_img>
+      </property>
+    </widget>
+    <widget class="listview" style="default" name="wnd_main_menu_item_listview">
+      <property>
+        <rect>[10,60,340,250]</rect>
+        <forecolor>[#AA00FF,#AA00FF,#AA00FF]</forecolor>
+        <backcolor>[main_bg1_color,main_bg1_color,main_bg1_color]</backcolor>
+         <i18n>true</i18n>
+        <roll_time>0</roll_time>
+        <select>1</select>
+        <focus_img>s_menu_choice</focus_img>
+        <item_rect>[0,0,340,50]</item_rect>
+        <item_fore_color>[text_color,white,text_color]</item_fore_color>
+        <item_back_color>[main_bg1_color,main_bg1_color,main_bg1_color]</item_back_color>
+      </property>
+      <signal>
+        <keypress>listview_main_menu_opt_keypress</keypress>
+        <get_total>listview_main_menu_opt_get_total</get_total>
+        <get_data>listview_main_menu_opt_get_data</get_data>
+        <change>listview_main_menu_opt_change</change>
+      </signal>
+      <children>
+        <widget class="header" style="default" name="wnd_main_menu_item_header24">
+          <property>
+            <rect>[0,0,340,0]</rect>
+            <forecolor>[black,black,black]</forecolor>
+            <backcolor>[default_color,default_color,default_color]</backcolor>
+            <colum_number>1</colum_number>
+          </property>
+          <children>
+            <widget class="text" style="default" name="wnd_main_menu_item_text507">
+              <property>
+                <rect>[0,0,340,0]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <string></string>
+                <format>static</format>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="scrollbar" style="default" name="wnd_main_menu_item_scrollbar27">
+          <property>
+            <rect>[315,50,0,200]</rect>
+            <forecolor>[black,black,black]</forecolor>
+            <format>scroll_hide</format>
+          </property>
+        </widget>
+        <widget class="listitem" style="default" name="wnd_main_menu_item_listitem1"/>
+        <widget class="listitem" style="default" name="wnd_main_menu_item_listitem2"/>
+        <widget class="listitem" style="default" name="wnd_main_menu_item_listitem3"/>
+        <widget class="listitem" style="default" name="wnd_main_menu_item_listitem4"/>
+        <widget class="listitem" style="default" name="wnd_main_menu_item_listitem5"/>
+      </children>
+    </widget>
+  </children>
+</widget>

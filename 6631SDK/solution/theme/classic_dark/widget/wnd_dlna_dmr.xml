@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_dlna_dmr">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[#292D31,#292D31,#292D31]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <back_ground>null</back_ground>
+    </property>
+    <signal>
+        <create>app_dlna_dmr_create</create>
+        <destroy>app_dlna_dmr_destroy</destroy>
+        <got_focus>app_dlna_dmr_got_focus</got_focus>
+        <lost_focus>app_dlna_dmr_lost_focus</lost_focus>
+        <keypress>app_dlna_dmr_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="file_image" style="default" name="img_dlna_dmr_gif">
+            <property>
+                <rect>[488,60,48,48]</rect>
+                <state>hide</state>
+                <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+                <backcolor>[bk_dlna_color,bk_dlna_color,bk_dlna_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_dlna_dmr_mute">
+            <property>
+                <rect>[805,40,62,44]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_mute</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_dlna_dmr_pause">
+            <property>
+                <rect>[910,85,64,24]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_pause</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_dlna_dmr_popup">
+            <property>
+                <rect>[320,152,384,192]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_t2</lt_img>
+                <rt_img>s_win2_r_t2</rt_img>
+                <lb_img>s_win2_l_b2</lb_img>
+                <rb_img>s_win2_r_b2</rb_img>
+                <l_img>s_win2_l_m</l_img>
+                <r_img>s_win2_r_m</r_img>
+                <t_img>s_win2_m_t2</t_img>
+                <b_img>s_win2_m_b2</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_dlna_dmr_popup">
+            <property>
+                <rect>[332,196,360,64]</rect>
+                <state>hide</state>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <string></string>
+                <alignment>left|top</alignment>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_dlna_dmr_popup_detail">
+            <property>
+                <rect>[332,262,360,32]</rect>
+                <state>hide</state>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <alignment>left|top</alignment>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_dlna_dmr_popup_rename">
+            <property>
+                <rect>[568,308,16,16]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_green</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_dlna_dmr_popup_rename">
+            <property>
+                <rect>[592,299,100,32]</rect>
+                <state>hide</state>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <string>Rename</string>
+                <format>automatic</format>
+            </property>
+        </widget>
+   </children>
+</widget>

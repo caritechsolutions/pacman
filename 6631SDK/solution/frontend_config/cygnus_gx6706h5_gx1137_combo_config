@@ -1,0 +1,58 @@
+//Board Mark: GX6706H5_DVB-T2&S2_COMBO_GX1137_RDA5815M_R850_V1.0  2024-04-12
+//Frontend Info: Cygnus(R850) Pavo131(RDA5815M)
+
+frontend1_demod_i2c_id = 0
+frontend1_demod_i2c_chip_addr = 0x56
+frontend1_demod_attach = Pavo131_DVBS_ATTACH
+frontend1_tuner_i2c_id = 0
+frontend1_tuner_i2c_chip_addr = 0x18
+frontend1_tuner_crystal = 27
+frontend1_ts_mode = SERIAL
+frontend1_iq = 0
+frontend1_lnb_power_gpio = V_GPIO_LNB_A
+frontend1_lnb_invert = 1
+frontend1_polar_invert = 1
+frontend1_tuner_connection = FE_SINGLE_END
+frontend1_ts_pin_config_00 = DATA0
+frontend1_ts_pin_config_01 = ERRS
+frontend1_ts_pin_config_02 = ERRS
+frontend1_ts_pin_config_03 = ERRS
+frontend1_ts_pin_config_04 = ERRS
+frontend1_ts_pin_config_05 = ERRS
+frontend1_ts_pin_config_06 = ERRS
+frontend1_ts_pin_config_07 = ERRS
+frontend1_ts_pin_config_08 = SYNC
+frontend1_ts_pin_config_09 = ERRS
+frontend1_ts_pin_config_10 = CLK
+frontend1_ts_pin_config_11 = ERRS
+frontend1_demux_ts_src = DEMUX_TS2
+frontend1_agc_gpio = 19
+frontend1_hv_sel_gpio = 2
+frontend1_diseqc_out_gpio = 3
+frontend1_diseqc_in_gpio = 4
+
+frontend2_demod_i2c_id = 0
+frontend2_demod_i2c_chip_addr = 0xE4
+frontend2_demod_attach = Cygnus_DVBT_ATTACH
+frontend2_tuner_attach = R836_T_ATTACH
+frontend2_tuner_i2c_chip_addr = 0xF8
+frontend2_tuner_if_freq = 5000
+frontend2_tuner_crystal = 24
+frontend2_tuner_xtal_cap = 0
+frontend2_tuner_clock_out = 0
+frontend2_tuner_loop_out = 1
+frontend2_tuner_i2c_id = 0
+frontend2_demux_ts_src = DEMUX_TS1
+
+frontend3_demod_i2c_id = 0
+frontend3_demod_i2c_chip_addr = 0xE4
+frontend3_demod_attach = Cygnus_DVBC_ATTACH
+frontend3_tuner_attach = R836_C_ATTACH
+frontend3_tuner_i2c_chip_addr = 0xF8
+frontend3_tuner_if_freq = 5000
+frontend3_tuner_crystal = 24
+frontend3_tuner_xtal_cap = 0
+frontend3_tuner_clock_out = 0
+frontend3_tuner_loop_out = 1
+frontend3_tuner_i2c_id = 0
+frontend3_demux_ts_src = DEMUX_TS1

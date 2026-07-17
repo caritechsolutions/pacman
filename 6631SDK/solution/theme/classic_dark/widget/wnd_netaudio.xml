@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_netaudio">
+    <property>
+        <rect>[320,152,384,192]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_netaudio_init</create>
+        <destroy>app_etaudio_destroy</destroy>
+        <service>app_etaudio_service</service>
+        <keypress>app_netaudio_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="win_netaudio_image_back">
+            <property>
+                <rect>[0,0,384,192]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_t2</lt_img>
+                <rt_img>s_win2_r_t2</rt_img>
+                <lb_img>s_win2_l_b2</lb_img>
+                <rb_img>s_win2_r_b2</rb_img>
+                <l_img>s_win2_l_m</l_img>
+                <r_img>s_win2_r_m</r_img>
+                <t_img>s_win2_m_t2</t_img>
+                <b_img>s_win2_m_b2</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="netaudio_title">
+            <property>
+                <rect>[15,0,360,28]</rect>
+                <forecolor>[pop_bg_color,pop_bg_color,pop_bg_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Video Cache Setting</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="box" style="default" name="netaudio_box">
+            <property>
+                <rect>[8,48,366,128]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[#000000,#000000,#242424]</backcolor>
+                <interval>2</interval>
+                <format>vertical</format>
+            </property>
+            <children>
+                <widget class="boxitem" style="default" name="netaudio_boxitem0">
+                    <property>
+                        <rect>[0,2,366,30]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                        <mirror>disable</mirror>
+                        <focus_image>s_bar_choice_blue4</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="netaudio_txt1">
+                            <property>
+                                <rect>[24,0,160,30]</rect>
+                                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string>Video Cache</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="netaudio_combo_audio_channel">
+                            <property>
+                                <rect>[191,0,175,30]</rect>
+                                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                                <content>[NONE]</content>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+           </children>
+        </widget>
+    </children>
+</widget>

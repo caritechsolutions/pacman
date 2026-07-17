@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget class="window" name="wnd_usb_speed" style="default">
+    <property>
+        <rect>[0,0,1280,720]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+	<backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_usb_speed_create</create>
+	<destroy>app_usb_speed_destroy</destroy>
+        <keypress>app_usb_speed_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="text" name="text_usb_speed_BG_top" style="default">
+            <property>
+                <rect>[0,0,1280,120]</rect>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[#17174A,#17174A,#17174A]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" name="img_usb_speed_opt_back" style="default">
+            <property>
+                <rect>[180,150,920,288]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" name="img_usb_speed_title" style="default">
+            <property>
+                <rect>[100,40,80,80]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_title_left_setting</img>
+                <lt_img>s_title_left_setting</lt_img>
+                <rt_img>s_title_right</rt_img>
+            </property>
+        </widget>
+        <widget class="text" name="text_usb_speed_title" style="default">
+            <property>
+                <rect>[195,70,600,48]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_sub</font>
+                <alignment>left|bottom</alignment>
+                <string>USB Speed Test</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" name="img_usb_speed_bottom" style="default">
+            <property>
+                <rect>[0,620,1280,100]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bot_color,window_bot_color,window_bot_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <t_img>s_bar_bg</t_img>
+            </property>
+        </widget>
+	
+   <widget class="file_image" style="default" name="img_usb_speed_gif">
+      <property>
+        <rect>[624,79,48,48]</rect>
+        <state>hide</state>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+	<backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <mode>single</mode>
+        <img></img>
+      </property>
+    </widget>
+  
+
+    <widget class="box" style="default" name="box_usb_speed">
+      <property>
+        <rect>[200,200,880,307]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <format>vertical</format>
+      </property>
+      <signal>
+        <keypress>app_usb_speed_box_keypress</keypress>
+      </signal>
+      <children>
+
+	<widget class="boxitem" style="default" name="boxitem_usb_speed_1">
+          <property>
+            <rect>[0,0,870,38]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <focus_image>s_bar_long_focus</focus_image>
+          </property>
+          <children>
+	    <widget class="text" style="default" name="text_usb_speed_item1">
+      	      <property>
+                <rect>[60,0,390,38]</rect>
+                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+		<string>Key Press</string>
+		<format>static</format>
+	      </property>
+	    </widget>
+            <widget class="button" name="btn_usb_speed_opt1" style="default">
+            <property>
+                <rect>[435,0,435,38]</rect>
+                <state>show</state>
+                <forecolor>[text_color,text_color,#424247]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+		<string>Press OK</string>
+                <focus_img>s_bar_half_focus_r</focus_img>
+                <unfocus_img>s_bar_half_unfocus</unfocus_img>
+                <disable_img>s_bar_half_unfocus</disable_img>
+            </property>
+            <signal>
+                <keypress>app_usb_speed_btn1_keypress</keypress>
+            </signal>
+            </widget>
+	 </children>
+        </widget>
+
+	<widget class="boxitem" style="default" name="boxitem_usb_speed_2">
+          <property>
+            <rect>[0,38,870,38]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <focus_image>s_bar_long_focus</focus_image>
+          </property>
+          <children>
+	    <widget class="text" style="default" name="text_usb_speed_item2">
+      	      <property>
+                <rect>[60,0,390,38]</rect>
+                <forecolor>[text_color,text_color,text_disable_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+		<string>USB Speed</string>
+		<format>static</format>
+	      </property>
+	    </widget>
+            <widget class="button" name="btn_usb_speed_opt2" style="default">
+            <property>
+                <rect>[435,0,435,38]</rect>
+                <state>show</state>
+                <forecolor>[text_color,text_color,#424247]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>0 kB/s</string>
+                <focus_img>s_bar_half_focus_r</focus_img>
+                <unfocus_img>s_bar_half_unfocus</unfocus_img>
+                <disable_img>s_bar_half_unfocus</disable_img>
+            </property>
+            </widget>
+	 </children>
+        </widget>
+
+      </children>
+    </widget>
+ 
+
+  </children>
+</widget>

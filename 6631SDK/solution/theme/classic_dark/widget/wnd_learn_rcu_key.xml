@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget name="wnd_learn_rcu_key" style="default" class="window">
+    <property>
+        <rect>[0,0,1024,576]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <back_ground>bg</back_ground>
+        <mirror>disable</mirror>
+    </property>
+    <signal>
+        <create>app_key_learn_rcu_create</create>
+        <destroy>app_key_learn_rcu_destroy</destroy>
+        <keypress>app_key_learn_rcu_keypress</keypress>
+    </signal>
+    <children>
+       <widget class="image" name="img_learn_rcu_opt_back" style="default">
+            <property>
+				<rect>[144,64,736,366]</rect>
+				<forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="image" name="img_learn_rcu_title" style="default">
+            <property>
+				<rect>[160,72,48,48]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+				<img>s_title_left_utility</img>
+            </property>
+        </widget>
+        <widget class="text" name="text_learn_rcu_title" style="default">
+            <property>
+				<rect>[224,74,600,52]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <font>font_main</font>
+                <alignment>left|bottom</alignment>
+                <string>RCU Learning</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" name="img_learn_rcu_bottom" style="default">
+            <property>
+				<rect>[0,496,1024,80]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>signal</mode>
+            </property>
+        </widget>
+        <widget class="image" name="img_key_learn_rcu_green" style="default">
+            <property>
+                <rect>[384,516,16,16]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_green</img>
+            </property>
+        </widget>
+        <widget class="text" name="text_key_learn_rcu_green" style="default">
+            <property>
+                <rect>[408,510,160,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Delete All</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" name="img_key_learn_rcu_blue" style="default">
+            <property>
+                <rect>[624,516,16,16]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_blue</img>
+            </property>
+        </widget>
+        <widget class="text" name="text_key_learn_rcu_blue" style="default">
+            <property>
+                <rect>[648,510,160,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Delete</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" name="img_key_learn_rcu_red" style="default">
+            <property>
+                <rect>[144,516,16,16]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img>s_ts_red</img>
+            </property>
+        </widget>
+        <widget class="text" name="text_key_learn_rcu_red" style="default">
+            <property>
+                <rect>[168,510,160,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Save</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="combobox" style="default" name="cmb_key_learn_rcu">
+            <property>
+                <rect>[350,128,348,30]</rect>
+                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <focus_left_img>s_arrow_l</focus_left_img>
+                <focus_right_img>s_arrow_r</focus_right_img>
+                <unfocus_left_img>s_arrow_l</unfocus_left_img>
+                <unfocus_right_img>s_arrow_r</unfocus_right_img>
+                <focus_img>s_bar_black_half1</focus_img>
+                <content>[None]</content>
+            </property>
+            <signal>
+                <keypress>app_key_learn_rcu_cmb_keypress</keypress>
+                <change>app_key_learn_rcu_cmb_change</change>
+            </signal>
+        </widget>
+        <widget class="text" style="default" name="text_satlist_name_title">
+            <property>
+                <rect>[168,160,88,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>No.</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_satlist_longitude_title">
+            <property>
+                <rect>[288,160,180,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>Key Name</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" name="img_cl_bottom" style="default">
+            <property>
+                <rect>[168,192,362,2]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[text_color,text_color,text_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="listview" name="listview_key_learn_rcu" style="default">
+            <property>
+                <rect>[168,200,362,220]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+                <roll_time>0</roll_time>
+                <focus_img>s_bar_black_half1</focus_img>
+                <i18n>false</i18n>
+                <item_rect>[0,0,348,30]</item_rect>
+                <item_fore_color>[text_color,text_color,text_color]</item_fore_color>
+                <item_back_color>[window_bg_color,window_g_color,window_bg_color]</item_back_color>
+            </property>
+            <signal>
+                <keypress>app_key_learn_rcu_list_keypress</keypress>
+                <get_total>app_key_learn_rcu_list_get_total</get_total>
+                <get_data>app_key_learn_rcu_list_get_data</get_data>
+                <change>app_key_learn_rcu_list_change</change>
+            </signal>
+            <children>
+                <widget class="header" name="header_key_learn_rcu" style="default">
+                    <property>
+                        <rect>[0,0,352,0]</rect>
+                        <forecolor>[text_color,text_color,text_color]</forecolor>
+                        <backcolor>[default_color,default_color,default_color]</backcolor>
+                        <colum_number>5</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" name="header_text_key_num" style="default">
+                            <property>
+                                <rect>[12,0,56,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" name="header_text_key_name" style="default">
+                            <property>
+                                <rect>[120,0,170,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" name="header_text_key_hd" style="default">
+                            <property>
+                                <rect>[300,0,24,0]</rect>
+                                <forecolor>[text_color,text_color,text_color]</forecolor>
+                                <backcolor>[default_color,default_color,default_color]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" name="scrollbar_key_learn_rcu" style="default">
+                    <property>
+                        <rect>[352,0,9,220]</rect>
+                        <forecolor>[window_bg_color,window_bg_color,window_bg_color]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+                <widget class="listitem" name="listitem_channel_1" style="default"/>
+                <widget class="listitem" name="listitem_channel_2" style="default"/>
+                <widget class="listitem" name="listitem_channel_3" style="default"/>
+                <widget class="listitem" name="listitem_channel_4" style="default"/>
+                <widget class="listitem" name="listitem_channel_5" style="default"/>
+                <widget class="listitem" name="listitem_channel_6" style="default"/>
+                <widget class="listitem" name="listitem_channel_7" style="default"/>
+            </children>
+        </widget>
+        <widget class="image" style="default" name="img_key_learn_rcu_back">
+            <property>
+                <rect>[576,200,288,128]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win1_l_u2</lt_img>
+                <rt_img>s_win1_r_u2</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win1_u_m2</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_key_learn_rcu_start">
+            <property>
+                <rect>[600,208,240,112]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+    </children>
+</widget>

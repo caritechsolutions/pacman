@@ -1,0 +1,21 @@
+config BR2_PROJ_NAME
+	string
+
+menu "Project Configuration"
+source system/configin/Config.in.proj
+endmenu
+
+menu "Theme Configuration"
+source system/configin/Config.in.theme
+source system/configin/Config.in.lang
+endmenu
+
+#if BR2_PROJ_NAME !=  ""
+#source system/configin/Config.in.board
+if BR2_TUNER_TYPE != "ott"
+source system/configin/Config.in.demod
+endif
+source system/configin/Config.in.module
+source system/configin/Config.in.secure
+source system/configin/Config.in.debug
+#endif

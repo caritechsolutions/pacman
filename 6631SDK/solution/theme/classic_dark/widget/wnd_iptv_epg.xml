@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_iptv_epg">
+    <property>
+        <rect>[62,128,900,406]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_iptv_epg_create</create>
+        <destroy>app_iptv_epg_destroy</destroy>
+        <keypress>app_iptv_epg_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_iptv_epg_bg">
+            <property>
+                <rect>[0,0,900,406]</rect>
+                <forecolor>[#16161c,#16161c,#16161c]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_iptv_epg_title">
+            <property>
+                <rect>[18,1,450,34]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_prog</font>
+                <alignment>left|bottom</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_iptv_epg_date">
+            <property>
+                <rect>[620,7,24,28]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_calendar</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_iptv_epg_date">
+            <property>
+                <rect>[650,6,90,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_iptv_epg_time">
+            <property>
+                <rect>[756,7,24,26]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_clock</img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_iptv_epg_time">
+            <property>
+                <rect>[786,6,90,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="listview" style="default" name="list_iptv_epg_days">
+            <property>
+                <rect>[18,64,278,275]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <roll_time>100</roll_time>
+                <format>enable_roll</format>
+                <interval>5</interval>
+                <focus_img>s_bar_black3</focus_img>
+                <item_active_color>#B5DE29</item_active_color>
+                <i18n>false</i18n>
+                <item_rect>[0,0,272,30]</item_rect>
+                <item_fore_color>[text_color,text_focus_color,text_color]</item_fore_color>
+                <item_back_color>[gui_trans,gui_trans,gui_trans]</item_back_color>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>app_iptv_epg_days_list_keypress</keypress>
+                <get_total>app_iptv_epg_days_list_get_total</get_total>
+                <get_data>app_iptv_epg_days_list_get_data</get_data>
+                <change>app_iptv_epg_days_list_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="header_iptv_epg_days_feeds">
+                    <property>
+                        <rect>[0,0,234,0]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[#808080,#808080,#808080]</backcolor>
+                        <colum_number>1</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="headertext_iptv_epg_days_feeds">
+                            <property>
+                                <rect>[10,0,224,0]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[#808080,#808080,#808080]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="scrollbar_iptv_epg_days_feeds">
+                    <property>
+                        <rect>[272,0,6,275]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_iptv_epg_days_feeds0"/>
+                <widget class="listitem" style="default" name="item_iptv_epg_days_feeds1"/>
+                <widget class="listitem" style="default" name="item_iptv_epg_days_feeds2"/>
+                <widget class="listitem" style="default" name="item_iptv_epg_days_feeds3"/>
+                <widget class="listitem" style="default" name="item_iptv_epg_days_feeds4"/>
+                <widget class="listitem" style="default" name="item_iptv_epg_days_feeds5"/>
+                <widget class="listitem" style="default" name="item_iptv_epg_days_feeds6"/>
+                <widget class="listitem" style="default" name="item_iptv_epg_days_feeds7"/>
+            </children>
+        </widget>
+        <widget class="listview" style="default" name="list_iptv_epg_events">
+            <property>
+                <rect>[298,64,584,275]</rect>
+                <state>hide</state>
+                <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <roll_time>100</roll_time>
+                <format>enable_roll</format>
+                <interval>5</interval>
+                <focus_img>s_bar_epg_event</focus_img>
+                <item_active_color>#B5DE29</item_active_color>
+                <i18n>false</i18n>
+                <item_rect>[0,0,578,30]</item_rect>
+                <item_fore_color>[text_color,text_focus_color,text_color]</item_fore_color>
+                <item_back_color>[gui_trans,gui_trans,gui_trans]</item_back_color>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+            <signal>
+                <keypress>app_iptv_epg_events_list_keypress</keypress>
+                <get_total>app_iptv_epg_events_list_get_total</get_total>
+                <get_data>app_iptv_epg_events_list_get_data</get_data>
+                <change>app_iptv_epg_events_list_change</change>
+            </signal>
+            <children>
+                <widget class="header" style="default" name="header_iptv_epg_events_feeds">
+                    <property>
+                        <rect>[0,0,530,0]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[#808080,#808080,#808080]</backcolor>
+                        <colum_number>3</colum_number>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="headertext_iptv_epg_events_feeds0">
+                            <property>
+                                <rect>[10,0,80,0]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[#808080,#808080,#808080]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+			            <widget class="text" style="default" name="headertext_iptv_epg_events_feeds1">
+                            <property>
+                                <rect>[90,0,16,0]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[#808080,#808080,#808080]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="headertext_iptv_epg_events_feeds2">
+                            <property>
+                                <rect>[110,0,420,0]</rect>
+                                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                                <backcolor>[#808080,#808080,#808080]</backcolor>
+                                <alignment>left|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="scrollbar" style="default" name="scrollbar_iptv_epg_events_feeds">
+                    <property>
+                        <rect>[578,0,6,275]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+                <widget class="listitem" style="default" name="item_iptv_epg_events_feeds0"/>
+                <widget class="listitem" style="default" name="item_iptv_epg_events_feeds1"/>
+                <widget class="listitem" style="default" name="item_iptv_epg_events_feeds2"/>
+                <widget class="listitem" style="default" name="item_iptv_epg_events_feeds3"/>
+                <widget class="listitem" style="default" name="item_iptv_epg_events_feeds4"/>
+                <widget class="listitem" style="default" name="item_iptv_epg_events_feeds5"/>
+                <widget class="listitem" style="default" name="item_iptv_epg_events_feeds6"/>
+                <widget class="listitem" style="default" name="item_iptv_epg_events_feeds7"/>
+            </children>
+        </widget>
+        <widget class="image" style="default" name="img_iptv_epg_detail_back">
+            <property>
+                <rect>[0,346,900,60]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win1_l_u2</lt_img>
+                <rt_img>s_win1_r_u2</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win1_u_m2</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_iptv_epg_detail">
+            <property>
+                <rect>[18,350,860,50]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <font>font_22</font>
+                <alignment>left|top</alignment>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_iptv_epg_popup">
+            <property>
+                <rect>[300,120,320,160]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_t2</lt_img>
+                <rt_img>s_win2_r_t2</rt_img>
+                <lb_img>s_win2_l_b2</lb_img>
+                <rb_img>s_win2_r_b2</rb_img>
+                <l_img>s_win2_l_m</l_img>
+                <r_img>s_win2_r_m</r_img>
+                <t_img>s_win2_m_t2</t_img>
+                <b_img>s_win2_m_b2</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_iptv_epg_popup">
+            <property>
+                <rect>[315,160,290,100]</rect>
+                <state>hide</state>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+    </children>
+</widget>

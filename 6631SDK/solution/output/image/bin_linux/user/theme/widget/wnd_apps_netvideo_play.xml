@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_apps_netvideo_play">
+    <property>
+        <rect>[0,0,1280,720]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <back_ground>null</back_ground>
+    </property>
+    <signal>
+        <create>app_netvideo_play_create</create>
+        <destroy>app_netvideo_play_destroy</destroy>
+        <got_focus>app_netvideo_play_got_focus</got_focus>
+        <lost_focus>app_netvideo_play_lost_focus</lost_focus>
+        <keypress>app_netvideo_play_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="file_image" style="default" name="fimg_netvideo_play_gif">
+            <property>
+                <rect>[624,100,48,48]</rect>
+                <state>hide</state>
+                <forecolor>[#efefef,#efefef,#efefef]</forecolor>
+                <backcolor>[net_bg_tb_color,net_bg_tb_color,net_bg_tb_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+         <widget class="text" style="default" name="text_netvideo_play_netspeed">
+            <property>
+                <rect>[1034,135,125,30]</rect>
+                <state>hide</state>
+                <font>font_22</font>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="sliderbar" style="default" name="sliderbar_netvideo_play_cache">
+            <property>
+                <rect>[1034,135,125,30]</rect>
+                <state>hide</state>
+                <mirror>disable</mirror>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <step>2</step>
+                <back_image_l>s_progress_bg_l</back_image_l>
+                <back_image_m>s_progress_bg_m</back_image_m>
+                <back_image_r>s_progress_bg_r</back_image_r>
+                <fore_image_l>s_progress_blue_l</fore_image_l>
+                <fore_image_m>s_progress_blue_m</fore_image_m>
+                <fore_image_r>s_progress_blue_r</fore_image_r>
+                <format>water</format>
+            </property>
+        </widget>
+
+        <widget class="text" style="default" name="text_netvideo_play_wait">
+            <property>
+                <rect>[480,300,320,40]</rect>
+                <state>hide</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[black,black,black]</backcolor>
+                <string>Please wait!</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_netvideo_play_popup">
+            <property>
+                <rect>[410,230,460,230]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[net_bg1_color,net_bg1_color,net_bg1_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>L_U</lt_img>
+                <rt_img>R_U</rt_img>
+                <lb_img>L_B</lb_img>
+                <rb_img>R_B</rb_img>
+                <l_img>L_M</l_img>
+                <r_img>R_M</r_img>
+                <t_img>U_M</t_img>
+                <b_img>B_M</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txt_netvideo_play_popup">
+            <property>
+                <rect>[470,275,340,120]</rect>
+                <state>hide</state>
+                <forecolor>[#B5DE29,#B5DE29,#B5DE29]</forecolor>
+                <backcolor>[net_bg1_color,net_bg1_color,net_bg1_color]</backcolor>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_netvideo_play_mute">
+            <property>
+                <rect>[1000,40,94,76]</rect>
+                <state>hide</state>
+                <forecolor>[black,black,black]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_mute</img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_netvideo_play_pause">
+            <property>
+                <rect>[1000,135,30,30]</rect>
+                <state>hide</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_pause_2</img>
+            </property>
+        </widget>
+        <widget class="canvas" style="default" name="wnd_apps_netvideo_play_canvas_subt">
+            <property>
+              <rect>[50,176,1180,504]</rect>
+              <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+              <state>hide</state>
+              <font>font_prog</font>
+            </property>
+        </widget>
+   </children>
+</widget>

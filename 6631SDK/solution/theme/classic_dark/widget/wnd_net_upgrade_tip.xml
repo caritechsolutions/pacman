@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_net_upgrade_tip">
+    <property>
+        <rect>[300,130,420,230]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <format>popup</format>
+    </property>
+    <signal>
+        <create>app_net_upgrade_tip_create</create>
+        <destroy>app_net_upgrade_tip_destroy</destroy>
+        <service>app_net_upgrade_tip_service</service>
+        <keypress>app_net_upgrade_tip_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_net_upgrade_tip_bg">
+            <property>
+                <rect>[0,0,420,230]</rect>
+                <state>show</state>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_t2</lt_img>
+                <rt_img>s_win2_r_t2</rt_img>
+                <lb_img>s_win2_l_b2</lb_img>
+                <rb_img>s_win2_r_b2</rb_img>
+                <l_img>s_win2_l_m</l_img>
+                <r_img>s_win2_r_m</r_img>
+                <t_img>s_win2_m_t2</t_img>
+                <b_img>s_win2_m_b2</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_net_upgrade_tip_title">
+            <property>
+                <rect>[20,1,380,28]</rect>
+                <state>show</state>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Tips</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="notepad" style="default" name="notepad_net_upgrade_tip">
+            <property>
+                <rect>[20,40,380,115]</rect>
+                <state>show</state>
+                <forecolor>[pop_title_color,pop_title_color,pop_title_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <font>Arial</font>
+                <alignment>left|top</alignment>
+                <vertical_margin>0</vertical_margin>
+                <horizontal_margin>20</horizontal_margin>
+            </property>
+            <children>
+                <widget class="scrollbar" style="default" name="scrollbar_net_upgrade_tip">
+                    <property>
+                        <rect>[371,0,9,115]</rect>
+                        <forecolor>[default_color,default_color,default_color]</forecolor>
+                        <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                        <back_img>s_roll_m</back_img>
+                        <arrow_up>s_roll_t</arrow_up>
+                        <arrow_down>s_roll_d</arrow_down>
+                        <fore_img>s_roll_button</fore_img>
+                        <format>scroll_show</format>
+                    </property>
+                </widget>
+            </children>
+        </widget>
+    <widget class="text" style="default" name="text_net_upgrade_tip_time">
+      <property>
+        <rect>[175,160,185,25]</rect>
+        <forecolor>[text_focus_color,text_focus_color,text_focus_color]</forecolor>
+        <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+        <alignment>right|vcentre</alignment>
+        <string></string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_net_upgrade_tip_opt">
+      <property>
+          <rect>[25,195,366,30]</rect>
+          <mirror>disable</mirror>
+        <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <mode>single</mode>
+        <img>s_bar_choice_blue4</img>
+      </property>
+    </widget>
+        <widget class="button" style="default" name="btn_net_upgrade_tip_ok">
+            <property>
+                <rect>[240,195,100,30]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#00FF00]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>OK</string>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_net_upgrade_tip_cancel">
+            <property>
+                <rect>[80,195,100,30]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#00FF00]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>Cancel</string>
+            </property>
+        </widget>
+    </children>
+</widget>

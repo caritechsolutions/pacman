@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="win_movie_set">
+    <property>
+        <rect>[320,152,384,192]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>movie_set_init</create>
+        <destroy>movie_set_destroy</destroy>
+        <service>movie_set_service</service>
+        <keypress>movie_set_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="win_movie_set_image_back">
+            <property>
+                <rect>[0,0,384,192]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_t2</lt_img>
+                <rt_img>s_win2_r_t2</rt_img>
+                <lb_img>s_win2_l_b2</lb_img>
+                <rb_img>s_win2_r_b2</rb_img>
+                <l_img>s_win2_l_m</l_img>
+                <r_img>s_win2_r_m</r_img>
+                <t_img>s_win2_m_t2</t_img>
+                <b_img>s_win2_m_b2</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="movie_set_title">
+            <property>
+                <rect>[15,0,360,28]</rect>
+                <forecolor>[pop_bg_color,pop_bg_color,pop_bg_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Setting</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="box" style="default" name="movie_set_box">
+            <property>
+                <rect>[8,48,366,128]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[#000000,#000000,#242424]</backcolor>
+                <interval>2</interval>
+                <format>vertical</format>
+            </property>
+            <children>
+                <widget class="boxitem" style="default" name="movie_set_boxitem0">
+                    <property>
+                        <rect>[0,2,366,30]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                        <mirror>disable</mirror>
+                        <focus_image>s_bar_choice_blue4</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="movie_set_text0">
+                            <property>
+                                <rect>[24,0,160,30]</rect>
+                                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string>Quick seek</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="edit" style="default" name="movie_set_edit_seek">
+                            <property>
+                                <rect>[191,0,175,28]</rect>
+                                <mirror>disable</mirror>
+                                <keypress_revert>disable</keypress_revert>
+                                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <string>00:00:00</string>
+                                <maxlen>8</maxlen>
+                                <format>edit_time</format>
+                            </property>
+                            <signal>
+                                <reach_end>app_movie_set_edit_seek_reach_end</reach_end>
+                            </signal>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="movie_set_boxitem1">
+                    <property>
+                        <rect>[0,34,366,30]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                        <mirror>disable</mirror>
+                        <focus_image>s_bar_choice_blue4</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="movie_set_txt1">
+                            <property>
+                                <rect>[24,0,160,30]</rect>
+                                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string>Audio Channel</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="movie_set_combo_audio_channel">
+                            <property>
+                                <rect>[191,0,175,30]</rect>
+                                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                                <content>[English,Chinese]</content>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="movie_set_boxitem2">
+                    <property>
+                        <rect>[0,66,366,30]</rect>
+                        <forecolor>[#000000,#000000,#000000]</forecolor>
+                        <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                        <mirror>disable</mirror>
+                        <focus_image>s_bar_choice_blue4</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="movie_set_txt2">
+                            <property>
+                                <rect>[24,0,160,30]</rect>
+                                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string>Play Mode</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="movie_set_combo_play_sequence">
+                            <property>
+                                <rect>[191,0,175,30]</rect>
+                                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                                <alignment>hcentre|vcentre</alignment>
+                                <content>[Only once,Repeat one,Sequence]</content>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="movie_set_boxitem4">
+                    <property>
+                        <rect>[0,98,366,30]</rect>
+                        <forecolor>[#000000,#000000,#000000]</forecolor>
+                        <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                        <mirror>disable</mirror>
+                        <focus_image>s_bar_choice_blue4</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="movie_set_txt4">
+                            <property>
+                                <rect>[24,0,160,30]</rect>
+                                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string>View mode</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="movie_set_combo_display_mode">
+                            <property>
+                                <rect>[191,0,175,30]</rect>
+                                <forecolor>[pop_text_color,pop_text_focus_color,pop_text_disable_color]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <focus_left_img>s_arrow_l</focus_left_img>
+                                <focus_right_img>s_arrow_r</focus_right_img>
+                                <alignment>hcentre|vcentre</alignment>
+                                <content>[Auto,Full screen,Original,4:3,16:9]</content>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+    </children>
+</widget>

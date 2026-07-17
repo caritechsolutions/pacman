@@ -1,0 +1,27 @@
+//Board Mark: SCORPIO_DVBC_R850_OnBoard_Demo_V1.0  2019-02028
+//Frontend Info: Scorpio(R850)
+
+frontend1_demod1_adapt_i2c_id = 0
+frontend1_demod1_adapt_i2c_chip_addr = 0xA4
+frontend1_demod1_adapt_attach = Scorpio_DVBC_ATTACH
+frontend1_tuner1_adapt_i2c_id = 0
+frontend1_tuner1_adapt_crystal = 24
+frontend1_tuner1_adapt_if_freq = 5000
+frontend1_tuner1_adapt_xtal_cap = 0
+frontend1_tuner1_adapt_clock_out = 0
+frontend1_tuner1_adapt_loop_out = 0
+frontend1_tuner1_adapt_attach = R836_C_ATTACH
+frontend1_tuner1_adapt_i2c_chip_addr = 0xF8
+frontend1_demod1_adapt_demux_ts_src = DEMUX_TS1
+
+frontend1_demod2_adapt_i2c_id = 0
+frontend1_demod2_adapt_i2c_chip_addr = 0xA4
+frontend1_demod2_adapt_attach = Taurus_DVBC_ATTACH
+frontend1_tuner2_adapt_crystal = 24
+frontend1_tuner2_adapt_if_freq = 5000
+frontend1_tuner2_adapt_xtal_cap = 0
+frontend1_tuner2_adapt_clock_out = 0
+frontend1_tuner2_adapt_loop_out = 0
+frontend1_tuner2_adapt_i2c_id = 0
+frontend1_tuner2_adapt_attach = R836_C_ATTACH
+frontend1_tuner2_adapt_i2c_chip_addr = 0xF8

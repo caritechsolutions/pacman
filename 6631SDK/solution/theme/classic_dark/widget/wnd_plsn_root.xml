@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_plsn_root">
+    <property>
+        <rect>[320,152,384,222]</rect>
+         <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+         <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+    </property>
+    <signal>
+    	<create>app_tp_list_plsn_root_create</create>
+        <keypress>app_tp_list_plsn_root_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_plsn_root_back">
+            <property>
+                <rect>[0,0,384,222]</rect>
+                <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                <backcolor>[#f8f8f8,#f8f8f8,#f8f8f8]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_t2</lt_img>
+                <rt_img>s_win2_r_t2</rt_img>
+                <lb_img>s_win2_l_b2</lb_img>
+                <rb_img>s_win2_r_b2</rb_img>
+                <l_img>s_win2_l_m</l_img>
+                <r_img>s_win2_r_m</r_img>
+                <t_img>s_win2_m_t2</t_img>
+                <b_img>s_win2_m_b2</b_img>
+            </property>
+        </widget>
+        <widget class="box" style="default" name="box_plsn_root_para">
+            <property>
+                <rect>[8,93,366,90]</rect>
+                <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                <backcolor>[#f8f8f8,#f8f8f8,#f8f8f8]</backcolor>
+                <format>vertical</format>
+            </property>
+            <signal>
+                <keypress>app_box_plsn_root_keypress</keypress>
+            </signal>
+            <children>
+                <widget class="boxitem" style="default" name="boxitem_plsn_root_choose">
+                    <property>
+                        <rect>[9,0,348,30]</rect>
+                        <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                        <backcolor>[#f8f8f8,#f8f8f8,#f8f8f8]</backcolor>
+                        <focus_image>s_bar_black_half1</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_plsn_root_N">
+                            <property>
+                                <rect>[24,0,160,30]</rect>
+                                <forecolor>[#000000,#f4f4f4,#000000]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <string>N</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="edit" style="default" name="edit_plsn_root_value_n">
+                            <property>
+                                <rect>[184,0,164,30]</rect>
+                                <forecolor>[#000000,#000000,#34343c]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <maxlen>8</maxlen>
+                                <format>edit_digit</format>
+                            </property>
+                            <signal>
+                                <reach_end>app_edit_plsn_root_value_n_reach_end</reach_end>
+                            </signal>
+                        </widget>
+			<widget class="text" style="default" name="text_tplist_pls_n_bk">
+			  <property>
+				  <rect>[184,0,164,30]</rect>
+				  <forecolor>[#000000,#000000,#34343c]</forecolor>
+				  <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+				  <alignment>hcentre|vcentre</alignment>
+				  <string></string>
+				  <format>static</format>
+			  </property>
+		  	</widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_plsn_root_content">
+                    <property>
+                        <rect>[9,30,348,30]</rect>
+                        <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                        <backcolor>[#f8f8f8,#f8f8f8,#f8f8f8]</backcolor>
+                        <focus_image>s_bar_black_half1</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_plsn_root_root">
+                            <property>
+                                <rect>[24,0,160,30]</rect>
+                                <forecolor>[#000000,#f4f4f4,#000000]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <string>Root</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="edit" style="default" name="edit_plsn_root_value">
+                            <property>
+                                <rect>[183,0,164,30]</rect>
+                                <forecolor>[#000000,#000000,#34343c]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <maxlen>8</maxlen>
+                                <format>edit_digit</format>
+                            </property>
+                            <signal>
+                                <reach_end>app_edit_plsn_root_value_reach_end</reach_end>
+                            </signal>
+                        </widget>
+			<widget class="text" style="default" name="text_tplist_pls_root_bk">
+			  <property>
+				  <rect>[183,0,164,30]</rect>
+				  <forecolor>[#000000,#000000,#34343c]</forecolor>
+				  <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+				  <alignment>hcentre|vcentre</alignment>
+				  <string></string>
+				  <format>static</format>
+			  </property>
+		  	</widget>
+                    </children>
+                </widget>
+
+                <widget class="boxitem" style="default" name="boxitem_plsn_root_save">
+                    <property>
+                        <rect>[0,60,366,30]</rect>
+                        <forecolor>[#00FF00,#00FF00,#00FF00]</forecolor>
+                        <backcolor>[#f8f8f8,#f8f8f8,#f8f8f8]</backcolor>
+                        <focus_image>s_bar_choice_blue4</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_plsn_root_ok">
+                            <property>
+                                <rect>[0,0,191,30]</rect>
+                                <forecolor>[#000000,#f4f4f4,#000000]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <string>Save</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_plsn_root_press_ok">
+                            <property>
+                                <rect>[190,0,174,30]</rect>
+                                <forecolor>[#000000,#000000,#000000]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string>Press OK</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+        <widget class="text" style="default" name="text_plsn_root_title">
+            <property>
+                <rect>[102,0,180,30]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Input N</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_plsn_root_type">
+            <property>
+                <rect>[41,63,160,30]</rect>
+                <forecolor>[#000000,#f4f4f4,#000000]</forecolor>
+                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                <string>Type</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_plsn_root_value">
+            <property>
+                <rect>[201,63,164,30]</rect>
+                <forecolor>[#000000,#f4f4f4,#000000]</forecolor>
+                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                <string>Value</string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

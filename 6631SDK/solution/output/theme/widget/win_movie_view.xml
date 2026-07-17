@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="win_movie_view">
+  <property>
+    <rect>[0,0,1280,720]</rect>
+    <mirror>disable</mirror>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+  </property>
+  <signal>
+    <create>movie_view_init</create>
+    <destroy>movie_view_destroy</destroy>
+    <got_focus>movie_view_got_focus</got_focus>
+    <lost_focus>movie_view_lost_focus</lost_focus>
+    <service>movie_view_service</service>
+    <keypress>movie_view_keypress</keypress>
+  </signal>
+  <children>
+    <widget class="text" style="default" name="movie_view_text_status">
+      <property>
+        <rect>[510,150,260,32]</rect>
+        <state>hide</state>
+        <forecolor>[win_fore_color,win_fore_color,osd_trans]</forecolor>
+        <backcolor>[black,black,win_bg_color]</backcolor>
+        <string>Can not play the file!</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="movie_view_image_popmsg">
+      <property>
+        <rect>[1080,120,80,30]</rect>
+        <state>hide</state>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+        <mode>single</mode>
+        <img></img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="movie_view_text_popmsg">
+      <property>
+        <rect>[1100,123,60,26]</rect>
+        <state>hide</state>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <font>font_22</font>
+        <string>X2</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="movie_view_imag_mute">
+      <property>
+        <rect>[1080,35,94,76]</rect>
+        <state>hide</state>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_mute</img>
+      </property>
+    </widget>
+    <widget class="combobox" style="default" name="movie_view_combo_popmsg">
+      <property>
+        <rect>[552,200,176,32]</rect>
+        <state>hide</state>
+        <forecolor>[win_fore_color,win_fore_color,osd_trans]</forecolor>
+        <backcolor>[black,black,default_color]</backcolor>
+        <content>[Stereo,Left,Right,Auto,Full screen,Original size,4:3,16:9]</content>
+      </property>
+    </widget>
+  </children>
+</widget>

@@ -1,0 +1,8 @@
+<?xml version="1.0"  encoding="utf-8"?>
+<upgrade>
+        <sw_version>00.00.00.01</sw_version>
+        <hw_version>00.00.00.01</hw_version>
+        <manufacture_id>00.00.00.01</manufacture_id>
+        <model_sn>0x1234</model_sn>
+</upgrade>
+

@@ -1,0 +1,29 @@
+//Board Mark: GX6631-CH1D_DVB-C_DAUL_R858C_DEMO_V1.0 2023-3-15
+//Frontend Info: Canopus(R858)
+
+frontend1_demod_i2c_id = 2
+frontend1_demod_i2c_chip_addr = 0xa4
+frontend1_demod_attach = Canopus_DVBC_ATTACH
+frontend1_tuner_i2c_chip_addr = 0xd4
+frontend1_tuner_crystal = 24
+frontend1_if_freq = 5000
+//frontend1_tuner_i2c_chip_addr = 0xc0 //mxl608
+//frontend1_tuner_crystal = 16 //mxl608
+//frontend1_if_freq = 4500 //mxl608
+frontend1_tuner_xtal_cap = 30
+frontend1_tuner_clock_out = 0
+frontend1_tuner_loop_out = 1
+frontend1_demux_ts_src = DEMUX_TS1
+frontend1_tuner_i2c_id = 0
+
+frontend2_demod_i2c_id = 2
+frontend2_demod_i2c_chip_addr = 0xA4
+frontend2_demod_attach = Canopus_DVBC1_ATTACH
+frontend2_tuner_i2c_chip_addr = 0xf4
+frontend2_tuner_crystal = 24
+frontend2_if_freq = 5500
+frontend2_tuner_xtal_cap = 30
+frontend2_tuner_clock_out = 0
+frontend2_tuner_loop_out = 1
+frontend2_demux_ts_src = DEMUX_TS3
+frontend2_tuner_i2c_id = 0

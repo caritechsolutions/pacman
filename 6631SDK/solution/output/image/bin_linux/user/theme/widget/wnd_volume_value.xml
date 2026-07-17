@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget class="window" name="wnd_volume_value" style="default">
+    <property>
+        <rect>[290,530,700,78]</rect>
+        <mirror>disable</mirror>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_volume_value_create</create>
+        <destroy>app_volume_value_destroy</destroy>
+        <keypress>app_volume_value_keypress</keypress>
+        <service>app_volume_value_service</service>
+    </signal>
+    <children>
+        <widget class="image" name="image_volume" style="default">
+            <property>
+                <rect>[100,33,600,45]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <rt_img>s_vol1_r</rt_img>
+                <t_img>s_vol1_m</t_img>
+            </property>
+        </widget>
+        <widget class="progbar" name="progbar_volume" style="default">
+            <property>
+                <rect>[100,45,525,21]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <min>0</min>
+                <max>25</max>
+                <back_image>s_process_grey</back_image>
+                <back_image_l>s_vol2_l</back_image_l>
+                <back_image_m>s_vol2_m</back_image_m>
+                <back_image_r>s_vol2_r</back_image_r>
+                <fore_image>s_process_blue</fore_image>
+                <fore_image_l>s_vol3_l</fore_image_l>
+                <fore_image_m>s_vol3_m</fore_image_m>
+                <fore_image_r>s_vol3_r</fore_image_r>
+                <format>water</format>
+                <text_format>hide</text_format>
+                <alignment>hcentre|vcentre</alignment>
+            </property>
+        </widget>
+        <widget class="text" name="txt_volume" style="default">
+            <property>
+                <rect>[632,36,60,40]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="image" name="img_volume" style="default">
+            <property>
+                <rect>[0,0,100,78]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <mode>single</mode>
+                <img>s_vol</img>
+            </property>
+        </widget>
+    </children>
+</widget>

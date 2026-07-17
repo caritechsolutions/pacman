@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget class="window" style="default" name="wnd_tp_list_popup">
+    <property>
+        <rect>[320,152,384,216]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_tplist_popup_create</create>
+        <destroy>app_tplist_popup_destroy</destroy>
+        <keypress>app_tplist_popup_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="img_tplist_popup_back">
+            <property>
+                <rect>[0,0,384,216]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win2_l_t2</lt_img>
+                <rt_img>s_win2_r_t2</rt_img>
+                <lb_img>s_win2_l_b2</lb_img>
+                <rb_img>s_win2_r_b2</rb_img>
+                <l_img>s_win2_l_m</l_img>
+                <r_img>s_win2_r_m</r_img>
+                <t_img>s_win2_m_t2</t_img>
+                <b_img>s_win2_m_b2</b_img>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_tplist_popup_ok_back">
+            <property>
+                <rect>[8,171,366,30]</rect>
+                <mirror>disable</mirror>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[#808080,#808080,#808080]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_choice_blue4</img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_tplist_popup_ok">
+            <property>
+                <rect>[254,172,80,26]</rect>
+                <forecolor>[text_tag_color,text_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>OK</string>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_tplist_popup_cancel">
+            <property>
+                <rect>[56,172,80,26]</rect>
+                <forecolor>[text_tag_color,text_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>Cancel</string>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_tplist_popup_title">
+            <property>
+                <rect>[12,1,360,28]</rect>
+                <forecolor>[#f4f4f4,#f4f4f4,#f4f4f4]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_tplist_popup_tip1">
+            <property>
+                <rect>[16,55,352,56]</rect>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|top</alignment>
+                <string></string>
+                <format>automatic</format>
+            </property>
+        </widget>
+        <widget class="image" style="default" name="img_tplist_tip_opt_exist">
+            <property>
+                <rect>[8,163,366,30]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_bar_choice_blue4</img>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_tplist_tip_cancel_exist">
+            <property>
+                <rect>[56,163,80,30]</rect>
+                <state>hide</state>
+                <forecolor>[#96C1F6,#000000,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>Cancel</string>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="btn_tplist_tip_ok_exist">
+            <property>
+                <rect>[248,163,80,30]</rect>
+                <state>hide</state>
+                <forecolor>[#96C1F6,#000000,osd_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>OK</string>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_tplist_popup_tip2">
+            <property>
+                <rect>[16,119,224,28]</rect>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|top</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="box" style="default" name="box_tplist_popup_para">
+            <property>
+                <rect>[8,48,366,158]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <format>vertical</format>
+            </property>
+            <signal>
+                <keypress>app_tplist_popup_box_keypress</keypress>
+            </signal>
+            <children>
+                <widget class="boxitem" style="default" name="boxitem_tplist_popup_freq">
+                    <property>
+                        <rect>[9,0,348,30]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                        <focus_image>s_bar_black_half1</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_tplist_popup_freq">
+                            <property>
+                                <rect>[24,0,160,30]</rect>
+                                <forecolor>[#000000,#f4f4f4,#000000]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <string>Frequency</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="edit" style="default" name="edit_tplist_popup_freq">
+                            <property>
+                                <rect>[183,0,164,30]</rect>
+                                <forecolor>[#000000,#000000,#34343c]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <maxlen>5</maxlen>
+                                <format>edit_digit</format>
+                            </property>
+                            <signal>
+                                <reach_end>app_edit_tplist_popup_freq_reach_end</reach_end>
+                            </signal>
+                        </widget>
+                        <widget class="text" style="default" name="text_tplist_popup_freq2">
+                            <property>
+                                <rect>[183,0,164,30]</rect>
+                                <forecolor>[#000000,#000000,#34343c]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="image" style="default" name="img_tplist_fre_lift_back">
+                            <property>
+                                <rect>[188,8,15,13]</rect>
+                                <forecolor>[#000000,#000000,#34343c]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <mode>single</mode>
+                                <mirror>disable</mirror>
+                                <img>s_arrow_l_1</img>
+                            </property>
+                        </widget>
+                        <widget class="image" style="default" name="img_tplist_fre_right_back">
+                            <property>
+                                <rect>[327,8,15,13]</rect>
+                                <forecolor>[#000000,#000000,#34343c]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <mode>single</mode>
+                                <mirror>disable</mirror>
+                                <img>s_arrow_r_1</img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_tplist_popup_polar">
+                    <property>
+                        <rect>[9,30,348,30]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                        <focus_image>s_bar_black_half1</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_tplist_popup_polar">
+                            <property>
+                                <rect>[24,0,160,30]</rect>
+                                <forecolor>[#000000,#f4f4f4,#000000]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <string>Polar</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="combobox" style="default" name="cmb_tplist_popup_polar">
+                            <property>
+                                <rect>[183,0,164,30]</rect>
+                                <forecolor>[#000000,#000000,#34343c]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <unfocus_left_img>s_arrow_l_1</unfocus_left_img>
+                                <focus_left_img>s_arrow_l_1</focus_left_img>
+                                <unfocus_right_img>s_arrow_r_1</unfocus_right_img>
+                                <focus_right_img>s_arrow_r_1</focus_right_img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_tplist_popup_sym">
+                    <property>
+                        <rect>[9,60,348,30]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                        <focus_image>s_bar_black_half1</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_tplist_popup_sym">
+                            <property>
+                                <rect>[24,0,160,30]</rect>
+                                <forecolor>[#000000,#f4f4f4,#000000]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <string>Symbol Rate</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="edit" style="default" name="edit_tplist_popup_sym">
+                            <property>
+                                <rect>[183,0,164,30]</rect>
+                                <forecolor>[#000000,#000000,#34343c]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <maxlen>6</maxlen>
+                                <format>edit_digit</format>
+                            </property>
+                            <signal>
+                                <reach_end>app_edit_tplist_popup_sym_reach_end</reach_end>
+                            </signal>
+                        </widget>
+                        <widget class="text" style="default" name="text_tplist_popup_sym2">
+                            <property>
+                                <rect>[183,0,164,30]</rect>
+                                <forecolor>[#000000,#000000,#34343c]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="image" style="default" name="img_tplist_sym_lift_back">
+                            <property>
+                                <rect>[188,8,15,13]</rect>
+                                <forecolor>[#000000,#000000,#34343c]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <mode>single</mode>
+                                <mirror>disable</mirror>
+                                <img>s_arrow_l_1</img>
+                            </property>
+                        </widget>
+                        <widget class="image" style="default" name="img_tplist_sym_right_back">
+                            <property>
+                                <rect>[327,8,15,13]</rect>
+                                <forecolor>[#000000,#000000,#34343c]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <mode>single</mode>
+                                <mirror>disable</mirror>
+                                <img>s_arrow_r_1</img>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_tplist_popup_save">
+                    <property>
+                        <rect>[0,121,366,30]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                        <mirror>disable</mirror>
+                        <focus_image>s_bar_choice_blue4</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_tplist_popup_ok">
+                            <property>
+                                <rect>[0,0,191,30]</rect>
+                                <forecolor>[#000000,#f4f4f4,#000000]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <string>Save</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_satlist_popup_press_ok">
+                            <property>
+                                <rect>[190,0,174,30]</rect>
+                                <forecolor>[#000000,#000000,#000000]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string>Press OK</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+        <widget class="box" style="default" name="box_tp_record_s2l3">
+            <property>
+                <rect>[8,48,366,158]</rect>
+                <state>hide</state>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <format>vertical</format>
+            </property>
+            <signal>
+                <keypress>app_tplist_popup_box_s2l3_rec_keypress</keypress>
+            </signal>
+            <children>
+                <widget class="boxitem" style="default" name="boxitem_tplist_popup_s2l3_rec">
+                    <property>
+                        <rect>[9,0,348,30]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                        <focus_image>s_bar_black_half1</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_tplist_popup_rec_s2l3">
+                            <property>
+                                <rect>[24,0,160,30]</rect>
+                                <forecolor>[#000000,#f4f4f4,#000000]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <string>Mode</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="edit" style="default" name="edit_tplist_popup_rec_s2l3">
+                            <property>
+                                <rect>[183,0,164,30]</rect>
+                                <forecolor>[#000000,#000000,#34343c]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <maxlen>1</maxlen>
+                                <format>edit_digit</format>
+                            </property>
+                            <signal>
+                                <reach_end>app_edit_tplist_popup_rec_s2l3_reach_end</reach_end>
+                            </signal>
+                        </widget>
+                        <widget class="text" style="default" name="text_tplist_popup2_rec_s2l3">
+                            <property>
+                                <rect>[183,0,164,30]</rect>
+                                <forecolor>[#000000,#000000,#34343c]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <alignment>hcentre|vcentre</alignment>
+                                <string></string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+                <widget class="boxitem" style="default" name="boxitem_tplist_popup_s2l3_rec_ok">
+                    <property>
+                        <rect>[0,121,366,30]</rect>
+                        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                        <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                        <focus_image>s_bar_choice_blue4</focus_image>
+                    </property>
+                    <children>
+                        <widget class="text" style="default" name="text_tplist_popup_s2l3_rec_ok">
+                            <property>
+                                <rect>[0,0,191,30]</rect>
+                                <forecolor>[#000000,#f4f4f4,#000000]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,#34343c]</backcolor>
+                                <string>Save</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                        <widget class="text" style="default" name="text_satlist_popup_s2l3_rec_press_ok">
+                            <property>
+                                <rect>[190,0,174,30]</rect>
+                                <forecolor>[#000000,#000000,#000000]</forecolor>
+                                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                                <string>Press OK</string>
+                                <format>static</format>
+                            </property>
+                        </widget>
+                    </children>
+                </widget>
+            </children>
+        </widget>
+        <widget class="text" style="default" name="text_tplist_popup_tip1_exist">
+            <property>
+                <rect>[16,115,352,40]</rect>
+                <state>hide</state>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|top</alignment>
+                <string>Jump to the exist tp?</string>
+                <format>automatic</format>
+            </property>
+        </widget>
+    </children>
+</widget>

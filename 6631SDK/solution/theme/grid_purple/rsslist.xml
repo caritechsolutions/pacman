@@ -1,0 +1,12 @@
+<?xml version="1.0"  encoding="utf-8"?>
+<list>
+  <item>
+    <key>Yahoo News</key>
+    <value>http://news.yahoo.com/rss/</value>
+  </item>
+  <item>
+    <key>BBC News</key>
+    <value>http://feeds.bbci.co.uk/news/rss.xml</value>
+  </item>
+
+</list>

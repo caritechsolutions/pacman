@@ -1,0 +1,311 @@
+#
+# Automatically generated make config: don't edit
+# NationalChip DVB-S2 HD STB Application Configuration
+#
+BR2_HAVE_DOT_CONFIG=y
+# BR2_CHIP_GX3201 is not set
+# BR2_CHIP_GX3211 is not set
+# BR2_CHIP_SIRIUS is not set
+# BR2_CHIP_CANOPUS is not set
+# BR2_CHIP_VEGA is not set
+BR2_CHIP_TAURUS=y
+# BR2_CHIP_SCORPIO is not set
+# BR2_CHIP_GEMINI is not set
+# BR2_CHIP_CYGNUS is not set
+# BR2_CHIP_GX6605S is not set
+BR2_CHIP_NAME="taurus"
+BR2_OS_ECOS=y
+# BR2_OS_LINUX is not set
+BR2_OS_NAME="ecos"
+BR2_PROJ_NAME="taurus_ecos_6605H1_dvbs"
+
+#
+# Project Configuration
+#
+BR2_FAMILY_MINI=y
+# BR2_FAMILY_PUBLIC is not set
+BR2_FAMILY_NAME="mini"
+# BR2_PROJ_MINI_TAURUS_ECOS_3113U5 is not set
+# BR2_PROJ_MINI_TAURUS_ECOS_3235H1 is not set
+BR2_PROJ_MINI_TAURUS_ECOS_6605H1=y
+# BR2_PROJ_MINI_TAURUS_ECOS_COMBO is not set
+BR2_BOARD_NAME="6605H1"
+BR2_PROJ_MINI_TAURUS_ECOS_6605H1_DVBS=y
+BR2_TUNER_TYPE="dvbs"
+
+#
+# Theme Configuration
+#
+# BR2_THEME_classic_blue is not set
+BR2_THEME_classic_dark=y
+# BR2_THEME_classic_purple is not set
+# BR2_THEME_sky_blue is not set
+BR2_THEME_TEMPLATE_NAME="classic_dark"
+
+#
+# Language Config
+#
+
+#
+# OSD Language Config
+#
+BR2_LANG_classic_dark_ARABIC=y
+# BR2_LANG_classic_dark_CHINESE is not set
+BR2_LANG_classic_dark_ENGLISH=y
+# BR2_LANG_classic_dark_FARSI is not set
+# BR2_LANG_classic_dark_FRENCH is not set
+BR2_LANG_classic_dark_GERMAN=y
+# BR2_LANG_classic_dark_PORTUGUESE is not set
+# BR2_LANG_classic_dark_RUSSIAN is not set
+# BR2_LANG_classic_dark_SPAIN is not set
+# BR2_LANG_classic_dark_THAI is not set
+BR2_LANG_classic_dark_TURKISH=y
+# BR2_LANG_classic_dark_VIETNAMESE is not set
+# BR2_LANG_DEFAULT_classic_dark_ARABIC is not set
+BR2_LANG_DEFAULT_classic_dark_ENGLISH=y
+# BR2_LANG_DEFAULT_classic_dark_GERMAN is not set
+# BR2_LANG_DEFAULT_classic_dark_TURKISH is not set
+
+#
+# KeyBorad Language Config
+#
+BR2_KB_LANG_classic_dark_ENGLISH=y
+BR2_KB_LANG_classic_dark_ARABIC=y
+# BR2_KB_LANG_classic_dark_FARSI is not set
+# BR2_KB_LANG_classic_dark_SPANISH is not set
+# BR2_KB_LANG_classic_dark_PORTUGUESE is not set
+BR2_KB_LANG_classic_dark_TURKISH=y
+BR2_KB_LANG_classic_dark_VIETNAMESE=y
+BR2_KB_LANG_classic_dark_RUSSIAN=y
+# BR2_KB_LANG_classic_dark_UKRAINIAN is not set
+# BR2_KB_LANG_classic_dark_THAI is not set
+# BR2_KB_LANG_classic_dark_BULGARAIN is not set
+# BR2_KB_LANG_classic_dark_POLSKI is not set
+BR2_KB_LANG_DEFAULT_classic_dark_ENGLISH=y
+# BR2_KB_LANG_DEFAULT_classic_dark_ARABIC is not set
+# BR2_KB_LANG_DEFAULT_classic_dark_TURKISH is not set
+# BR2_KB_LANG_DEFAULT_classic_dark_VIETNAMESE is not set
+# BR2_KB_LANG_DEFAULT_classic_dark_RUSSIAN is not set
+
+#
+# Frontend Configuration
+#
+# BR2_DEMOD_NDEMOD_WITH_1TUNER is not set
+BR2_DEMOD_MULTY_DEMOD=1
+
+#
+# Demod 1
+#
+BR2_DEMOD1_DVB_S2=y
+# BR2_DEMOD1_DVB_T2 is not set
+# BR2_DEMOD1_DVB_C is not set
+# BR2_DEMOD1_DTMB is not set
+# BR2_DEMOD1_ISDBT is not set
+# BR2_TUNER1_AUTO_ADAPT_DVBS is not set
+# BR2_TUNER1_AV2018 is not set
+BR2_TUNER1_RDA5815M=y
+# BR2_TUNER1_AV2020 is not set
+# BR2_TUNER1_RT720 is not set
+# BR2_TUNER1_R848_DVBS is not set
+# BR2_TUNER1_SHARP7306 is not set
+# BR2_TUNER1_TS6011 is not set
+# BR2_TUNER1_M3031 is not set
+# BR2_FE_CONFIG_TAURUS_GX3113U1_DVBC_CONFIG is not set
+# BR2_FE_CONFIG_TAURUS_GX3113U_R850_DVBC_CONFIG is not set
+# BR2_FE_CONFIG_TAURUS_GX3235H1_1503B_R850_DTMB_CONFIG is not set
+# BR2_FE_CONFIG_TAURUS_GX3235H1_ATBM7833_DVBS_CONFIG is not set
+# BR2_FE_CONFIG_TAURUS_GX3235H1_ATBM888X_MXL608_DTMB_CONFIG is not set
+# BR2_FE_CONFIG_TAURUS_GX3235H1_ATBM888X_R850_DTMB_CONFIG is not set
+# BR2_FE_CONFIG_TAURUS_GX6605H1_ATBM78X_COMBO_CONFIG is not set
+# BR2_FE_CONFIG_TAURUS_GX6605H1_CXD2856ER_COMBO_CONFIG is not set
+BR2_FE_CONFIG_TAURUS_GX6605H1_DVBS_PUBLIC_CONFIG=y
+# BR2_FE_CONFIG_TAURUS_GX6615H1_DVBS_PUBLIC_CONFIG is not set
+# BR2_FE_CONFIG_TAURUS_GX6622S2_GX1133_CONFIG is not set
+
+#
+# Module Configuration
+#
+
+#
+# Network configuration
+#
+BR2_MOD_APP_NETWORK=y
+BR2_MOD_APP_NETDEVICES=y
+BR2_MOD_APP_WIFI=y
+BR2_MODE_WIFI_TYPE=y
+BR2_MOD_WIFI_MT7601=y
+# BR2_MOD_WIFI_MT7603 is not set
+BR2_MOD_WIFI_RT5370=y
+# BR2_MOD_WIFI_RTL8188FU is not set
+# BR2_MOD_WIFI_RTL8188EU is not set
+# BR2_MOD_WIFI_ATBM6032 is not set
+# BR2_MOD_WIFI_RTL8192 is not set
+# BR2_MOD_WIFI_RTL88X1CU is not set
+# BR2_MOD_WIFI_RTL88X2BU is not set
+# BR2_MOD_WIFI_AIC8800 is not set
+# BR2_MOD_WIFI_DOUBLE is not set
+# BR2_MOD_WIFI_SUPER_AP is not set
+BR2_MOD_APP_3G=y
+# BR2_MOD_APP_GPRS is not set
+# BR2_MOD_APP_USB_ETH is not set
+# BR2_MOD_APP_VPN is not set
+# BR2_MOD_APP_BLUETOOTH is not set
+BR2_MOD_APP_NETAPPS=y
+# BR2_MOD_MPEG_DASH is not set
+# BR2_MOD_ASSOCIATIONLIBRE_URL is not set
+# BR2_MOD_NET_TIME_GET is not set
+# BR2_MOD_NET_AUDIO_SUPPORT is not set
+# BR2_MOD_APP_APPLETS is not set
+# BR2_MOD_SAT2IP_SERVER is not set
+# BR2_MOD_DVB2IP_SERVER is not set
+# BR2_MOD_APP_DLNADMR is not set
+# BR2_MOD_APP_DLNADMP is not set
+# BR2_MOD_APP_DLNASAT2IP is not set
+# BR2_MOD_APP_DLNADMS is not set
+# BR2_MOD_APP_QR_POP is not set
+# BR2_MOD_APP_WEBLET is not set
+# BR2_MOD_APP_WEBAPI is not set
+# BR2_MOD_APP_IPTV_LITE is not set
+BR2_MOD_APP_IPTV_ACCOUNT=y
+BR2_MOD_APP_IPTV_FAV=y
+# BR2_MOD_APP_IPTV_EPG is not set
+# BR2_MOD_APP_SAT_FINDER is not set
+# BR2_MOD_APP_DVB_CLOUD is not set
+# BR2_MOD_APP_NET_UPGRADE is not set
+BR2_MOD_APP_FREEIPTV=y
+BR2_MOD_APP_IPTV=y
+# BR2_MOD_APP_IPTV_CLOUD is not set
+# BR2_MOD_APP_RSS is not set
+BR2_MOD_APP_STALKER=y
+BR2_MOD_APP_STALKER_SERIES=y
+BR2_MOD_APP_XTREAM=y
+BR2_MOD_APP_XTREAM_SERIES=y
+
+#
+# Audio and Video configuration
+#
+BR2_MOD_APP_CVBS_SCALE=y
+# BR2_MOD_APP_HDCP_MODE is not set
+# BR2_MOD_APP_PP_FULL_HD_SUPPORT is not set
+# BR2_MOD_APP_SCART is not set
+# BR2_MOD_APP_FLAC is not set
+# BR2_MOD_APP_OGG is not set
+# BR2_MOD_APP_DA is not set
+# BR2_MOD_APP_AUDIO_LANG_QAA2OST_SUPPORT is not set
+# BR2_MOD_APP_VIDEO_SHARPNESS is not set
+# BR2_MOD_APP_VIDEO_HUE is not set
+
+#
+# Function configuration
+#
+# BR2_MOD_APP_NET_SEARCH is not set
+BR2_MOD_EPG_TMLIST=y
+# BR2_MOD_EPG_LVLIST is not set
+# BR2_MOD_EPG_REALTIMER_FILTER_DETAIL is not set
+# BR2_MOD_APP_RECALL_LIST is not set
+# BR2_MOD_APP_AUTO_STANDBY is not set
+# BR2_MOD_APP_MULTIFEED is not set
+# BR2_MOD_APP_NO_SIGNAL_AUTO_STANDBY is not set
+# BR2_MOD_LONG_PASSWORD is not set
+# BR2_MOD_APP_TKGS is not set
+# BR2_MOD_APP_GAME is not set
+BR2_MOD_ADVANCE_BOOK_TIME="30"
+# BR2_MOD_APP_PARENTAL_LOCK is not set
+# BR2_MOD_FUNC_CI is not set
+BR2_MOD_FUNC_RECORD_TP=y
+# BR2_MOD_BOOT_AD_SUPPORT is not set
+# BR2_MOD_AUDIO_DESCRIPTION is not set
+# BR2_MOD_APP_POWERON_CONTROL is not set
+# BR2_MOD_APP_PVR_STANDBY is not set
+# BR2_MOD_QUICK_SWITCH is not set
+# BR2_MOD_COMMON_VIEW_V2 is not set
+# BR2_MOD_UI_MIRROR is not set
+# BR2_MOD_SAT_LIST_MOVE_SORT is not set
+# BR2_MOD_TP_LIST_MOVE_SORT is not set
+# BR2_MOD_APP_MERGE_DB is not set
+# BR2_MOD_USB_SAFELY_REMOVE is not set
+# BR2_MOD_NAND_FLASH is not set
+# BR2_MOD_MULTIMEDIA_PREVIEW is not set
+# BR2_MOD_SHUTDOWN_MODE_SUPPORT is not set
+# BR2_MOD_LEARN_RCU_SUPPORT is not set
+
+#
+# Search configuration
+#
+# BR2_MOD_APP_UNICABLE is not set
+# BR2_MOD_NO_AVPROG_SAVE is not set
+# BR2_MOD_RESERVED_SERVICE_NOSAVE is not set
+BR2_MOD_APP_SUPERBLIND=y
+BR2_MOD_APP_MULTISTREAM=y
+BR2_MOD_APP_PDMX=y
+# BR2_MOD_APP_SYS_SAVE_DIRECT is not set
+# BR2_MOD_PSI_MODULE is not set
+# BR2_MOD_APP_BOUQUET is not set
+# BR2_MOD_SDT_SUPPORT is not set
+# BR2_MOD_PAT_SUPPORT is not set
+# BR2_MOD_PMT_UPDATE_SUPPORT is not set
+# BR2_MOD_APP_BACK_UPDATE is not set
+# BR2_MOD_SEARCH_AUTO_SAVE is not set
+# BR2_MOD_APP_LCN is not set
+# BR2_MOD_PRESET_PROG_INFO_CORRECT is not set
+# BR2_MOD_LNB_SHORT_DETECT is not set
+
+#
+# Peripheral configuration
+#
+# BR2_MOD_PANEL_SETTING_SUPPORT is not set
+# BR2_MOD_STANDBY_SHOW_TIME is not set
+# BR2_MOD_RF_MODULATOR is not set
+
+#
+# Subtitle and Teletext configuration
+#
+BR2_MOD_APP_MEDIA_SUBTITLE=y
+BR2_MOD_APP_OSD_SUBTITLE=y
+# BR2_MOD_APP_OSDTRANS_BG is not set
+BR2_MOD_MEDIA_SUB_DELAY="10"
+BR2_MOD_8BIT_COLOR_TTX=y
+# BR2_MOD_16BIT_COLOR_TTX is not set
+# BR2_MOD_TTX_PRE_PROCESS is not set
+BR2_MOD_CC_OFF=y
+# BR2_MOD_ARIBCC is not set
+# BR2_MOD_ATSCCC is not set
+
+#
+# Upgrade configuration
+#
+# BR2_MOD_APP_OTA is not set
+# BR2_MOD_USB_RECOVER is not set
+# BR2_MOD_APP_SKIN is not set
+
+#
+# System optimization options
+#
+BR2_MENCENT_FREEE_SPACE=y
+BR2_MOD_MINI_MEM_SUPPORT=y
+
+#
+# Secure Configuration
+#
+# BR2_MOD_SECURE_PVR is not set
+# BR2_MOD_FUNC_CAS is not set
+# BR2_MOD_CASCAM is not set
+BR2_SECURE_COMBINATION_MODULE=y
+# BR2_SECURE_FULL_MODULE is not set
+# BR2_SECURE_FIREWALL_MODULE is not set
+# BR2_SECURE_SCPU_MODULE is not set
+# BR2_SECURE_DMA_MODULE is not set
+# BR2_SECURE_RNG_MODULE is not set
+BR2_SECURE_SCI_MODULE=y
+# BR2_SECURE_TEE_MODULE is not set
+
+#
+# System hacking
+#
+# BR2_MOD_APP_ADVANCED_PRINT is not set
+# BR2_MOD_APP_USB_TEST is not set
+# BR2_MOD_APP_FACTORY_TEST is not set
+# BR2_MOD_APP_KEY_SCANCODE is not set
+# BR2_MOD_APP_CVBS_TEST is not set
+# BR2_MOD_APP_AUTO_TEST is not set
+# BR2_MOD_APP_DEMOD_INFO is not set

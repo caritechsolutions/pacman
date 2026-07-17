@@ -1,0 +1,1715 @@
+menu "Frontend Configuration"
+
+config BR2_DEMOD_NDEMOD_WITH_1TUNER
+	bool "N demods share one tuner support"
+	help
+
+config BR2_DEMOD_MULTY_DEMOD
+	int "Multi Demod Support"
+	range 1 4
+	default 1
+	help
+
+##############################  Demod 1  ###################################
+comment "Demod 1"
+choice
+	prompt "Demod Number 1"
+	default BR2_DEMOD1_DVB_S2
+
+config BR2_DEMOD1_AUTO_ADAPT_DVB_S2
+	bool "AUTO_S2"
+	help
+
+config BR2_DEMOD1_DVB_S2
+	bool "DVB_S2"
+	help
+
+config BR2_DEMOD1_AUTO_ADAPT_DVB_T2
+	bool "AUTO_T2"
+	help
+
+config BR2_DEMOD1_DVB_T2
+	bool "DVB_T2"
+	help
+
+config BR2_DEMOD1_AUTO_ADAPT_DVB_C
+	bool "AUTO_C"
+	help
+
+config BR2_DEMOD1_DVB_C
+	bool "DVB_C"
+	help
+
+config BR2_DEMOD1_AUTO_ADAPT_DTMB
+	bool "AUTO_DTMB"
+	help
+
+config BR2_DEMOD1_DTMB
+	bool "DVB_DTMB"
+	help
+
+config BR2_DEMOD1_AUTO_ADAPT_ISDBT
+	bool "AUTO_ISDBT"
+	help
+
+config BR2_DEMOD1_ISDBT
+	bool "ISDBT"
+	help
+
+config BR2_DEMOD1_AUTO_ADAPT_COMBO_S
+	depends on BR2_DEMOD_MULTY_DEMOD != 1
+	bool "AUTO_COMBO_S"
+	help
+
+config BR2_DEMOD1_COMBO_S
+	depends on BR2_DEMOD_MULTY_DEMOD != 1
+	bool "COMBO_S"
+	help
+
+config BR2_DEMOD1_AUTO_ADAPT_COMBO_T
+	depends on BR2_DEMOD_MULTY_DEMOD != 1
+	bool "AUTO_COMBO_T"
+	help
+
+config BR2_DEMOD1_COMBO_T
+	depends on BR2_DEMOD_MULTY_DEMOD != 1
+	bool "COMBO_T"
+	help
+
+config BR2_DEMOD1_AUTO_ADAPT_COMBO_C
+	depends on BR2_DEMOD_MULTY_DEMOD != 1
+	bool "AUTO_COMBO_C"
+	help
+
+config BR2_DEMOD1_COMBO_C
+	depends on BR2_DEMOD_MULTY_DEMOD != 1
+	bool "COMBO_C"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER1 SELECT"
+	depends on BR2_DEMOD1_DVB_S2 || BR2_DEMOD1_COMBO_S || BR2_DEMOD1_AUTO_ADAPT_DVB_S2 || BR2_DEMOD1_AUTO_ADAPT_COMBO_S
+	default BR2_TUNER1_AV2018
+
+config BR2_TUNER1_AUTO_ADAPT_DVBS
+	bool "AUTO"
+	help
+
+config BR2_TUNER1_AV2018
+	bool "AV2018"
+	help
+
+config BR2_TUNER1_RDA5815M
+	bool "RDA5815M"
+	help
+
+config BR2_TUNER1_AV2020
+	bool "AV2020"
+	help
+
+config BR2_TUNER1_RT720
+    bool "RT720"
+    help
+
+config BR2_TUNER1_R848_DVBS
+	bool "R848_DVBS"
+	help
+
+config BR2_TUNER1_SHARP7306
+	bool "SHARP7306"
+	help
+
+config BR2_TUNER1_TS6011
+	bool "TS6011"
+	help
+
+config BR2_TUNER1_M3031
+	bool "M3031"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER1 SELECT"
+	depends on BR2_DEMOD1_DVB_T2 || BR2_DEMOD1_COMBO_T || BR2_DEMOD1_AUTO_ADAPT_DVB_T2 || BR2_DEMOD1_AUTO_ADAPT_COMBO_T
+	default BR2_TUNER1_MXL608_DVBT
+
+config BR2_TUNER1_AUTO_ADAPT_DVBT
+	bool "AUTO"
+	help
+
+config BR2_TUNER1_MXL608_DVBT
+	bool "MXL608_DVBT"
+	help
+
+config BR2_TUNER1_R836_DVBT
+	bool "R836_DVBT"
+	help
+
+config BR2_TUNER1_R848_DVBT
+	bool "R848_DVBT"
+	help
+
+config BR2_TUNER1_R910_DVBT
+	bool "R910_DVBT"
+	help
+
+config BR2_TUNER1_SI2141_DVBT
+	bool "SI2141_DVBT"
+	help
+
+config BR2_TUNER1_ATBM253_DVBT
+	bool "ATBM253_DVBT"
+	help
+
+config BR2_TUNER1_RDA5160_DVBT
+	bool "RDA5160_DVBT"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER1 SELECT"
+	depends on BR2_DEMOD1_DVB_C || BR2_DEMOD1_COMBO_C || BR2_DEMOD1_AUTO_ADAPT_DVB_C || BR2_DEMOD1_AUTO_ADAPT_COMBO_C
+	default BR2_TUNER1_MXL608_DVBC
+
+config BR2_TUNER1_AUTO_ADAPT_DVBC
+	bool "AUTO"
+	help
+
+config BR2_TUNER1_MXL608_DVBC
+	bool "MXL608_DVBC"
+	help
+
+config BR2_TUNER1_TDA18250
+	bool "TDA18250"
+	help
+
+config BR2_TUNER1_TDA18250A
+	bool "TDA18250A"
+	help
+
+config BR2_TUNER1_TDA18273_DVBC
+	bool "TDA18273_DVBC"
+	help
+
+config BR2_TUNER1_R836_DVBC
+	bool "R836_DVBC"
+	help
+
+config BR2_TUNER1_R848_DVBC
+	bool "R848_DVBC"
+	help
+
+config BR2_TUNER1_R910_DVBC
+	bool "R910_DVBC"
+	help
+
+config BR2_TUNER1_SI2141_DVBC
+	bool "SI2141_DVBC"
+	help
+
+config BR2_TUNER1_ATBM2040_DVBC
+	bool "ATBM2040_DVBC"
+	help
+
+config BR2_TUNER1_ATBM253_DVBC
+	bool "ATBM253_DVBC"
+	help
+
+config BR2_TUNER1_RDA5160_DVBC
+	bool "RDA5160_DVBC"
+	help
+
+config BR2_TUNER1_R858_DVBC_1ST
+	bool "R858_DVBC_1ST"
+	help
+
+config BR2_TUNER1_R858_DVBC_2ND
+	bool "R858_DVBC_2ND"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER1 SELECT"
+	depends on BR2_DEMOD1_DTMB || BR2_DEMOD1_AUTO_ADAPT_DTMB
+	default BR2_TUNER1_MXL608_DTMB
+
+config BR2_TUNER1_AUTO_ADAPT_DTMB
+	bool "AUTO"
+	help
+
+config BR2_TUNER1_MXL608_DTMB
+	bool "MXL608_DTMB"
+	help
+
+config BR2_TUNER1_TDA18273_DTMB
+	bool "TDA18273_DTMB"
+	help
+
+config BR2_TUNER1_R836_DTMB
+	bool "R836_DTMB"
+	help
+
+config BR2_TUNER1_R848_DTMB
+	bool "R848_DTMB"
+	help
+
+config BR2_TUNER1_SI2141_DTMB
+	bool "SI2141_DTMB"
+	help
+
+config BR2_TUNER1_ATBM2030_DTMB
+	bool "ATBM2030_DTMB"
+	help
+
+config BR2_TUNER1_ATBM2040_DTMB
+	bool "ATBM2040_DTMB"
+	help
+
+config BR2_TUNER1_RDA5160_DTMB
+	bool "RDA5160_DTMB"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER1 SELECT"
+	depends on BR2_DEMOD1_ISDBT || BR2_DEMOD1_AUTO_ADAPT_ISDBT
+	default BR2_TUNER1_MXL608_ISDBT
+
+config BR2_TUNER1_AUTO_ADAPT_ISDBT
+	bool "AUTO"
+	help
+
+config BR2_TUNER1_MXL608_ISDBT
+	bool "MXL608_ISDBT"
+	help
+
+config BR2_TUNER1_MXL683_ISDBT
+	bool "MXL683_ISDBT"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER COMBO SELECT"
+	depends on BR2_DEMOD1_COMBO
+
+config BR2_TUNER1_AUTO_ADAPT_COMBO
+	depends on BR2_DEMOD1_COMBO_S || BR2_DEMOD1_COMBO_T || BR2_DEMOD1_COMBO_C || BR2_DEMOD1_AUTO_ADAPT_COMBO_S || BR2_DEMOD1_AUTO_ADAPT_COMBO_T || BR2_DEMOD1_AUTO_ADAPT_COMBO_C
+	bool "AUTO"
+	help
+
+config BR2_TUNER1_COMBO_AV2018
+	depends on BR2_DEMOD1_COMBO_S || BR2_DEMOD1_AUTO_ADAPT_COMBO_S
+	bool "AV2018"
+	help
+
+config BR2_TUNER1_COMBO_AV2020
+	depends on BR2_DEMOD1_COMBO_S || BR2_DEMOD1_AUTO_ADAPT_COMBO_S
+	bool "AV2020"
+	help
+
+config BR2_TUNER1_COMBO_RT720
+    depends on BR2_DEMOD1_COMBO_S || BR2_DEMOD1_AUTO_ADAPT_COMBO_S
+    bool "RT720"
+    help
+
+config BR2_TUNER1_COMBO_R848_DVBS
+	depends on BR2_DEMOD1_COMBO_S || BR2_DEMOD1_AUTO_ADAPT_COMBO_S
+	bool "R848_DVBS"
+	help
+
+config BR2_TUNER1_COMBO_RDA5815M
+	depends on BR2_DEMOD1_COMBO_S || BR2_DEMOD1_AUTO_ADAPT_COMBO_S
+	bool "RDA5815M"
+	help
+
+config BR2_TUNER1_COMBO_SHARP7306
+	depends on BR2_DEMOD1_COMBO_S || BR2_DEMOD1_AUTO_ADAPT_COMBO_S
+	bool "SHARP7306"
+	help
+
+config BR2_TUNER1_COMBO_MXL608_DVBT
+	depends on BR2_DEMOD1_COMBO_T || BR2_DEMOD1_AUTO_ADAPT_COMBO_T
+	bool "MXL608_DVBT"
+	help
+
+config BR2_TUNER1_COMBO_R836_DVBT
+	depends on BR2_DEMOD1_COMBO_T || BR2_DEMOD1_AUTO_ADAPT_COMBO_T
+	bool "R836_DVBT"
+	help
+
+config BR2_TUNER1_COMBO_R848_DVBT
+	depends on BR2_DEMOD1_COMBO_T || BR2_DEMOD1_AUTO_ADAPT_COMBO_T
+	bool "R848_DVBT"
+	help
+
+config BR2_TUNER1_COMBO_R910_DVBT
+	depends on BR2_DEMOD1_COMBO_T || BR2_DEMOD1_AUTO_ADAPT_COMBO_T
+	bool "R910_DVBT"
+	help
+
+config BR2_TUNER1_COMBO_SI2141_DVBT
+	depends on BR2_DEMOD1_COMBO_T || BR2_DEMOD1_AUTO_ADAPT_COMBO_T
+	bool "SI2141_DVBT"
+	help
+
+config BR2_TUNER1_COMBO_ATBM253_DVBT
+	depends on BR2_DEMOD1_COMBO_T || BR2_DEMOD1_AUTO_ADAPT_COMBO_T
+	bool "ATBM253_DVBT"
+	help
+
+config BR2_TUNER1_COMBO_RDA5160_DVBT
+	depends on BR2_DEMOD1_COMBO_T || BR2_DEMOD1_AUTO_ADAPT_COMBO_T
+	bool "RDA5160_DVBT"
+	help
+
+config BR2_TUNER1_COMBO_MXL608_DVBC
+	depends on BR2_DEMOD1_COMBO_C || BR2_DEMOD1_AUTO_ADAPT_COMBO_C
+	bool "MXL608_DVBC"
+	help
+
+config BR2_TUNER1_COMBO_TDA18250
+	depends on BR2_DEMOD1_COMBO_C || BR2_DEMOD1_AUTO_ADAPT_COMBO_C
+	bool "TDA18250"
+	help
+
+config BR2_TUNER1_COMBO_TDA18250A
+	depends on BR2_DEMOD1_COMBO_C || BR2_DEMOD1_AUTO_ADAPT_COMBO_C
+	bool "TDA18250A"
+	help
+
+config BR2_TUNER1_COMBO_TDA18273_DVBC
+	depends on BR2_DEMOD1_COMBO_C || BR2_DEMOD1_AUTO_ADAPT_COMBO_C
+	bool "TDA18273_DVBC"
+	help
+
+config BR2_TUNER1_COMBO_R836_DVBC
+	depends on BR2_DEMOD1_COMBO_C || BR2_DEMOD1_AUTO_ADAPT_COMBO_C
+	bool "R836_DVBC"
+	help
+
+config BR2_TUNER1_COMBO_R848_DVBC
+	depends on BR2_DEMOD1_COMBO_C || BR2_DEMOD1_AUTO_ADAPT_COMBO_C
+	bool "R848_DVBC"
+	help
+
+config BR2_TUNER1_COMBO_R910_DVBC
+	depends on BR2_DEMOD1_COMBO_C || BR2_DEMOD1_AUTO_ADAPT_COMBO_C
+	bool "R910_DVBC"
+	help
+
+config BR2_TUNER1_COMBO_SI2141_DVBC
+	depends on BR2_DEMOD1_COMBO_C || BR2_DEMOD1_AUTO_ADAPT_COMBO_C
+	bool "SI2141_DVBC"
+	help
+
+config BR2_TUNER1_COMBO_ATBM2040_DVBC
+	depends on BR2_DEMOD1_COMBO_C || BR2_DEMOD1_AUTO_ADAPT_COMBO_C
+	bool "ATBM2040_DVBC"
+	help
+
+config BR2_TUNER1_COMBO_ATBM253_DVBC
+	depends on BR2_DEMOD1_COMBO_C || BR2_DEMOD1_AUTO_ADAPT_COMBO_C
+	bool "ATBM253_DVBC"
+	help
+
+config BR2_TUNER1_COMBO_RDA5160_DVBC
+	depends on BR2_DEMOD1_COMBO_C || BR2_DEMOD1_AUTO_ADAPT_COMBO_C
+	bool "RDA5160_DVBC"
+	help
+
+config BR2_TUNER1_COMBO_TS6011
+	depends on BR2_DEMOD1_COMBO_S || BR2_DEMOD1_AUTO_ADAPT_COMBO_S
+	bool "TS6011"
+	help
+
+config BR2_TUNER1_COMBO_M3031
+	depends on BR2_DEMOD1_COMBO_S || BR2_DEMOD1_AUTO_ADAPT_COMBO_S
+	bool "M3031"
+	help
+
+config BR2_TUNER1_COMBO_R858_DVBC_1ST
+	depends on BR2_DEMOD1_COMBO_C || BR2_DEMOD1_AUTO_ADAPT_COMBO_C
+	bool "R858_DVBC_1ST"
+	help
+
+config BR2_TUNER1_COMBO_R858_DVBC_2ND
+	depends on BR2_DEMOD1_COMBO_C || BR2_DEMOD1_AUTO_ADAPT_COMBO_C
+	bool "R858_DVBC_2ND"
+	help
+
+endchoice
+
+##############################  Demod 2  ###################################
+comment "Demod 2"
+	depends on BR2_DEMOD_MULTY_DEMOD != 1
+
+choice
+	prompt "Demod Number 2"
+	depends on BR2_DEMOD_MULTY_DEMOD != 1
+	default BR2_DEMOD2_DVB_S2
+
+config BR2_DEMOD2_AUTO_ADAPT_DVB_S2
+	bool "AUTO_S2"
+	help
+
+config BR2_DEMOD2_DVB_S2
+	bool "DVB_S2"
+	help
+
+config BR2_DEMOD2_AUTO_ADAPT_DVB_T2
+	bool "AUTO_T2"
+	help
+
+config BR2_DEMOD2_DVB_T2
+	bool "DVB_T2"
+	help
+
+config BR2_DEMOD2_AUTO_ADAPT_DVB_C
+	bool "AUTO_C"
+	help
+
+config BR2_DEMOD2_DVB_C
+	bool "DVB_C"
+	help
+
+config BR2_DEMOD2_AUTO_ADAPT_DTMB
+	bool "AUTO_DTMB"
+	help
+
+config BR2_DEMOD2_DTMB
+	bool "DVB_DTMB"
+	help
+
+config BR2_DEMOD2_AUTO_ADAPT_ISDBT
+	bool "AUTO_ISDBT"
+	help
+
+config BR2_DEMOD2_ISDBT
+	bool "ISDBT"
+	help
+
+config BR2_DEMOD2_AUTO_ADAPT_COMBO_S
+	bool "AUTO_COMBO_S"
+	help
+
+config BR2_DEMOD2_COMBO_S
+	bool "COMBO_S"
+	help
+
+config BR2_DEMOD2_AUTO_ADAPT_COMBO_T
+	bool "AUTO_COMBO_T"
+	help
+
+config BR2_DEMOD2_COMBO_T
+	bool "COMBO_T"
+	help
+
+config BR2_DEMOD2_AUTO_ADAPT_COMBO_C
+	bool "AUTO_COMBO_C"
+	help
+
+config BR2_DEMOD2_COMBO_C
+	bool "COMBO_C"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER2 SELECT"
+	depends on BR2_DEMOD2_DVB_S2 || BR2_DEMOD2_COMBO_S || BR2_DEMOD2_AUTO_ADAPT_DVB_S2 || BR2_DEMOD2_AUTO_ADAPT_COMBO_S
+	default BR2_TUNER2_AV2018
+
+config BR2_TUNER2_AUTO_ADAPT_DVBS
+	bool "AUTO"
+	help
+
+config BR2_TUNER2_AV2018
+	bool "AV2018"
+	help
+
+config BR2_TUNER2_RDA5815M
+	bool "RDA5815M"
+	help
+
+config BR2_TUNER2_AV2020
+	bool "AV2020"
+	help
+
+config BR2_TUNER2_RT720
+	bool "RT720"
+	help
+
+config BR2_TUNER2_R848_DVBS
+	bool "R848_DVBS"
+	help
+
+config BR2_TUNER2_SHARP7306
+	bool "SHARP7306"
+	help
+
+config BR2_TUNER2_TS6011
+	bool "TS6011"
+	help
+
+config BR2_TUNER2_M3031
+	bool "M3031"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER2 SELECT"
+	depends on BR2_DEMOD2_DVB_T2 || BR2_DEMOD2_COMBO_T || BR2_DEMOD2_AUTO_ADAPT_DVB_T2 || BR2_DEMOD2_AUTO_ADAPT_COMBO_T
+	default BR2_TUNER2_MXL608_DVBT
+
+config BR2_TUNER2_AUTO_ADAPT_DVBT
+	bool "AUTO"
+	help
+
+config BR2_TUNER2_MXL608_DVBT
+	bool "MXL608_DVBT"
+	help
+
+config BR2_TUNER2_R836_DVBT
+	bool "R836_DVBT"
+	help
+
+config BR2_TUNER2_R848_DVBT
+	bool "R848_DVBT"
+	help
+
+config BR2_TUNER2_R910_DVBT
+	bool "R910_DVBT"
+	help
+
+config BR2_TUNER2_SI2141_DVBT
+	bool "SI2141_DVBT"
+	help
+
+config BR2_TUNER2_ATBM253_DVBT
+	bool "ATBM253_DVBT"
+	help
+
+config BR2_TUNER2_RDA5160_DVBT
+	bool "RDA5160_DVBT"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER2 SELECT"
+	depends on BR2_DEMOD2_DVB_C || BR2_DEMOD2_COMBO_C || BR2_DEMOD2_AUTO_ADAPT_DVB_C || BR2_DEMOD2_AUTO_ADAPT_COMBO_C
+	default BR2_TUNER2_MXL608_DVBC
+
+config BR2_TUNER2_AUTO_ADAPT_DVBC
+	bool "AUTO"
+	help
+
+config BR2_TUNER2_MXL608_DVBC
+	bool "MXL608_DVBC"
+	help
+
+config BR2_TUNER2_TDA18250
+	bool "TDA18250"
+	help
+
+config BR2_TUNER2_TDA18250A
+	bool "TDA18250A"
+	help
+
+config BR2_TUNER2_TDA18273_DVBC
+	bool "TDA18273_DVBC"
+	help
+
+config BR2_TUNER2_R836_DVBC
+	bool "R836_DVBC"
+	help
+
+config BR2_TUNER2_R848_DVBC
+	bool "R848_DVBC"
+	help
+
+config BR2_TUNER2_R910_DVBC
+	bool "R910_DVBC"
+	help
+
+config BR2_TUNER2_SI2141_DVBC
+	bool "SI2141_DVBC"
+	help
+
+config BR2_TUNER2_ATBM2040_DVBC
+	bool "ATBM2040_DVBC"
+	help
+
+config BR2_TUNER2_ATBM253_DVBC
+	bool "ATBM253_DVBC"
+	help
+
+config BR2_TUNER2_RDA5160_DVBC
+	bool "RDA5160_DVBC"
+	help
+
+config BR2_TUNER2_R858_DVBC_1ST
+	bool "R858_DVBC_1ST"
+	help
+
+config BR2_TUNER2_R858_DVBC_2ND
+	bool "R858_DVBC_2ND"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER2 SELECT"
+	depends on BR2_DEMOD2_DTMB || BR2_DEMOD2_AUTO_ADAPT_DTMB
+	default BR2_TUNER2_MXL608_DTMB
+
+config BR2_TUNER2_AUTO_ADAPT_DTMB
+	bool "AUTO"
+	help
+
+config BR2_TUNER2_MXL608_DTMB
+	bool "MXL608_DTMB"
+	help
+
+config BR2_TUNER2_TDA18273_DTMB
+	bool "TDA18273_DTMB"
+	help
+
+config BR2_TUNER2_R836_DTMB
+	bool "R836_DTMB"
+	help
+
+config BR2_TUNER2_R848_DTMB
+	bool "R848_DTMB"
+	help
+
+config BR2_TUNER2_SI2141_DTMB
+	bool "SI2141_DTMB"
+	help
+
+config BR2_TUNER2_ATBM2030_DTMB
+	bool "ATBM2030_DTMB"
+	help
+
+config BR2_TUNER2_ATBM2040_DTMB
+	bool "ATBM2040_DTMB"
+	help
+
+config BR2_TUNER2_RDA5160_DTMB
+	bool "RDA5160_DTMB"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER2 SELECT"
+	depends on BR2_DEMOD2_ISDBT || BR2_DEMOD2_AUTO_ADAPT_ISDBT
+	default BR2_TUNER2_MXL608_ISDBT
+
+config BR2_TUNER2_AUTO_ADAPT_ISDBT
+	bool "AUTO"
+	help
+
+config BR2_TUNER2_MXL608_ISDBT
+	bool "MXL608_ISDBT"
+	help
+
+config BR2_TUNER2_MXL683_ISDBT
+	bool "MXL683_ISDBT"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER COMBO SELECT"
+	depends on BR2_DEMOD2_COMBO
+
+config BR2_TUNER2_AUTO_ADAPT_COMBO
+	depends on BR2_DEMOD2_COMBO_S || BR2_DEMOD2_COMBO_T || BR2_DEMOD2_COMBO_C || BR2_DEMOD2_AUTO_ADAPT_COMBO_S || BR2_DEMOD2_AUTO_ADAPT_COMBO_T || BR2_DEMOD2_AUTO_ADAPT_COMBO_C
+	bool "AUTO"
+	help
+
+config BR2_TUNER2_COMBO_AV2018
+	depends on BR2_DEMOD2_COMBO_S || BR2_DEMOD2_AUTO_ADAPT_COMBO_S
+	bool "AV2018"
+	help
+
+config BR2_TUNER2_COMBO_AV2020
+	depends on BR2_DEMOD2_COMBO_S || BR2_DEMOD2_AUTO_ADAPT_COMBO_S
+	bool "AV2020"
+	help
+
+config BR2_TUNER2_COMBO_RT720
+	depends on BR2_DEMOD2_COMBO_S || BR2_DEMOD2_AUTO_ADAPT_COMBO_S
+    bool "RT720"
+    help
+
+config BR2_TUNER2_COMBO_R848_DVBS
+	depends on BR2_DEMOD2_COMBO_S || BR2_DEMOD2_AUTO_ADAPT_COMBO_S
+	bool "R848_DVBS"
+	help
+
+config BR2_TUNER2_COMBO_RDA5815M
+	depends on BR2_DEMOD2_COMBO_S || BR2_DEMOD2_AUTO_ADAPT_COMBO_S
+	bool "RDA5815M"
+	help
+
+config BR2_TUNER2_COMBO_SHARP7306
+	depends on BR2_DEMOD2_COMBO_S || BR2_DEMOD2_AUTO_ADAPT_COMBO_S
+	bool "SHARP7306"
+	help
+
+config BR2_TUNER2_COMBO_MXL608_DVBT
+	depends on BR2_DEMOD2_COMBO_T || BR2_DEMOD2_AUTO_ADAPT_COMBO_T
+	bool "MXL608_DVBT"
+	help
+
+config BR2_TUNER2_COMBO_R836_DVBT
+	depends on BR2_DEMOD2_COMBO_T || BR2_DEMOD2_AUTO_ADAPT_COMBO_T
+	bool "R836_DVBT"
+	help
+
+config BR2_TUNER2_COMBO_R848_DVBT
+	depends on BR2_DEMOD2_COMBO_T || BR2_DEMOD2_AUTO_ADAPT_COMBO_T
+	bool "R848_DVBT"
+	help
+
+config BR2_TUNER2_COMBO_R910_DVBT
+	depends on BR2_DEMOD2_COMBO_T || BR2_DEMOD2_AUTO_ADAPT_COMBO_T
+	bool "R910_DVBT"
+	help
+
+config BR2_TUNER2_COMBO_SI2141_DVBT
+	depends on BR2_DEMOD2_COMBO_T || BR2_DEMOD2_AUTO_ADAPT_COMBO_T
+	bool "SI2141_DVBT"
+	help
+
+config BR2_TUNER2_COMBO_RDA5160_DVBT
+	depends on BR2_DEMOD2_COMBO_T || BR2_DEMOD2_AUTO_ADAPT_COMBO_T
+	bool "RDA5160_DVBT"
+	help
+
+config BR2_TUNER2_COMBO_MXL608_DVBC
+	depends on BR2_DEMOD2_COMBO_C || BR2_DEMOD2_AUTO_ADAPT_COMBO_C
+	bool "MXL608_DVBC"
+	help
+
+config BR2_TUNER2_COMBO_TDA18250
+	depends on BR2_DEMOD2_COMBO_C || BR2_DEMOD2_AUTO_ADAPT_COMBO_C
+	bool "TDA18250"
+	help
+
+config BR2_TUNER2_COMBO_TDA18250A
+	depends on BR2_DEMOD2_COMBO_C || BR1_DEMOD2_AUTO_ADAPT_COMBO_C
+	bool "TDA18250A"
+	help
+
+config BR2_TUNER2_COMBO_TDA18273_DVBC
+	depends on BR2_DEMOD2_COMBO_C || BR2_DEMOD2_AUTO_ADAPT_COMBO_C
+	bool "TDA18273_DVBC"
+	help
+
+config BR2_TUNER2_COMBO_R836_DVBC
+	depends on BR2_DEMOD2_COMBO_C || BR2_DEMOD2_AUTO_ADAPT_COMBO_C
+	bool "R836_DVBC"
+	help
+
+config BR2_TUNER2_COMBO_R848_DVBC
+	depends on BR2_DEMOD2_COMBO_C || BR2_DEMOD2_AUTO_ADAPT_COMBO_C
+	bool "R848_DVBC"
+	help
+
+config BR2_TUNER2_COMBO_R910_DVBC
+	depends on BR2_DEMOD2_COMBO_C || BR2_DEMOD2_AUTO_ADAPT_COMBO_C
+	bool "R910_DVBC"
+	help
+
+config BR2_TUNER2_COMBO_SI2141_DVBC
+	depends on BR2_DEMOD2_COMBO_C || BR2_DEMOD2_AUTO_ADAPT_COMBO_C
+	bool "SI2141_DVBC"
+	help
+
+config BR2_TUNER2_COMBO_ATBM2040_DVBC
+	depends on BR2_DEMOD2_COMBO_C || BR2_DEMOD2_AUTO_ADAPT_COMBO_C
+	bool "ATBM2040_DVBC"
+	help
+
+config BR2_TUNER2_COMBO_ATBM253_DVBC
+	depends on BR2_DEMOD2_COMBO_C || BR2_DEMOD2_AUTO_ADAPT_COMBO_C
+	bool "ATBM253_DVBC"
+	help
+
+config BR2_TUNER2_COMBO_RDA5160_DVBC
+	depends on BR2_DEMOD2_COMBO_C || BR2_DEMOD2_AUTO_ADAPT_COMBO_C
+	bool "RDA5160_DVBC"
+	help
+
+config BR2_TUNER2_COMBO_TS6011
+	depends on BR2_DEMOD2_COMBO_S || BR2_DEMOD2_AUTO_ADAPT_COMBO_S
+	bool "TS6011"
+	help
+
+config BR2_TUNER2_COMBO_M3031
+	depends on BR2_DEMOD2_COMBO_S || BR2_DEMOD2_AUTO_ADAPT_COMBO_S
+	bool "M3031"
+	help
+
+config BR2_TUNER2_COMBO_R858_DVBC_1ST
+	depends on BR2_DEMOD2_COMBO_C || BR2_DEMOD2_AUTO_ADAPT_COMBO_C
+	bool "R858_DVBC_1ST"
+	help
+
+config BR2_TUNER2_COMBO_R858_DVBC_2ND
+	depends on BR2_DEMOD2_COMBO_C || BR2_DEMOD2_AUTO_ADAPT_COMBO_C
+	bool "R858_DVBC_2ND"
+	help
+
+endchoice
+
+##############################  Demod 3  ###################################
+comment "Demod 3"
+	depends on ( BR2_DEMOD_MULTY_DEMOD != 1 ) && ( BR2_DEMOD_MULTY_DEMOD != 2 )
+
+choice
+	prompt "Demod Number 3"
+	depends on ( BR2_DEMOD_MULTY_DEMOD != 1 ) && ( BR2_DEMOD_MULTY_DEMOD != 2 )
+	default BR2_DEMOD3_DVB_S2
+
+config BR2_DEMOD3_AUTO_ADAPT_DVB_S2
+	bool "AUTO_S2"
+	help
+
+config BR2_DEMOD3_DVB_S2
+	bool "DVB_S2"
+	help
+
+config BR2_DEMOD3_AUTO_ADAPT_DVB_T2
+	bool "AUTO_T2"
+	help
+
+config BR2_DEMOD3_DVB_T2
+	bool "DVB_T2"
+	help
+
+config BR2_DEMOD3_AUTO_ADAPT_DVB_C
+	bool "AUTO_C"
+	help
+
+config BR2_DEMOD3_DVB_C
+	bool "DVB_C"
+	help
+
+config BR2_DEMOD3_AUTO_ADAPT_DTMB
+	bool "AUTO_DTMB"
+	help
+
+config BR2_DEMOD3_DTMB
+	bool "DVB_DTMB"
+	help
+
+config BR2_DEMOD3_AUTO_ADAPT_ISDBT
+	bool "AUTO_ISDBT"
+	help
+
+config BR2_DEMOD3_ISDBT
+	bool "ISDBT"
+	help
+
+config BR2_DEMOD3_AUTO_ADAPT_COMBO_S
+	bool "AUTO_COMBO_S"
+	help
+
+config BR2_DEMOD3_COMBO_S
+	bool "COMBO_S"
+	help
+
+config BR2_DEMOD3_AUTO_ADAPT_COMBO_T
+	bool "AUTO_COMBO_T"
+	help
+
+config BR2_DEMOD3_COMBO_T
+	bool "COMBO_T"
+	help
+
+config BR2_DEMOD3_AUTO_ADAPT_COMBO_C
+	bool "AUTO_COMBO_C"
+	help
+
+config BR2_DEMOD3_COMBO_C
+	bool "COMBO_C"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER3 SELECT"
+	depends on BR2_DEMOD3_DVB_S2 || BR2_DEMOD3_COMBO_S || BR2_DEMOD3_AUTO_ADAPT_DVB_S2 || BR2_DEMOD3_AUTO_ADAPT_COMBO_S
+	default BR2_TUNER3_AV2018
+
+config BR2_TUNER3_AUTO_ADAPT_DVBS
+	bool "AUTO"
+	help
+
+config BR2_TUNER3_AV2018
+	bool "AV2018"
+	help
+
+config BR2_TUNER3_RDA5815M
+	bool "RDA5815M"
+	help
+
+config BR2_TUNER3_AV2020
+	bool "AV2020"
+	help
+
+config BR2_TUNER3_RT720
+    bool "RT720"
+    help
+
+config BR2_TUNER3_R848_DVBS
+	bool "R848_DVBS"
+	help
+
+config BR2_TUNER3_SHARP7306
+	bool "SHARP7306"
+	help
+
+config BR2_TUNER3_TS6011
+	bool "TS6011"
+	help
+
+config BR2_TUNER3_M3031
+	bool "M3031"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER3 SELECT"
+	depends on BR2_DEMOD3_DVB_T2 || BR2_DEMOD3_COMBO_T || BR2_DEMOD3_AUTO_ADAPT_DVB_T2 || BR2_DEMOD3_AUTO_ADAPT_COMBO_T
+	default BR2_TUNER3_MXL608_DVBT
+
+config BR2_TUNER3_AUTO_ADAPT_DVBT
+	bool "AUTO"
+	help
+
+config BR2_TUNER3_MXL608_DVBT
+	bool "MXL608_DVBT"
+	help
+
+config BR2_TUNER3_R836_DVBT
+	bool "R836_DVBT"
+	help
+
+config BR2_TUNER3_R848_DVBT
+	bool "R848_DVBT"
+	help
+
+config BR2_TUNER3_R910_DVBT
+	bool "R910_DVBT"
+	help
+
+config BR2_TUNER3_SI2141_DVBT
+	bool "SI2141_DVBT"
+	help
+
+config BR2_TUNER3_ATBM253_DVBT
+	bool "ATBM253_DVBT"
+	help
+
+config BR2_TUNER3_RDA5160_DVBT
+	bool "RDA5160_DVBT"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER3 SELECT"
+	depends on BR2_DEMOD3_DVB_C || BR2_DEMOD3_COMBO_C || BR2_DEMOD3_AUTO_ADAPT_DVB_C || BR2_DEMOD3_AUTO_ADAPT_COMBO_C
+	default BR2_TUNER3_MXL608_DVBC
+
+config BR2_TUNER3_AUTO_ADAPT_DVBC
+	bool "AUTO"
+	help
+
+config BR2_TUNER3_MXL608_DVBC
+	bool "MXL608_DVBC"
+	help
+
+config BR2_TUNER3_TDA18250
+	bool "TDA18250"
+	help
+
+config BR2_TUNER3_TDA18250A
+	bool "TDA18250A"
+	help
+
+config BR2_TUNER3_TDA18273_DVBC
+	bool "TDA18273_DVBC"
+	help
+
+config BR2_TUNER3_R836_DVBC
+	bool "R836_DVBC"
+	help
+
+config BR2_TUNER3_R848_DVBC
+	bool "R848_DVBC"
+	help
+
+config BR2_TUNER3_R910_DVBC
+	bool "R910_DVBC"
+	help
+
+config BR2_TUNER3_SI2141_DVBC
+	bool "SI2141_DVBC"
+	help
+
+config BR2_TUNER3_ATBM2040_DVBC
+	bool "ATBM2040_DVBC"
+	help
+
+config BR2_TUNER3_ATBM253_DVBC
+	bool "ATBM253_DVBC"
+	help
+
+config BR2_TUNER3_RDA5160_DVBC
+	bool "RDA5160_DVBC"
+	help
+
+config BR2_TUNER3_R858_DVBC_1ST
+	bool "R858_DVBC_1ST"
+	help
+
+config BR2_TUNER3_R858_DVBC_2ND
+	bool "R858_DVBC_2ND"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER3 SELECT"
+	depends on BR2_DEMOD3_DTMB || BR2_DEMOD3_AUTO_ADAPT_DTMB
+	default BR2_TUNER3_MXL608_DTMB
+
+config BR2_TUNER3_AUTO_ADAPT_DTMB
+	bool "AUTO"
+	help
+
+config BR2_TUNER3_MXL608_DTMB
+	bool "MXL608_DTMB"
+	help
+
+config BR2_TUNER3_TDA18273_DTMB
+	bool "TDA18273_DTMB"
+	help
+
+config BR2_TUNER3_R836_DTMB
+	bool "R836_DTMB"
+	help
+
+config BR2_TUNER3_R848_DTMB
+	bool "R848_DTMB"
+	help
+
+config BR2_TUNER3_SI2141_DTMB
+	bool "SI2141_DTMB"
+	help
+
+config BR2_TUNER3_ATBM2030_DTMB
+	bool "ATBM2030_DTMB"
+	help
+
+config BR2_TUNER3_ATBM2040_DTMB
+	bool "ATBM2040_DTMB"
+	help
+
+config BR2_TUNER3_RDA5160_DTMB
+	bool "RDA5160_DTMB"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER3 SELECT"
+	depends on BR2_DEMOD3_ISDBT || BR2_DEMOD3_AUTO_ADAPT_ISDBT
+	default BR2_TUNER3_MXL608_ISDBT
+
+config BR2_TUNER3_AUTO_ADAPT_ISDBT
+	bool "AUTO"
+	help
+
+config BR2_TUNER3_MXL608_ISDBT
+	bool "MXL608_ISDBT"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER COMBO SELECT"
+	depends on BR2_DEMOD3_COMBO
+
+config BR2_TUNER3_AUTO_ADAPT_COMBO
+	depends on BR2_DEMOD3_COMBO_S || BR2_DEMOD3_COMBO_T || BR2_DEMOD3_COMBO_C || BR2_DEMOD3_AUTO_ADAPT_COMBO_S || BR2_DEMOD3_AUTO_ADAPT_COMBO_T || BR2_DEMOD3_AUTO_ADAPT_COMBO_C
+	bool "AUTO"
+	help
+
+config BR2_TUNER3_COMBO_AV2018
+	depends on BR2_DEMOD3_COMBO_S || BR2_DEMOD3_AUTO_ADAPT_COMBO_S
+	bool "AV2018"
+	help
+
+config BR2_TUNER3_COMBO_AV2020
+	depends on BR2_DEMOD3_COMBO_S || BR2_DEMOD3_AUTO_ADAPT_COMBO_S
+	bool "AV2020"
+	help
+
+config BR2_TUNER3_COMBO_RT720
+	depends on BR2_DEMOD3_COMBO_S || BR2_DEMOD3_AUTO_ADAPT_COMBO_S
+	bool "RT720"
+	help
+
+config BR2_TUNER3_COMBO_R848_DVBS
+	depends on BR2_DEMOD3_COMBO_S || BR2_DEMOD3_AUTO_ADAPT_COMBO_S
+	bool "R848_DVBS"
+	help
+
+config BR2_TUNER3_COMBO_RDA5815M
+	depends on BR2_DEMOD3_COMBO_S || BR2_DEMOD3_AUTO_ADAPT_COMBO_S
+	bool "RDA5815M"
+	help
+
+config BR2_TUNER3_COMBO_SHARP7306
+	depends on BR2_DEMOD3_COMBO_S || BR2_DEMOD3_AUTO_ADAPT_COMBO_S
+	bool "SHARP7306"
+	help
+
+config BR2_TUNER3_COMBO_MXL608_DVBT
+	depends on BR2_DEMOD3_COMBO_T || BR2_DEMOD3_AUTO_ADAPT_COMBO_T
+	bool "MXL608_DVBT"
+	help
+
+config BR2_TUNER3_COMBO_R836_DVBT
+	depends on BR2_DEMOD3_COMBO_T || BR2_DEMOD3_AUTO_ADAPT_COMBO_T
+	bool "R836_DVBT"
+	help
+
+config BR2_TUNER3_COMBO_R848_DVBT
+	depends on BR2_DEMOD3_COMBO_T || BR2_DEMOD3_AUTO_ADAPT_COMBO_T
+	bool "R848_DVBT"
+	help
+
+config BR2_TUNER3_COMBO_R910_DVBT
+	depends on BR2_DEMOD3_COMBO_T || BR2_DEMOD3_AUTO_ADAPT_COMBO_T
+	bool "R910_DVBT"
+	help
+
+config BR2_TUNER3_COMBO_SI2141_DVBT
+	depends on BR2_DEMOD3_COMBO_T || BR2_DEMOD3_AUTO_ADAPT_COMBO_T
+	bool "SI2141_DVBT"
+	help
+
+config BR2_TUNER3_COMBO_ATBM253_DVBT
+	depends on BR2_DEMOD3_COMBO_T || BR2_DEMOD3_AUTO_ADAPT_COMBO_T
+	bool "ATBM253_DVBT"
+	help
+
+config BR2_TUNER3_COMBO_RDA5160_DVBT
+	depends on BR2_DEMOD3_COMBO_T || BR2_DEMOD3_AUTO_ADAPT_COMBO_T
+	bool "RDA5160_DVBT"
+	help
+
+config BR2_TUNER3_COMBO_MXL608_DVBC
+	depends on BR2_DEMOD3_COMBO_C || BR2_DEMOD3_AUTO_ADAPT_COMBO_C
+	bool "MXL608_DVBC"
+	help
+
+config BR2_TUNER3_COMBO_TDA18250
+	depends on BR2_DEMOD3_COMBO_C || BR2_DEMOD3_AUTO_ADAPT_COMBO_C
+	bool "TDA18250"
+	help
+
+config BR2_TUNER3_COMBO_TDA18250A
+	depends on BR2_DEMOD3_COMBO_C || BR2_DEMOD3_AUTO_ADAPT_COMBO_C
+	bool "TDA18250A"
+	help
+
+config BR2_TUNER3_COMBO_TDA18273_DVBC
+	depends on BR2_DEMOD3_COMBO_C || BR2_DEMOD3_AUTO_ADAPT_COMBO_C
+	bool "TDA18273_DVBC"
+	help
+
+config BR2_TUNER3_COMBO_R836_DVBC
+	depends on BR2_DEMOD3_COMBO_C || BR2_DEMOD3_AUTO_ADAPT_COMBO_C
+	bool "R836_DVBC"
+	help
+
+config BR2_TUNER3_COMBO_R848_DVBC
+	depends on BR2_DEMOD3_COMBO_C || BR2_DEMOD3_AUTO_ADAPT_COMBO_C
+	bool "R848_DVBC"
+	help
+
+config BR2_TUNER3_COMBO_R910_DVBC
+	depends on BR2_DEMOD3_COMBO_C || BR2_DEMOD3_AUTO_ADAPT_COMBO_C
+	bool "R910_DVBC"
+	help
+
+config BR2_TUNER3_COMBO_SI2141_DVBC
+	depends on BR2_DEMOD3_COMBO_C || BR2_DEMOD3_AUTO_ADAPT_COMBO_C
+	bool "SI2141_DVBC"
+	help
+
+config BR2_TUNER3_COMBO_ATBM2040_DVBC
+	depends on BR2_DEMOD3_COMBO_C || BR2_DEMOD3_AUTO_ADAPT_COMBO_C
+	bool "ATBM2040_DVBC"
+	help
+
+config BR2_TUNER3_COMBO_RDA5160_DVBC
+	depends on BR2_DEMOD3_COMBO_C || BR2_DEMOD3_AUTO_ADAPT_COMBO_C
+	bool "RDA5160_DVBC"
+	help
+
+config BR2_TUNER3_COMBO_TS6011
+	depends on BR2_DEMOD3_COMBO_S || BR2_DEMOD3_AUTO_ADAPT_COMBO_S
+	bool "TS6011"
+	help
+
+config BR2_TUNER3_COMBO_M3031
+	depends on BR2_DEMOD3_COMBO_S || BR2_DEMOD3_AUTO_ADAPT_COMBO_S
+	bool "M3031"
+	help
+
+config BR2_TUNER3_COMBO_R858_DVBC_1ST
+	depends on BR2_DEMOD3_COMBO_C || BR2_DEMOD3_AUTO_ADAPT_COMBO_C
+	bool "R858_DVBC_1ST"
+	help
+
+config BR2_TUNER3_COMBO_R858_DVBC_2ND
+	depends on BR2_DEMOD3_COMBO_C || BR2_DEMOD3_AUTO_ADAPT_COMBO_C
+	bool "R858_DVBC_2ND"
+	help
+
+endchoice
+
+##############################  Demod 4  ###################################
+comment "Demod 4"
+	depends on ( BR2_DEMOD_MULTY_DEMOD != 1 ) && ( BR2_DEMOD_MULTY_DEMOD != 2 ) && ( BR2_DEMOD_MULTY_DEMOD != 3 )
+
+choice
+	prompt "Demod Number 4"
+	depends on ( BR2_DEMOD_MULTY_DEMOD != 1 ) && ( BR2_DEMOD_MULTY_DEMOD != 2 ) && ( BR2_DEMOD_MULTY_DEMOD != 3 )
+	default BR2_DEMOD4_DVB_S2
+
+config BR2_DEMOD4_AUTO_ADAPT_DVB_S2
+	bool "AUTO_S2"
+	help
+
+config BR2_DEMOD4_DVB_S2
+	bool "DVB_S2"
+	help
+
+config BR2_DEMOD4_AUTO_ADAPT_DVB_T2
+	bool "AUTO_T2"
+	help
+
+config BR2_DEMOD4_DVB_T2
+	bool "DVB_T2"
+	help
+
+config BR2_DEMOD4_AUTO_ADAPT_DVB_C
+	bool "AUTO_C"
+	help
+
+config BR2_DEMOD4_DVB_C
+	bool "DVB_C"
+	help
+
+config BR2_DEMOD4_AUTO_ADAPT_DTMB
+	bool "AUTO_DTMB"
+	help
+
+config BR2_DEMOD4_DTMB
+	bool "DVB_DTMB"
+	help
+
+config BR2_DEMOD4_AUTO_ADAPT_ISDBT
+	bool "AUTO_ISDBT"
+	help
+
+config BR2_DEMOD4_ISDBT
+	bool "ISDBT"
+	help
+
+config BR2_DEMOD4_AUTO_ADAPT_COMBO_S
+	bool "AUTO_COMBO_S"
+	help
+
+config BR2_DEMOD4_COMBO_S
+	bool "COMBO_S"
+	help
+
+config BR2_DEMOD4_AUTO_ADAPT_COMBO_T
+	bool "AUTO_COMBO_T"
+	help
+
+config BR2_DEMOD4_COMBO_T
+	bool "COMBO_T"
+	help
+
+config BR2_DEMOD4_AUTO_ADAPT_COMBO_C
+	bool "AUTO_COMBO_C"
+	help
+
+config BR2_DEMOD4_COMBO_C
+	bool "COMBO_C"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER4 SELECT"
+	depends on BR2_DEMOD4_DVB_S2 || BR2_DEMOD4_COMBO_S || BR2_DEMOD4_AUTO_ADAPT_DVB_S2 || BR2_DEMOD4_AUTO_ADAPT_COMBO_S
+	default BR2_TUNER4_AV2018
+
+config BR2_TUNER4_AUTO_ADAPT_DVBS
+	bool "AUTO"
+	help
+
+config BR2_TUNER4_AV2018
+	bool "AV2018"
+	help
+
+config BR2_TUNER4_RDA5815M
+	bool "RDA5815M"
+	help
+
+config BR2_TUNER4_AV2020
+	bool "AV2020"
+	help
+
+config BR2_TUNER4_RT720
+    bool "RT720"
+    help
+
+config BR2_TUNER4_R848_DVBS
+	bool "R848_DVBS"
+	help
+
+config BR2_TUNER4_SHARP7306
+	bool "SHARP7306"
+	help
+
+config BR2_TUNER4_TS6011
+	bool "TS6011"
+	help
+
+config BR2_TUNER4_M3031
+	bool "M3031"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER4 SELECT"
+	depends on BR2_DEMOD4_DVB_T2 || BR2_DEMOD4_COMBO_T || BR2_DEMOD4_AUTO_ADAPT_DVB_T2 || BR2_DEMOD4_AUTO_ADAPT_COMBO_T
+	default BR2_TUNER4_MXL608_DVBT
+
+config BR2_TUNER4_AUTO_ADAPT_DVBT
+	bool "AUTO"
+	help
+
+config BR2_TUNER4_MXL608_DVBT
+	bool "MXL608_DVBT"
+	help
+
+config BR2_TUNER4_R836_DVBT
+	bool "R836_DVBT"
+	help
+
+config BR2_TUNER4_R848_DVBT
+	bool "R848_DVBT"
+	help
+
+config BR2_TUNER4_R910_DVBT
+	bool "R910_DVBT"
+	help
+
+config BR2_TUNER4_SI2141_DVBT
+	bool "SI2141_DVBT"
+	help
+
+config BR2_TUNER4_RDA5160_DVBT
+	bool "RDA5160_DVBT"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER4 SELECT"
+	depends on BR2_DEMOD4_DVB_C || BR2_DEMOD4_COMBO_C || BR2_DEMOD4_AUTO_ADAPT_DVB_C || BR2_DEMOD4_AUTO_ADAPT_COMBO_C
+	default BR2_TUNER4_MXL608_DVBC
+
+config BR2_TUNER4_AUTO_ADAPT_DVBC
+	bool "AUTO"
+	help
+
+config BR2_TUNER4_MXL608_DVBC
+	bool "MXL608_DVBC"
+	help
+
+config BR2_TUNER4_TDA18250
+	bool "TDA18250"
+	help
+
+config BR2_TUNER4_TDA18250A
+	bool "TDA18250A"
+	help
+
+config BR2_TUNER4_TDA18273_DVBC
+	bool "TDA18273_DVBC"
+	help
+
+config BR2_TUNER4_R836_DVBC
+	bool "R836_DVBC"
+	help
+
+config BR2_TUNER4_R848_DVBC
+	bool "R848_DVBC"
+	help
+
+config BR2_TUNER4_R910_DVBC
+	bool "R910_DVBC"
+	help
+
+config BR2_TUNER4_SI2141_DVBC
+	bool "SI2141_DVBC"
+	help
+
+config BR2_TUNER4_ATBM2040_DVBC
+	bool "ATBM2040_DVBC"
+	help
+
+config BR2_TUNER4_RDA5160_DVBC
+	bool "RDA5160_DVBC"
+	help
+
+config BR2_TUNER4_R858_DVBC_1ST
+	bool "R858_DVBC_1ST"
+	help
+
+config BR2_TUNER4_R858_DVBC_2ND
+	bool "R858_DVBC_2ND"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER4 SELECT"
+	depends on BR2_DEMOD4_DTMB || BR2_DEMOD4_AUTO_ADAPT_DTMB
+	default BR2_TUNER4_MXL608_DTMB
+
+config BR2_TUNER4_AUTO_ADAPT_DTMB
+	bool "AUTO"
+	help
+
+config BR2_TUNER4_MXL608_DTMB
+	bool "MXL608_DTMB"
+	help
+
+config BR2_TUNER4_TDA18273_DTMB
+	bool "TDA18273_DTMB"
+	help
+
+config BR2_TUNER4_R836_DTMB
+	bool "R836_DTMB"
+	help
+
+config BR2_TUNER4_R848_DTMB
+	bool "R848_DTMB"
+	help
+
+config BR2_TUNER4_SI2141_DTMB
+	bool "SI2141_DTMB"
+	help
+
+config BR2_TUNER4_ATBM2030_DTMB
+	bool "ATBM2030_DTMB"
+	help
+
+config BR2_TUNER4_ATBM2040_DTMB
+	bool "ATBM2040_DTMB"
+	help
+
+config BR2_TUNER4_RDA5160_DTMB
+	bool "RDA5160_DTMB"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER4 SELECT"
+	depends on BR2_DEMOD4_ISDBT || BR2_DEMOD4_AUTO_ADAPT_ISDBT
+	default BR2_TUNER4_MXL608_ISDBT
+
+config BR2_TUNER4_AUTO_ADAPT_ISDBT
+	bool "AUTO"
+	help
+
+config BR2_TUNER4_MXL608_ISDBT
+	bool "MXL608_ISDBT"
+	help
+
+endchoice
+
+choice
+	prompt "TUNER COMBO SELECT"
+	depends on BR2_DEMOD4_COMBO
+
+config BR2_TUNER4_AUTO_ADAPT_COMBO
+	depends on BR2_DEMOD4_COMBO_S || BR2_DEMOD4_COMBO_T || BR2_DEMOD4_COMBO_C || BR2_DEMOD4_AUTO_ADAPT_COMBO_S || BR2_DEMOD4_AUTO_ADAPT_COMBO_T || BR2_DEMOD4_AUTO_ADAPT_COMBO_C
+	bool "AUTO"
+	help
+
+config BR2_TUNER4_COMBO_AV2018
+	depends on BR2_DEMOD4_COMBO_S || BR2_DEMOD4_AUTO_ADAPT_COMBO_S
+	bool "AV2018"
+	help
+
+config BR2_TUNER4_COMBO_AV2020
+	depends on BR2_DEMOD4_COMBO_S || BR2_DEMOD4_AUTO_ADAPT_COMBO_S
+	bool "AV2020"
+	help
+
+config BR2_TUNER4_COMBO_RT720
+	depends on BR2_DEMOD4_COMBO_S || BR2_DEMOD4_AUTO_ADAPT_COMBO_S
+	bool "RT720"
+	help
+
+config BR2_TUNER4_COMBO_R848_DVBS
+	depends on BR2_DEMOD4_COMBO_S || BR2_DEMOD4_AUTO_ADAPT_COMBO_S
+	bool "R848_DVBS"
+	help
+
+config BR2_TUNER4_COMBO_RDA5815M
+	depends on BR2_DEMOD4_COMBO_S || BR2_DEMOD4_AUTO_ADAPT_COMBO_S
+	bool "RDA5815M"
+	help
+
+config BR2_TUNER4_COMBO_SHARP7306
+	depends on BR2_DEMOD4_COMBO_S || BR2_DEMOD4_AUTO_ADAPT_COMBO_S
+	bool "SHARP7306"
+	help
+
+config BR2_TUNER4_COMBO_MXL608_DVBT
+	depends on BR2_DEMOD4_COMBO_T || BR2_DEMOD4_AUTO_ADAPT_COMBO_T
+	bool "MXL608_DVBT"
+	help
+
+config BR2_TUNER4_COMBO_R836_DVBT
+	depends on BR2_DEMOD4_COMBO_T || BR2_DEMOD4_AUTO_ADAPT_COMBO_T
+	bool "R836_DVBT"
+	help
+
+config BR2_TUNER4_COMBO_R848_DVBT
+	depends on BR2_DEMOD4_COMBO_T || BR2_DEMOD4_AUTO_ADAPT_COMBO_T
+	bool "R848_DVBT"
+	help
+
+config BR2_TUNER4_COMBO_R910_DVBT
+	depends on BR2_DEMOD4_COMBO_T || BR2_DEMOD4_AUTO_ADAPT_COMBO_T
+	bool "R910_DVBT"
+	help
+
+config BR2_TUNER4_COMBO_SI2141_DVBT
+	depends on BR2_DEMOD4_COMBO_T || BR2_DEMOD4_AUTO_ADAPT_COMBO_T
+	bool "SI2141_DVBT"
+	help
+
+config BR2_TUNER4_COMBO_RDA5160_DVBT
+	depends on BR2_DEMOD4_COMBO_T || BR2_DEMOD4_AUTO_ADAPT_COMBO_T
+	bool "RDA5160_DVBT"
+	help
+
+config BR2_TUNER4_COMBO_MXL608_DVBC
+	depends on BR2_DEMOD4_COMBO_C || BR2_DEMOD4_AUTO_ADAPT_COMBO_C
+	bool "MXL608_DVBC"
+	help
+
+config BR2_TUNER4_COMBO_TDA18250
+	depends on BR2_DEMOD4_COMBO_C || BR2_DEMOD4_AUTO_ADAPT_COMBO_C
+	bool "TDA18250"
+	help
+
+config BR2_TUNER4_COMBO_TDA18250A
+	depends on BR2_DEMOD4_COMBO_C || BR2_DEMOD4_AUTO_ADAPT_COMBO_C
+	bool "TDA18250A"
+	help
+
+config BR2_TUNER4_COMBO_TDA18273_DVBC
+	depends on BR2_DEMOD4_COMBO_C || BR2_DEMOD4_AUTO_ADAPT_COMBO_C
+	bool "TDA18273_DVBC"
+	help
+
+config BR2_TUNER4_COMBO_R836_DVBC
+	depends on BR2_DEMOD4_COMBO_C || BR2_DEMOD4_AUTO_ADAPT_COMBO_C
+	bool "R836_DVBC"
+	help
+
+config BR2_TUNER4_COMBO_R848_DVBC
+	depends on BR2_DEMOD4_COMBO_C || BR2_DEMOD4_AUTO_ADAPT_COMBO_C
+	bool "R848_DVBC"
+	help
+
+config BR2_TUNER4_COMBO_R910_DVBC
+	depends on BR2_DEMOD4_COMBO_C || BR2_DEMOD4_AUTO_ADAPT_COMBO_C
+	bool "R910_DVBC"
+	help
+
+config BR2_TUNER4_COMBO_SI2141_DVBC
+	depends on BR2_DEMOD4_COMBO_C || BR2_DEMOD4_AUTO_ADAPT_COMBO_C
+	bool "SI2141_DVBC"
+	help
+
+config BR2_TUNER4_COMBO_ATBM2040_DVBC
+	depends on BR2_DEMOD4_COMBO_C || BR2_DEMOD4_AUTO_ADAPT_COMBO_C
+	bool "ATBM2040_DVBC"
+	help
+
+config BR2_TUNER4_COMBO_RDA5160_DVBC
+	depends on BR2_DEMOD4_COMBO_C || BR2_DEMOD4_AUTO_ADAPT_COMBO_C
+	bool "RDA5160_DVBC"
+	help
+
+config BR2_TUNER4_COMBO_TS6011
+	depends on BR2_DEMOD4_COMBO_S || BR2_DEMOD4_AUTO_ADAPT_COMBO_S
+	bool "TS6011"
+	help
+
+config BR2_TUNER4_COMBO_M3031
+	depends on BR2_DEMOD4_COMBO_S || BR2_DEMOD4_AUTO_ADAPT_COMBO_S
+	bool "M3031"
+	help
+
+config BR2_TUNER4_COMBO_R858_DVBC_1ST
+	depends on BR2_DEMOD4_COMBO_C || BR2_DEMOD4_AUTO_ADAPT_COMBO_C
+	bool "R858_DVBC_1ST"
+	help
+
+config BR2_TUNER4_COMBO_R858_DVBC_2ND
+	depends on BR2_DEMOD4_COMBO_C || BR2_DEMOD4_AUTO_ADAPT_COMBO_C
+	bool "R858_DVBC_2ND"
+	help
+
+endchoice
+
+
+
+source system/configin/Config.in.frontend_config
+endmenu

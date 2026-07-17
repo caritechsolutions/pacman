@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="wnd_satfinder">
+    <property>
+        <rect>[0,0,1280,720]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_satfinder_create</create>
+        <destroy>app_satfinder_destroy</destroy>
+        <keypress>app_satfinder_keypress</keypress>
+    </signal>
+    <children>
+  	<widget class="image" style="default" name="img_satfinder_bg_jpg">
+        <property>
+            <rect>[0,0,1280,720]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <mode>single</mode>
+            <img>bg</img>
+        </property>
+	</widget>
+    <widget class="image" style="default" name="img_sat_finder_back">
+      <property>
+        <rect>[200,150,880,416]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>s_win_l_t</lt_img>
+        <rt_img>s_win_r_t</rt_img>
+        <lb_img>s_win_l_b</lb_img>
+        <rb_img>s_win_r_b</rb_img>
+        <l_img>s_win_l_m</l_img>
+        <r_img>s_win_r_m</r_img>
+        <t_img>s_win_m_t</t_img>
+        <b_img>s_win_m_b</b_img>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_sat_finder_title">
+        <property>
+        <rect>[100,40,80,80]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[default_color,default_color,default_color]</backcolor>
+        <mode>single</mode>
+        <img>s_title_left_installation</img>
+        <lt_img>s_title_left_installation</lt_img>
+        <rt_img>s_title_right</rt_img>
+        </property>
+    </widget>
+        <widget class="text" style="default" name="text_sat_finder_title">
+            <property>
+            <rect>[195,70,600,48]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <font>font_sub</font>
+                <alignment>left|bottom</alignment>
+                <string>DVB Finder</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_qr">
+            <property>
+                <rect>[760,250,240,240]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="file_image" style="default" name="img_app">
+            <property>
+                <rect>[280,250,240,240]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>single</mode>
+                <img></img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="txtTipsDonwnloadApp">
+            <property>
+                <rect>[240,153,320,32]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Download App</string>
+                <format>static</format>
+            </property>
+        </widget>
+
+        <widget class="text" style="default" name="txtTipsConnectServer">
+            <property>
+                <rect>[720,153,320,32]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Find Satellite</string>
+                <format>static</format>
+            </property>
+        </widget>
+
+  <widget class="image" style="default" name="img_sat_finder_back">
+      <property>
+        <rect>[0,620,1280,100]</rect>
+         <forecolor>[default_color,default_color,default_color]</forecolor>
+    <backcolor>[window_bg_color,window_g_color,window_bg_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <t_img>s_bar_bg</t_img>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_sat_finder_red">
+        <property>
+            <rect>[125,634,22,22]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[win_bar_up_color,win_bar_up_color,win_bar_up_color]</backcolor>
+            <mode>single</mode>
+            <img>s_ts_red</img>
+        </property>
+    </widget>
+    <widget class="text" style="default" name="text_sat_finder_red">
+        <property>
+            <rect>[150,630,150,30]</rect>
+            <forecolor>[text_color,text_color,text_color]</forecolor>
+            <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+            <alignment>left|vcentre</alignment>
+            <string>Update</string>
+            <format>static</format>
+        </property>
+    </widget>
+    <widget class="text" style="default" name="text_sat_finder_info">
+      <property>
+        <rect>[310,620,700,68]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <alignment>left|vcentre</alignment>
+        <string>First you need to download APP and install it on your phone, then scan dvbfinder.</string>
+        <format>automatic</format>
+      </property>
+    </widget>
+    <widget class="image" style="default" name="img_sat_finder_tip_bk">
+        <property>
+            <rect>[440,250,400,200]</rect>
+            <state>hide</state>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[net_bg1_color,net_bg1_color,net_bg1_color]</backcolor>
+            <mode>multiple</mode>
+            <img></img>
+            <lt_img>L_U</lt_img>
+            <rt_img>R_U</rt_img>
+            <lb_img>L_B</lb_img>
+            <rb_img>R_B</rb_img>
+            <l_img>L_M</l_img>
+            <r_img>R_M</r_img>
+            <t_img>U_M</t_img>
+            <b_img>B_M</b_img>
+        </property>
+    </widget>
+    <widget class="text" style="default" name="text_sat_finder_tip_status">
+        <property>
+            <rect>[470,290,340,150]</rect>
+            <state>hide</state>
+            <forecolor>[#B5DE29,#B5DE29,#B5DE29]</forecolor>
+            <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+            <string></string>
+            <format>automatic</format>
+        </property>
+    </widget>
+    </children>
+</widget>
+

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<widget class="window" style="default" name="win_pmp_set">
+  <property>
+<rect>[12,0,256,576]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+  </property>
+  <signal>
+    <create>pmp_set_init</create>
+    <destroy>pmp_set_destroy</destroy>
+    <keypress>pmp_set_keypress</keypress>
+  </signal>
+  <children>
+    <widget class="image" style="default" name="pmp_set_image_logo">
+      <property>
+<rect>[32,56,80,17]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[#808080,#808080,#808080]</backcolor>
+        <mode>single</mode>
+        <img>MP_ICON_SETTING</img>
+      </property>
+    </widget>
+    <widget class="box" style="default" name="pmp_set_box">
+      <property>
+<rect>[16,96,240,216]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+        <interval>2</interval>
+        <format>vertical</format>
+      </property>
+      <children>
+        <widget class="boxitem" style="default" name="pmp_set_boxitem_language">
+          <property>
+<rect>[0,1,240,24]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+            <focus_image>MP_BUTTON6</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="pmp_set_text_language">
+              <property>
+<rect>[16,0,144,24]</rect>
+                <forecolor>[#909092,#cecece,osd_trans]</forecolor>
+                <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+                <string>Language</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="pmp_set_combo_language">
+              <property>
+<rect>[128,1,96,20]</rect>
+                <forecolor>[#909092,#cecece,osd_trans]</forecolor>
+                <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+                <content>[Chinese,English]</content>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="pmp_set_boxitem_tvout">
+          <property>
+<rect>[0,27,240,24]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+            <focus_image>MP_BUTTON6</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="pmp_set_txt_tvout">
+              <property>
+<rect>[16,0,144,24]</rect>
+                <forecolor>[#909092,#cecece,osd_trans]</forecolor>
+                <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+                <string>TV Ouput</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="pmp_set_combo_tvout">
+              <property>
+<rect>[128,1,96,20]</rect>
+                <forecolor>[#909092,#cecece,osd_trans]</forecolor>
+                <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+                <content>[CVBS,SCART,VGA]</content>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="pmp_set_boxitem_video_format">
+          <property>
+<rect>[0,52,240,24]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+            <focus_image>MP_BUTTON6</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="pmp_set_txt_video_format">
+              <property>
+<rect>[16,0,144,24]</rect>
+                <forecolor>[#909092,#cecece,osd_trans]</forecolor>
+                <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+                <string>Video format</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="pmp_set_combo_video_format">
+              <property>
+<rect>[128,1,96,20]</rect>
+                <forecolor>[#909092,#cecece,osd_trans]</forecolor>
+                <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+                <content>[Auto]</content>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="pmp_set_boxitem_screen_format">
+          <property>
+<rect>[0,78,240,24]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+            <focus_image>MP_BUTTON6</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="pmp_set_txt_screen_format">
+              <property>
+<rect>[16,0,144,24]</rect>
+                <forecolor>[#909092,#cecece,osd_trans]</forecolor>
+                <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+                <string>Screen format</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="pmp_set_combo_screen_format">
+              <property>
+<rect>[128,1,96,20]</rect>
+                <forecolor>[#909092,#cecece,osd_trans]</forecolor>
+                <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+                <content>[Auto,Full screen,Original size,4:3,16:9]</content>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="pmp_set_boxitem_save_tags">
+          <property>
+<rect>[0,104,240,24]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+            <focus_image>MP_BUTTON6</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="pmp_set_txt_save_tags">
+              <property>
+<rect>[16,0,144,24]</rect>
+                <forecolor>[#909092,#cecece,osd_trans]</forecolor>
+                <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+                <string>Save tags</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="combobox" style="default" name="pmp_set_combo_save_tags">
+              <property>
+<rect>[128,1,96,20]</rect>
+                <forecolor>[#909092,#cecece,osd_trans]</forecolor>
+                <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+                <content>[Off,On]</content>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="pmp_set_boxitem_fac_default">
+          <property>
+<rect>[0,129,240,24]</rect>
+            <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+            <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+            <focus_image>MP_BUTTON7</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="pmp_set_txt_fac_default">
+              <property>
+<rect>[16,0,144,24]</rect>
+                <forecolor>[#909092,#cecece,osd_trans]</forecolor>
+                <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+                <string>Factory default</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="button" style="default" name="pmp_set_button_fac_default">
+              <property>
+<rect>[160,1,80,20]</rect>
+                <forecolor>[#909092,#cecece,osd_trans]</forecolor>
+                <backcolor>[bk_pmp_set_color,bk_pmp_set_color,bk_pmp_set_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+              </property>
+            </widget>
+          </children>
+        </widget>
+      </children>
+    </widget>
+  </children>
+</widget>

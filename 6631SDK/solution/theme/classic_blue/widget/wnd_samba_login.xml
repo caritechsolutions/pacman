@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget class="window" style="default" name="wnd_samba_login">
+  <property>
+    <rect>[305,200,670,240]</rect>
+    <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+    <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+  </property>
+  <signal>
+    <create>On_samba_login_create</create>
+    <keypress>On_samba_login_keypress</keypress>
+  </signal>
+  <children>
+    <widget class="image" style="default" name="img_samba_login_back">
+      <property>
+        <rect>[0,0,670,240]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <mode>multiple</mode>
+        <img></img>
+        <lt_img>s_win_l_t</lt_img>
+        <rt_img>s_win_r_t</rt_img>
+        <lb_img>s_win_l_b</lb_img>
+        <rb_img>s_win_r_b</rb_img>
+        <l_img>s_win_l_m</l_img>
+        <r_img>s_win_r_m</r_img>
+        <t_img>s_win_m_t</t_img>
+        <b_img>s_win_m_b</b_img>
+      </property>
+    </widget>
+    <widget class="text" style="default" name="text_samba_login_title">
+      <property>
+        <rect>[10,2,650,35]</rect>
+        <forecolor>[text_color,text_color,text_color]</forecolor>
+        <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+        <string>Login</string>
+        <format>static</format>
+      </property>
+    </widget>
+    <widget class="box" style="default" name="box_samba_login_opt">
+      <property>
+        <rect>[10,60,650,154]</rect>
+        <forecolor>[default_color,default_color,default_color]</forecolor>
+        <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+        <format>vertical</format>
+      </property>
+      <signal>
+        <keypress>On_samba_login_box_keypress</keypress>
+      </signal>
+      <children>
+        <widget class="boxitem" style="default" name="boxitem_samba_login_path">
+          <property>
+            <rect>[0,0,650,38]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <focus_image>s_bar_choice_blue</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="text_samba_login_path">
+              <property>
+                <rect>[10,0,220,38]</rect>
+                <forecolor>[text_tag_color,text_tag_color,text_tag_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Path</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="button" style="default" name="btn_samba_login_path">
+              <property>
+                <rect>[250,0,390,38]</rect>
+                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>//</string>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="boxitem_samba_login_username">
+          <property>
+            <rect>[0,38,650,38]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <focus_image>s_bar_choice_blue</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="text_samba_login_username">
+              <property>
+                <rect>[10,0,220,38]</rect>
+                <forecolor>[text_tag_color,text_tag_color,text_tag_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Username</string>
+                <format>static</format>
+              </property>
+            </widget>
+             <widget class="button" style="default" name="btn_samba_login_username">
+              <property>
+                <rect>[250,0,390,38]</rect>
+                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="boxitem_samba_login_passwd">
+          <property>
+            <rect>[0,76,650,38]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <focus_image>s_bar_choice_blue</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="text_samba_login_passwd">
+              <property>
+                <rect>[10,0,220,38]</rect>
+                <forecolor>[text_tag_color,text_tag_color,text_tag_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Password</string>
+                <format>static</format>
+              </property>
+            </widget>
+             <widget class="button" style="default" name="btn_samba_login_passwd">
+              <property>
+                <rect>[250,0,390,38]</rect>
+                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+              </property>
+            </widget>
+          </children>
+        </widget>
+        <widget class="boxitem" style="default" name="boxitem_samba_login_save">
+          <property>
+            <rect>[0,114,650,38]</rect>
+            <forecolor>[default_color,default_color,default_color]</forecolor>
+            <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+            <focus_image>s_bar_choice_blue</focus_image>
+          </property>
+          <children>
+            <widget class="text" style="default" name="text_samba_login_save">
+              <property>
+                <rect>[10,0,220,38]</rect>
+                <forecolor>[text_tag_color,text_tag_color,text_tag_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <string>Save</string>
+                <format>static</format>
+              </property>
+            </widget>
+            <widget class="button" style="default" name="btn_samba_login_save">
+              <property>
+                <rect>[250,0,390,38]</rect>
+                <forecolor>[text_color,text_focus_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <string>Press OK</string>
+              </property>
+            </widget>
+          </children>
+        </widget>
+      </children>
+    </widget>
+  </children>
+</widget>

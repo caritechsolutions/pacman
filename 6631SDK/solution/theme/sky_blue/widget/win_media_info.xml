@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget class="window" style="default" name="win_media_info">
+    <property>
+        <rect>[222,120,580,272]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>media_info_init</create>
+        <destroy>media_info_destroy</destroy>
+        <service>media_info_service</service>
+        <keypress>media_info_keypress</keypress>
+    </signal>
+    <children>
+        <widget class="image" style="default" name="media_info_bg">
+            <property>
+                <rect>[0,0,580,272]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="media_info_text0">
+            <property>
+                <rect>[28,40,294,32]</rect>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,osd_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="media_info_text1">
+            <property>
+                <rect>[28,72,294,32]</rect>
+                <forecolor>[pop_text_color,pop_text_color,#osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_text_disable_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="media_info_text2">
+            <property>
+                <rect>[28,104,294,32]</rect>
+                <forecolor>[pop_text_color,pop_text_color,#osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_text_disable_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="media_info_text3">
+            <property>
+                <rect>[28,136,294,32]</rect>
+                <forecolor>[pop_text_color,pop_text_color,#osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_text_disable_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="media_info_text4">
+            <property>
+                <rect>[28,168,294,32]</rect>
+                <forecolor>[pop_text_color,pop_text_color,#osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_text_disable_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="media_info_text5">
+            <property>
+                <rect>[28,200,294,32]</rect>
+                <forecolor>[pop_text_color,pop_text_color,#osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,pop_text_disable_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="media_info_text_info0">
+            <property>
+                <rect>[306,40,250,32]</rect>
+                <forecolor>[pop_text_color,pop_text_color,pop_text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,osd_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="media_info_text_info1">
+            <property>
+                <rect>[306,72,250,32]</rect>
+                <forecolor>[pop_text_color,pop_text_color,#osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,default_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="media_info_text_info2">
+            <property>
+                <rect>[306,104,250,32]</rect>
+                <forecolor>[pop_text_color,pop_text_color,#osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,default_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="media_info_text_info3">
+            <property>
+                <rect>[306,136,250,32]</rect>
+                <forecolor>[pop_text_color,pop_text_color,osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,default_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="media_info_text_info4">
+            <property>
+                <rect>[306,168,250,32]</rect>
+                <forecolor>[pop_text_color,pop_text_color,#osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,default_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="media_info_text_info5">
+            <property>
+                <rect>[306,200,250,32]</rect>
+                <forecolor>[pop_text_color,pop_text_color,#osd_trans]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,default_color]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="button" style="default" name="media_info_button_ok">
+            <property>
+                <rect>[267,238,46,25]</rect>
+                <forecolor>[pop_text_color,pop_text_color,osd_trans]</forecolor>
+                <backcolor>[default_color,default_color,default_color]</backcolor>
+                <alignment>hcentre|vcentre</alignment>
+                <focus_img>s_ts_ok</focus_img>
+                <unfocus_img>s_ts_ok</unfocus_img>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="media_info_text_title">
+            <property>
+                <rect>[220,10,140,28]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[pop_bg_color,pop_bg_color,osd_trans]</backcolor>
+                <string>Information</string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

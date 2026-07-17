@@ -1,0 +1,86 @@
+{
+    "mainmenuVersion": 1,
+    "style": "classic",
+    "default": "Installation",
+    "mainmenu_item": {
+        "offset": 84,
+        "interval": 186,
+        "level": 6,
+        "visual": 5,
+        "arrow": 0
+    },
+    "member": {
+        "Channel Edit": [
+            "APPUI_ENTRY_TV_CHANNEL",
+            "APPUI_ENTRY_RADIO_CHANNEL",
+            "APPUI_ENTRY_DELETE_ALL"
+        ],
+
+        "System Setting": [
+            "APPUI_ENTRY_TIME_SETTING",
+            "APPUI_ENTRY_SLEEP",
+            "APPUI_ENTRY_TIMER_SETTING",
+            "APPUI_ENTRY_LANGUAGE",
+            "APPUI_ENTRY_AV_SETTING",
+			"APPUI_ENTRY_RM_MODULATOR_SETTING",
+            "APPUI_ENTRY_LOCK_CONTROL",
+            "APPUI_ENTRY_PARENTAL_GUIDANCE",
+            "APPUI_ENTRY_OSD_SETTING",
+            "APPUI_ENTRY_COLOR_SETTING",
+            "APPUI_ENTRY_PANEL_SETTING",
+            "APPUI_ENTRY_SAT2IP_SETTING",
+            "APPUI_ENTRY_DVB2IP_SETTING",
+            "APPUI_ENTRY_NETWORK_SETTING",
+            "APPUI_ENTRY_SOCKS5",
+            "APPUI_ENTRY_CVBS_TEST_SETTING",
+            "APPUI_ENTRY_BLUETOOTH_SETTING",
+            "APPUI_ENTRY_ADVANCED_SETTING"
+        ],
+
+        "Installation": [
+            "APPUI_ENTRY_ANTENNA",
+			"APPUI_ENTRY_NET_SEARCH",
+            "APPUI_ENTRY_POSITIONER",
+            "APPUI_ENTRY_SAT_LIST",
+            "APPUI_ENTRY_TP_LIST",
+            "APPUI_ENTRY_TKGS",
+            "APPUI_ENTRY_DVBFINDER",
+            "APPUI_ENTRY_DVBT",
+            "APPUI_ENTRY_DVBC_AUTOSCAN",
+	    "APPUI_ENTRY_DVBC_MANUALSCAN",
+            "APPUI_ENTRY_DVBC_FULLSCAN",
+	    "APPUI_ENTRY_DVBC_SETFRE",
+            "APPUI_ENTRY_DTMB"
+        ],
+
+        "Utility": [
+            "APPUI_ENTRY_SYSTEM_INFO",
+            "APPUI_ENTRY_PRINT_SETTING",
+            "APPUI_ENTRY_FACTORY_RESET",
+            "APPUI_ENTRY_GAME_CENTRE",
+            "APPUI_ENTRY_SOFTWARE_UPGRADE",
+            "APPUI_ENTRY_LEARN_RCU",
+            "APPUI_ENTRY_OTA",
+            "APPUI_ENTRY_DVB_CI",
+            "APPUI_ENTRY_CA_SETTING"
+        ],
+
+        "Media Centre": [
+            "APPUI_ENTRY_MEDIA_PLAYER",
+            "APPUI_ENTRY_PVR_MANAGEMENT",
+            "APPUI_ENTRY_PVR_MEDIA",
+            "APPUI_ENTRY_USB_REMOVE",
+            "APPUI_ENTRY_USB_TEST",
+            "APPUI_ENTRY_APPLETS",
+            "APPUI_ENTRY_WEBLET",
+            "APPUI_ENTRY_SINK",
+            "APPUI_ENTRY_DLNA_DMR",
+            "APPUI_ENTRY_DLNA_DMP",
+            "APPUI_ENTRY_DLNA_SAT2IP",
+            "APPUI_ENTRY_DLNA_DMS",
+            "APPUI_ENTRY_UPGRADE_BY_NET",
+            "APPUI_ENTRY_MIRACAST",
+            "APPUI_ENTRY_NETAPPS"
+        ]
+    }
+}

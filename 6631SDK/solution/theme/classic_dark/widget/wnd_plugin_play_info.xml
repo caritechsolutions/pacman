@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget name="wnd_plugin_play_info" style="default" class="window">
+    <property>
+        <rect>[120,408,784,150]</rect>
+        <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+        <backcolor>[osd_trans,osd_trans,osd_trans]</backcolor>
+    </property>
+    <signal>
+        <create>app_plugin_play_info_create</create>
+        <destroy>app_plugin_play_info_destroy</destroy>
+        <got_focus>app_plugin_play_info_got_focus</got_focus>
+        <lost_focus>app_plugin_play_info_lost_focus</lost_focus>
+        <keypress>app_plugin_play_info_keypress</keypress>
+    </signal>
+    <children>
+        <widget name="img_plugin_play_info_back" style="default" class="image">
+            <property>
+                <rect>[0,0,784,150]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>multiple</mode>
+                <img></img>
+                <lt_img>s_win_l_t</lt_img>
+                <rt_img>s_win_r_t</rt_img>
+                <lb_img>s_win_l_b</lb_img>
+                <rb_img>s_win_r_b</rb_img>
+                <l_img>s_win_l_m</l_img>
+                <r_img>s_win_r_m</r_img>
+                <t_img>s_win_m_t</t_img>
+                <b_img>s_win_m_b</b_img>
+            </property>
+        </widget>
+        <widget name="text_plugin_play_info_name" style="default" class="text">
+            <property>
+                <rect>[100,38,650,20]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|bottom</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="img_plugin_play_info_progbar_tv_radio" style="default" class="image">
+            <property>
+                <rect>[16,8,68,70]</rect>
+                <forecolor>[osd_trans,osd_trans,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <mode>signal</mode>
+                <img>s_bar_tv</img>
+            </property>
+        </widget>
+        <widget name="text_plugin_play_info_bar_title" style="default" class="text">
+            <property>
+                <rect>[100,5,300,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_prog</font>
+                <alignment>left|bottom</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="wnd_channel_info_image245" style="default" class="image">
+            <property>
+                <rect>[650,10,24,26]</rect>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_clock</img>
+            </property>
+        </widget>
+        <widget name="wnd_channel_info_image247" style="default" class="image">
+            <property>
+                <rect>[504,8,24,28]</rect>
+                <forecolor>[#000000,#000000,#000000]</forecolor>
+                <backcolor>[#808080,#808080,#808080]</backcolor>
+                <mode>single</mode>
+                <img>s_icon_calendar</img>
+            </property>
+        </widget>
+        <widget name="text_plugin_play_info_time" style="default" class="text">
+            <property>
+                <rect>[680,8,100,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <alignment>left|vcentre</alignment>
+                <string>12:00</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_plugin_play_info_name_num" style="default" class="text">
+            <property>
+                <rect>[5,82,90,52]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_main</font>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="img_plugin_play_info_vformat" style="default" class="image">
+            <property>
+                <rect>[660,68,11,11]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>new_buttom_info</img>
+            </property>
+        </widget>
+        <widget name="text_plugin_play_info_vformat" style="default" class="text">
+            <property>
+                <rect>[675,64,100,20]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="img_plugin_play_info_aformat" style="default" class="image">
+            <property>
+                <rect>[660,88,11,11]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>new_buttom_info</img>
+            </property>
+        </widget>
+        <widget name="text_plugin_play_info_aformat" style="default" class="text">
+            <property>
+                <rect>[675,84,100,20]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="img_plugin_play_info_solution" style="default" class="image">
+            <property>
+                <rect>[660,108,11,11]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>new_buttom_info</img>
+            </property>
+        </widget>
+        <widget name="text_plugin_play_info_solution" style="default" class="text">
+            <property>
+                <rect>[675,104,106,20]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="img_plugin_play_info_netspeed" style="default" class="image">
+            <property>
+                <rect>[660,128,11,11]</rect>
+                <forecolor>[default_color,default_color,default_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <mode>single</mode>
+                <img>new_buttom_info</img>
+            </property>
+        </widget>
+        <widget name="text_plugin_play_info_netspeed" style="default" class="text">
+            <property>
+                <rect>[675,124,90,20]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_plugin_play_info_date" style="default" class="text">
+            <property>
+                <rect>[536,8,114,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>roboto</font>
+                <alignment>left|vcentre</alignment>
+                <string>0000/00/00</string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="sliderbar" style="default" name="sliderbar_process_plugin_play_info">
+            <property>
+                <rect>[100,85,544,12]</rect>
+                <state>show</state>
+                <forecolor>[#909092,#909092,gui_trans]</forecolor>
+                <backcolor>[#383A3D,#383A3D,#383A3D]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <step>2</step>
+                <fore_image>s_progress3_m_green</fore_image>
+                <format>normal</format>
+                <cursor_image>s_progress3_m_green</cursor_image>
+            </property>
+        </widget>
+        <widget class="sliderbar" style="default" name="sliderbar_cursor_plugin_play_info">
+            <property>
+                <rect>[100,85,544,12]</rect>
+                <state>show</state>
+                <forecolor>[#909092,#909092,gui_trans]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <min>0</min>
+                <max>100</max>
+                <step>2</step>
+                <format>normal</format>
+                <cursor_image>s_progress3_m_red</cursor_image>
+            </property>
+            <signal>
+                <keypress>app_plugin_play_info_cursor_keypress</keypress>
+            </signal>
+        </widget>
+        <widget name="text_epg_info_next" style="default" class="text">
+            <property>
+                <rect>[110,100,544,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,gui_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_plugin_play_start_time">
+            <property>
+                <rect>[100,104,96,32]</rect>
+                <state>show</state>
+                <forecolor>[#c8c8c8,#c8c8c8,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <font>font_22</font>
+                <alignment>left|top</alignment>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_plugin_play_seek_time">
+            <property>
+                <rect>[320,104,96,32]</rect>
+                <state>show</state>
+                <forecolor>[#c8c8c8,#c8c8c8,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <font>font_22</font>
+                <alignment>top</alignment>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget class="text" style="default" name="text_plugin_play_stop_time">
+            <property>
+                <rect>[550,104,96,32]</rect>
+                <state>show</state>
+                <forecolor>[#c8c8c8,#c8c8c8,osd_trans]</forecolor>
+                <backcolor>[window_bg_color,window_bg_color,window_bg_color]</backcolor>
+                <string></string>
+                <font>font_22</font>
+                <alignment>right|top</alignment>
+                <format>static</format>
+            </property>
+        </widget>
+        <widget name="text_epg_info_current" style="default" class="text">
+            <property>
+                <rect>[110,70,544,30]</rect>
+                <forecolor>[text_color,text_color,text_color]</forecolor>
+                <backcolor>[gui_trans,gui_trans,osd_trans]</backcolor>
+                <font>font_22</font>
+                <alignment>left|vcentre</alignment>
+                <string></string>
+                <format>static</format>
+            </property>
+        </widget>
+    </children>
+</widget>

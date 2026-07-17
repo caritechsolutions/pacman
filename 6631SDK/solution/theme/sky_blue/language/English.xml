@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+    <language name="English">
+        <font>font_prog</font>
+        <tran id="Software Upgrade"                >Software Update</tran>
+        <tran id="SW Ver:"                >SW Version:</tran>
+        <tran id="HW Ver:"                >HW Version:</tran>
+        <tran id="Program Not Exist!"                >Program does not exist!</tran>
+        <tran id="No Enough Space!"                >No enough disk space!</tran>
+        <tran id="Timer Full!"                >Exceed the maximum timer number!</tran>
+        <tran id="Summer time"                >Summertime</tran>
+        <tran id="Only once"                >Only Once</tran>
+        <tran id="Repeat one"                >Repeat One</tran>
+        <tran id="No FAV!"                >No FAV program!</tran>
+        <tran id="No signal"                >No signal!</tran>
+        <tran id="Scrambled"                >Scrambled!</tran>
+        <tran id="Locked"                >Locked!</tran>
+        <tran id="TvTotal:"                >Tv Total:</tran>
+        <tran id="Sure to Factory Reset?"                >Sure to factory reset?</tran>
+        <tran id="Thai"                >ภาษาไทย</tran>
+        <tran id="Mon.-Fri."                >weekdays</tran>
+        <tran id="Sat.-Sun."                >weekend</tran>
+        <tran id="Arabic"                >العربي</tran>
+        <tran id="French"                >Français</tran>
+        <tran id="Portuguese"                >Português</tran>
+        <tran id="Turkish"                >Türk</tran>
+        <tran id="Spanish"                >Español</tran>
+        <tran id="Vietnamese"                >Việt Nam</tran>
+        <tran id="German"                >Deutsch</tran>
+        <tran id="Russian"                >Pусский</tran>
+        <tran id="Chinese"                >中文</tran>
+        <tran id="Farsi"                >فارسی</tran>
+        <tran id="Media Centre"                >Media Center</tran>
+        <tran id="Formating! Please wait! No plug!"                >Formatting! Please wait! No plug!</tran>
+        <tran id="Reykjavik,Casablanca"                >Reykjavik, Casablanca</tran>
+        <tran id="No bluetooth device!"                >No bluetooth device</tran>
+        <tran id="Please open bluetooth!"                >Please open bluetooth</tran>
+        <tran id="Please connect to bluetooth device."                >Please connect to bluetooth device</tran>
+        <tran id="Focal length:"                >Focal Length:</tran>
+    </language>
