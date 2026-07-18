@@ -1214,6 +1214,13 @@ static void app_normal_play(GxMsgProperty_NodeByPosGet *prog_node)
     app_dvbonline_program_play(&prog_node->prog_data);
 #endif
 
+    /* RIST capture: tee the selected program's TS into userspace (ringmem).
+     * Iter 1 dumps to a file to prove the memory tap delivers ES. */
+    {
+        int app_rist_play_change(GxBusPmDataProg *prog);
+        app_rist_play_change(&prog_node->prog_data);
+    }
+
     app_fuse_spec_play_parental_lock_start();
 }
 
