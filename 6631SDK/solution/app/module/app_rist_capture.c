@@ -1,41 +1,41 @@
 /*****************************************************************************
  * app_rist_capture.c  --  RIST satellite capture -> userspace TS -> UDP
  *
- * PROVEN PATH (Iter 1c/2):
- *   selected program --> player3(REC) record to a DVR-volume dest
- *   ("/media/sda1/ristcap.ts.dvr") --> stream_dvr DMAs the secure hardware TSW
- *   buffer to disk as CLEAR TS --> we live-tail "/media/sda1/ristcap/0000.ts".
- *   (ringmem:// is impossible for a secure DVB record; a flat .ts hits
- *    wsize:-1; only the .dvr/stream_dvr path works -- see git history.)
+ * PATH:
+ *   selected program --> player3(REC) record to "/tmp/ristcap_rec.ts.dvr"
+ *   --> stream_dvr writes DEVICE-ENCRYPTED TS to a tmpfs volume 0000.ts
+ *   --> we live-tail the volume, DECRYPT each block, inject PAT/PMT, sendto UDP.
  *
- * ITER 3 (this file): wire the tail to UDP.
- *   reader tails 0000.ts (live, from EOF) and for every block:
- *     1. injects our own PAT/PMT (app_pat_generate/app_pmt_generate -- the
- *        same generators PVR uses; PMT declares real stream_types e.g. HEVC
- *        0x24 / AAC) ahead of the ES, so the stream is self-describing;
- *     2. sendto()s 1316-byte (7x188) datagrams to a UDP dest (default
- *        multicast 239.6.6.6:6000, overridable via /tmp/ristcap "ip:port").
- *   The record keeps running -- it is the source of the tail.
+ * KEY FACT (Iter "decrypt"): the recorded volume is NOT clear TS. stream_dvr
+ * encrypts every block at rest with the device key (AES-128-ECB, TFM_KEY_SSUK,
+ * TS-packet mode, HW_PVR_MODE) via _dvr_tfm_copy() -- that is why the .dvr
+ * plays clean on the box (stream_dvr's READ decrypts) but raw 0000.ts is
+ * high-entropy garbage. GxStream_* is not app-linkable, but GxTfm_Decrypt IS
+ * (used by app_des_descrambler.c / app_system_init.c), so we replicate the
+ * exact _dvr_tfm_copy DECRYPT on each block before sending.
  *
- * Later: Iter 4 = volume rotation/recycling + the marker PID (add to the
- * record config's ext_pids AND declare it in the generated PMT -- hook left
- * in _rist_build_psi).
+ * This build folds in a one-shot diagnostic: on the first block it logs the
+ * raw vs decrypted 00-00-01 start-code counts, so one flash confirms the
+ * transform AND (if it works) already streams clean TS.
  *
- * Discipline: capture only on player3 (sole slot that coexists with live
- * NORMAL); refuses while USB-PVR is active; every app_player_open(REC) is
- * matched by app_player_close(REC) on all exits; reader stopped+joined before
- * the player close; gate on /media/sda1 being mounted (USB attaches ~65-140s).
+ * Robustness (Iter 4): tmpfs volume (no USB fragility), bounded circular
+ * volume rotation (RAM cap), reader follows the incrementing volumes,
+ * /tmp/ristcap re-read every ~2s (dest override without a re-zap).
+ *
+ * DEFERRED (Iter 5): marker PID (record ext_pids + PMT declaration); send
+ * pacing; re-disable dvb2ip. Hooks marked below.
  *****************************************************************************/
 
 #include "gxcore.h"
 #include "app_module.h"
 #include "app_send_msg.h"
-#include "app.h"                 /* APP_TIMER_ADD / APP_TIMER_REMOVE */
-#include "gxplayer.h"            /* GxPlayer_Media*, PlayerRecordConfig, PlayerPVRConfig */
-#include "module/app_pvr.h"      /* g_AppPvrOps, PVR_DUMMY */
-#include "module/app_nim.h"      /* AppFrontend_Config (ts_src / dmx_id) */
-#include "module/app_ioctl.h"    /* app_ioctl, FRONTEND_CONFIG_GET */
-#include "module/app_psi.h"      /* app_pat_generate/app_pmt_generate/app_ts_pack, AppTsData */
+#include "app.h"
+#include "gxplayer.h"
+#include "module/app_pvr.h"
+#include "module/app_nim.h"
+#include "module/app_ioctl.h"
+#include "module/app_psi.h"
+#include "gxsecure/gxtfm_api.h"   /* GxTfm_Decrypt, GxTfmCrypto, TFM_KEY_SSUK, flags */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,25 +47,28 @@
 #include <arpa/inet.h>
 
 /* ------------------------------------------------------------------ config */
-#define RIST_PLAYER             PLAYER_FOR_REC          /* "player3" */
-#define RIST_DEST               "/media/sda1/ristcap.ts.dvr"
-#define RIST_VOL0               "/media/sda1/ristcap/0000.ts"
-#define RIST_USB_MOUNT          "/media/sda1"
-#define RIST_START_DELAY_MS     2000                    /* let the live player settle */
-#define RIST_READ_CHUNK         (188 * 350)             /* 65800 = 50 x 1316, packet-aligned */
-#define RIST_DGRAM              (188 * 7)               /* 1316: standard TS-over-UDP datagram */
-#define RIST_PSI_MAX            (188 * 12)              /* room for PAT + a large PMT */
-#define RIST_PSI_PIDS           4                       /* distinct PIDs in the PSI burst */
-#define RIST_VOL_SIZEMB         2000                    /* one big 0000.ts; avoid rotation (Iter 4) */
+#define RIST_PLAYER             PLAYER_FOR_REC
+#define RIST_DEST               "/tmp/ristcap_rec.ts.dvr"
+#define RIST_VOL_DIR            "/tmp/ristcap_rec"
+#define RIST_VOL_SIZEMB         2
+#define RIST_VOL_MAXNUM         4
 
-#define RIST_CTRL_FILE          "/tmp/ristcap"          /* optional "ip:port" override */
+#define RIST_START_DELAY_MS     2000
+#define RIST_BLOCK              (188 * 256)             /* 48128 = DVR flush block (0xbc00) */
+#define RIST_DGRAM              (188 * 7)               /* 1316: TS-over-UDP datagram */
+#define RIST_PSI_MAX            (188 * 12)
+#define RIST_PSI_PIDS           4
+#define RIST_RESOLVE_SECS       2
+
+#define RIST_MARKER_PID         0                       /* Iter 5 */
+
+#define RIST_CTRL_FILE          "/tmp/ristcap"
 #define RIST_UDP_DEFAULT_IP     "239.6.6.6"
 #define RIST_UDP_DEFAULT_PORT   6000
 
 #define RIST_LOG(fmt, ...)      printf("[RIST] " fmt, ##__VA_ARGS__)
 #define ULL(x)                  ((unsigned long long)(x))
 
-/* reused, globally-linked helpers (defined in app_play_control.c / app_pvr.c) */
 extern void app_player_url_get(char *url, GxBusPmDataProg *prog, uint16_t ts_src, uint16_t dmx_id);
 extern void app_player_record_config_get(int prog_id, PlayerRecordConfig *config);
 extern status_t GxPlayer_MediaRecord(const char *name, const char *srcurl, const char *file);
@@ -74,21 +77,19 @@ extern status_t GxPlayer_MediaGetStatus(const char *name, PlayerStatusInfo *info
 /* ------------------------------------------------------------------- state */
 static struct {
     int             active;
-    int             opened;         /* app_player_open(REC) succeeded -> owes a close */
+    int             opened;
     volatile int    reader_run;
     handle_t        reader_thread;
     event_list     *start_timer;
     GxBusPmDataProg prog;
-    uint32_t        marker_pid;     /* Iter 4 */
+    uint32_t        marker_pid;
 
-    /* PSI generated once per capture (program is stable) */
     unsigned char   psi[RIST_PSI_MAX];
     int             psi_len;
     int             pmt_pid;
     int             cc_pid[RIST_PSI_PIDS];
     int             cc_val[RIST_PSI_PIDS];
 
-    /* UDP out */
     int             udp_fd;
     struct sockaddr_in dst;
     char            dst_ip[24];
@@ -99,17 +100,44 @@ static struct {
              {0}, 0, 0, {-1,-1,-1,-1}, {0,0,0,0},
              -1, {0}, {0}, 0, 0, 0 };
 
-/* --------------------------------------------------------------- USB gate */
-static int _rist_usb_ready(void)
+/* ------------------------------------------------------------- DVR decrypt */
+/* Verbatim of stream_dvr.c _dvr_tfm_copy(..., encrypt=0): reverse the
+ * device-key encryption stream_dvr applied at record time. Position-
+ * independent (per-TS-packet ECB), so it works on any 188-aligned run. */
+static int _rist_dvr_decrypt(unsigned char *src, unsigned char *dst, unsigned int size)
 {
-    return (access(RIST_USB_MOUNT, W_OK) == 0);   /* mounted + writable */
+    GxTfmCrypto param;
+
+    memset(&param, 0, sizeof(param));
+    param.module        = TFM_MOD_M2M;
+    param.alg           = TFM_ALG_AES128;
+    param.opt           = TFM_OPT_ECB;
+    param.src.id        = TFM_SRC_MEM;
+    param.dst.id        = TFM_DST_MEM;
+    param.input.buf     = src;
+    param.input.length  = size;
+    param.output.buf    = dst;
+    param.output.length = size;
+    param.even_key.id   = TFM_KEY_SSUK;
+    param.odd_key.id    = TFM_KEY_SSUK;
+    param.flags         = TFM_FLAG_CRYPT_EVEN_KEY_VALID | TFM_FLAG_CRYPT_ODD_KEY_VALID |
+                          TFM_FLAG_CRYPT_TS_PACKET_MODE | TFM_FLAG_CRYPT_SWITCH_CLR |
+                          TFM_FLAG_CRYPT_HW_PVR_MODE;
+    param.output_paddr  = (unsigned int)dst;
+
+    return GxTfm_Decrypt(&param);
+}
+
+static int _rist_count_sc(const unsigned char *b, int len)
+{
+    int i, c = 0;
+    for (i = 0; i + 2 < len; i++)
+        if (b[i] == 0 && b[i + 1] == 0 && b[i + 2] == 1)
+            c++;
+    return c;
 }
 
 /* --------------------------------------------------------------- PSI build */
-/* Generate PAT + PMT TS packets once, exactly like app_pvr.c's
- * _pvr_pat_ts_pack / _pvr_pmt_ts_pack. Runs on the app thread while the
- * captured program is the current one, so app_pmt_generate() reads the right
- * program info (real video/audio stream_types). */
 static void _rist_build_psi(uint16_t prog_id)
 {
     AppTsData ts = {0};
@@ -121,7 +149,6 @@ static void _rist_build_psi(uint16_t prog_id)
     s_rist.pmt_pid = 0;
     for (i = 0; i < RIST_PSI_PIDS; i++) { s_rist.cc_pid[i] = -1; s_rist.cc_val[i] = 0; }
 
-    /* PAT on PID 0 */
     pat = app_pat_generate(&prog_id, 1);
     if (pat) {
         dlen = ((pat[1] & 0x0f) << 8) | pat[2];
@@ -137,15 +164,12 @@ static void _rist_build_psi(uint16_t prog_id)
         GxCore_Free(pat);
     }
 
-    /* PMT pid from the program node */
     node.node_type = NODE_PROG;
     node.id = prog_id;
     if (app_send_msg_exec(GXMSG_PM_NODE_BY_ID_GET, &node) == GXCORE_SUCCESS)
         s_rist.pmt_pid = node.prog_data.pmt_pid;
 
-    /* PMT on pmt_pid. No private descriptor for RIST (PVR passes its lock tag;
-     * we want a clean, standard PMT). Iter 4: append the marker PID's
-     * elementary-stream entry here so the stream stays self-describing. */
+    /* Iter 5: append the marker PID's ES entry to the PMT here (+ CRC fix). */
     memset(&ts, 0, sizeof(ts));
     pmt = app_pmt_generate(prog_id, NULL);
     if (pmt) {
@@ -166,8 +190,6 @@ static void _rist_build_psi(uint16_t prog_id)
              s_rist.psi_len, s_rist.psi_len / 188, s_rist.pmt_pid);
 }
 
-/* Patch per-PID continuity counters (like the SDK's _modify_hdr_cc), then send
- * the PAT+PMT burst as one datagram ahead of the ES. */
 static void _rist_psi_send(void)
 {
     int off, k;
@@ -196,10 +218,10 @@ static void _rist_psi_send(void)
 }
 
 /* ------------------------------------------------------------------- UDP */
-static int _rist_udp_open(void)
+static int _rist_resolve_dest(void)
 {
     char ip[24];
-    int  port, fo;
+    int  port, from_file = 0;
     FILE *f;
 
     strncpy(ip, RIST_UDP_DEFAULT_IP, sizeof(ip) - 1);
@@ -212,122 +234,188 @@ static int _rist_udp_open(void)
         if (fgets(line, sizeof(line) - 1, f)) {
             char tip[24];
             int  tport;
-            if (sscanf(line, "%23[^:\n]:%d", tip, &tport) == 2 && tport > 0 && tport < 65536) {
+            if (sscanf(line, " %23[^: \t\r\n]:%d", tip, &tport) == 2 &&
+                tport > 0 && tport < 65536) {
                 strncpy(ip, tip, sizeof(ip) - 1);
                 ip[sizeof(ip) - 1] = '\0';
                 port = tport;
+                from_file = 1;
             }
         }
         fclose(f);
-        RIST_LOG("udp: %s -> dest %s:%d\n", RIST_CTRL_FILE, ip, port);
-    } else {
-        RIST_LOG("udp: no %s -> default dest %s:%d\n", RIST_CTRL_FILE, ip, port);
     }
+
+    if (strcmp(ip, s_rist.dst_ip) == 0 && port == s_rist.dst_port)
+        return 0;
+
+    strncpy(s_rist.dst_ip, ip, sizeof(s_rist.dst_ip) - 1);
+    s_rist.dst_ip[sizeof(s_rist.dst_ip) - 1] = '\0';
+    s_rist.dst_port = port;
+    memset(&s_rist.dst, 0, sizeof(s_rist.dst));
+    s_rist.dst.sin_family      = AF_INET;
+    s_rist.dst.sin_addr.s_addr = inet_addr(ip);
+    s_rist.dst.sin_port        = htons((unsigned short)port);
+
+    RIST_LOG("udp: dest = %s:%d  (%s)\n", ip, port,
+             from_file ? RIST_CTRL_FILE : "default, no /tmp/ristcap");
+    return 1;
+}
+
+static int _rist_udp_open(void)
+{
+    unsigned char ttl = 8;
 
     s_rist.udp_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (s_rist.udp_fd < 0) {
         RIST_LOG("udp: socket() FAILED\n");
         return -1;
     }
+    setsockopt(s_rist.udp_fd, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl));
 
-    memset(&s_rist.dst, 0, sizeof(s_rist.dst));
-    s_rist.dst.sin_family      = AF_INET;
-    s_rist.dst.sin_addr.s_addr = inet_addr(ip);
-    s_rist.dst.sin_port        = htons((unsigned short)port);
-    strncpy(s_rist.dst_ip, ip, sizeof(s_rist.dst_ip) - 1);
-    s_rist.dst_ip[sizeof(s_rist.dst_ip) - 1] = '\0';
-    s_rist.dst_port = port;
-
-    fo = atoi(ip);   /* first octet */
-    if (fo >= 224 && fo <= 239) {
-        unsigned char ttl = 8;
-        setsockopt(s_rist.udp_fd, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl));
-        RIST_LOG("udp: multicast dest -> IP_MULTICAST_TTL=8\n");
-    }
+    s_rist.dst_ip[0] = '\0';
+    s_rist.dst_port  = 0;
+    _rist_resolve_dest();
     return 0;
+}
+
+/* --------------------------------------------------------------- volumes */
+static int _rist_vol_exists(int vol)
+{
+    char p[80];
+    snprintf(p, sizeof(p), "%s/%04d.ts", RIST_VOL_DIR, vol);
+    return (access(p, R_OK) == 0);
+}
+
+static FILE *_rist_vol_open(int vol)
+{
+    char p[80];
+    snprintf(p, sizeof(p), "%s/%04d.ts", RIST_VOL_DIR, vol);
+    return fopen(p, "rb");
 }
 
 /* --------------------------------------------------------------- reader */
 static void _rist_reader(void *arg)
 {
-    uint8_t  *rbuf  = NULL;
-    uint8_t  *sbuf  = NULL;   /* accumulator for 1316-byte datagram alignment */
+    /* 2048-aligned (like the app's GxTfm buffers) for the hardware decrypt */
+    static unsigned char din[RIST_BLOCK]  __attribute__((aligned(2048)));
+    static unsigned char dout[RIST_BLOCK] __attribute__((aligned(2048)));
+    uint8_t  *sbuf  = NULL;
     int       sfill = 0;
     FILE     *in    = NULL;
+    int       cur   = 0;
     uint64_t  total = 0, since = 0;
-    time_t    last  = time(NULL);
+    time_t    last  = time(NULL), last_resolve = last;
     int       first = 1, waited = 0;
 
-    rbuf = (uint8_t *)GxCore_Mallocz(RIST_READ_CHUNK);
-    sbuf = (uint8_t *)GxCore_Mallocz(RIST_READ_CHUNK + 2 * RIST_DGRAM);
-    if (rbuf == NULL || sbuf == NULL) {
+    sbuf = (uint8_t *)GxCore_Mallocz(RIST_BLOCK + 2 * RIST_DGRAM);
+    if (sbuf == NULL) {
         RIST_LOG("reader: malloc FAILED\n");
         goto done;
     }
 
-    /* the record creates the volume asynchronously; wait for 0000.ts */
-    while (s_rist.reader_run && in == NULL) {
-        in = fopen(RIST_VOL0, "rb");
-        if (in == NULL) {
-            if ((++waited % 20) == 0)
-                RIST_LOG("reader: waiting for %s (%d x100ms)...\n", RIST_VOL0, waited);
-            GxCore_ThreadDelay(100);
-        }
+    while (s_rist.reader_run && !_rist_vol_exists(0)) {
+        if ((++waited % 20) == 0)
+            RIST_LOG("reader: waiting for %s/0000.ts (%d x100ms)...\n", RIST_VOL_DIR, waited);
+        GxCore_ThreadDelay(100);
     }
+    if (!s_rist.reader_run)
+        goto done;
+    in = _rist_vol_open(0);
     if (in == NULL) {
-        RIST_LOG("reader: stop requested before %s appeared\n", RIST_VOL0);
+        RIST_LOG("reader: open 0000.ts FAILED\n");
         goto done;
     }
-    fseek(in, 0, SEEK_END);   /* start LIVE: skip the on-disk backlog */
-    RIST_LOG("reader: tailing %s live -> udp %s:%d\n", RIST_VOL0, s_rist.dst_ip, s_rist.dst_port);
+    fseek(in, 0, SEEK_END);   /* live, block-aligned (volumes grow in whole blocks) */
+    cur = 0;
+    RIST_LOG("reader: tailing %s/%04d.ts live (decrypt on) -> udp %s:%d\n",
+             RIST_VOL_DIR, cur, s_rist.dst_ip, s_rist.dst_port);
 
     while (s_rist.reader_run) {
-        size_t n = fread(rbuf, 1, RIST_READ_CHUNK, in);
-        if (n > 0) {
-            int off = 0;
-            if (first) {
-                RIST_LOG("reader: FIRST live read = %d bytes (%d pkts)\n", (int)n, (int)(n / 188));
-                first = 0;
-            }
-            _rist_psi_send();                       /* PAT/PMT ahead of this ES block */
+        int got = 0, rotated = 0, dret, off;
+        unsigned char *payload;
 
-            memcpy(sbuf + sfill, rbuf, n);
-            sfill += (int)n;
-            while (sfill - off >= RIST_DGRAM) {
-                if (sendto(s_rist.udp_fd, sbuf + off, RIST_DGRAM, 0,
-                           (struct sockaddr *)&s_rist.dst, sizeof(s_rist.dst)) < 0)
-                    s_rist.senderr++;
-                else
-                    s_rist.sent++;
-                off += RIST_DGRAM;
+        /* fill one full DVR block, following growth / volume rotation */
+        while (s_rist.reader_run && got < RIST_BLOCK) {
+            size_t r = fread(din + got, 1, RIST_BLOCK - got, in);
+            if (r > 0) {
+                got += (int)r;
+                continue;
             }
-            if (off > 0) {
-                if (sfill - off > 0)
-                    memmove(sbuf, sbuf + off, sfill - off);
-                sfill -= off;
+            if (got == 0 && _rist_vol_exists(cur + 1)) {
+                fclose(in);
+                cur++;
+                in = _rist_vol_open(cur);
+                if (in == NULL) {
+                    RIST_LOG("reader: rotate open %04d.ts FAILED -> stop\n", cur);
+                    goto done;
+                }
+                RIST_LOG("reader: rotate -> vol %04d.ts\n", cur);
+                rotated = 1;
+                break;
             }
-            total += (uint64_t)n;
-            since += (uint64_t)n;
-        } else {
-            clearerr(in);              /* clear EOF so the next fread sees appended data */
+            clearerr(in);
             GxCore_ThreadDelay(20);
         }
+        if (rotated) continue;
+        if (got < RIST_BLOCK) continue;   /* reader stopping */
+
+        /* decrypt this block (same transform stream_dvr applies on read) */
+        dret = _rist_dvr_decrypt(din, dout, RIST_BLOCK);
+
+        if (first) {
+            int scr = _rist_count_sc(din, RIST_BLOCK);
+            int scd = _rist_count_sc(dout, RIST_BLOCK);
+            RIST_LOG("DIAG raw: %02x %02x %02x %02x  sync47@0=%d  startcodes=%d\n",
+                     din[0], din[1], din[2], din[3], (din[0] == 0x47), scr);
+            RIST_LOG("DIAG dec: ret=%d  %02x %02x %02x %02x  sync47@0=%d  startcodes=%d\n",
+                     dret, dout[0], dout[1], dout[2], dout[3], (dout[0] == 0x47), scd);
+            RIST_LOG("DIAG verdict: %s\n",
+                     (dret == 0 && scd > scr + 8)
+                         ? "DECRYPT -> CLEAN TS (sending decrypted)"
+                         : "decrypt did NOT yield start codes (sending raw; check key/flags/paddr)");
+            first = 0;
+        }
+
+        payload = (dret == 0) ? dout : din;
+
+        _rist_psi_send();
+        memcpy(sbuf + sfill, payload, RIST_BLOCK);
+        sfill += RIST_BLOCK;
+        off = 0;
+        while (sfill - off >= RIST_DGRAM) {
+            if (sendto(s_rist.udp_fd, sbuf + off, RIST_DGRAM, 0,
+                       (struct sockaddr *)&s_rist.dst, sizeof(s_rist.dst)) < 0)
+                s_rist.senderr++;
+            else
+                s_rist.sent++;
+            off += RIST_DGRAM;
+        }
+        if (off > 0) {
+            if (sfill - off > 0)
+                memmove(sbuf, sbuf + off, sfill - off);
+            sfill -= off;
+        }
+        total += RIST_BLOCK;
+        since += RIST_BLOCK;
 
         {
             time_t now = time(NULL);
             if (now != last) {
-                RIST_LOG("reader: tail %llu B/s  total=%llu B  udp sent=%llu err=%llu%s\n",
-                         ULL(since), ULL(total), ULL(s_rist.sent), ULL(s_rist.senderr),
-                         (since == 0) ? "   (idle)" : "");
+                RIST_LOG("reader: %llu B/s  total=%llu B  vol=%04d  udp sent=%llu err=%llu\n",
+                         ULL(since), ULL(total), cur, ULL(s_rist.sent), ULL(s_rist.senderr));
                 since = 0;
                 last  = now;
+            }
+            if (now - last_resolve >= RIST_RESOLVE_SECS) {
+                if (_rist_resolve_dest())
+                    RIST_LOG("udp: dest updated -> %s:%d\n", s_rist.dst_ip, s_rist.dst_port);
+                last_resolve = now;
             }
         }
     }
 
 done:
     if (in)   fclose(in);
-    if (rbuf) GxCore_Free(rbuf);
     if (sbuf) GxCore_Free(sbuf);
     RIST_LOG("reader: stopped, total=%llu B  udp sent=%llu err=%llu\n",
              ULL(total), ULL(s_rist.sent), ULL(s_rist.senderr));
@@ -343,7 +431,6 @@ void app_rist_capture_stop(void)
 
     RIST_LOG("stop: tearing down capture\n");
 
-    /* 1) stop reader FIRST */
     if (s_rist.reader_run || s_rist.reader_thread > 0) {
         s_rist.reader_run = 0;
         if (s_rist.reader_thread > 0) {
@@ -351,14 +438,10 @@ void app_rist_capture_stop(void)
             s_rist.reader_thread = -1;
         }
     }
-
-    /* 2) close UDP socket */
     if (s_rist.udp_fd >= 0) {
         close(s_rist.udp_fd);
         s_rist.udp_fd = -1;
     }
-
-    /* 3) close REC -> MediaStop -> stops stream_dvr, unwinds player_logic */
     if (s_rist.opened) {
         app_player_close(RIST_PLAYER);
         s_rist.opened = 0;
@@ -374,7 +457,7 @@ static int _rist_start_cb(void *arg)
     AppFrontend_Config fe  = {0};
     char               url[PLAYER_URL_LONG + 1] = {0};
 
-    s_rist.start_timer = NULL;   /* TIMER_ONCE auto-removed */
+    s_rist.start_timer = NULL;
 
     if (s_rist.active) {
         RIST_LOG("start: already active, skip\n");
@@ -385,58 +468,43 @@ static int _rist_start_cb(void *arg)
         return 0;
     }
 
-    /* USB may attach late (~65-140s). Retry until /media/sda1 is mounted. */
-    if (!_rist_usb_ready()) {
-        RIST_LOG("start: %s not mounted yet -> retry in %dms\n", RIST_USB_MOUNT, RIST_START_DELAY_MS);
-        APP_TIMER_ADD(s_rist.start_timer, _rist_start_cb, RIST_START_DELAY_MS, TIMER_ONCE);
-        return 0;
-    }
+    /* fresh slate on tmpfs (instant) */
+    system("rm -rf " RIST_VOL_DIR " " RIST_DEST " 2>/dev/null");
 
-    /* 1) open the dedicated REC player (owes a close) */
     if (app_player_open(RIST_PLAYER) != PLAYER_OPEN_OK) {
         RIST_LOG("start: app_player_open(%s) FAILED\n", RIST_PLAYER);
         return 0;
     }
     s_rist.opened = 1;
 
-    /* 2) one big volume so 0000.ts doesn't rotate during the run (rotation = Iter 4) */
     {
         PlayerPVRConfig pc = {0};
         GxPlayer_GetPVRConfig(&pc);
-        pc.volume_sizemb = RIST_VOL_SIZEMB;
-        pc.volume_maxnum = 0;
+        pc.volume_sizemb   = RIST_VOL_SIZEMB;
+        pc.volume_maxnum   = RIST_VOL_MAXNUM;
+        pc.volume_fullstop = 0;
         GxPlayer_SetPVRConfig(&pc);
     }
 
-    /* 3) bind record config: which PIDs the record captures (video+audio+...).
-     * Same call PVR/Iter 2 used. Its have_pmt/userdata PSI goes to the .dvr
-     * sidecar (secure record), NOT into 0000.ts -- so 0000.ts stays bare ES and
-     * we inject our OWN PAT/PMT in the reader. Iter 4: append marker_pid to
-     * cfg->ext_info.ext_pids/ext_types (+ ext_num++) here. */
     {
         PlayerRecordConfig *cfg = (PlayerRecordConfig *)GxCore_Calloc(1, sizeof(PlayerRecordConfig));
         if (cfg) {
             app_player_record_config_get((int)s_rist.prog.id, cfg);
             RIST_LOG("start: cfg have_pmt=%u userdata_len=%u ext_num=%u\n",
                      cfg->ext_data.have_pmt, cfg->ext_data.userdata_len, cfg->ext_info.ext_num);
+            /* Iter 5: append marker_pid to cfg->ext_info.ext_pids/ext_types here */
             GxPlayer_MediaRecordConfig(RIST_PLAYER, cfg);
             GxCore_Free(cfg);
         }
     }
 
-    /* 4) source URL: NORMAL dvb variant (no tsbuff/tscache) */
     app_ioctl(s_rist.prog.tuner, FRONTEND_CONFIG_GET, &fe);
     app_player_url_get(url, &s_rist.prog, fe.ts_src, fe.dmx_id);
     RIST_LOG("start: srcurl=%s\n", url);
 
-    /* 5) record to the DVR-volume dest (proven-good path, no wsize:-1) */
     {
         status_t rr;
         PlayerStatusInfo si;
-
-        memset(&si, 0, sizeof(si));
-        if (GxPlayer_MediaGetStatus(RIST_PLAYER, &si) == GXCORE_SUCCESS)
-            RIST_LOG("start: player3 status=%d BEFORE record (0=STOPPED wanted)\n", (int)si.status);
 
         RIST_LOG("start: GxPlayer_MediaRecord(%s, <dvbs...>, %s)\n", RIST_PLAYER, RIST_DEST);
         rr = GxPlayer_MediaRecord(RIST_PLAYER, url, RIST_DEST);
@@ -450,14 +518,12 @@ static int _rist_start_cb(void *arg)
             RIST_LOG("start: player3 status=%d AFTER record (6=RECORD_RUNNING wanted)\n", (int)si.status);
     }
 
-    /* 6) build PSI (program is current here) and open the UDP socket */
     _rist_build_psi((uint16_t)s_rist.prog.id);
     if (_rist_udp_open() < 0) {
         RIST_LOG("start: UDP open FAILED -> aborting\n");
         goto cleanup;
     }
 
-    /* 7) spawn the tail->UDP reader */
     s_rist.reader_run = 1;
     if (GxCore_ThreadCreate("app_rist_reader", &s_rist.reader_thread,
                             _rist_reader, NULL, 64 * 1024,
@@ -501,10 +567,10 @@ int app_rist_play_change(GxBusPmDataProg *prog)
     if (prog == NULL)
         return -1;
 
-    app_rist_capture_stop();   /* fully tear down the previous capture */
+    app_rist_capture_stop();
 
     memcpy(&s_rist.prog, prog, sizeof(GxBusPmDataProg));
-    s_rist.marker_pid = 0;     /* Iter 4 */
+    s_rist.marker_pid = RIST_MARKER_PID;
     s_rist.sent = 0;
     s_rist.senderr = 0;
 
