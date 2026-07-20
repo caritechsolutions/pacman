@@ -47,6 +47,16 @@
 #define RIST_PLAYER             PLAYER_FOR_REC          /* "player3" */
 #define RIST_RING_ID            7                       /* ringmem instance id */
 #define RIST_RING_SIZE          (188 * 3 * 1000)        /* ~564 KB, multiple of 188 */
+
+/* ITER 1c: record destination under test.
+ *   FILE  -> "/media/sda1/rist_probe.ts"  (isolates scheme vs call-context)
+ *   RING  -> "ringmem://id:7&size:564000&" (the refused Iter 1b target)
+ * Same direct GxPlayer_MediaRecord call for both, so RET disambiguates:
+ *   file RET==0  -> our call-context is fine, ringmem scheme is the problem
+ *   file RET==-1 -> the direct-call context is the problem, route via GXMSG/PVR
+ * NOTE: a FILE dest needs USB mounted at /media/sda1 first (watch for
+ *       "[AUTOMOUNT] Mount /dev/sda1 to /media/sda1") before zapping. */
+#define RIST_DEST               "/media/sda1/rist_probe.ts"
 #define RIST_START_DELAY_MS     2000                    /* let the live player settle */
 #define RIST_READ_CHUNK         (188 * 350)             /* ~65 KB per MediaRead */
 #define RIST_DUMP_PATH          "/media/sda1/rist_dump.ts"  /* ITER 1: file sink */
@@ -222,28 +232,36 @@ static int _rist_start_cb(void *arg)
      *    previous run logged "ACTIVE" even though the ring never delivered a
      *    byte. sat2ip calls MediaRecord2 the same way (app-thread, direct). */
     {
-        char dst[128] = {0};
         status_t rr;
         PlayerStatusInfo si;
 
-        snprintf(dst, sizeof(dst), "ringmem://id:%d&size:%d&", RIST_RING_ID, RIST_RING_SIZE);
-        RIST_LOG("start: calling GxPlayer_MediaRecord(%s, <dvbs...>, %s)\n", RIST_PLAYER, dst);
+        /* Log player3's status BEFORE the call -> directly tests the "Busy"
+         * gate in gxplayer_media_record (it refuses unless status is one of
+         * STOPPED(0)/ERROR/PLAY_END/RECORD_END/RECORD_FULL). player3 was
+         * created by GxPlayer_MediaRecordConfig above, so Find/GetStatus works. */
+        memset(&si, 0, sizeof(si));
+        if (GxPlayer_MediaGetStatus(RIST_PLAYER, &si) == GXCORE_SUCCESS)
+            RIST_LOG("start: player3 status=%d error=%d BEFORE record (0=STOPPED wanted)\n",
+                     (int)si.status, (int)si.error);
+        else
+            RIST_LOG("start: MediaGetStatus BEFORE record FAILED (player3 not created?)\n");
 
-        rr = GxPlayer_MediaRecord(RIST_PLAYER, url, dst);
-        RIST_LOG("start: GxPlayer_MediaRecord RET = %d  (0=OK, <0 = record refused)\n", (int)rr);
+        RIST_LOG("start: calling GxPlayer_MediaRecord(%s, <dvbs...>, %s)\n", RIST_PLAYER, RIST_DEST);
+        rr = GxPlayer_MediaRecord(RIST_PLAYER, url, RIST_DEST);
+        RIST_LOG("start: GxPlayer_MediaRecord RET = %d  (0=OK, <0 = refused)\n", (int)rr);
         if (rr != GXCORE_SUCCESS) {
-            RIST_LOG("start: record REFUSED -> the ringmem dest never opened. "
-                     "Check full serial log for '[Player]: Dump File Open Failed' / "
-                     "'[Media]:DumpFilter Open Fail' / 'New Recorder Config Error' / 'Busy'.\n");
+            RIST_LOG("start: record REFUSED at dest '%s'. Compare to the known-good "
+                     "PVR-to-file result: if FILE is ALSO refused here, the direct-call "
+                     "CONTEXT is the problem (route via GXMSG/PVR sequence); if FILE works, "
+                     "it is SCHEME-specific (ringmem).\n", RIST_DEST);
             goto cleanup;
         }
 
         memset(&si, 0, sizeof(si));
         if (GxPlayer_MediaGetStatus(RIST_PLAYER, &si) == GXCORE_SUCCESS)
-            RIST_LOG("start: player status=%d error=%d (want status=RECORD_RUNNING=6, error=0)\n",
+            RIST_LOG("start: player3 status=%d error=%d AFTER record (6=RECORD_RUNNING wanted)\n",
                      (int)si.status, (int)si.error);
-        else
-            RIST_LOG("start: GxPlayer_MediaGetStatus failed\n");
+        RIST_LOG("start: record ACCEPTED -> check whether %s grows on USB\n", RIST_DEST);
     }
 
     /* 5) spawn the reader */
