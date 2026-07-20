@@ -48,15 +48,28 @@
 #define RIST_RING_ID            7                       /* ringmem instance id */
 #define RIST_RING_SIZE          (188 * 3 * 1000)        /* ~564 KB, multiple of 188 */
 
-/* ITER 1c: record destination under test.
- *   FILE  -> "/media/sda1/rist_probe.ts"  (isolates scheme vs call-context)
- *   RING  -> "ringmem://id:7&size:564000&" (the refused Iter 1b target)
- * Same direct GxPlayer_MediaRecord call for both, so RET disambiguates:
- *   file RET==0  -> our call-context is fine, ringmem scheme is the problem
- *   file RET==-1 -> the direct-call context is the problem, route via GXMSG/PVR
- * NOTE: a FILE dest needs USB mounted at /media/sda1 first (watch for
- *       "[AUTOMOUNT] Mount /dev/sda1 to /media/sda1") before zapping. */
-#define RIST_DEST               "/media/sda1/rist_probe.ts"
+/* ITER 2: record to a DVR-VOLUME destination and tail 0000.ts.
+ *
+ * Root cause established from source + serial:
+ *   - the DVB record produces a SECURE hardware TSW buffer (log: "tsw - hwsec 1,
+ *     ptr_en 1 ... tswmem"), which the CPU cannot read.
+ *   - ringmem:// (stream_ringmem, software mem) has no DVR/secure path -> the
+ *     record is REFUSED at open (RET=-1).
+ *   - a flat "*.ts" falls to plain stream_file, whose write() can't read the
+ *     secure buffer -> "[Record]: Disk Access Failed !.. wsize:-1".
+ *   - "*.ts.dvr" is mapped by url_rec_proto() to the "dvr" protocol -> stream_dvr,
+ *     the secure/DVR-capable writer (gxsecure DMA) that PVR uses to produce a
+ *     real 12 MB recording. So memory-direct is impossible for a secure DVB
+ *     record; the TS only becomes CPU-readable once stream_dvr writes it to disk.
+ *
+ * volume_open_dvr_file() (fileops_volume.c) splits the dsturl on ".dvr",
+ * GxCore_Mkdir()s <dir>, and writes volumes as "<dir>/%04d.ts" (MAKEVOL).
+ *   dsturl "/media/sda1/ristcap.ts.dvr" -> volume "/media/sda1/ristcap/0000.ts"
+ * We record there (proven-good path, no wsize:-1) and TAIL 0000.ts from
+ * userspace. PSI injection + UDP sendto come in Iter 3; this iteration only
+ * proves the DVR-dir record runs clean and the live tail reads real ES. */
+#define RIST_DEST               "/media/sda1/ristcap.ts.dvr"
+#define RIST_VOL0               "/media/sda1/ristcap/0000.ts"
 #define RIST_START_DELAY_MS     2000                    /* let the live player settle */
 #define RIST_READ_CHUNK         (188 * 350)             /* ~65 KB per MediaRead */
 #define RIST_DUMP_PATH          "/media/sda1/rist_dump.ts"  /* ITER 1: file sink */
@@ -83,66 +96,74 @@ static struct {
 } s_rist = { 0, 0, 0, -1, NULL, {0}, 0 };
 
 /* --------------------------------------------------------------- reader thr */
+/* ITER 2 reader: live-tail the DVR volume 0000.ts that stream_dvr is writing.
+ * The record writes CLEAR TS to disk (secure DMA handled by stream_dvr); the
+ * CPU can read the file back, so we fopen it and follow its growth (clearerr
+ * after each EOF so the next fread sees appended data). This proves the tail
+ * delivers real ES before we add PSI + UDP in Iter 3. */
 static void _rist_reader(void *arg)
 {
     uint8_t   *buf   = NULL;
-    FILE      *fp    = NULL;
+    FILE      *in    = NULL;
     uint64_t   total = 0, since = 0;
     time_t     last  = time(NULL);
     int        first = 1;
-    int        dbg   = 0;   /* log the first handful of raw MediaRead returns */
+    int        waited = 0;
 
     buf = (uint8_t *)GxCore_Mallocz(RIST_READ_CHUNK);
     if (buf == NULL) {
         RIST_LOG("reader: malloc(%d) FAILED\n", RIST_READ_CHUNK);
         return;
     }
-    fp = fopen(RIST_DUMP_PATH, "wb");
-    if (fp == NULL) {
-        RIST_LOG("reader: fopen(%s) FAILED (USB mounted?)\n", RIST_DUMP_PATH);
+
+    /* the record creates the volume asynchronously; wait for 0000.ts to appear */
+    while (s_rist.reader_run && in == NULL) {
+        in = fopen(RIST_VOL0, "rb");
+        if (in == NULL) {
+            if ((++waited % 20) == 0)
+                RIST_LOG("reader: waiting for %s to appear (%d x100ms)...\n", RIST_VOL0, waited);
+            GxCore_ThreadDelay(100);
+        }
+    }
+    if (in == NULL) {
+        RIST_LOG("reader: stop requested before %s appeared\n", RIST_VOL0);
         GxCore_Free(buf);
         return;
     }
-    RIST_LOG("reader: started, dumping -> %s (ring id:%d size:%d)\n",
-             RIST_DUMP_PATH, RIST_RING_ID, RIST_RING_SIZE);
+    RIST_LOG("reader: tailing %s\n", RIST_VOL0);
 
     while (s_rist.reader_run) {
-        int n = GxPlayer_MediaRead(RIST_PLAYER, PLAYER_READ_DUMPER, buf, RIST_READ_CHUNK);
-        if (dbg < 8) {
-            /* -1 = dumper not RUNNING / stream not open; 0 = ring empty; >0 = data */
-            RIST_LOG("reader: MediaRead ret=%d\n", n);
-            dbg++;
-        }
+        size_t n = fread(buf, 1, RIST_READ_CHUNK, in);
         if (n > 0) {
             if (first) {
-                RIST_LOG("reader: FIRST read = %d bytes (%d pkts)\n", n, n / 188);
+                RIST_LOG("reader: FIRST tail read = %d bytes (%d pkts)\n", (int)n, (int)(n / 188));
                 first = 0;
             }
-            fwrite(buf, 1, (size_t)n, fp);
+            /* Iter 3 will inject PAT/PMT here and sendto() the UDP socket. */
             total += (uint64_t)n;
             since += (uint64_t)n;
         } else {
-            GxCore_ThreadDelay(10);
+            clearerr(in);              /* clear EOF so we re-read appended data */
+            GxCore_ThreadDelay(20);
         }
 
         {
             time_t now = time(NULL);
             if (now != last) {
-                RIST_LOG("reader: %llu B/s  total=%llu B (%llu pkts)%s\n",
+                RIST_LOG("reader: tail %llu B/s  total=%llu B (%llu pkts)%s\n",
                          (unsigned long long)since,
                          (unsigned long long)total,
                          (unsigned long long)(total / 188),
-                         (since == 0) ? "   <-- ZERO PAYLOAD!" : "");
+                         (since == 0) ? "   <-- not growing yet" : "");
                 since = 0;
                 last  = now;
             }
         }
     }
 
-    fflush(fp);
-    fclose(fp);
+    fclose(in);
     GxCore_Free(buf);
-    RIST_LOG("reader: stopped, total=%llu B (%llu pkts)\n",
+    RIST_LOG("reader: stopped, tailed total=%llu B (%llu pkts)\n",
              (unsigned long long)total, (unsigned long long)(total / 188));
 }
 
@@ -261,7 +282,7 @@ static int _rist_start_cb(void *arg)
         if (GxPlayer_MediaGetStatus(RIST_PLAYER, &si) == GXCORE_SUCCESS)
             RIST_LOG("start: player3 status=%d error=%d AFTER record (6=RECORD_RUNNING wanted)\n",
                      (int)si.status, (int)si.error);
-        RIST_LOG("start: record ACCEPTED -> check whether %s grows on USB\n", RIST_DEST);
+        RIST_LOG("start: record ACCEPTED -> expect NO 'wsize:-1'; volume %s should grow\n", RIST_VOL0);
     }
 
     /* 5) spawn the reader */
