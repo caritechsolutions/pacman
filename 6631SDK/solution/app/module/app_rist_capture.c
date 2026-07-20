@@ -56,6 +56,10 @@
 /* reused, globally-linked helpers (defined in app_play_control.c / app_pvr.c) */
 extern void app_player_url_get(char *url, GxBusPmDataProg *prog, uint16_t ts_src, uint16_t dmx_id);
 extern void app_player_record_config_get(int prog_id, PlayerRecordConfig *config);
+/* Direct record call so we can SEE the real return (the GXMSG_PLAYER_RECORD
+ * message path returns success on delivery and discards MediaRecord's -1). */
+extern status_t GxPlayer_MediaRecord(const char *name, const char *srcurl, const char *file);
+extern status_t GxPlayer_MediaGetStatus(const char *name, PlayerStatusInfo *info);
 
 /* ------------------------------------------------------------------- state */
 static struct {
@@ -76,6 +80,7 @@ static void _rist_reader(void *arg)
     uint64_t   total = 0, since = 0;
     time_t     last  = time(NULL);
     int        first = 1;
+    int        dbg   = 0;   /* log the first handful of raw MediaRead returns */
 
     buf = (uint8_t *)GxCore_Mallocz(RIST_READ_CHUNK);
     if (buf == NULL) {
@@ -93,6 +98,11 @@ static void _rist_reader(void *arg)
 
     while (s_rist.reader_run) {
         int n = GxPlayer_MediaRead(RIST_PLAYER, PLAYER_READ_DUMPER, buf, RIST_READ_CHUNK);
+        if (dbg < 8) {
+            /* -1 = dumper not RUNNING / stream not open; 0 = ring empty; >0 = data */
+            RIST_LOG("reader: MediaRead ret=%d\n", n);
+            dbg++;
+        }
         if (n > 0) {
             if (first) {
                 RIST_LOG("reader: FIRST read = %d bytes (%d pkts)\n", n, n / 188);
@@ -161,7 +171,6 @@ void app_rist_capture_stop(void)
 static int _rist_start_cb(void *arg)
 {
     PlayerRecordConfig         *cfg = NULL;
-    GxMsgProperty_PlayerRecord *rec = NULL;
     AppFrontend_Config          fe  = {0};
     char                        url[PLAYER_URL_LONG + 1] = {0};
 
@@ -207,24 +216,35 @@ static int _rist_start_cb(void *arg)
     app_player_url_get(url, &s_rist.prog, fe.ts_src, fe.dmx_id);
     RIST_LOG("start: srcurl=%s\n", url);
 
-    /* 4) fire the record via the PROVEN message path, dest = ringmem */
-    rec = GxCore_Mallocz(sizeof(GxMsgProperty_PlayerRecord));
-    if (rec == NULL) {
-        RIST_LOG("start: rec malloc FAILED\n");
-        goto cleanup;
-    }
-    rec->player = RIST_PLAYER;
-    strncpy((char *)rec->url, url, PLAYER_URL_LONG);
-    snprintf((char *)rec->file, PLAYER_URL_LONG, "ringmem://id:%d&size:%d&",
-             RIST_RING_ID, RIST_RING_SIZE);
-    RIST_LOG("start: dst=%s\n", (char *)rec->file);
+    /* 4) fire the record DIRECTLY (not via GXMSG_PLAYER_RECORD) so we see the
+     *    real return. The message path's DEF_APP_SEND_MSG_SYNC returns success
+     *    on delivery and throws away MediaRecord's status -- which is why the
+     *    previous run logged "ACTIVE" even though the ring never delivered a
+     *    byte. sat2ip calls MediaRecord2 the same way (app-thread, direct). */
+    {
+        char dst[128] = {0};
+        status_t rr;
+        PlayerStatusInfo si;
 
-    if (app_send_msg_exec(GXMSG_PLAYER_RECORD, (void *)rec) != GXCORE_SUCCESS) {
-        RIST_LOG("start: GXMSG_PLAYER_RECORD FAILED\n");
-        GXCORE_FREE(rec);
-        goto cleanup;
+        snprintf(dst, sizeof(dst), "ringmem://id:%d&size:%d&", RIST_RING_ID, RIST_RING_SIZE);
+        RIST_LOG("start: calling GxPlayer_MediaRecord(%s, <dvbs...>, %s)\n", RIST_PLAYER, dst);
+
+        rr = GxPlayer_MediaRecord(RIST_PLAYER, url, dst);
+        RIST_LOG("start: GxPlayer_MediaRecord RET = %d  (0=OK, <0 = record refused)\n", (int)rr);
+        if (rr != GXCORE_SUCCESS) {
+            RIST_LOG("start: record REFUSED -> the ringmem dest never opened. "
+                     "Check full serial log for '[Player]: Dump File Open Failed' / "
+                     "'[Media]:DumpFilter Open Fail' / 'New Recorder Config Error' / 'Busy'.\n");
+            goto cleanup;
+        }
+
+        memset(&si, 0, sizeof(si));
+        if (GxPlayer_MediaGetStatus(RIST_PLAYER, &si) == GXCORE_SUCCESS)
+            RIST_LOG("start: player status=%d error=%d (want status=RECORD_RUNNING=6, error=0)\n",
+                     (int)si.status, (int)si.error);
+        else
+            RIST_LOG("start: GxPlayer_MediaGetStatus failed\n");
     }
-    GXCORE_FREE(rec);
 
     /* 5) spawn the reader */
     s_rist.reader_run = 1;
