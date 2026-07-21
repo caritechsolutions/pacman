@@ -50,6 +50,7 @@
 #include <sys/statvfs.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <errno.h>
 
 /* ------------------------------------------------------------------ config */
 #define RIST_PLAYER             PLAYER_FOR_REC
@@ -332,8 +333,9 @@ static void _rist_reader(void *arg)
      * ordinary heap/BSS pointer faults ("sirius_m2m space err"). GxCore_Memhole
      * memory has a valid physical address (same allocator dvb2ip hands the DVR
      * hardware), and is CPU-readable so we can send the decrypted result. */
-    unsigned char *din  = NULL;
-    unsigned char *dout = NULL;
+    unsigned char *din  = NULL;   /* memhole (DMA) cipher INPUT  */
+    unsigned char *dout = NULL;   /* memhole (DMA) cipher OUTPUT */
+    unsigned char *rbuf = NULL;   /* normal heap: read() target (see below) */
     uint8_t  *sbuf  = NULL;
     int       sfill = 0;
     int       fd    = -1;
@@ -343,11 +345,17 @@ static void _rist_reader(void *arg)
     time_t    last  = time(NULL), last_resolve = last, wd_last = last;
     int       first = 1, waited = 0, seen_data = 0;
 
+    /* read() must land in ordinary user memory: copy_to_user faults (EFAULT)
+     * on the memhole/DMA mapping, so read() into it silently fails forever
+     * (fstat sees the volume growing, but rpos never advances). Read into a
+     * normal heap buffer, then memcpy the completed block into the memhole
+     * input the M2M cipher can DMA from. */
     din  = (unsigned char *)GxCore_MemholeMalloc(RIST_BLOCK, NULL);
     dout = (unsigned char *)GxCore_MemholeMalloc(RIST_BLOCK, NULL);
+    rbuf = (unsigned char *)GxCore_Mallocz(RIST_BLOCK);
     sbuf = (uint8_t *)GxCore_Mallocz(RIST_BLOCK + 2 * RIST_DGRAM);
-    if (din == NULL || dout == NULL || sbuf == NULL) {
-        RIST_LOG("reader: buffer alloc FAILED (memhole din=%p dout=%p)\n", din, dout);
+    if (din == NULL || dout == NULL || rbuf == NULL || sbuf == NULL) {
+        RIST_LOG("reader: buffer alloc FAILED (memhole din=%p dout=%p rbuf=%p)\n", din, dout, rbuf);
         goto done;
     }
 
@@ -376,7 +384,8 @@ static void _rist_reader(void *arg)
          * reset on rotate) so the recorded TS stays byte-continuous / 188-aligned
          * across the whole stream -- required for the per-packet ECB decrypt. */
         while (s_rist.reader_run && got < RIST_BLOCK) {
-            ssize_t r = read(fd, din + got, RIST_BLOCK - got);
+            ssize_t r = read(fd, rbuf + got, RIST_BLOCK - got);
+            int rerr = (r < 0) ? errno : 0;
             if (r > 0) {
                 if (!seen_data) {
                     RIST_LOG("reader: first data on vol %04d (r=%d)\n", cur, (int)r);
@@ -400,8 +409,8 @@ static void _rist_reader(void *arg)
                     if (fstat(fd, &sf) == 0) fsz = (long long)sf.st_size;
                     snprintf(pp, sizeof(pp), "%s/%04d.ts", RIST_VOL_DIR, cur);
                     if (stat(pp, &sp) == 0) psz = (long long)sp.st_size;
-                    RIST_LOG("reader: stall vol=%04d fd_size=%lld path_size=%lld rpos=%lld next=%d\n",
-                             cur, fsz, psz, (long long)rpos, _rist_vol_exists(cur + 1));
+                    RIST_LOG("reader: stall vol=%04d fd_size=%lld path_size=%lld rpos=%lld next=%d r=%d errno=%d\n",
+                             cur, fsz, psz, (long long)rpos, _rist_vol_exists(cur + 1), (int)r, rerr);
                     if (psz > fsz) {          /* our fd is stale -> re-grab the live inode */
                         int nfd = _rist_vol_open_fd(cur);
                         if (nfd >= 0) {
@@ -448,6 +457,9 @@ static void _rist_reader(void *arg)
             GxCore_ThreadDelay(20);            /* cur is the live volume; wait */
         }
         if (got < RIST_BLOCK) break;           /* reader stopping */
+
+        /* stage the freshly-read block into the DMA-capable cipher input */
+        memcpy(din, rbuf, RIST_BLOCK);
 
         /* decrypt this block (same transform stream_dvr applies on read) */
         dret = _rist_dvr_decrypt(din, dout, RIST_BLOCK);
@@ -509,6 +521,7 @@ static void _rist_reader(void *arg)
 
 done:
     if (fd >= 0) close(fd);
+    if (rbuf) GxCore_Free(rbuf);
     if (sbuf) GxCore_Free(sbuf);
     if (din)  GxCore_MemholeFree(din);
     if (dout) GxCore_MemholeFree(dout);
