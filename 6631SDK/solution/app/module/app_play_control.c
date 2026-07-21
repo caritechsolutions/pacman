@@ -1214,12 +1214,17 @@ static void app_normal_play(GxMsgProperty_NodeByPosGet *prog_node)
     app_dvbonline_program_play(&prog_node->prog_data);
 #endif
 
-    /* RIST capture: tee the selected program's TS into userspace (ringmem).
-     * Iter 1 dumps to a file to prove the memory tap delivers ES. */
+    /* RIST capture DISABLED: the userspace M2M decrypt of the device-encrypted
+     * DVR volumes is a dead end -- it panics the kernel (bad-physaddr DMA in the
+     * cipher). Pivoting to dvb2ip (serves CLEAR TS over HTTP, no decrypt). This
+     * hook also had to go so it stops competing with dvb2ip for the single
+     * DVR/TSW record hardware. Re-enable only if the capture path is reworked. */
+#if 0
     {
         int app_rist_play_change(GxBusPmDataProg *prog);
         app_rist_play_change(&prog_node->prog_data);
     }
+#endif
 
     app_fuse_spec_play_parental_lock_start();
 }
