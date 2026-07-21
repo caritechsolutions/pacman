@@ -47,6 +47,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/statvfs.h>
 
 /* ------------------------------------------------------------------ config */
 #define RIST_PLAYER             PLAYER_FOR_REC
@@ -59,6 +60,8 @@
 #define RIST_VOL_DIR            "/tmp/ristcap_rd/rec"
 #define RIST_VOL_SIZEMB         1          /* 1 MB per volume */
 #define RIST_VOL_MAXNUM         0          /* DVR never deletes; the READER recycles */
+#define RIST_RESERVE_MB         1          /* shrink DVR free-space reserve (default 20MB
+                                            * > our whole ramdisk) so record can start */
 
 #define RIST_START_DELAY_MS     2000
 #define RIST_BLOCK              (188 * 256)             /* 48128 = DVR flush block (0xbc00) */
@@ -499,8 +502,11 @@ static int _rist_start_cb(void *arg)
         return 0;
     }
 
-    /* mount the size-capped tmpfs (idempotent) and clear it for a fresh capture */
+    /* mount the size-capped tmpfs (idempotent) and clear it for a fresh capture.
+     * guard the mount: an unconditional mount stacks a new tmpfs over the old
+     * one every zap, wasting RAM and hiding the previous contents. */
     system("mkdir -p " RIST_RD_MOUNT " 2>/dev/null; "
+           "grep -q " RIST_RD_MOUNT " /proc/mounts || "
            "mount -t tmpfs -o size=" RIST_RD_SIZE " tmpfs " RIST_RD_MOUNT " 2>/dev/null; "
            "rm -rf " RIST_VOL_DIR " " RIST_DEST " 2>/dev/null");
 
@@ -516,6 +522,9 @@ static int _rist_start_cb(void *arg)
         pc.volume_sizemb   = RIST_VOL_SIZEMB;
         pc.volume_maxnum   = RIST_VOL_MAXNUM;
         pc.volume_fullstop = 0;
+        /* the DVR refuses to start if free space <= reserve (default 20MB), which
+         * is bigger than our whole ramdisk -> keep the reserve tiny (1MB). */
+        pc.reserve_sizemb  = RIST_RESERVE_MB;
         GxPlayer_SetPVRConfig(&pc);
     }
 
@@ -539,6 +548,15 @@ static int _rist_start_cb(void *arg)
         status_t rr;
         PlayerStatusInfo si;
 
+        {   /* prove whether the reserve-space check can be the cause of a -1:
+             * log the tmpfs free space (MB) vs the reserve we requested (1 MB) */
+            struct statvfs vfs;
+            if (statvfs(RIST_RD_MOUNT, &vfs) == 0) {
+                unsigned long freemb =
+                    (unsigned long)((vfs.f_bavail * (unsigned long long)vfs.f_bsize) >> 20);
+                RIST_LOG("start: tmpfs free=%luMB reserve_req=%dMB\n", freemb, RIST_RESERVE_MB);
+            }
+        }
         RIST_LOG("start: GxPlayer_MediaRecord(%s, <dvbs...>, %s)\n", RIST_PLAYER, RIST_DEST);
         rr = GxPlayer_MediaRecord(RIST_PLAYER, url, RIST_DEST);
         RIST_LOG("start: GxPlayer_MediaRecord RET = %d\n", (int)rr);
