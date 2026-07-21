@@ -340,7 +340,7 @@ static void _rist_reader(void *arg)
     off_t     rpos  = 0;         /* absolute read offset within the current volume */
     int       cur   = 0;
     uint64_t  total = 0, since = 0, decfail = 0;
-    time_t    last  = time(NULL), last_resolve = last;
+    time_t    last  = time(NULL), last_resolve = last, wd_last = last;
     int       first = 1, waited = 0, seen_data = 0;
 
     din  = (unsigned char *)GxCore_MemholeMalloc(RIST_BLOCK, NULL);
@@ -385,6 +385,34 @@ static void _rist_reader(void *arg)
                 got  += (int)r;
                 rpos += r;
                 continue;
+            }
+            /* No forward progress (r <= 0). Once per second: log what the reader
+             * actually sees -- our fd's size vs the path's size (they differ if
+             * the DVR recreated/truncated the volume under us, leaving our fd on
+             * a stale inode) -- and self-heal by reopening the volume at rpos so
+             * a stale fd is swapped for the live one without losing our place. */
+            if (!seen_data) {
+                time_t now = time(NULL);
+                if (now != wd_last) {
+                    struct stat sf, sp;
+                    long long fsz = -1, psz = -1;
+                    char pp[80];
+                    if (fstat(fd, &sf) == 0) fsz = (long long)sf.st_size;
+                    snprintf(pp, sizeof(pp), "%s/%04d.ts", RIST_VOL_DIR, cur);
+                    if (stat(pp, &sp) == 0) psz = (long long)sp.st_size;
+                    RIST_LOG("reader: stall vol=%04d fd_size=%lld path_size=%lld rpos=%lld next=%d\n",
+                             cur, fsz, psz, (long long)rpos, _rist_vol_exists(cur + 1));
+                    if (psz > fsz) {          /* our fd is stale -> re-grab the live inode */
+                        int nfd = _rist_vol_open_fd(cur);
+                        if (nfd >= 0) {
+                            lseek(nfd, rpos, SEEK_SET);
+                            close(fd);
+                            fd = nfd;
+                            RIST_LOG("reader: reopened vol %04d (was stale)\n", cur);
+                        }
+                    }
+                    wd_last = now;
+                }
             }
             if (r < 0) {                       /* transient error; back off */
                 GxCore_ThreadDelay(20);
