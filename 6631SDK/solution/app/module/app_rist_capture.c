@@ -329,13 +329,12 @@ static int _rist_vol_lowest(int start, int limit)
 /* --------------------------------------------------------------- reader */
 static void _rist_reader(void *arg)
 {
-    /* DMA-capable memhole buffers: the M2M cipher DMAs to output_paddr, so an
-     * ordinary heap/BSS pointer faults ("sirius_m2m space err"). GxCore_Memhole
-     * memory has a valid physical address (same allocator dvb2ip hands the DVR
-     * hardware), and is CPU-readable so we can send the decrypted result. */
-    unsigned char *din  = NULL;   /* memhole (DMA) cipher INPUT  */
+    /* The M2M cipher DMAs its result to output_paddr, so the OUTPUT must be
+     * memhole/DMA memory (an ordinary/BSS pointer gives "sirius_m2m space err").
+     * memhole memory has a valid physical address (the same allocator dvb2ip
+     * hands the DVR hardware) and is CPU-readable so we can send the result. */
     unsigned char *dout = NULL;   /* memhole (DMA) cipher OUTPUT */
-    unsigned char *rbuf = NULL;   /* normal heap: read() target (see below) */
+    unsigned char *rbuf = NULL;   /* ordinary heap: read() target AND cipher INPUT */
     uint8_t  *sbuf  = NULL;
     int       sfill = 0;
     int       fd    = -1;
@@ -345,17 +344,17 @@ static void _rist_reader(void *arg)
     time_t    last  = time(NULL), last_resolve = last, wd_last = last;
     int       first = 1, waited = 0, seen_data = 0;
 
-    /* read() must land in ordinary user memory: copy_to_user faults (EFAULT)
-     * on the memhole/DMA mapping, so read() into it silently fails forever
-     * (fstat sees the volume growing, but rpos never advances). Read into a
-     * normal heap buffer, then memcpy the completed block into the memhole
-     * input the M2M cipher can DMA from. */
-    din  = (unsigned char *)GxCore_MemholeMalloc(RIST_BLOCK, NULL);
+    /* Mirror stream_dvr's decrypt exactly: the cipher INPUT is an ordinary heap
+     * buffer (there it is s->data_buf = av_malloc; here rbuf) and only the
+     * OUTPUT is DMA/memhole memory with a usable output_paddr. Two reasons this
+     * split is mandatory: (1) read() into memhole faults copy_to_user (EFAULT),
+     * so the volume can only be read into normal memory; (2) handing the M2M
+     * engine a memhole buffer as INPUT hangs it -- the original never does that. */
     dout = (unsigned char *)GxCore_MemholeMalloc(RIST_BLOCK, NULL);
     rbuf = (unsigned char *)GxCore_Mallocz(RIST_BLOCK);
     sbuf = (uint8_t *)GxCore_Mallocz(RIST_BLOCK + 2 * RIST_DGRAM);
-    if (din == NULL || dout == NULL || rbuf == NULL || sbuf == NULL) {
-        RIST_LOG("reader: buffer alloc FAILED (memhole din=%p dout=%p rbuf=%p)\n", din, dout, rbuf);
+    if (dout == NULL || rbuf == NULL || sbuf == NULL) {
+        RIST_LOG("reader: buffer alloc FAILED (memhole dout=%p rbuf=%p)\n", dout, rbuf);
         goto done;
     }
 
@@ -458,17 +457,15 @@ static void _rist_reader(void *arg)
         }
         if (got < RIST_BLOCK) break;           /* reader stopping */
 
-        /* stage the freshly-read block into the DMA-capable cipher input */
-        memcpy(din, rbuf, RIST_BLOCK);
-
-        /* decrypt this block (same transform stream_dvr applies on read) */
-        dret = _rist_dvr_decrypt(din, dout, RIST_BLOCK);
+        /* decrypt this block (same transform stream_dvr applies on read):
+         * ordinary-heap input rbuf -> memhole output dout */
+        dret = _rist_dvr_decrypt(rbuf, dout, RIST_BLOCK);
 
         if (first) {
-            int scr = _rist_count_sc(din, RIST_BLOCK);
+            int scr = _rist_count_sc(rbuf, RIST_BLOCK);
             int scd = _rist_count_sc(dout, RIST_BLOCK);
             RIST_LOG("DIAG raw: %02x %02x %02x %02x  sync47@0=%d  startcodes=%d\n",
-                     din[0], din[1], din[2], din[3], (din[0] == 0x47), scr);
+                     rbuf[0], rbuf[1], rbuf[2], rbuf[3], (rbuf[0] == 0x47), scr);
             RIST_LOG("DIAG dec: ret=%d  %02x %02x %02x %02x  sync47@0=%d  startcodes=%d\n",
                      dret, dout[0], dout[1], dout[2], dout[3], (dout[0] == 0x47), scd);
             RIST_LOG("DIAG verdict: %s\n",
@@ -523,7 +520,6 @@ done:
     if (fd >= 0) close(fd);
     if (rbuf) GxCore_Free(rbuf);
     if (sbuf) GxCore_Free(sbuf);
-    if (din)  GxCore_MemholeFree(din);
     if (dout) GxCore_MemholeFree(dout);
     RIST_LOG("reader: stopped, total=%llu B  udp sent=%llu err=%llu\n",
              ULL(total), ULL(s_rist.sent), ULL(s_rist.senderr));
