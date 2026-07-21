@@ -1043,6 +1043,14 @@ static int app_dvb2ip_service_change(void)
     }
     GxCore_MutexUnlock(arg->mtx);
 
+    /* Always-on serial diagnostic (independent of s_http_printf_level): the
+     * server starts only when all four gates are true, so this line pinpoints
+     * which one is blocking on a fresh bring-up. */
+    printf("[DVB2IP] service_change: use=%d net=%d gui=%d prog=%d fm=%d run=%d -> %s (ip=%s ports=%d/%d)\n",
+           arg->use_flag, arg->net_flag, arg->gui_flag, arg->prog_num, arg->fm_num, arg->run_flag,
+           do_start ? "START" : (do_stop ? "STOP" : "no-op"),
+           arg->ip_addr, DVB2IP_SERVER_PORTS, DVB2IP_STREAM_PORTS);
+
     if (do_stop)
     {
         DVB2IP_INFO("\033[31mstop dvb2ip server\033[0m\n");
@@ -1066,11 +1074,15 @@ static int app_dvb2ip_service_change(void)
         if (dvb2ip_service_start(&para) < 0)
         {
             DVB2IP_ERR("dvb2ip_service_start failed!\n");
+            printf("[DVB2IP] dvb2ip_service_start FAILED (bind %s:%d/%d in use? bad ip?)\n",
+                   arg->ip_addr, DVB2IP_SERVER_PORTS, DVB2IP_STREAM_PORTS);
             GxCore_MutexLock(arg->mtx);
             arg->run_flag = 0;
             GxCore_MutexUnlock(arg->mtx);
             return -1;
         }
+        printf("[DVB2IP] server STARTED  ->  playlist: http://%s:%d/play_file   stream: http://%s:%d/stream=<prog_id>.ts\n",
+               arg->ip_addr, DVB2IP_SERVER_PORTS, arg->ip_addr, DVB2IP_STREAM_PORTS);
     }
 
     return 0;

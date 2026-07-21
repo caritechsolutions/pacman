@@ -1,20 +1,30 @@
 #!/bin/sh
-# install.sh - one-shot deploy of the current RIST-capture iteration.
+# install.sh - enable + deploy the dvb2ip HTTP-TS server.
 #
-# REF policy: defaults to the working branch, which auto-tracks every pushed
-# iteration, so re-running the SAME curl one-liner always installs the latest.
-# To pin a specific drop instead, override:  REF=iter1 curl -fsSL .../install.sh | sh
+# WHY THIS EXISTS: the userspace-decrypt RIST capture is a dead end (the M2M
+# cipher panics the kernel on app-owned buffers). We pivot to dvb2ip, a shipping
+# SDK feature that captures the selected program THROUGH the hardware demux
+# descrambler -> CLEAR TS in a DVR MEM buffer -> served over HTTP. No decrypt.
 #
+#   playlist :  http://<stb-ip>:8998/play_file
+#   stream   :  http://<stb-ip>:8999/stream=<prog_id>.ts
+#
+# dvb2ip is compiled out by default (DVB2IP_SERVER_SUPPORT 0). This script:
+#   1. installs the changed sources (diagnostics + disabled RIST hook),
+#   2. flips BR2_MOD_DVB2IP_SERVER=y in .config,
+#   3. FORCES A FULL APP REBUILD -- mandatory: enabling the macro inserts two
+#      values into the GXMSG_* enum (app_msg.h), renumbering every later message
+#      id, so any stale object would mis-dispatch messages. A partial rebuild is
+#      NOT safe here.
+#
+# REF policy: defaults to the working branch (auto-tracks each pushed iteration).
 # Usage:   curl -fsSL <raw-url>/install.sh | sh
 #   env overrides:  SDK_ROOT=...  REF=...  ENV_SH=...
 #
-# Plain POSIX sh (busybox/dash safe). Needs only curl, make, coreutils and the
-# toolchain already on the VM. No git, no package installs.
+# Plain POSIX sh (busybox/dash safe). Needs curl, make, sed, coreutils + toolchain.
 
 set -eu
 
-# ============================================================================
-# CONFIG  -- future iterations: usually only FILES / OBJS need editing.
 # ============================================================================
 RAW_BASE="https://raw.githubusercontent.com/caritechsolutions/pacman"
 REF="${REF:-claude/gx6631-ts-userspace-rist-fe2wkc}"
@@ -22,22 +32,20 @@ REPO_PREFIX="6631SDK/solution"                        # repo path that maps to $
 SDK_ROOT="${SDK_ROOT:-/opt/stb/sdk-clean/6631SDK/solution}"
 ENV_SH="${ENV_SH:-/opt/stb/env.sh}"
 
-# Files changed by THIS iteration, as paths relative to $SDK_ROOT
-# (each is identical to its path under $REPO_PREFIX in the repo).
-FILES="app/module/app_rist_capture.c
+# Source files changed by THIS iteration (paths relative to $SDK_ROOT, identical
+# to their path under $REPO_PREFIX in the repo).
+#   - app_dvb2ip_platform.c : always-on serial diagnostics on the start path.
+#   - app_play_control.c    : RIST capture hook DISABLED (it panics + would fight
+#                             dvb2ip for the single DVR/TSW hardware).
+FILES="app/dvb2ip_server/app_dvb2ip_platform.c
 app/module/app_play_control.c"
 
-# Objects to force-rebuild so we never ship a stale out.elf.
-OBJS="output/objects/app_rist_capture.o
-output/objects/app_play_control.o"
-
-# Marker used to detect an already-hooked (hand-edited) app_play_control.c.
-HOOK_MARKER="app_rist_play_change"
+CONFIG_OPT="BR2_MOD_DVB2IP_SERVER"                    # Kconfig symbol to enable
 
 # ============================================================================
 TS="$(date +%Y%m%d-%H%M%S)"
-MAKE_LOG="/tmp/rist_make.log"
-MAKEBIN_LOG="/tmp/rist_makebin.log"
+MAKE_LOG="/tmp/dvb2ip_make.log"
+MAKEBIN_LOG="/tmp/dvb2ip_makebin.log"
 
 log() { printf '%s\n' "$*"; }
 die() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
@@ -45,52 +53,34 @@ die() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
 # ---- 1. sanity -------------------------------------------------------------
 command -v curl >/dev/null 2>&1 || die "curl not found on PATH"
 command -v make >/dev/null 2>&1 || die "make not found on PATH"
-[ -d "$SDK_ROOT" ] || die "SDK_ROOT is not a directory: $SDK_ROOT   (set SDK_ROOT=...)"
-[ -f "$ENV_SH" ]   || die "env script not found: $ENV_SH   (set ENV_SH=...)"
+command -v sed  >/dev/null 2>&1 || die "sed not found on PATH"
+[ -d "$SDK_ROOT" ]        || die "SDK_ROOT is not a directory: $SDK_ROOT   (set SDK_ROOT=...)"
+[ -f "$ENV_SH" ]          || die "env script not found: $ENV_SH   (set ENV_SH=...)"
+[ -f "$SDK_ROOT/.config" ]|| die ".config not found in $SDK_ROOT (is this the solution dir?)"
 
-log "=== RIST capture install ==="
+log "=== dvb2ip enable + install ==="
 log "  REF      : $REF"
 log "  SDK_ROOT : $SDK_ROOT"
-log "  raw base : $RAW_BASE"
 log ""
 
-TMP="$(mktemp -d "${TMPDIR:-/tmp}/ristinstall.XXXXXX")" || die "mktemp -d failed"
+TMP="$(mktemp -d "${TMPDIR:-/tmp}/dvb2ipinstall.XXXXXX")" || die "mktemp -d failed"
 trap 'rm -rf "$TMP"' EXIT INT TERM
 REPORT="$TMP/report"
 : > "$REPORT"
-HOOK_STATUS="n/a"
-STAGED=""
 
-# ---- 2. download everything to temp FIRST (never half-install) -------------
+# ---- 2. download changed sources to temp FIRST (never half-install) --------
 for rel in $FILES; do
-    dest="$SDK_ROOT/$rel"
     url="$RAW_BASE/$REF/$REPO_PREFIX/$rel"
-    base="$(basename "$rel")"
-
-    # Protect the hand-edited hook host: if the hook is already present, leave
-    # the VM's file completely alone (it may carry your other local edits).
-    if [ "$base" = "app_play_control.c" ]; then
-        if [ -f "$dest" ] && grep -q "$HOOK_MARKER" "$dest" 2>/dev/null; then
-            HOOK_STATUS="already present -> left your $base untouched"
-            log "hook: '$HOOK_MARKER' already in $base -> skipping download (your edits preserved)"
-            continue
-        fi
-        HOOK_STATUS="was missing -> installed repo's hooked $base (your copy backed up)"
-        log "hook: '$HOOK_MARKER' NOT found in $base -> will install repo's hooked copy"
-    fi
-
     mkdir -p "$TMP/$(dirname "$rel")"
     log "download: $url"
     curl -fsSL "$url" -o "$TMP/$rel" || die "download failed (404 or network): $url"
     [ -s "$TMP/$rel" ] || die "downloaded an empty file: $url"
-    STAGED="$STAGED$rel
-"
 done
 
 # ---- 3. install staged files (back up anything we overwrite) ---------------
 log ""
-log "installing:"
-for rel in $STAGED; do
+log "installing sources:"
+for rel in $FILES; do
     dest="$SDK_ROOT/$rel"
     mkdir -p "$(dirname "$dest")"
     if [ -f "$dest" ]; then
@@ -102,33 +92,60 @@ for rel in $STAGED; do
     log "  write  : $dest ($sz bytes)"
     printf '%s  (%s bytes)\n' "$rel" "$sz" >> "$REPORT"
 done
-[ -s "$REPORT" ] || log "  (no files needed installing)"
 
-# ---- 4. force object rebuild ----------------------------------------------
+# ---- 4. enable dvb2ip in .config (idempotent) ------------------------------
 log ""
-log "forcing object rebuild:"
-for o in $OBJS; do
-    if [ -f "$SDK_ROOT/$o" ]; then
-        rm -f "$SDK_ROOT/$o"
-        log "  rm $o"
+log "enabling $CONFIG_OPT in .config:"
+CFG="$SDK_ROOT/.config"
+if grep -q "^${CONFIG_OPT}=y" "$CFG"; then
+    log "  already enabled ($CONFIG_OPT=y)"
+    CFG_STATUS="already =y"
+else
+    cp -p "$CFG" "$CFG.bak.$TS"
+    log "  backup : $CFG -> $CFG.bak.$TS"
+    if grep -q "^# ${CONFIG_OPT} is not set" "$CFG"; then
+        sed -i "s/^# ${CONFIG_OPT} is not set\$/${CONFIG_OPT}=y/" "$CFG"
+        CFG_STATUS="flipped 'is not set' -> =y"
     else
-        log "  (absent) $o"
+        printf '%s=y\n' "$CONFIG_OPT" >> "$CFG"
+        CFG_STATUS="appended =y"
     fi
-done
+    grep -q "^${CONFIG_OPT}=y" "$CFG" || die "failed to set ${CONFIG_OPT}=y in $CFG"
+    log "  $CFG_STATUS"
+fi
 
-# ---- 5. build (make, then make bin; stop hard if make fails) ---------------
+# ---- 5. FULL app rebuild (mandatory: GXMSG enum renumbers, see header) ------
 log ""
-log "=== build: make ==="
+log "forcing FULL app rebuild (enum renumber makes a partial build unsafe):"
+# drop the generated macro header so post_config regenerates it from .config
+rm -f "$SDK_ROOT/app/include/app_config.h" && log "  rm app/include/app_config.h (regenerated by post_config)"
+# drop every app object so all 507 recompile against the new DVB2IP_SERVER_SUPPORT
+if [ -d "$SDK_ROOT/output/objects" ]; then
+    n="$(find "$SDK_ROOT/output/objects" -maxdepth 1 -name '*.o' | wc -l | tr -d ' ')"
+    find "$SDK_ROOT/output/objects" -maxdepth 1 -name '*.o' -delete
+    log "  removed $n app objects from output/objects/"
+fi
+
+# ---- 6. build (make, then make bin; stop hard if make fails) ---------------
+log ""
+log "=== build: make  (full app rebuild -- this takes a while) ==="
 cd "$SDK_ROOT"
 set +e; . "$ENV_SH"; set -e     # sourcing env scripts can return non-zero benignly
 
-{ make 2>&1; echo $? > "$TMP/make.rc"; } | tee "$MAKE_LOG" | grep -iE 'rist_capture|app ok|error' || true
+{ make 2>&1; echo $? > "$TMP/make.rc"; } | tee "$MAKE_LOG" | grep -iE 'dvb2ip|app ok|error|warning: implicit' || true
 mk="$(cat "$TMP/make.rc" 2>/dev/null || echo 1)"
 if [ "$mk" != "0" ]; then
     log ""
-    log "---- last 25 lines of $MAKE_LOG ----"
-    tail -n 25 "$MAKE_LOG" 2>/dev/null || true
+    log "---- last 30 lines of $MAKE_LOG ----"
+    tail -n 30 "$MAKE_LOG" 2>/dev/null || true
     die "'make' failed (rc=$mk) -- NOT running 'make bin'. Full log: $MAKE_LOG"
+fi
+
+# confirm the macro actually regenerated to 1
+if grep -q "define DVB2IP_SERVER_SUPPORT 1" "$SDK_ROOT/app/include/app_config.h" 2>/dev/null; then
+    log "  app_config.h: DVB2IP_SERVER_SUPPORT = 1  (OK)"
+else
+    log "  WARNING: DVB2IP_SERVER_SUPPORT is not 1 in app_config.h -- lib present? Kconfig dep?"
 fi
 
 log ""
@@ -142,36 +159,31 @@ if [ "$mb" != "0" ]; then
     die "'make bin' failed (rc=$mb). Full log: $MAKEBIN_LOG"
 fi
 
-# ---- 6. summary ------------------------------------------------------------
+# ---- 7. summary ------------------------------------------------------------
 IMG="$SDK_ROOT/output/image/download_linux.bin"
 log ""
 log "======================= SUMMARY ======================="
-log "REF                        : $REF"
-log "hook (app_play_control.c)  : $HOOK_STATUS"
-log "files installed            :"
-if [ -s "$REPORT" ]; then
-    while IFS= read -r line; do log "    $line"; done < "$REPORT"
-else
-    log "    (none - play_control hook already present, nothing else changed)"
-fi
+log "REF               : $REF"
+log "config            : ${CFG_STATUS:-already =y}"
+log "sources installed :"
+while IFS= read -r line; do log "    $line"; done < "$REPORT"
 log ""
 if [ -f "$IMG" ]; then
     isz="$(wc -c < "$IMG" | tr -d ' ')"
-    its="$(date -r "$IMG" '+%Y-%m-%d %H:%M:%S' 2>/dev/null \
-           || ls -l "$IMG" 2>/dev/null | awk '{print $6, $7, $8}' \
-           || echo '?')"
-    log "image  : $IMG"
-    log "  size : $isz bytes"
-    log "  time : $its"
+    log "image  : $IMG ($isz bytes)"
 else
     log "image  : $IMG   (NOT FOUND - did 'make bin' succeed?)"
 fi
 log ""
 log "next:"
 log "  1) flash $IMG to the box"
-log "  2) zap a channel (Iter 1 auto-arms the capture on zap; the /tmp/ristcap"
-log "     marker-input file is reserved for Iter 2, not needed yet)"
-log "  3) on the serial console watch for:  [RIST] reader: FIRST read = N bytes"
-log "     then the per-second byte counter climbing (not 'ZERO PAYLOAD'), and"
-log "     /media/sda1/rist_dump.ts growing with real video+audio ES."
+log "  2) make sure the box is on the network (has an IP) and channels are scanned"
+log "  3) serial console, watch for:"
+log "       [DVB2IP] service_change: use=1 net=1 gui=1 prog=N ... -> START"
+log "       [DVB2IP] server STARTED  ->  playlist: http://<ip>:8998/play_file ..."
+log "     if it says '-> no-op', the printed use/net/gui/prog flags show which"
+log "     gate is 0 (net=0 => no IP yet; prog=0 => no channels scanned)."
+log "  4) from your laptop (same LAN):"
+log "       curl -s http://<stb-ip>:8998/play_file        # lists current-TP prog ids"
+log "       curl -s http://<stb-ip>:8999/stream=<id>.ts | mpv -   # or vlc"
 log "======================================================="
