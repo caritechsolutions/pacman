@@ -36,6 +36,8 @@
 #include "module/app_ioctl.h"
 #include "module/app_psi.h"
 #include "gxsecure/gxtfm_api.h"   /* GxTfm_Decrypt, GxTfmCrypto, TFM_KEY_SSUK, flags */
+#include "common/memhole.h"       /* GxCore_MemholeMalloc/Free -- DMA-capable buffers */
+#include "common/gx_hw_malloc.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -296,20 +298,25 @@ static FILE *_rist_vol_open(int vol)
 /* --------------------------------------------------------------- reader */
 static void _rist_reader(void *arg)
 {
-    /* 2048-aligned (like the app's GxTfm buffers) for the hardware decrypt */
-    static unsigned char din[RIST_BLOCK]  __attribute__((aligned(2048)));
-    static unsigned char dout[RIST_BLOCK] __attribute__((aligned(2048)));
+    /* DMA-capable memhole buffers: the M2M cipher DMAs to output_paddr, so an
+     * ordinary heap/BSS pointer faults ("sirius_m2m space err"). GxCore_Memhole
+     * memory has a valid physical address (same allocator dvb2ip hands the DVR
+     * hardware), and is CPU-readable so we can send the decrypted result. */
+    unsigned char *din  = NULL;
+    unsigned char *dout = NULL;
     uint8_t  *sbuf  = NULL;
     int       sfill = 0;
     FILE     *in    = NULL;
     int       cur   = 0;
-    uint64_t  total = 0, since = 0;
+    uint64_t  total = 0, since = 0, decfail = 0;
     time_t    last  = time(NULL), last_resolve = last;
     int       first = 1, waited = 0;
 
+    din  = (unsigned char *)GxCore_MemholeMalloc(RIST_BLOCK, NULL);
+    dout = (unsigned char *)GxCore_MemholeMalloc(RIST_BLOCK, NULL);
     sbuf = (uint8_t *)GxCore_Mallocz(RIST_BLOCK + 2 * RIST_DGRAM);
-    if (sbuf == NULL) {
-        RIST_LOG("reader: malloc FAILED\n");
+    if (din == NULL || dout == NULL || sbuf == NULL) {
+        RIST_LOG("reader: buffer alloc FAILED (memhole din=%p dout=%p)\n", din, dout);
         goto done;
     }
 
@@ -332,7 +339,6 @@ static void _rist_reader(void *arg)
 
     while (s_rist.reader_run) {
         int got = 0, rotated = 0, dret, off;
-        unsigned char *payload;
 
         /* fill one full DVR block, following growth / volume rotation */
         while (s_rist.reader_run && got < RIST_BLOCK) {
@@ -371,38 +377,41 @@ static void _rist_reader(void *arg)
                      dret, dout[0], dout[1], dout[2], dout[3], (dout[0] == 0x47), scd);
             RIST_LOG("DIAG verdict: %s\n",
                      (dret == 0 && scd > scr + 8)
-                         ? "DECRYPT -> CLEAN TS (sending decrypted)"
-                         : "decrypt did NOT yield start codes (sending raw; check key/flags/paddr)");
+                         ? "DECRYPT -> CLEAN TS"
+                         : "decrypt FAILED (no clean TS) -- NOT sending; check memhole/key/flags");
             first = 0;
         }
 
-        payload = (dret == 0) ? dout : din;
-
-        _rist_psi_send();
-        memcpy(sbuf + sfill, payload, RIST_BLOCK);
-        sfill += RIST_BLOCK;
-        off = 0;
-        while (sfill - off >= RIST_DGRAM) {
-            if (sendto(s_rist.udp_fd, sbuf + off, RIST_DGRAM, 0,
-                       (struct sockaddr *)&s_rist.dst, sizeof(s_rist.dst)) < 0)
-                s_rist.senderr++;
-            else
-                s_rist.sent++;
-            off += RIST_DGRAM;
+        /* only send successfully-decrypted TS; never emit ciphertext */
+        if (dret != 0) {
+            decfail++;
+        } else {
+            _rist_psi_send();
+            memcpy(sbuf + sfill, dout, RIST_BLOCK);
+            sfill += RIST_BLOCK;
+            off = 0;
+            while (sfill - off >= RIST_DGRAM) {
+                if (sendto(s_rist.udp_fd, sbuf + off, RIST_DGRAM, 0,
+                           (struct sockaddr *)&s_rist.dst, sizeof(s_rist.dst)) < 0)
+                    s_rist.senderr++;
+                else
+                    s_rist.sent++;
+                off += RIST_DGRAM;
+            }
+            if (off > 0) {
+                if (sfill - off > 0)
+                    memmove(sbuf, sbuf + off, sfill - off);
+                sfill -= off;
+            }
+            total += RIST_BLOCK;
+            since += RIST_BLOCK;
         }
-        if (off > 0) {
-            if (sfill - off > 0)
-                memmove(sbuf, sbuf + off, sfill - off);
-            sfill -= off;
-        }
-        total += RIST_BLOCK;
-        since += RIST_BLOCK;
 
         {
             time_t now = time(NULL);
             if (now != last) {
-                RIST_LOG("reader: %llu B/s  total=%llu B  vol=%04d  udp sent=%llu err=%llu\n",
-                         ULL(since), ULL(total), cur, ULL(s_rist.sent), ULL(s_rist.senderr));
+                RIST_LOG("reader: %llu B/s  total=%llu B  vol=%04d  sent=%llu err=%llu decfail=%llu\n",
+                         ULL(since), ULL(total), cur, ULL(s_rist.sent), ULL(s_rist.senderr), ULL(decfail));
                 since = 0;
                 last  = now;
             }
@@ -417,6 +426,8 @@ static void _rist_reader(void *arg)
 done:
     if (in)   fclose(in);
     if (sbuf) GxCore_Free(sbuf);
+    if (din)  GxCore_MemholeFree(din);
+    if (dout) GxCore_MemholeFree(dout);
     RIST_LOG("reader: stopped, total=%llu B  udp sent=%llu err=%llu\n",
              ULL(total), ULL(s_rist.sent), ULL(s_rist.senderr));
 }
