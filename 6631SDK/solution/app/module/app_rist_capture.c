@@ -50,10 +50,15 @@
 
 /* ------------------------------------------------------------------ config */
 #define RIST_PLAYER             PLAYER_FOR_REC
-#define RIST_DEST               "/tmp/ristcap_rec.ts.dvr"
-#define RIST_VOL_DIR            "/tmp/ristcap_rec"
-#define RIST_VOL_SIZEMB         2
-#define RIST_VOL_MAXNUM         4
+/* Dedicated size-capped tmpfs ramdisk for the volumes, so "Disk Full" can only
+ * ever hit our own budget, never the rest of /tmp. Small volumes + the reader
+ * deleting each one the instant it's consumed keeps ~2 volumes live at a time. */
+#define RIST_RD_MOUNT           "/tmp/ristcap_rd"
+#define RIST_RD_SIZE            "16m"
+#define RIST_DEST               "/tmp/ristcap_rd/rec.ts.dvr"
+#define RIST_VOL_DIR            "/tmp/ristcap_rd/rec"
+#define RIST_VOL_SIZEMB         1          /* 1 MB per volume */
+#define RIST_VOL_MAXNUM         0          /* DVR never deletes; the READER recycles */
 
 #define RIST_START_DELAY_MS     2000
 #define RIST_BLOCK              (188 * 256)             /* 48128 = DVR flush block (0xbc00) */
@@ -295,6 +300,13 @@ static FILE *_rist_vol_open(int vol)
     return fopen(p, "rb");
 }
 
+static void _rist_vol_unlink(int vol)
+{
+    char p[80];
+    snprintf(p, sizeof(p), "%s/%04d.ts", RIST_VOL_DIR, vol);
+    unlink(p);          /* frees the tmpfs RAM immediately once our fd is closed */
+}
+
 /* --------------------------------------------------------------- reader */
 static void _rist_reader(void *arg)
 {
@@ -310,7 +322,7 @@ static void _rist_reader(void *arg)
     int       cur   = 0;
     uint64_t  total = 0, since = 0, decfail = 0;
     time_t    last  = time(NULL), last_resolve = last;
-    int       first = 1, waited = 0;
+    int       first = 1, waited = 0, seen_data = 0;
 
     din  = (unsigned char *)GxCore_MemholeMalloc(RIST_BLOCK, NULL);
     dout = (unsigned char *)GxCore_MemholeMalloc(RIST_BLOCK, NULL);
@@ -332,9 +344,8 @@ static void _rist_reader(void *arg)
         RIST_LOG("reader: open 0000.ts FAILED\n");
         goto done;
     }
-    fseek(in, 0, SEEK_END);   /* live, block-aligned (volumes grow in whole blocks) */
-    cur = 0;
-    RIST_LOG("reader: tailing %s/%04d.ts live (decrypt on) -> udp %s:%d\n",
+    cur = 0;                  /* read from the START of 0000 (not EOF) */
+    RIST_LOG("reader: tailing %s/%04d.ts (decrypt on) -> udp %s:%d\n",
              RIST_VOL_DIR, cur, s_rist.dst_ip, s_rist.dst_port);
 
     while (s_rist.reader_run) {
@@ -344,22 +355,31 @@ static void _rist_reader(void *arg)
         while (s_rist.reader_run && got < RIST_BLOCK) {
             size_t r = fread(din + got, 1, RIST_BLOCK - got, in);
             if (r > 0) {
+                if (!seen_data) {
+                    RIST_LOG("reader: first data on vol %04d (r=%d)\n", cur, (int)r);
+                    seen_data = 1;
+                }
                 got += (int)r;
                 continue;
             }
-            if (got == 0 && _rist_vol_exists(cur + 1)) {
+            /* fread==0: EOF on cur. If the next volume exists, cur is complete
+             * -> free it and rotate (volumes are 48128-aligned in steady state,
+             * so a nonzero partial here only ever happens at teardown). */
+            if (_rist_vol_exists(cur + 1)) {
                 fclose(in);
+                _rist_vol_unlink(cur);
                 cur++;
                 in = _rist_vol_open(cur);
                 if (in == NULL) {
                     RIST_LOG("reader: rotate open %04d.ts FAILED -> stop\n", cur);
                     goto done;
                 }
-                RIST_LOG("reader: rotate -> vol %04d.ts\n", cur);
+                RIST_LOG("reader: rotate -> vol %04d.ts (freed %04d)\n", cur, cur - 1);
+                got = 0;
                 rotated = 1;
                 break;
             }
-            clearerr(in);
+            clearerr(in);      /* cur is the live volume; wait for it to grow */
             GxCore_ThreadDelay(20);
         }
         if (rotated) continue;
@@ -479,8 +499,10 @@ static int _rist_start_cb(void *arg)
         return 0;
     }
 
-    /* fresh slate on tmpfs (instant) */
-    system("rm -rf " RIST_VOL_DIR " " RIST_DEST " 2>/dev/null");
+    /* mount the size-capped tmpfs (idempotent) and clear it for a fresh capture */
+    system("mkdir -p " RIST_RD_MOUNT " 2>/dev/null; "
+           "mount -t tmpfs -o size=" RIST_RD_SIZE " tmpfs " RIST_RD_MOUNT " 2>/dev/null; "
+           "rm -rf " RIST_VOL_DIR " " RIST_DEST " 2>/dev/null");
 
     if (app_player_open(RIST_PLAYER) != PLAYER_OPEN_OK) {
         RIST_LOG("start: app_player_open(%s) FAILED\n", RIST_PLAYER);
