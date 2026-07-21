@@ -48,6 +48,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/statvfs.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 /* ------------------------------------------------------------------ config */
 #define RIST_PLAYER             PLAYER_FOR_REC
@@ -59,7 +61,13 @@
 #define RIST_DEST               "/tmp/ristcap_rd/rec.ts.dvr"
 #define RIST_VOL_DIR            "/tmp/ristcap_rd/rec"
 #define RIST_VOL_SIZEMB         1          /* 1 MB per volume */
-#define RIST_VOL_MAXNUM         0          /* DVR never deletes; the READER recycles */
+#define RIST_VOL_MAXNUM         8          /* DVR-owned circular buffer: it deletes the
+                                            * oldest once >8 volumes exist, capping the
+                                            * ramdisk at ~8MB (< the 16MB tmpfs and the
+                                            * hw TSW ring) no matter the reader's pace.
+                                            * recfile_rm closes the fd, so space frees;
+                                            * the reader-unlink approach left space held
+                                            * and overflowed the hardware ring. */
 #define RIST_RESERVE_MB         1          /* shrink DVR free-space reserve (default 20MB
                                             * > our whole ramdisk) so record can start */
 
@@ -296,18 +304,25 @@ static int _rist_vol_exists(int vol)
     return (access(p, R_OK) == 0);
 }
 
-static FILE *_rist_vol_open(int vol)
+/* Raw fd, not stdio: fopen/fread keep a sticky EOF flag on a growing file, so
+ * once the reader touches a still-empty volume it stops seeing later writes even
+ * after clearerr. A plain open()/read() re-reads a growing file correctly. */
+static int _rist_vol_open_fd(int vol)
 {
     char p[80];
     snprintf(p, sizeof(p), "%s/%04d.ts", RIST_VOL_DIR, vol);
-    return fopen(p, "rb");
+    return open(p, O_RDONLY);
 }
 
-static void _rist_vol_unlink(int vol)
+/* Lowest existing volume index in [start, start+limit], or -1 if none.
+ * Used to catch up if the DVR recycled the volume we were on out from under us. */
+static int _rist_vol_lowest(int start, int limit)
 {
-    char p[80];
-    snprintf(p, sizeof(p), "%s/%04d.ts", RIST_VOL_DIR, vol);
-    unlink(p);          /* frees the tmpfs RAM immediately once our fd is closed */
+    int v;
+    for (v = start; v <= start + limit; v++)
+        if (_rist_vol_exists(v))
+            return v;
+    return -1;
 }
 
 /* --------------------------------------------------------------- reader */
@@ -321,7 +336,8 @@ static void _rist_reader(void *arg)
     unsigned char *dout = NULL;
     uint8_t  *sbuf  = NULL;
     int       sfill = 0;
-    FILE     *in    = NULL;
+    int       fd    = -1;
+    off_t     rpos  = 0;         /* absolute read offset within the current volume */
     int       cur   = 0;
     uint64_t  total = 0, since = 0, decfail = 0;
     time_t    last  = time(NULL), last_resolve = last;
@@ -342,51 +358,68 @@ static void _rist_reader(void *arg)
     }
     if (!s_rist.reader_run)
         goto done;
-    in = _rist_vol_open(0);
-    if (in == NULL) {
+    fd = _rist_vol_open_fd(0);
+    if (fd < 0) {
         RIST_LOG("reader: open 0000.ts FAILED\n");
         goto done;
     }
     cur = 0;                  /* read from the START of 0000 (not EOF) */
-    RIST_LOG("reader: tailing %s/%04d.ts (decrypt on) -> udp %s:%d\n",
+    RIST_LOG("reader: tailing %s/%04d.ts (raw, decrypt on) -> udp %s:%d\n",
              RIST_VOL_DIR, cur, s_rist.dst_ip, s_rist.dst_port);
 
     while (s_rist.reader_run) {
-        int got = 0, rotated = 0, dret, off;
+        int got = 0, dret, off;
 
-        /* fill one full DVR block, following growth / volume rotation */
+        /* Fill one full DVR block, following the volume's growth and rotating to
+         * the next volume at its end. Volumes are concatenated SEAMLESSLY: a
+         * partial block at a boundary carries into the next volume (got is NOT
+         * reset on rotate) so the recorded TS stays byte-continuous / 188-aligned
+         * across the whole stream -- required for the per-packet ECB decrypt. */
         while (s_rist.reader_run && got < RIST_BLOCK) {
-            size_t r = fread(din + got, 1, RIST_BLOCK - got, in);
+            ssize_t r = read(fd, din + got, RIST_BLOCK - got);
             if (r > 0) {
                 if (!seen_data) {
                     RIST_LOG("reader: first data on vol %04d (r=%d)\n", cur, (int)r);
                     seen_data = 1;
                 }
-                got += (int)r;
+                got  += (int)r;
+                rpos += r;
                 continue;
             }
-            /* fread==0: EOF on cur. If the next volume exists, cur is complete
-             * -> free it and rotate (volumes are 48128-aligned in steady state,
-             * so a nonzero partial here only ever happens at teardown). */
-            if (_rist_vol_exists(cur + 1)) {
-                fclose(in);
-                _rist_vol_unlink(cur);
-                cur++;
-                in = _rist_vol_open(cur);
-                if (in == NULL) {
-                    RIST_LOG("reader: rotate open %04d.ts FAILED -> stop\n", cur);
-                    goto done;
-                }
-                RIST_LOG("reader: rotate -> vol %04d.ts (freed %04d)\n", cur, cur - 1);
-                got = 0;
-                rotated = 1;
-                break;
+            if (r < 0) {                       /* transient error; back off */
+                GxCore_ThreadDelay(20);
+                continue;
             }
-            clearerr(in);      /* cur is the live volume; wait for it to grow */
-            GxCore_ThreadDelay(20);
+            /* r == 0: EOF at rpos. If a later volume exists, the writer has moved
+             * on and cur is final -- but it may have flushed a tail on close
+             * after our last read, so drain to its real size before rotating. */
+            if (_rist_vol_exists(cur + 1)) {
+                struct stat st;
+                if (fstat(fd, &st) == 0 && rpos < st.st_size)
+                    continue;                  /* more bytes appeared; read them */
+                close(fd);
+                cur++;
+                fd = _rist_vol_open_fd(cur);
+                if (fd < 0) {
+                    /* the DVR recycled cur out from under us (reader fell behind
+                     * the volume window) -- skip forward to the oldest live one. */
+                    int lo = _rist_vol_lowest(cur, RIST_VOL_MAXNUM + 2);
+                    if (lo < 0) {
+                        RIST_LOG("reader: no live volume at/after %04d -> stop\n", cur);
+                        goto done;
+                    }
+                    RIST_LOG("reader: vol %04d gone, skip -> %04d (fell behind)\n", cur, lo);
+                    cur = lo;
+                    fd  = _rist_vol_open_fd(cur);
+                    if (fd < 0) { RIST_LOG("reader: skip open %04d FAILED -> stop\n", cur); goto done; }
+                }
+                rpos = 0;
+                RIST_LOG("reader: rotate -> vol %04d.ts\n", cur);
+                continue;                      /* keep filling the same block */
+            }
+            GxCore_ThreadDelay(20);            /* cur is the live volume; wait */
         }
-        if (rotated) continue;
-        if (got < RIST_BLOCK) continue;   /* reader stopping */
+        if (got < RIST_BLOCK) break;           /* reader stopping */
 
         /* decrypt this block (same transform stream_dvr applies on read) */
         dret = _rist_dvr_decrypt(din, dout, RIST_BLOCK);
@@ -447,7 +480,7 @@ static void _rist_reader(void *arg)
     }
 
 done:
-    if (in)   fclose(in);
+    if (fd >= 0) close(fd);
     if (sbuf) GxCore_Free(sbuf);
     if (din)  GxCore_MemholeFree(din);
     if (dout) GxCore_MemholeFree(dout);
