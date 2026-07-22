@@ -725,8 +725,33 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                          * The real fix is to make the demux TS-out write CLEAR.) */
                         if(diag)
                         {
-                            printf("[DVB2IP] DIAG raw: [%02x %02x %02x %02x] sync47=%d len=%d\n",
-                                   buffer[0], buffer[1], buffer[2], buffer[3], (buffer[0] == 0x47), read_len);
+                            /* One-shot classification of the DVR MEM read so a single
+                             * serial line settles what the barrier is:
+                             *  - nearly all ZEROS  -> firewall-protected memory (CPU
+                             *    read blocked) -> clearing the DEMUX_TSW fuse should
+                             *    yield clear TS.
+                             *  - ~0 zeros, high-entropy, sync47 at 188 boundaries but
+                             *    no start codes -> CIPHERTEXT (encrypted payloads).
+                             *  - sync47 at every 188 AND start codes present -> already
+                             *    CLEAR TS. */
+                            int n = (read_len < 48128) ? read_len : 48128;
+                            int i, nzero = 0, nsync = 0, nsc = 0, npkt = 0;
+                            for(i = 0; i < n; i++)
+                                if(buffer[i] == 0x00) nzero++;
+                            for(i = 0; i + 187 < n; i += 188) { npkt++; if(buffer[i] == 0x47) nsync++; }
+                            for(i = 0; i + 2 < n; i++)
+                                if(buffer[i] == 0x00 && buffer[i+1] == 0x00 && buffer[i+2] == 0x01) nsc++;
+                            printf("[DVB2IP] DIAG raw len=%d  head16: "
+                                   "%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+                                   read_len,
+                                   buffer[0],buffer[1],buffer[2],buffer[3],buffer[4],buffer[5],buffer[6],buffer[7],
+                                   buffer[8],buffer[9],buffer[10],buffer[11],buffer[12],buffer[13],buffer[14],buffer[15]);
+                            printf("[DVB2IP] DIAG raw: zero=%d/1000  sync47=%d/%d  startcodes=%d  -> %s\n",
+                                   (n ? (nzero * 1000 / n) : 0), nsync, npkt, nsc,
+                                   (n && (nzero * 1000 / n) >= 900) ? "ZEROS (firewall-protected) => fuse-clear should give clear TS" :
+                                   (nsync >= npkt && nsc > 0)      ? "CLEAR TS (already decodable)" :
+                                   (nsync >= npkt && nsc == 0)     ? "CIPHERTEXT: clear headers, encrypted payloads" :
+                                                                     "CIPHERTEXT/UNKNOWN: no 188-framing, no start codes");
                             diag = 0;
                         }
                         ts_multi_fifo_write(prog->fifo, buffer, read_len);
