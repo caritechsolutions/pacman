@@ -63,6 +63,16 @@ int protect_flag_probe(void)
 	if (gx_otp_query_flag(OTP_FLAG_SCPU_BUF_PROTECT) == true)
 		flag |= GXMEM_FLAG_SCPU;
 
+	/* Clear the DEMUX_TSW protection bit so the transport-stream writer emits
+	 * CLEAR TS into the record buffer, letting us capture the program stream for
+	 * IP output (dvb2ip). This is what makes GxAVModuleRead return plaintext
+	 * instead of ciphertext. The TSW encryption is software-gated on this bit
+	 * (firewall_flag & GXMEM_FLAG_DEMUX_TSW -> tsr_security -> SET_SECURITY), and
+	 * the CPU can already read the tswmem region, so clearing the bit yields
+	 * clear TS rather than an access fault. All OTHER content protection
+	 * (ES/TSR/FW/frame) is left exactly as fused. */
+	flag &= ~GXMEM_FLAG_DEMUX_TSW;
+
 	return flag;
 #else
 	return 0;
