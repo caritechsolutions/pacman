@@ -1247,11 +1247,26 @@ void app_dvb2ip_prog_num_update(void)
 {
     Dvb2ipArg *arg = &s_dvb2ip_arg;
     int fm_num = 0;
-    int prog_num = app_dvb2ip_tv_radio_num_get(NULL, 0);
+    int prog_num;
+
+    /* Safe to call from the play path before dvb2ip is initialised: the mutex
+     * is 0 until arg_init runs GxCore_MutexCreate, so bail until then. */
+    if (arg->mtx == 0)
+        return;
+
+    prog_num = app_dvb2ip_tv_radio_num_get(NULL, 0);
 #if FM_SUPPORT
     fm_num = app_dvb2ip_fm_num_get(NULL);
 #endif
     GxCore_MutexLock(arg->mtx);
+    /* No change -> do nothing: this runs on every zap, and re-flagging change
+     * would make service_change stop+restart a running server each time. */
+    if (arg->prog_num == prog_num && arg->fm_num == fm_num)
+    {
+        GxCore_MutexUnlock(arg->mtx);
+        return;
+    }
+    printf("[DVB2IP] prog_num %d->%d fm %d->%d\n", arg->prog_num, prog_num, arg->fm_num, fm_num);
     arg->prog_num = prog_num;
     arg->fm_num = fm_num;
     arg->change_flag = 1;

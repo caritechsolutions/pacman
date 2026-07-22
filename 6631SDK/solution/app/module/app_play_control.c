@@ -1214,15 +1214,18 @@ static void app_normal_play(GxMsgProperty_NodeByPosGet *prog_node)
     app_dvbonline_program_play(&prog_node->prog_data);
 #endif
 
-    /* RIST capture DISABLED: the userspace M2M decrypt of the device-encrypted
-     * DVR volumes is a dead end -- it panics the kernel (bad-physaddr DMA in the
-     * cipher). Pivoting to dvb2ip (serves CLEAR TS over HTTP, no decrypt). This
-     * hook also had to go so it stops competing with dvb2ip for the single
-     * DVR/TSW record hardware. Re-enable only if the capture path is reworked. */
-#if 0
+    /* dvb2ip: refresh the served program count whenever a channel plays. The
+     * boot-time count (from network init) can run before the program DB is
+     * ready, latching prog_num=0 and permanently blocking the HTTP server; here
+     * the DB is loaded and the PM lock is free, so it counts correctly.
+     * prog_num_update is a no-op when the count is unchanged, so this does not
+     * disturb active client streams on every zap.
+     * (The old userspace-RIST capture hook lived here; removed -- decrypting the
+     * device-encrypted DVR path panicked the kernel. dvb2ip serves clear TS.) */
+#if DVB2IP_SERVER_SUPPORT
     {
-        int app_rist_play_change(GxBusPmDataProg *prog);
-        app_rist_play_change(&prog_node->prog_data);
+        void app_dvb2ip_prog_num_update(void);
+        app_dvb2ip_prog_num_update();
     }
 #endif
 

@@ -835,6 +835,13 @@ static int32_t _ts_rec_dvr_config(int32_t index)
     dvrconf.dst = DVR_OUTPUT_MEM;
     dvrconf.dst_buf.sw_buffer_size = SW_BUFFER_SIZE;
     dvrconf.dst_buf.hw_buffer_size = HW_BUFFER_SIZE;
+    /* Request UNPROTECTED (clear) DVR memory. Without this flag the DVR driver
+     * sets hwbuf_security=1 and encrypts the captured buffer at rest (see
+     * platform/gxbus/player/interface/gx_fifo_muxts.c:65). That is why the
+     * served TS body was ciphertext: the app-injected PAT/PMT parse fine but the
+     * ES decodes as garbage / "lost synchro". This keeps the capture clear so
+     * FTA programs stream as plain TS -- no userspace decrypt needed. */
+    dvrconf.flags |= DVR_FLAG_MEM_NOT_PROTECTED;
 #if DVB2IP_SERVER_USE_STATIC_SCREEN
     prog->sw_buffer_ptr = GxCore_MemholeMalloc(SW_BUFFER_SIZE, NULL);
     prog->hw_buffer_ptr = GxCore_MemholeMalloc(HW_BUFFER_SIZE, NULL);
