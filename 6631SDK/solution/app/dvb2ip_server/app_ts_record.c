@@ -6,40 +6,6 @@
 #include "app_ts_record.h"
 #include "app_module.h"
 #include "module/app_frontend_board_config.h"
-#include "gxsecure/gxtfm_api.h"   /* GxTfm_Decrypt / GxTfmCrypto / TFM_* */
-
-/* The DVR captures into device-PROTECTED memory (hwbuf_security), so the bytes
- * GxAVModuleRead hands us are AES-encrypted at rest (TFM_KEY_SSUK, TS-packet
- * mode) -- the same at-rest encryption the player reverses when it plays a
- * recording (stream_dvr.c _dvr_tfm_copy). We replicate that decrypt here so the
- * served TS is clear. Critical: the M2M cipher DMAs the cleartext to a PHYSICAL
- * address, so the output buffer must be memhole memory and output_paddr must be
- * its PHYSICAL address (GxCore_MemholeGetPhysAddr) -- passing a virtual pointer
- * hangs the engine / panics the kernel. Input stays on ordinary heap with
- * input_paddr left 0, exactly as stream_dvr does. */
-static int _ts_rec_dvr_decrypt(unsigned char *src, unsigned char *dst,
-                               unsigned int dst_paddr, unsigned int size)
-{
-    GxTfmCrypto param;
-
-    memset(&param, 0, sizeof(param));
-    param.module        = TFM_MOD_M2M;
-    param.alg           = TFM_ALG_AES128;
-    param.opt           = TFM_OPT_ECB;
-    param.src.id        = TFM_SRC_MEM;
-    param.dst.id        = TFM_DST_MEM;
-    param.input.buf     = src;
-    param.input.length  = size;
-    param.output.buf    = dst;
-    param.output.length = size;
-    param.even_key.id   = TFM_KEY_SSUK;
-    param.odd_key.id    = TFM_KEY_SSUK;
-    param.flags         = TFM_FLAG_CRYPT_EVEN_KEY_VALID | TFM_FLAG_CRYPT_ODD_KEY_VALID |
-                          TFM_FLAG_CRYPT_TS_PACKET_MODE | TFM_FLAG_CRYPT_SWITCH_CLR |
-                          TFM_FLAG_CRYPT_HW_PVR_MODE;
-    param.output_paddr  = dst_paddr;   /* PHYSICAL, from GxCore_MemholeGetPhysAddr */
-    return GxTfm_Decrypt(&param);
-}
 
 #define TS_REC_USER_MAX_COUNT 32
 #define TS_REC_USER_MAX_LEN   (TS_REC_USER_MAX_COUNT*188)
@@ -718,10 +684,8 @@ static bool _ts_rec_private_packet_fill(ProgDmxInfo *prog)
 
 static void ts_rec_dumpfilter_thread(void *usrdata)
 {
-    uint8_t *buffer = NULL;       /* heap: encrypted DVR read target (cipher INPUT) */
-    uint8_t *clrbuf = NULL;       /* memhole: decrypted output (cipher OUTPUT, DMA) */
-    unsigned int clrpaddr = 0;    /* PHYSICAL address of clrbuf, for output_paddr */
-    int diag = 1;                 /* one-shot decrypt diagnostic */
+    uint8_t *buffer = NULL;       /* heap: DVR read target */
+    int diag = 1;                 /* one-shot output diagnostic */
     int32_t i = 0;
     int32_t read_len = 0;
     TsRecCtrl *ctrl = &thiz_TsRecCtrl;
@@ -731,16 +695,8 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
     GxCore_ThreadDetach();
 
     buffer = GxCore_Calloc(TS_REC_DUMP_DVB_BLOCK_SIZE, sizeof(uint8_t));
-    clrbuf = (uint8_t *)GxCore_MemholeMalloc(TS_REC_DUMP_DVB_BLOCK_SIZE, NULL);
-    if(NULL == buffer || NULL == clrbuf)
-    {
-        TS_REC_ERR("dumpfilter buffer alloc failed (buffer=%p clrbuf=%p)\n", buffer, clrbuf);
-        if(buffer) GxCore_Free(buffer);
-        if(clrbuf) GxCore_MemholeFree(clrbuf);
+    if(NULL == buffer)
         return;
-    }
-    clrpaddr = GxCore_MemholeGetPhysAddr(clrbuf);
-    printf("[DVB2IP] dumpfilter: clrbuf=%p paddr=0x%x\n", clrbuf, clrpaddr);
 
     while(TS_REC_STATUS_RUNNING == ctrl->status)
     {
@@ -762,19 +718,18 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                 {
                     if((read_len = GxAVModuleRead(ctrl->dev, prog->dvr_handle, buffer, TS_REC_DUMP_DVB_BLOCK_SIZE, 20000000)) > 0)
                     {
-                        /* Decrypt the at-rest-encrypted DVR block into clrbuf,
-                         * then serve the CLEAR bytes. Only forward on success --
-                         * never emit ciphertext. */
-                        int dret = _ts_rec_dvr_decrypt(buffer, clrbuf, clrpaddr, (unsigned int)read_len);
+                        /* Forward the DVR bytes as-is. (Userspace M2M decrypt of
+                         * this buffer is a dead end: HW_PVR_MODE demands the
+                         * secure TSW memory region -> "sirius_m2m space err" -> it
+                         * only ever writes into CPU-unreadable protected memory.
+                         * The real fix is to make the demux TS-out write CLEAR.) */
                         if(diag)
                         {
-                            printf("[DVB2IP] DIAG dec: ret=%d in[%02x %02x %02x %02x] out[%02x %02x %02x %02x] sync47=%d len=%d\n",
-                                   dret, buffer[0], buffer[1], buffer[2], buffer[3],
-                                   clrbuf[0], clrbuf[1], clrbuf[2], clrbuf[3], (clrbuf[0] == 0x47), read_len);
+                            printf("[DVB2IP] DIAG raw: [%02x %02x %02x %02x] sync47=%d len=%d\n",
+                                   buffer[0], buffer[1], buffer[2], buffer[3], (buffer[0] == 0x47), read_len);
                             diag = 0;
                         }
-                        if(dret == 0)
-                            ts_multi_fifo_write(prog->fifo, clrbuf, read_len);
+                        ts_multi_fifo_write(prog->fifo, buffer, read_len);
                         if(read_len > 188)
                             need_delay = false;
                     }
@@ -788,7 +743,6 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
     }
 
     GxCore_Free(buffer);
-    GxCore_MemholeFree(clrbuf);
     return;
 }
 
