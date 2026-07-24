@@ -127,6 +127,30 @@ static TsRecCtrl thiz_TsRecCtrl = {
     .status = TS_REC_STATUS_STOPPED,
 };
 
+/* Runtime-selectable demux/DVR/descrambler instance id (Trigon "try dmx2/dmx3"
+ * test). Read from /tmp/ristdmx once per stream request; default AV_MODULE_ID.
+ * Lets us route the capture through a different demux+DVR instance to test
+ * whether the TSW at-rest protection is per-instance or global -- app only, no
+ * BOOT flash. Test: reboot, `echo 2 > /tmp/ristdmx`, start ONE stream, read the
+ * [DVB2IP] DIAG line; repeat with 3. */
+static int32_t s_ts_rec_modid       = AV_MODULE_ID;
+static int32_t s_ts_rec_open_modid  = -1;   /* id the demux is currently open with */
+static int     s_ts_rec_diag_rearm  = 1;    /* re-arm the one-shot DVR-read DIAG per request */
+
+static void _ts_rec_modid_refresh(void)
+{
+    FILE *fp = fopen("/tmp/ristdmx", "r");
+    if(fp)
+    {
+        int v = -1;
+        if(fscanf(fp, "%d", &v) == 1 && v >= 0 && v < TS_REC_DEMUX_MOD_MAX)
+            s_ts_rec_modid = v;
+        fclose(fp);
+    }
+    printf("[DVB2IP] modid=%d (echo 0..%d > /tmp/ristdmx to change)\n",
+           s_ts_rec_modid, TS_REC_DEMUX_MOD_MAX - 1);
+}
+
 static void _ts_rec_prog_release(ProgDmxInfo *prog);
 
 static void _ts_rec_prog_unset(ProgDmxInfo *prog);
@@ -581,7 +605,10 @@ static int32_t _ts_rec_demux_module_config(uint32_t tuner)
 static int32_t _ts_rec_demux_module_open(void)
 {
     if(-1 == thiz_TsRecCtrl.dmx_handle)
-        thiz_TsRecCtrl.dmx_handle = GxAVOpenModule(thiz_TsRecCtrl.dev, GXAV_MOD_DEMUX, AV_MODULE_ID);
+    {
+        thiz_TsRecCtrl.dmx_handle = GxAVOpenModule(thiz_TsRecCtrl.dev, GXAV_MOD_DEMUX, s_ts_rec_modid);
+        s_ts_rec_open_modid = s_ts_rec_modid;
+    }
 
     if(thiz_TsRecCtrl.dmx_handle < 0)
         return -1;
@@ -685,7 +712,6 @@ static bool _ts_rec_private_packet_fill(ProgDmxInfo *prog)
 static void ts_rec_dumpfilter_thread(void *usrdata)
 {
     uint8_t *buffer = NULL;       /* heap: DVR read target */
-    int diag = 1;                 /* one-shot output diagnostic */
     int32_t i = 0;
     int32_t read_len = 0;
     TsRecCtrl *ctrl = &thiz_TsRecCtrl;
@@ -723,7 +749,7 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                          * secure TSW memory region -> "sirius_m2m space err" -> it
                          * only ever writes into CPU-unreadable protected memory.
                          * The real fix is to make the demux TS-out write CLEAR.) */
-                        if(diag)
+                        if(s_ts_rec_diag_rearm)
                         {
                             /* One-shot classification of the DVR MEM read so a single
                              * serial line settles what the barrier is:
@@ -746,13 +772,13 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                                    read_len,
                                    buffer[0],buffer[1],buffer[2],buffer[3],buffer[4],buffer[5],buffer[6],buffer[7],
                                    buffer[8],buffer[9],buffer[10],buffer[11],buffer[12],buffer[13],buffer[14],buffer[15]);
-                            printf("[DVB2IP] DIAG raw: zero=%d/1000  sync47=%d/%d  startcodes=%d  -> %s\n",
-                                   (n ? (nzero * 1000 / n) : 0), nsync, npkt, nsc,
+                            printf("[DVB2IP] DIAG dmx%d raw: zero=%d/1000  sync47=%d/%d  startcodes=%d  -> %s\n",
+                                   s_ts_rec_modid, (n ? (nzero * 1000 / n) : 0), nsync, npkt, nsc,
                                    (n && (nzero * 1000 / n) >= 900) ? "ZEROS (firewall-protected) => fuse-clear should give clear TS" :
                                    (nsync >= npkt && nsc > 0)      ? "CLEAR TS (already decodable)" :
                                    (nsync >= npkt && nsc == 0)     ? "CIPHERTEXT: clear headers, encrypted payloads" :
                                                                      "CIPHERTEXT/UNKNOWN: no 188-framing, no start codes");
-                            diag = 0;
+                            s_ts_rec_diag_rearm = 0;
                         }
                         ts_multi_fifo_write(prog->fifo, buffer, read_len);
                         if(read_len > 188)
@@ -860,7 +886,7 @@ static int32_t _ts_rec_dvr_config(int32_t index)
     ProgDmxInfo *prog = &ctrl->prog[index];
 
     if(-1 == prog->dvr_handle)
-        prog->dvr_handle = GxAVOpenModule(ctrl->dev, GXAV_MOD_DVR, AV_MODULE_ID);
+        prog->dvr_handle = GxAVOpenModule(ctrl->dev, GXAV_MOD_DVR, s_ts_rec_modid);
     if(prog->dvr_handle < 0)
     {
         TS_REC_ERR("open dvr failed!\n");
@@ -1487,6 +1513,21 @@ static int32_t _ts_rec_prog_config(int32_t index, TsRecConfig *config)
     if(GXCORE_ERROR == GxBus_PmProgGetById(config->prog_id, &node_prog))
         return -1;
 
+    /* Trigon dmx2/dmx3 test: pick the instance for THIS request. If it differs
+     * from the one the demux is already open on (default 1 from boot), close and
+     * reopen the demux on the requested instance. The DVR and descrambler below
+     * then bind to the same instance via s_ts_rec_modid. Re-arm the one-shot DVR
+     * DIAG so each request prints a fresh classification line. */
+    _ts_rec_modid_refresh();
+    s_ts_rec_diag_rearm = 1;
+    if(s_ts_rec_open_modid != -1 && s_ts_rec_open_modid != s_ts_rec_modid)
+    {
+        _ts_rec_demux_module_close();           /* dmx_handle -> -1 */
+        if(_ts_rec_demux_module_open() < 0)     /* reopen on s_ts_rec_modid */
+            return -1;
+        printf("[DVB2IP] demux reopened on instance %d\n", s_ts_rec_modid);
+    }
+
     if(_ts_rec_demux_module_config(node_prog.tuner) < 0)
         return -1;
 
@@ -1525,7 +1566,7 @@ static int32_t _ts_rec_prog_config(int32_t index, TsRecConfig *config)
 
 #if CA_SUPPORT
     TS_REC_INFO("%s[%d]ProgID: %d, SatID: %d, TPID: %d\n", __func__, __LINE__, config->prog_id, node_prog.sat_id, node_prog.tp_id);
-    app_extend_send_service(config->prog_id, node_prog.sat_id, node_prog.tp_id, AV_MODULE_ID, CONTROL_PVR);
+    app_extend_send_service(config->prog_id, node_prog.sat_id, node_prog.tp_id, s_ts_rec_modid, CONTROL_PVR);
 #endif
     return _ts_rec_multi_fifo_config(index);
 }
