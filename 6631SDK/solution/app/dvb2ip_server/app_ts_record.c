@@ -137,6 +137,13 @@ static int32_t s_ts_rec_modid       = 2;    /* default to the UNPROTECTED instan
 static int32_t s_ts_rec_open_modid  = -1;   /* id the demux is currently open with */
 static int     s_ts_rec_diag_rearm  = 1;    /* re-arm the one-shot DVR-read DIAG per request */
 
+/* PSI (PAT/PMT) injection cadence in ms. Lower = ffmpeg on the UDP consumer sees
+ * a PMT sooner after it binds, so its probe collapses faster (cuts player_av
+ * bring-up). Default 100ms (broadcast-typical, was a fixed 500ms); overridable
+ * per stream via /tmp/ristpsims. The first fill is always emitted immediately so
+ * PAT/PMT lead the stream. */
+static int     s_ts_rec_psi_ms      = 100;
+
 static void _ts_rec_modid_refresh(void)
 {
     FILE *fp = fopen("/tmp/ristdmx", "r");
@@ -147,8 +154,18 @@ static void _ts_rec_modid_refresh(void)
             s_ts_rec_modid = v;
         fclose(fp);
     }
-    printf("[DVB2IP] modid=%d (echo 0..%d > /tmp/ristdmx to change)\n",
-           s_ts_rec_modid, TS_REC_DEMUX_MOD_MAX - 1);
+
+    fp = fopen("/tmp/ristpsims", "r");
+    if(fp)
+    {
+        int v = -1;
+        if(fscanf(fp, "%d", &v) == 1 && v >= 10 && v <= 2000)
+            s_ts_rec_psi_ms = v;
+        fclose(fp);
+    }
+
+    printf("[DVB2IP] modid=%d (echo 0..%d > /tmp/ristdmx)  psi=%dms (echo ms > /tmp/ristpsims)\n",
+           s_ts_rec_modid, TS_REC_DEMUX_MOD_MAX - 1, s_ts_rec_psi_ms);
 }
 
 static void _ts_rec_prog_release(ProgDmxInfo *prog);
@@ -701,7 +718,7 @@ static int32_t _ts_rec_heart_beats(ProgDmxInfo *prog)
 
 static bool _ts_rec_private_packet_fill(ProgDmxInfo *prog)
 {
-    if(0 == prog->fill_packet_timems || (prog->timems[1] - prog->fill_packet_timems) >= 500)
+    if(0 == prog->fill_packet_timems || (prog->timems[1] - prog->fill_packet_timems) >= (uint32_t)s_ts_rec_psi_ms)
     {
         prog->fill_packet_timems = prog->timems[1];
         return true;

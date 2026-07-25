@@ -34,6 +34,8 @@
 #include "app_send_msg.h"
 #include "app.h"
 #include "module/pm/gxpm_manage.h"             /* GxBusPmDataProg */
+#include "module/app_ioctl.h"                  /* app_ioctl + FRONTEND_LOCK_STATE_GET */
+#include "module/app_nim.h"                    /* AppFrontend_LockState */
 #include "gxplayer.h"                          /* umbrella -> GxPlayer_MediaPlay/MediaStop */
 #include "../dvb2ip_server/app_ts_record.h"    /* app_ts_record_* + TsRecConfig (DVB2IP-gated) */
 
@@ -51,10 +53,19 @@
 /* ------------------------------------------------------------------ config */
 #define RIST_DGRAM              (188 * 7)      /* 1316: one TS-over-UDP datagram */
 #define RIST_READ               (188 * 256)    /* 48128: read chunk from the capture fifo */
-#define RIST_START_DELAY_MS     2000           /* let the tuner lock before we tap dmx2 */
+#define RIST_START_DELAY_MS     2000           /* default capture-start delay (tuner lock) */
 #define RIST_RESOLVE_SECS       2              /* re-read /tmp/ristcap this often */
 #define RIST_FIFO_SIZE          (20 * 256 * 188)
 #define RIST_MAX_PROG           4
+
+/* Latency tuning (Step: reduce zap-to-picture). Both re-read per zap from /tmp so
+ * the floor can be swept without a reflash; milliseconds; default = the old fixed
+ * value. /tmp/ristdelay1 = wait before capture starts (tuner lock); acts as the
+ * SAFETY-TIMEOUT ceiling under lock-triggered start. /tmp/ristdelay2 = wait before
+ * player_av opens (so the reader is already pumping datagrams). */
+#define RIST_DELAY1_FILE        "/tmp/ristdelay1"
+#define RIST_DELAY2_FILE        "/tmp/ristdelay2"
+#define RIST_LOCK_POLL_MS       50             /* lock-poll granularity for capture start */
 
 #define RIST_CTRL_FILE          "/tmp/ristcap"            /* runtime dest: "ip:port" */
 #define RIST_UDP_DEFAULT_IP     "239.6.6.6"
@@ -70,6 +81,17 @@
 #define RIST_SCREEN_PLAYER      "player_av"               /* PMP_PLAYER_AV: local media player slot */
 #define RIST_SCREEN_DELAY_MS    1500                      /* after capture start, let data flow before player_av probes */
 
+/* player_av URL "-H" options appended to the default receive URL to cut ffmpeg
+ * bring-up on our known live TS (consumed in demuxer/demux_lavf.c):
+ *   net_stream_live_mode:1 -> AVFMT_FLAG_QUICK_START: early-exit find_stream_info
+ *                             once the program map + streams are found (big win).
+ *   no_cache_flag:1        -> AVFMT_FLAG_NOBUFFER: drop the udp cache thread and
+ *                             probe packet buffering (low-latency live).
+ * Space-separated "key:value" after a leading " -H". Override the whole URL live
+ * via /tmp/ristscreenurl to sweep these (add ffprobesize:KB, ffanalyzeduration:S,
+ * ffnonblock_flag:1, etc.) without a reflash. */
+#define RIST_SCREEN_URL_OPTS    " -H net_stream_live_mode:1 no_cache_flag:1"
+
 #define RIST_LOG(fmt, ...)      printf("[RIST] " fmt, ##__VA_ARGS__)
 #define ULL(x)                  ((unsigned long long)(x))
 
@@ -82,6 +104,8 @@ static struct {
     event_list         *start_timer;
     event_list         *screen_timer;   /* deferred player_av start */
     int                 screen_started;  /* player_av running on the loopback udp:// */
+    int                 delay1;          /* capture-start safety-timeout ceiling (ms) */
+    unsigned            waited_ms;       /* elapsed lock-poll time this zap */
     GxBusPmDataProg     prog;
 
     int                 udp_fd;
@@ -90,7 +114,21 @@ static struct {
     int                 dst_port;
     uint64_t            sent;
     uint64_t            senderr;
-} s_rist = { 0, 0, -1, 0, NULL, NULL, 0, {0}, -1, {0}, {0}, 0, 0, 0 };
+} s_rist = { 0, 0, -1, 0, NULL, NULL, 0, 0, 0, {0}, -1, {0}, {0}, 0, 0, 0 };
+
+/* Read a non-negative integer from a /tmp control file; return defval if the
+ * file is absent/unparseable. Used for the per-zap latency knobs. */
+static int _rist_read_int_file(const char *path, int defval)
+{
+    FILE *f = fopen(path, "r");
+    int v = defval, t = 0;
+    if (f) {
+        if (fscanf(f, "%d", &t) == 1 && t >= 0)
+            v = t;
+        fclose(f);
+    }
+    return v;
+}
 
 /* ------------------------------------------------------------------- UDP */
 /* Resolve the destination from /tmp/ristcap ("ip:port"); fall back to the
@@ -194,7 +232,7 @@ static void _rist_screen_url(char *out, int outsz)
         }
         fclose(f);
     }
-    snprintf(out, outsz, "udp://@:%d", s_rist.dst_port);
+    snprintf(out, outsz, "udp://@:%d%s", s_rist.dst_port, RIST_SCREEN_URL_OPTS);
 }
 
 static void _rist_screen_stop(void)
@@ -357,24 +395,18 @@ void app_rist_capture_stop(void)
 }
 
 /* ------------------------------------------------------------- deferred start */
-static int _rist_start_cb(void *arg)
+/* The actual capture bring-up, invoked once the tuner is confirmed locked (or the
+ * delay1 ceiling is hit). Leaves s_rist.active = 1 on success. */
+static void _rist_capture_begin(void)
 {
     TsRecConfig cfg;
-
-    (void)arg;
-    s_rist.start_timer = NULL;
-
-    if (s_rist.active) {
-        RIST_LOG("start: already active, skip\n");
-        return 0;
-    }
 
     /* dmx2 capture pipeline. Idempotent: if the dvb2ip HTTP server already
      * inited it, this is a no-op; otherwise it inits and spawns the dumpfilter
      * thread that fills each prog's fifo from DEMUX/DVR instance 2. */
     if (app_ts_record_init(RIST_FIFO_SIZE, RIST_MAX_PROG) < 0) {
         RIST_LOG("start: app_ts_record_init FAILED\n");
-        return 0;
+        return;
     }
 
     memset(&cfg, 0, sizeof(cfg));
@@ -385,14 +417,14 @@ static int _rist_start_cb(void *arg)
     if (s_rist.rec_handle == 0 || s_rist.rec_handle == (handle_t)-1) {
         RIST_LOG("start: app_ts_record_start(prog=%d) FAILED\n", s_rist.prog.id);
         s_rist.rec_handle = 0;
-        return 0;
+        return;
     }
 
     if (_rist_udp_open() < 0) {
         RIST_LOG("start: UDP open FAILED -> aborting\n");
         app_ts_record_stop(s_rist.rec_handle);
         s_rist.rec_handle = 0;
-        return 0;
+        return;
     }
 
     s_rist.reader_run = 1;
@@ -406,7 +438,7 @@ static int _rist_start_cb(void *arg)
         s_rist.udp_fd = -1;
         app_ts_record_stop(s_rist.rec_handle);
         s_rist.rec_handle = 0;
-        return 0;
+        return;
     }
 
     s_rist.active = 1;
@@ -419,9 +451,39 @@ static int _rist_start_cb(void *arg)
      * later, once the reader is pumping datagrams. Default OFF -> screen keeps
      * showing the live tuner (app_normal_play did not suppress the decode). */
     if (app_rist_screen_enabled()) {
-        RIST_LOG("start: /tmp/ristscreen ON -> player_av in %dms on loopback\n", RIST_SCREEN_DELAY_MS);
-        APP_TIMER_ADD(s_rist.screen_timer, _rist_screen_cb, RIST_SCREEN_DELAY_MS, TIMER_ONCE);
+        int d2 = _rist_read_int_file(RIST_DELAY2_FILE, RIST_SCREEN_DELAY_MS);
+        RIST_LOG("start: /tmp/ristscreen ON -> player_av in %dms (delay2) on loopback\n", d2);
+        APP_TIMER_ADD(s_rist.screen_timer, _rist_screen_cb, d2, TIMER_ONCE);
     }
+}
+
+/* Lock-triggered capture start: poll the frontend lock and begin the moment it
+ * reports LOCKED, or when the delay1 ceiling is reached (safety timeout). A
+ * same-transponder zap never unlocks, so the first poll (~RIST_LOCK_POLL_MS)
+ * already reads LOCKED -> near-zero wait; a genuine retune waits for the real
+ * lock instead of a blind 2s. Re-arms itself as a fresh TIMER_ONCE (auto-freed). */
+static int _rist_start_cb(void *arg)
+{
+    AppFrontend_LockState lock = FRONTEND_UNLOCK;
+
+    (void)arg;
+    s_rist.start_timer = NULL;
+
+    if (s_rist.active)
+        return 0;
+
+    app_ioctl(s_rist.prog.tuner, FRONTEND_LOCK_STATE_GET, &lock);
+
+    if (lock != FRONTEND_LOCKED && s_rist.waited_ms < (unsigned)s_rist.delay1) {
+        s_rist.waited_ms += RIST_LOCK_POLL_MS;
+        APP_TIMER_ADD(s_rist.start_timer, _rist_start_cb, RIST_LOCK_POLL_MS, TIMER_ONCE);
+        return 0;
+    }
+
+    RIST_LOG("start: tuner %s after ~%ums (delay1 ceiling %dms) -> begin capture\n",
+             (lock == FRONTEND_LOCKED) ? "LOCKED" : "TIMEOUT(unlocked)",
+             s_rist.waited_ms, s_rist.delay1);
+    _rist_capture_begin();
     return 0;
 }
 
@@ -437,13 +499,17 @@ int app_rist_play_change(GxBusPmDataProg *prog)
     app_rist_capture_stop();
 
     memcpy(&s_rist.prog, prog, sizeof(GxBusPmDataProg));
-    s_rist.sent    = 0;
-    s_rist.senderr = 0;
+    s_rist.sent      = 0;
+    s_rist.senderr   = 0;
+    s_rist.delay1    = _rist_read_int_file(RIST_DELAY1_FILE, RIST_START_DELAY_MS);
+    s_rist.waited_ms = 0;
 
-    RIST_LOG("play_change: prog_id=%d ts_id=%d svc_id=%d -> start in %dms\n",
-             prog->id, prog->tp_id, prog->service_id, RIST_START_DELAY_MS);
+    RIST_LOG("play_change: prog_id=%d ts_id=%d svc_id=%d tuner=%d -> lock-poll start (delay1 ceiling %dms)\n",
+             prog->id, prog->tp_id, prog->service_id, prog->tuner, s_rist.delay1);
 
-    APP_TIMER_ADD(s_rist.start_timer, _rist_start_cb, RIST_START_DELAY_MS, TIMER_ONCE);
+    /* First lock poll fires soon (RIST_LOCK_POLL_MS); _rist_start_cb re-arms until
+     * the frontend reports lock or delay1 elapses, then begins the capture. */
+    APP_TIMER_ADD(s_rist.start_timer, _rist_start_cb, RIST_LOCK_POLL_MS, TIMER_ONCE);
     return 0;
 }
 
