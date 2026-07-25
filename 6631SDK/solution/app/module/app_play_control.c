@@ -1219,13 +1219,22 @@ static void app_normal_play(GxMsgProperty_NodeByPosGet *prog_node)
      * ready, latching prog_num=0 and permanently blocking the HTTP server; here
      * the DB is loaded and the PM lock is free, so it counts correctly.
      * prog_num_update is a no-op when the count is unchanged, so this does not
-     * disturb active client streams on every zap.
-     * (The old userspace-RIST capture hook lived here; removed -- decrypting the
-     * device-encrypted DVR path panicked the kernel. dvb2ip serves clear TS.) */
+     * disturb active client streams on every zap. */
 #if DVB2IP_SERVER_SUPPORT
     {
         void app_dvb2ip_prog_num_update(void);
         app_dvb2ip_prog_num_update();
+    }
+
+    {
+        /* Zap-driven dmx2 clear-TS -> UDP output. Non-blocking (arms a deferred
+         * start timer); tears down the previous program's capture first. Does
+         * NOT touch the screen decode above (PLAYER_FOR_NORMAL, 1155/1159) --
+         * this adds a PARALLEL UDP output that follows channel changes, sourced
+         * from the dmx2 clear-TS path (not the device-encrypted DVR). This is
+         * where the old userspace-RIST capture hook lived; re-added here. */
+        int app_rist_play_change(GxBusPmDataProg *prog);
+        app_rist_play_change(&prog_node->prog_data);
     }
 #endif
 

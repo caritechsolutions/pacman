@@ -133,7 +133,7 @@ static TsRecCtrl thiz_TsRecCtrl = {
  * whether the TSW at-rest protection is per-instance or global -- app only, no
  * BOOT flash. Test: reboot, `echo 2 > /tmp/ristdmx`, start ONE stream, read the
  * [DVB2IP] DIAG line; repeat with 3. */
-static int32_t s_ts_rec_modid       = AV_MODULE_ID;
+static int32_t s_ts_rec_modid       = 2;    /* default to the UNPROTECTED instance (clear TS); /tmp/ristdmx overrides */
 static int32_t s_ts_rec_open_modid  = -1;   /* id the demux is currently open with */
 static int     s_ts_rec_diag_rearm  = 1;    /* re-arm the one-shot DVR-read DIAG per request */
 

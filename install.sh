@@ -35,16 +35,22 @@ ENV_SH="${ENV_SH:-/opt/stb/env.sh}"
 # Source files changed by THIS iteration (paths relative to $SDK_ROOT, identical
 # to their path under $REPO_PREFIX in the repo).
 #   - app_dvb2ip_platform.c : always-on serial diagnostics on the start path.
-#   - app_play_control.c    : RIST capture hook DISABLED (it panics + would fight
-#                             dvb2ip for the single DVR/TSW hardware).
+#   - app_ts_record.c       : dmx2 clear-TS capture; instance runtime-selectable
+#                             via /tmp/ristdmx (default 2, the unprotected one).
+#   - app_rist_capture.c    : zap-driven dmx2 clear-TS -> UDP output (sources the
+#                             app_ts_record capture; dest via /tmp/ristcap "ip:port").
+#   - app_play_control.c    : re-adds the capture-on-zap hook (app_rist_play_change)
+#                             in app_normal_play. Screen decode left untouched.
 FILES="app/dvb2ip_server/app_dvb2ip_platform.c
 app/dvb2ip_server/app_ts_record.c
+app/module/app_rist_capture.c
 app/module/app_play_control.c"
 
 # Objects for those sources (flat basename.o), used for the fast INCREMENTAL path
 # once dvb2ip is already enabled.
 OBJS="output/objects/app_dvb2ip_platform.o
 output/objects/app_ts_record.o
+output/objects/app_rist_capture.o
 output/objects/app_play_control.o"
 
 CONFIG_OPT="BR2_MOD_DVB2IP_SERVER"                    # Kconfig symbol to enable
