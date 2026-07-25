@@ -1145,10 +1145,34 @@ static void app_normal_play(GxMsgProperty_NodeByPosGet *prog_node)
     snprintf(url_tmp, sizeof(url_tmp), "&tscache_ms:%d&tscache_mode:%d&tscache_dmxid:%d&tscache_bufsize:%d", 600, 2, g_AppPlayOps.normal_play.dmx_id + 1, 10240000);
     strcat(play->url, url_tmp);
 #endif
+#if DVB2IP_SERVER_SUPPORT
+    {
+        /* Zap-driven dmx2 clear-TS -> UDP capture (+ optional loopback screen
+         * player). Runs BEFORE the decode below so any previous program's
+         * player_av is torn down first, freeing the video decoder for whichever
+         * player owns the screen this zap. Non-blocking (arms deferred timers). */
+        int app_rist_play_change(GxBusPmDataProg *prog);
+        app_rist_play_change(&prog_node->prog_data);
+    }
+#endif
     if (GUI_CheckDialog(WND_SYSTEM_SETTING) != GXCORE_SUCCESS)
     {
 #if CASCAM_SUPPORT
         app_ca_stop_descramble();
+#endif
+#if DVB2IP_SERVER_SUPPORT
+        int app_rist_screen_enabled(void);
+        if (app_rist_screen_enabled())
+        {
+            /* Screen-switch ON (/tmp/ristscreen == "1"): suppress the live-tuner
+             * decode and release the single video decoder so player_av can own
+             * it. app_rist_capture starts player_av on the loopback udp:// once
+             * the capture is producing. Everything else in app_normal_play (CA,
+             * volume, info bar, prog updates, parental lock) still runs. Set the
+             * flag to 0 / remove it to restore normal decode on the next zap. */
+            app_player_close(PLAYER_FOR_NORMAL);
+        }
+        else
 #endif
         if(app_channel_epg_check_dialog() == GXCORE_SUCCESS)
         {
@@ -1224,17 +1248,6 @@ static void app_normal_play(GxMsgProperty_NodeByPosGet *prog_node)
     {
         void app_dvb2ip_prog_num_update(void);
         app_dvb2ip_prog_num_update();
-    }
-
-    {
-        /* Zap-driven dmx2 clear-TS -> UDP output. Non-blocking (arms a deferred
-         * start timer); tears down the previous program's capture first. Does
-         * NOT touch the screen decode above (PLAYER_FOR_NORMAL, 1155/1159) --
-         * this adds a PARALLEL UDP output that follows channel changes, sourced
-         * from the dmx2 clear-TS path (not the device-encrypted DVR). This is
-         * where the old userspace-RIST capture hook lived; re-added here. */
-        int app_rist_play_change(GxBusPmDataProg *prog);
-        app_rist_play_change(&prog_node->prog_data);
     }
 #endif
 
