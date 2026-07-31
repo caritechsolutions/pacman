@@ -36,6 +36,7 @@
 #include "module/pm/gxpm_manage.h"             /* GxBusPmDataProg */
 #include "module/app_ioctl.h"                  /* app_ioctl + FRONTEND_LOCK_STATE_GET */
 #include "module/app_nim.h"                    /* AppFrontend_LockState */
+#include "module/app_rist_api.h"               /* recovery API cache lookup (Step E) */
 #include "gxplayer.h"                          /* umbrella -> GxPlayer_MediaPlay/MediaStop */
 #include "../dvb2ip_server/app_ts_record.h"    /* app_ts_record_* + TsRecConfig (DVB2IP-gated) */
 
@@ -44,7 +45,10 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <signal.h>
 #include <sys/socket.h>
+#include <sys/wait.h>
+#include <sys/prctl.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
@@ -92,6 +96,38 @@
  * ffnonblock_flag:1, etc.) without a reflash. */
 #define RIST_SCREEN_URL_OPTS    " -H net_stream_live_mode:1 no_cache_flag:1"
 
+/* ---------------------------------------------------------- RIST chain (D) */
+/* On zap, if the tuned service_id is in the recovery API cache AND the chain
+ * kill switch is on, run the full product path:
+ *
+ *   dmx2 capture -> udp://127.0.0.1:6000
+ *     -> rist_watchdog ristsender_marker -i udp://@127.0.0.1:6000
+ *                                        -u rist://@127.0.0.1:6100?buffer=8000
+ *     -> ristreceiver -i "<local sat peer weight=0>,<API recovery peer weight=1000>"
+ *                     -o udp://127.0.0.1:6200
+ *     -> player_av on udp://@:6200 -> screen
+ *
+ * A service NOT in the API list leaves the factory path completely alone.
+ * /tmp/ristchain defaults OFF so a bad chain is one file away from a working box.
+ *
+ * NOTE: librist here is OUR modified build (VSF TR-06-4 Part 6 program selection
+ * + Part 7 FSR). The binaries are invoked by absolute path from the rootfs; do
+ * not substitute an upstream/packaged librist -- FSR would silently never fire. */
+#define RIST_CAP_PORT           6000    /* capture -> sender (UDP)      */
+#define RIST_LOCAL_PORT         6100    /* sender  -> receiver (RIST)   */
+#define RIST_OUT_PORT           6200    /* receiver -> player_av (UDP)  */
+
+#define RIST_CHAIN_FLAG_FILE    "/tmp/ristchain"
+#define RIST_DELAY3_FILE        "/tmp/ristdelay3"   /* player delay when the chain is up */
+#define RIST_DELAY3_MS          3000                /* receiver buffer needs longer than loopback */
+
+#define RIST_BIN_WATCHDOG       "/usr/bin/rist_watchdog"
+#define RIST_BIN_SENDER         "/usr/bin/ristsender_marker"
+#define RIST_BIN_RECEIVER       "/usr/bin/ristreceiver"
+
+#define RIST_PID_WATCHDOG       "/tmp/rist_watchdog.pid"
+#define RIST_PID_RECEIVER       "/tmp/rist_receiver.pid"
+
 #define RIST_LOG(fmt, ...)      printf("[RIST] " fmt, ##__VA_ARGS__)
 #define ULL(x)                  ((unsigned long long)(x))
 
@@ -108,13 +144,24 @@ static struct {
     unsigned            waited_ms;       /* elapsed lock-poll time this zap */
     GxBusPmDataProg     prog;
 
+    /* Step D: RIST chain for this program */
+    int                 chain_active;    /* kill switch ON *and* service has recovery */
+    int                 chain_running;   /* children actually spawned */
+    AppRistRecovery     rec;             /* API entry for the tuned service */
+    pid_t               pid_watchdog;    /* rist_watchdog (owns ristsender_marker) */
+    pid_t               pid_receiver;    /* ristreceiver (standalone, not watchdogged) */
+
     int                 udp_fd;
     struct sockaddr_in  dst;
     char                dst_ip[24];
     int                 dst_port;
     uint64_t            sent;
     uint64_t            senderr;
-} s_rist = { 0, 0, -1, 0, NULL, NULL, 0, 0, 0, {0}, -1, {0}, {0}, 0, 0, 0 };
+} s_rist = { 0, 0, -1, 0, NULL, NULL, 0, 0, 0, {0},
+             0, 0, {0}, -1, -1,
+             -1, {0}, {0}, 0, 0, 0 };
+
+static int s_swept = 0;     /* stale-child pidfile sweep done once per app run */
 
 /* Read a non-negative integer from a /tmp control file; return defval if the
  * file is absent/unparseable. Used for the per-zap latency knobs. */
@@ -145,6 +192,16 @@ static int _rist_resolve_dest(void)
     ip[sizeof(ip) - 1] = '\0';
     port = RIST_UDP_DEFAULT_PORT;
 
+    /* Chain up: the capture MUST feed ristsender_marker on loopback, so the
+     * destination is fixed in code and /tmp/ristcap is ignored (the reader
+     * re-resolves every 2s and would otherwise drag it back to the file value). */
+    if (s_rist.chain_active) {
+        strncpy(ip, "127.0.0.1", sizeof(ip) - 1);
+        ip[sizeof(ip) - 1] = '\0';
+        port = RIST_CAP_PORT;
+        goto apply;
+    }
+
     f = fopen(RIST_CTRL_FILE, "r");
     if (f) {
         char line[64] = {0};
@@ -162,6 +219,7 @@ static int _rist_resolve_dest(void)
         fclose(f);
     }
 
+apply:
     if (strcmp(ip, s_rist.dst_ip) == 0 && port == s_rist.dst_port)
         return 0;
 
@@ -174,7 +232,8 @@ static int _rist_resolve_dest(void)
     s_rist.dst.sin_port        = htons((unsigned short)port);
 
     RIST_LOG("udp: dest = %s:%d  (%s)\n", ip, port,
-             from_file ? RIST_CTRL_FILE : "default, no /tmp/ristcap");
+             s_rist.chain_active ? "RIST chain input (fixed)" :
+             from_file           ? RIST_CTRL_FILE : "default, no /tmp/ristcap");
     return 1;
 }
 
@@ -195,6 +254,183 @@ static int _rist_udp_open(void)
     return 0;
 }
 
+/* ----------------------------------------------------------- RIST chain */
+static int _rist_chain_flag(void)
+{
+    FILE *f = fopen(RIST_CHAIN_FLAG_FILE, "r");
+    int on = 0;
+    if (f) {
+        int c = fgetc(f);
+        on = (c == '1');
+        fclose(f);
+    }
+    return on;
+}
+
+/* Kill a pid recorded in a pidfile, but only if it really is one of ours --
+ * check /proc/<pid>/cmdline for the expected binary so a recycled pid belonging
+ * to an unrelated process is never killed. Used to sweep survivors of an app
+ * restart (where PR_SET_PDEATHSIG did not get the chance to fire). */
+static void _rist_pid_sweep(const char *pidfile, const char *binary)
+{
+    FILE *f = fopen(pidfile, "r");
+    int pid = 0;
+
+    if (!f)
+        return;
+
+    if (fscanf(f, "%d", &pid) == 1 && pid > 1) {
+        char path[64], cmd[256] = {0};
+        FILE *cf;
+        int n = 0;
+
+        snprintf(path, sizeof(path), "/proc/%d/cmdline", pid);
+        cf = fopen(path, "r");
+        if (cf) {
+            n = (int)fread(cmd, 1, sizeof(cmd) - 1, cf);
+            fclose(cf);
+        }
+        /* cmdline is NUL-separated; argv[0] is enough to identify it. */
+        if (n > 0 && strstr(cmd, binary) != NULL) {
+            kill(pid, SIGKILL);
+            RIST_LOG("chain: swept stale %s pid=%d\n", binary, pid);
+        }
+    }
+
+    fclose(f);
+    unlink(pidfile);
+}
+
+static pid_t _rist_spawn(char *const argv[], const char *pidfile, const char *label)
+{
+    pid_t pid;
+    int i;
+
+    RIST_LOG("chain: exec %s", label);
+    for (i = 0; argv[i]; i++)
+        printf(" %s", argv[i]);
+    printf("\n");
+
+    pid = fork();
+    if (pid < 0) {
+        RIST_LOG("chain: fork FAILED for %s\n", label);
+        return -1;
+    }
+
+    if (pid == 0) {
+        /* Child: keep this async-signal-safe -- no printf, no malloc.
+         * PDEATHSIG makes the kernel kill us if the app dies, so a crashed or
+         * restarted app can never leave these running against a stale chain. */
+        prctl(PR_SET_PDEATHSIG, SIGKILL);
+        if (getppid() == 1)
+            _exit(127);                 /* parent died between fork and prctl */
+        execv(argv[0], argv);
+        _exit(127);                     /* execv only returns on failure */
+    }
+
+    if (pidfile) {
+        FILE *f = fopen(pidfile, "w");
+        if (f) {
+            fprintf(f, "%d\n", (int)pid);
+            fclose(f);
+        }
+    }
+    RIST_LOG("chain: started %s pid=%d\n", label, (int)pid);
+    return pid;
+}
+
+static void _rist_reap(pid_t *pid, const char *pidfile, const char *label)
+{
+    int i, st = 0;
+
+    if (pid && *pid > 0) {
+        kill(*pid, SIGTERM);
+        for (i = 0; i < 20; i++) {              /* up to ~1s for a clean exit */
+            if (waitpid(*pid, &st, WNOHANG) == *pid) {
+                *pid = -1;
+                goto done;
+            }
+            GxCore_ThreadDelay(50);
+        }
+        kill(*pid, SIGKILL);
+        waitpid(*pid, &st, 0);
+        *pid = -1;
+done:
+        RIST_LOG("chain: stopped %s\n", label);
+    }
+
+    if (pidfile)
+        unlink(pidfile);
+}
+
+static void _rist_chain_stop(void)
+{
+    if (!s_rist.chain_running &&
+        s_rist.pid_watchdog <= 0 && s_rist.pid_receiver <= 0)
+        return;
+
+    /* Receiver first: it is the consumer, so stopping it first avoids a burst of
+     * "peer gone" churn in the sender during teardown. */
+    _rist_reap(&s_rist.pid_receiver, RIST_PID_RECEIVER, "ristreceiver");
+    _rist_reap(&s_rist.pid_watchdog, RIST_PID_WATCHDOG, "rist_watchdog(+sender)");
+    s_rist.chain_running = 0;
+}
+
+static int _rist_chain_start(void)
+{
+    static char in_url[96], out_url[96], recv_in[512], recv_out[96];
+    char *wd_argv[8];
+    char *rx_argv[6];
+
+    /* sender: UDP in from our capture, RIST out listening for the local receiver */
+    snprintf(in_url,  sizeof(in_url),  "udp://@127.0.0.1:%d", RIST_CAP_PORT);
+    snprintf(out_url, sizeof(out_url), "rist://@127.0.0.1:%d?buffer=8000", RIST_LOCAL_PORT);
+
+    /* receiver: two peers, comma separated (stock tools/ristreceiver splits on ',').
+     * The local satellite peer is weight=0; the API recovery URL MUST carry
+     * weight=1000 or librist classifies it as a second satellite peer and FSR can
+     * never activate. The API returns no weight, so append it here. */
+    snprintf(recv_in, sizeof(recv_in),
+             "rist://127.0.0.1:%d?weight=0&buffer=8000,%s%sweight=1000",
+             RIST_LOCAL_PORT,
+             s_rist.rec.rist_url,
+             strchr(s_rist.rec.rist_url, '?') ? "&" : "?");
+    snprintf(recv_out, sizeof(recv_out), "udp://127.0.0.1:%d", RIST_OUT_PORT);
+
+    RIST_LOG("chain: ports cap=%d local=%d out=%d  (svc_id=%d \"%s\")\n",
+             RIST_CAP_PORT, RIST_LOCAL_PORT, RIST_OUT_PORT,
+             s_rist.rec.service_id, s_rist.rec.name);
+
+    /* execv, not system(): the URLs contain '&' and '?' which a shell would
+     * mangle; as argv elements they need no quoting at all. */
+    wd_argv[0] = (char *)RIST_BIN_WATCHDOG;
+    wd_argv[1] = (char *)RIST_BIN_SENDER;
+    wd_argv[2] = (char *)"-i";
+    wd_argv[3] = in_url;
+    wd_argv[4] = (char *)"-u";
+    wd_argv[5] = out_url;
+    wd_argv[6] = NULL;
+
+    rx_argv[0] = (char *)RIST_BIN_RECEIVER;
+    rx_argv[1] = (char *)"-i";
+    rx_argv[2] = recv_in;
+    rx_argv[3] = (char *)"-o";
+    rx_argv[4] = recv_out;
+    rx_argv[5] = NULL;
+
+    s_rist.pid_watchdog = _rist_spawn(wd_argv, RIST_PID_WATCHDOG, "rist_watchdog(+sender)");
+    s_rist.pid_receiver = _rist_spawn(rx_argv, RIST_PID_RECEIVER, "ristreceiver");
+
+    if (s_rist.pid_watchdog <= 0 || s_rist.pid_receiver <= 0) {
+        RIST_LOG("chain: start FAILED -> tearing down (screen falls back on next zap)\n");
+        _rist_chain_stop();
+        return -1;
+    }
+
+    s_rist.chain_running = 1;
+    return 0;
+}
+
 /* --------------------------------------------------------------- screen */
 /* Runtime switch, queried both here and by app_normal_play's decode suppression:
  * "1" in /tmp/ristscreen => suppress live decode + play the loopback stream on
@@ -203,12 +439,21 @@ int app_rist_screen_enabled(void)
 {
     FILE *f = fopen(RIST_SCREEN_FLAG_FILE, "r");
     int on = 0;
+
     if (f) {
         int c = fgetc(f);
         on = (c == '1');
         fclose(f);
     }
-    return on;
+
+    /* Two independent reasons to take the screen off the live tuner:
+     *   /tmp/ristscreen  -> Step C loopback test, any channel;
+     *   chain_active     -> Step D, THIS service has recovery and the chain is on.
+     * chain_active is computed in app_rist_play_change(), which runs before the
+     * decode gate in app_normal_play, so it is already correct when this is
+     * called for the suppression decision. A service with no recovery entry
+     * leaves chain_active 0 -> factory decode, untouched. */
+    return on || s_rist.chain_active;
 }
 
 /* player_av receive URL: default "udp://@:<capture-dest-port>" (listen on the
@@ -232,7 +477,10 @@ static void _rist_screen_url(char *out, int outsz)
         }
         fclose(f);
     }
-    snprintf(out, outsz, "udp://@:%d%s", s_rist.dst_port, RIST_SCREEN_URL_OPTS);
+    /* Chain up -> decode the RECEIVER's corrected output, not the raw capture. */
+    snprintf(out, outsz, "udp://@:%d%s",
+             s_rist.chain_active ? RIST_OUT_PORT : s_rist.dst_port,
+             RIST_SCREEN_URL_OPTS);
 }
 
 static void _rist_screen_stop(void)
@@ -367,6 +615,7 @@ void app_rist_capture_stop(void)
     APP_TIMER_REMOVE(s_rist.start_timer);
     APP_TIMER_REMOVE(s_rist.screen_timer);
     _rist_screen_stop();                     /* release the video decoder for the next player */
+    _rist_chain_stop();                      /* SIGTERM -> wait -> SIGKILL, both children */
 
     if (!s_rist.active && s_rist.reader_thread <= 0 && s_rist.udp_fd < 0 &&
         s_rist.rec_handle == 0)
@@ -447,12 +696,24 @@ static void _rist_capture_begin(void)
              s_rist.prog.id, s_rist.prog.tp_id, s_rist.prog.service_id,
              s_rist.dst_ip, s_rist.dst_port);
 
-    /* Screen switch: if enabled, start player_av on the loopback udp:// a bit
-     * later, once the reader is pumping datagrams. Default OFF -> screen keeps
-     * showing the live tuner (app_normal_play did not suppress the decode). */
+    /* Step D: bring up the RIST chain now that the capture is producing, so the
+     * sender has data waiting the moment it binds. If it fails to start we clear
+     * chain_active, which makes the screen fall back to the raw capture rather
+     * than waiting on a receiver output that will never come. */
+    if (s_rist.chain_active && _rist_chain_start() < 0)
+        s_rist.chain_active = 0;
+
+    /* Screen switch: start player_av once data is flowing. Default OFF -> screen
+     * keeps showing the live tuner (app_normal_play did not suppress the decode).
+     * The chain needs longer than the loopback: the receiver has to bring both
+     * peers up and fill its buffer before it emits anything. */
     if (app_rist_screen_enabled()) {
-        int d2 = _rist_read_int_file(RIST_DELAY2_FILE, RIST_SCREEN_DELAY_MS);
-        RIST_LOG("start: /tmp/ristscreen ON -> player_av in %dms (delay2) on loopback\n", d2);
+        int d2 = s_rist.chain_active
+                   ? _rist_read_int_file(RIST_DELAY3_FILE, RIST_DELAY3_MS)
+                   : _rist_read_int_file(RIST_DELAY2_FILE, RIST_SCREEN_DELAY_MS);
+        RIST_LOG("start: screen ON -> player_av in %dms (%s) on udp://@:%d\n",
+                 d2, s_rist.chain_active ? "delay3/chain" : "delay2/loopback",
+                 s_rist.chain_active ? RIST_OUT_PORT : s_rist.dst_port);
         APP_TIMER_ADD(s_rist.screen_timer, _rist_screen_cb, d2, TIMER_ONCE);
     }
 }
@@ -498,11 +759,36 @@ int app_rist_play_change(GxBusPmDataProg *prog)
 
     app_rist_capture_stop();
 
+    /* One-time sweep of children left behind by a previous app instance (a crash
+     * or restart, where PR_SET_PDEATHSIG never got the chance to fire). */
+    if (!s_swept) {
+        s_swept = 1;
+        _rist_pid_sweep(RIST_PID_WATCHDOG, "rist_watchdog");
+        _rist_pid_sweep(RIST_PID_RECEIVER, "ristreceiver");
+    }
+
     memcpy(&s_rist.prog, prog, sizeof(GxBusPmDataProg));
     s_rist.sent      = 0;
     s_rist.senderr   = 0;
     s_rist.delay1    = _rist_read_int_file(RIST_DELAY1_FILE, RIST_START_DELAY_MS);
     s_rist.waited_ms = 0;
+
+    /* Step D decision, taken here so it is already correct when app_normal_play
+     * asks app_rist_screen_enabled() for the suppression decision a few lines
+     * later. A miss (no recovery for this service, or the chain switch off)
+     * leaves the factory tuner path completely alone. */
+    memset(&s_rist.rec, 0, sizeof(s_rist.rec));
+    s_rist.chain_active = 0;
+    if (_rist_chain_flag()) {
+        if (app_rist_api_lookup(prog->service_id, &s_rist.rec) == 0) {
+            s_rist.chain_active = 1;
+            RIST_LOG("play_change: svc_id=%d IS in the recovery list (\"%s\") -> RIST chain\n",
+                     prog->service_id, s_rist.rec.name);
+        } else {
+            RIST_LOG("play_change: svc_id=%d not in the recovery list (%d cached) -> factory path\n",
+                     prog->service_id, app_rist_api_count());
+        }
+    }
 
     RIST_LOG("play_change: prog_id=%d ts_id=%d svc_id=%d tuner=%d -> lock-poll start (delay1 ceiling %dms)\n",
              prog->id, prog->tp_id, prog->service_id, prog->tuner, s_rist.delay1);
