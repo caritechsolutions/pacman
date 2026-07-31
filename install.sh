@@ -41,9 +41,14 @@ ENV_SH="${ENV_SH:-/opt/stb/env.sh}"
 #                             app_ts_record capture; dest via /tmp/ristcap "ip:port").
 #   - app_play_control.c    : re-adds the capture-on-zap hook (app_rist_play_change)
 #                             in app_normal_play. Screen decode left untouched.
+#   - app_rist_api.c/.h     : recovery API client (fetch + cache by service_id).
+#   - app_network_service.c : starts the API client when the network gets an IP.
 FILES="app/dvb2ip_server/app_dvb2ip_platform.c
 app/dvb2ip_server/app_ts_record.c
 app/module/app_rist_capture.c
+app/include/module/app_rist_api.h
+app/module/app_rist_api.c
+app/module/network/app_network_service.c
 app/module/app_play_control.c"
 
 # Objects for those sources (flat basename.o), used for the fast INCREMENTAL path
@@ -51,6 +56,8 @@ app/module/app_play_control.c"
 OBJS="output/objects/app_dvb2ip_platform.o
 output/objects/app_ts_record.o
 output/objects/app_rist_capture.o
+output/objects/app_rist_api.o
+output/objects/app_network_service.o
 output/objects/app_play_control.o"
 
 CONFIG_OPT="BR2_MOD_DVB2IP_SERVER"                    # Kconfig symbol to enable

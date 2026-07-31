@@ -4818,6 +4818,16 @@ static status_t app_network_state_report(const char *dev_name, IfState dev_state
 #endif
 #if DVB2IP_SERVER_SUPPORT
                 app_dvb2ip_net_flag_set(1, (char*)cfg_data.ip_addr);
+                {
+                    /* Network is up WITH an IP -- the earliest point a DNS lookup
+                     * can succeed, so start the recovery API client here. It is
+                     * idempotent, spawns its own worker (never blocks this
+                     * thread) and retries internally until the resolver settles.
+                     * Failure leaves the cache empty -> every channel stays on
+                     * the factory decode path. */
+                    void app_rist_api_start(void);
+                    app_rist_api_start();
+                }
 #endif
             }
         }
