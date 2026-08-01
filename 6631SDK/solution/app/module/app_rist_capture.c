@@ -255,15 +255,36 @@ static int _rist_udp_open(void)
 }
 
 /* ----------------------------------------------------------- RIST chain */
-static int _rist_chain_flag(void)
+/* RIST is the normal behaviour now that it is proven, so the chain is ON unless
+ * explicitly disabled:
+ *   file absent -> ENABLED (default)
+ *   "0"         -> DISABLED (escape hatch: factory path everywhere)
+ *   "1"         -> ENABLED (accepted so existing habits keep working)
+ * Enabling by default is safe because every failure downstream already falls
+ * back: no API response, an empty list, or a service not in the list all take
+ * the factory tuner path, so a box that cannot reach the API behaves exactly
+ * like a stock box. *why is passed back for the per-zap log line. */
+static int _rist_chain_flag(const char **why)
 {
     FILE *f = fopen(RIST_CHAIN_FLAG_FILE, "r");
-    int on = 0;
+    int on = 1;
+    const char *reason = "default, no " RIST_CHAIN_FLAG_FILE;
+
     if (f) {
         int c = fgetc(f);
-        on = (c == '1');
         fclose(f);
+        if (c == '0') {
+            on     = 0;
+            reason = RIST_CHAIN_FLAG_FILE "=0, forced off";
+        } else if (c == '1') {
+            reason = RIST_CHAIN_FLAG_FILE "=1, forced on";
+        } else {
+            reason = RIST_CHAIN_FLAG_FILE " unreadable, using default";
+        }
     }
+
+    if (why)
+        *why = reason;
     return on;
 }
 
@@ -779,14 +800,23 @@ int app_rist_play_change(GxBusPmDataProg *prog)
      * leaves the factory tuner path completely alone. */
     memset(&s_rist.rec, 0, sizeof(s_rist.rec));
     s_rist.chain_active = 0;
-    if (_rist_chain_flag()) {
-        if (app_rist_api_lookup(prog->service_id, &s_rist.rec) == 0) {
-            s_rist.chain_active = 1;
-            RIST_LOG("play_change: svc_id=%d IS in the recovery list (\"%s\") -> RIST chain\n",
-                     prog->service_id, s_rist.rec.name);
+    {
+        const char *why = NULL;
+        int chain_on = _rist_chain_flag(&why);
+
+        RIST_LOG("play_change: chain=%s (%s)\n", chain_on ? "ENABLED" : "DISABLED", why);
+
+        if (chain_on) {
+            if (app_rist_api_lookup(prog->service_id, &s_rist.rec) == 0) {
+                s_rist.chain_active = 1;
+                RIST_LOG("play_change: svc_id=%d IS in the recovery list (\"%s\") -> RIST chain\n",
+                         prog->service_id, s_rist.rec.name);
+            } else {
+                RIST_LOG("play_change: svc_id=%d not in the recovery list (%d cached) -> factory path\n",
+                         prog->service_id, app_rist_api_count());
+            }
         } else {
-            RIST_LOG("play_change: svc_id=%d not in the recovery list (%d cached) -> factory path\n",
-                     prog->service_id, app_rist_api_count());
+            RIST_LOG("play_change: svc_id=%d -> factory path (chain disabled)\n", prog->service_id);
         }
     }
 
