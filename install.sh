@@ -42,7 +42,11 @@ ENV_SH="${ENV_SH:-/opt/stb/env.sh}"
 #   - app_play_control.c    : re-adds the capture-on-zap hook (app_rist_play_change)
 #                             in app_normal_play. Screen decode left untouched.
 #   - app_rist_api.c/.h     : recovery API client (fetch + cache by service_id).
+#   - app_rist_stats.c/.h   : per-view statistics ring, POSTed on the API call.
 #   - app_network_service.c : starts the API client when the network gets an IP.
+#   - full_screen.c/.h      : "Waiting..." tip while a RIST channel comes up.
+# NOTE: headers count. A .c deployed without its changed header builds against
+# the stale declaration -- exactly how FULL_STATE_CONNECTING failed to compile.
 FILES="app/dvb2ip_server/app_dvb2ip_platform.c
 app/dvb2ip_server/app_ts_record.c
 app/module/app_rist_capture.c
@@ -52,6 +56,7 @@ app/include/module/app_rist_stats.h
 app/module/app_rist_stats.c
 app/module/network/app_network_service.c
 app/module/app_play_control.c
+app/include/full_screen.h
 app/full_screen.c"
 
 # Objects for those sources (flat basename.o), used for the fast INCREMENTAL path

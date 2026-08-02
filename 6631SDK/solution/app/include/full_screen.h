@@ -54,10 +54,15 @@ typedef enum
 #if PARENTAL_LOCK_SUPPORT
     FULL_STATE_PARENTAL_LOCK,
 #endif
-#if DVB2IP_SERVER_SUPPORT
-    FULL_STATE_CONNECTING,      /* RIST channel coming up -- neutral "Waiting..." */
-#endif
     FULL_STATE_DUMMY,
+#if DVB2IP_SERVER_SUPPORT
+    /* RIST channel coming up -- neutral "Waiting...". Deliberately APPENDED after
+     * FULL_STATE_DUMMY: 19 other .c files reference FULL_STATE_*, and inserting
+     * ahead of DUMMY would renumber it, so any object not rebuilt in an
+     * incremental build would compare against the stale value. Appending leaves
+     * every existing value untouched, so only full_screen.c needs rebuilding. */
+    FULL_STATE_CONNECTING,
+#endif
 }FullTip;
 
 
