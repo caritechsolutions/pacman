@@ -47,6 +47,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <sys/wait.h>
 #include <sys/prctl.h>
 #include <netinet/in.h>
@@ -70,6 +71,8 @@
 #define RIST_DELAY1_FILE        "/tmp/ristdelay1"
 #define RIST_DELAY2_FILE        "/tmp/ristdelay2"
 #define RIST_LOCK_POLL_MS       50             /* lock-poll granularity for capture start */
+#define RIST_PROBE_POLL_MS      100            /* player_av "first frame" poll granularity */
+#define RIST_PROBE_MAX_MS       20000          /* stop probing after this long */
 
 #define RIST_CTRL_FILE          "/tmp/ristcap"            /* runtime dest: "ip:port" */
 #define RIST_UDP_DEFAULT_IP     "239.6.6.6"
@@ -144,6 +147,11 @@ static struct {
     unsigned            waited_ms;       /* elapsed lock-poll time this zap */
     GxBusPmDataProg     prog;
 
+    /* Startup timing: every stage is logged as T+<ms> from the zap */
+    unsigned            t0_ms;
+    event_list         *probe_timer;    /* polls player_av until it reports RUNNING */
+    unsigned            probe_ms;
+
     /* Step D: RIST chain for this program */
     int                 chain_active;    /* kill switch ON *and* service has recovery */
     int                 chain_running;   /* children actually spawned */
@@ -158,8 +166,26 @@ static struct {
     uint64_t            sent;
     uint64_t            senderr;
 } s_rist = { 0, 0, -1, 0, NULL, NULL, 0, 0, 0, {0},
+             0, NULL, 0,
              0, 0, {0}, -1, -1,
              -1, {0}, {0}, 0, 0, 0 };
+
+/* Milliseconds since an arbitrary epoch; only differences are used, so the
+ * 32-bit wrap (~49 days) is harmless. */
+static unsigned _rist_now_ms(void)
+{
+    struct timeval tv;
+
+    gettimeofday(&tv, NULL);
+    return (unsigned)tv.tv_sec * 1000u + (unsigned)(tv.tv_usec / 1000);
+}
+
+/* Stage marker: every chain-startup step logs its offset from the zap, so the
+ * real breakdown is readable on serial instead of inferred. librist's own lines
+ * (peer authenticated / FSR enabled / recovery data flowing) interleave with
+ * these from the child processes and can be correlated against them. */
+#define RIST_T(fmt, ...) \
+    RIST_LOG("T+%-5u " fmt, _rist_now_ms() - s_rist.t0_ms, ##__VA_ARGS__)
 
 static int s_swept = 0;     /* stale-child pidfile sweep done once per app run */
 
@@ -439,8 +465,11 @@ static int _rist_chain_start(void)
     rx_argv[4] = recv_out;
     rx_argv[5] = NULL;
 
+    RIST_T("chain: spawning children\n");
     s_rist.pid_watchdog = _rist_spawn(wd_argv, RIST_PID_WATCHDOG, "rist_watchdog(+sender)");
     s_rist.pid_receiver = _rist_spawn(rx_argv, RIST_PID_RECEIVER, "ristreceiver");
+    RIST_T("chain: children spawned (watchdog=%d receiver=%d)\n",
+           (int)s_rist.pid_watchdog, (int)s_rist.pid_receiver);
 
     if (s_rist.pid_watchdog <= 0 || s_rist.pid_receiver <= 0) {
         RIST_LOG("chain: start FAILED -> tearing down (screen falls back on next zap)\n");
@@ -504,6 +533,30 @@ static void _rist_screen_url(char *out, int outsz)
              RIST_SCREEN_URL_OPTS);
 }
 
+/* "Is RIST genuinely putting a picture on screen right now?"
+ *
+ * Used by the full-screen arbiter to decide whether an UNLOCKED tuner really
+ * means "no signal". In the FSR case the tuner is legitimately unlocked while
+ * the recovery path carries the service, so the no-signal tip would be wrong.
+ *
+ * Deliberately gated on the player actually RUNNING (i.e. decoding the
+ * receiver's output), not merely on chain_active: if the chain is up but the
+ * recovery peer is unreachable or silent, this returns 0 and the user still
+ * gets the honest no-signal indication instead of an unexplained black screen. */
+int app_rist_screen_delivering(void)
+{
+    PlayerStatusInfo si;
+
+    if (!s_rist.chain_active || !s_rist.screen_started)
+        return 0;
+
+    memset(&si, 0, sizeof(si));
+    if (GxPlayer_MediaGetStatus(RIST_SCREEN_PLAYER, &si) != GXCORE_SUCCESS)
+        return 0;
+
+    return (si.status == PLAYER_STATUS_PLAY_RUNNING);
+}
+
 static void _rist_screen_stop(void)
 {
     if (s_rist.screen_started) {
@@ -511,6 +564,37 @@ static void _rist_screen_stop(void)
         GxPlayer_MediaStop(RIST_SCREEN_PLAYER);
         s_rist.screen_started = 0;
     }
+}
+
+/* Poll player_av after start until it reports RUNNING, logging when the picture
+ * actually appears. This is measurement only -- it changes no behaviour. */
+static int _rist_probe_cb(void *arg)
+{
+    PlayerStatusInfo si;
+
+    (void)arg;
+    s_rist.probe_timer = NULL;
+
+    if (!s_rist.screen_started)
+        return 0;
+
+    memset(&si, 0, sizeof(si));
+    if (GxPlayer_MediaGetStatus(RIST_SCREEN_PLAYER, &si) == GXCORE_SUCCESS &&
+        si.status == PLAYER_STATUS_PLAY_RUNNING) {
+        RIST_T("screen: player_av RUNNING -- FIRST FRAME (%ums after the play call)\n",
+               s_rist.probe_ms);
+        return 0;
+    }
+
+    s_rist.probe_ms += RIST_PROBE_POLL_MS;
+    if (s_rist.probe_ms >= RIST_PROBE_MAX_MS) {
+        RIST_T("screen: player_av still not RUNNING after %ums (status=%d) -- giving up on the probe\n",
+               s_rist.probe_ms, (int)si.status);
+        return 0;
+    }
+
+    APP_TIMER_ADD(s_rist.probe_timer, _rist_probe_cb, RIST_PROBE_POLL_MS, TIMER_ONCE);
+    return 0;
 }
 
 /* Deferred so the capture is already producing before player_av probes the
@@ -535,13 +619,19 @@ static int _rist_screen_cb(void *arg)
         return 0;
 
     _rist_screen_url(url, sizeof(url));
-    RIST_LOG("screen: starting player_av on \"%s\" (decode the box's own loopback stream)\n", url);
+    RIST_T("screen: starting player_av on \"%s\"\n", url);
     if (GxPlayer_MediaPlay(RIST_SCREEN_PLAYER, url, 0, 0, NULL) != GXCORE_SUCCESS) {
         RIST_LOG("screen: GxPlayer_MediaPlay(player_av) FAILED\n");
         return 0;
     }
     s_rist.screen_started = 1;
-    RIST_LOG("screen: player_av STARTED\n");
+    RIST_T("screen: player_av STARTED (call returned)\n");
+
+    /* Poll until the player reports RUNNING, i.e. it has actually decoded the
+     * stream -- that is the "first frame" edge, and the tail of the startup
+     * budget that neither delay2/delay3 nor the librist logs expose. */
+    s_rist.probe_ms = 0;
+    APP_TIMER_ADD(s_rist.probe_timer, _rist_probe_cb, RIST_PROBE_POLL_MS, TIMER_ONCE);
     return 0;
 }
 
@@ -635,6 +725,7 @@ void app_rist_capture_stop(void)
 {
     APP_TIMER_REMOVE(s_rist.start_timer);
     APP_TIMER_REMOVE(s_rist.screen_timer);
+    APP_TIMER_REMOVE(s_rist.probe_timer);
     _rist_screen_stop();                     /* release the video decoder for the next player */
     _rist_chain_stop();                      /* SIGTERM -> wait -> SIGKILL, both children */
 
@@ -712,10 +803,9 @@ static void _rist_capture_begin(void)
     }
 
     s_rist.active = 1;
-    RIST_LOG("start: capture ACTIVE prog_id=%d ts_id=%d svc_id=%d -> udp %s:%d "
-             "(dmx via /tmp/ristdmx, default 2)\n",
-             s_rist.prog.id, s_rist.prog.tp_id, s_rist.prog.service_id,
-             s_rist.dst_ip, s_rist.dst_port);
+    RIST_T("capture ACTIVE prog_id=%d ts_id=%d svc_id=%d -> udp %s:%d\n",
+           s_rist.prog.id, s_rist.prog.tp_id, s_rist.prog.service_id,
+           s_rist.dst_ip, s_rist.dst_port);
 
     /* Step D: bring up the RIST chain now that the capture is producing, so the
      * sender has data waiting the moment it binds. If it fails to start we clear
@@ -762,9 +852,9 @@ static int _rist_start_cb(void *arg)
         return 0;
     }
 
-    RIST_LOG("start: tuner %s after ~%ums (delay1 ceiling %dms) -> begin capture\n",
-             (lock == FRONTEND_LOCKED) ? "LOCKED" : "TIMEOUT(unlocked)",
-             s_rist.waited_ms, s_rist.delay1);
+    RIST_T("tuner %s (lock-poll %ums, delay1 ceiling %dms) -> begin capture\n",
+           (lock == FRONTEND_LOCKED) ? "LOCKED" : "TIMEOUT(unlocked)",
+           s_rist.waited_ms, s_rist.delay1);
     _rist_capture_begin();
     return 0;
 }
@@ -793,6 +883,8 @@ int app_rist_play_change(GxBusPmDataProg *prog)
     s_rist.senderr   = 0;
     s_rist.delay1    = _rist_read_int_file(RIST_DELAY1_FILE, RIST_START_DELAY_MS);
     s_rist.waited_ms = 0;
+    s_rist.t0_ms     = _rist_now_ms();      /* T0 = the zap */
+    s_rist.probe_ms  = 0;
 
     /* Step D decision, taken here so it is already correct when app_normal_play
      * asks app_rist_screen_enabled() for the suppression decision a few lines
@@ -809,8 +901,8 @@ int app_rist_play_change(GxBusPmDataProg *prog)
         if (chain_on) {
             if (app_rist_api_lookup(prog->service_id, &s_rist.rec) == 0) {
                 s_rist.chain_active = 1;
-                RIST_LOG("play_change: svc_id=%d IS in the recovery list (\"%s\") -> RIST chain\n",
-                         prog->service_id, s_rist.rec.name);
+                RIST_T("svc_id=%d IS in the recovery list (\"%s\") -> RIST chain\n",
+                       prog->service_id, s_rist.rec.name);
             } else {
                 RIST_LOG("play_change: svc_id=%d not in the recovery list (%d cached) -> factory path\n",
                          prog->service_id, app_rist_api_count());

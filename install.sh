@@ -49,7 +49,8 @@ app/module/app_rist_capture.c
 app/include/module/app_rist_api.h
 app/module/app_rist_api.c
 app/module/network/app_network_service.c
-app/module/app_play_control.c"
+app/module/app_play_control.c
+app/full_screen.c"
 
 # Objects for those sources (flat basename.o), used for the fast INCREMENTAL path
 # once dvb2ip is already enabled.
@@ -58,7 +59,8 @@ output/objects/app_ts_record.o
 output/objects/app_rist_capture.o
 output/objects/app_rist_api.o
 output/objects/app_network_service.o
-output/objects/app_play_control.o"
+output/objects/app_play_control.o
+output/objects/full_screen.o"
 
 CONFIG_OPT="BR2_MOD_DVB2IP_SERVER"                    # Kconfig symbol to enable
 

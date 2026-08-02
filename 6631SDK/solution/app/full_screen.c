@@ -724,6 +724,38 @@ static void full_state_exec(FullArb* arb)
     app_ioctl(g_AppPlayOps.normal_play.tuner, FRONTEND_LOCK_STATE_GET, &lock);
     //g_AppNim.property_get(&g_AppNim, AppFrontendID_Status, &status,
     //								sizeof(AppFrontend_Status));
+#if DVB2IP_SERVER_SUPPORT
+    {
+        /* RIST/FSR is carrying this service. The tuner is legitimately unlocked
+         * (that IS the FSR use case -- satellite dead, recovery delivering), so
+         * the no-signal tip would be actively wrong: there is a real picture.
+         *
+         * Gated on app_rist_screen_delivering(), which requires the player to be
+         * RUNNING on the receiver's output -- NOT merely on "chain active". If
+         * the chain is up but the recovery peer is unreachable or silent, this
+         * is false and the normal no-signal path below still runs, so a genuine
+         * failure is never hidden behind a blank screen.
+         *
+         * The counters are reset too, so the no-signal auto-standby and alert
+         * tip cannot fire against a working RIST picture if they are ever
+         * enabled in this build. */
+        extern int app_rist_screen_delivering(void);
+        if (lock == FRONTEND_UNLOCK && app_rist_screen_delivering())
+        {
+            BadSignalCount = 0;
+#if NO_SIGNAL_AUTO_STANDBY_SUPPORT
+            no_signal_count = 0;
+#endif
+#if NO_SIGNAL_ALERT_TIP_SUPPORT
+            app_no_signal_alert_reset_count();
+#endif
+            led_lock_state = 1;
+            app_panel_ioctl_handle(PANEL_SHOW_LOCK, &led_lock_state);
+            arb->tip = FULL_STATE_DUMMY;
+            return;
+        }
+    }
+#endif
 #if NO_SIGNAL_AUTO_STANDBY_SUPPORT
     if(lock == FRONTEND_LOCKED)
     {
