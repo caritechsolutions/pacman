@@ -33,10 +33,12 @@
 #include "app_module.h"
 #include "app.h"
 #include "module/app_rist_api.h"
+#include "module/app_rist_stats.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -51,12 +53,16 @@
 #define RIST_API_DEFAULT_URL    "http://recovery.caritech.net/api/recovery.php"
 #define RIST_API_URL_FILE       "/tmp/ristapi"          /* runtime endpoint override */
 #define RIST_API_PERIOD_FILE    "/tmp/ristapisecs"      /* runtime refresh period    */
+#define RIST_NTP_FILE           "/tmp/ristntp"          /* runtime NTP host override */
+#define RIST_NTP_SERVER_1       "pool.ntp.org"
+#define RIST_NTP_SERVER_2       "time.google.com"
 
 #define RIST_API_PERIOD_SECS    60      /* steady-state re-fetch period */
 #define RIST_API_RETRY_SECS     10      /* re-try period until the first success */
 #define RIST_API_CONNECT_MS     5000
 #define RIST_API_IO_SECS        8
 #define RIST_API_RESP_MAX       (16 * 1024)
+#define RIST_API_POST_MAX       (16 * 1024)
 
 #define API_LOG(fmt, ...)       printf("[RISTAPI] " fmt, ##__VA_ARGS__)
 
@@ -204,7 +210,7 @@ static int _api_connect(const char *host, int port)
 
 /* GET the url into buf. Returns the HTTP status code, or -1 on transport error.
  * On 200 the response BODY (not the headers) is left in buf. */
-static int _api_http_get(const char *url, char *buf, int bufsz)
+static int _api_http_get(const char *url, const char *post_body, char *buf, int bufsz)
 {
     char host[128] = {0}, path[256] = {0}, req[512];
     int  port = 80, fd, total = 0, n, status = -1;
@@ -221,16 +227,37 @@ static int _api_http_get(const char *url, char *buf, int bufsz)
         return -1;
     }
 
-    n = snprintf(req, sizeof(req),
-                 "GET %s HTTP/1.0\r\n"
-                 "Host: %s\r\n"
-                 "User-Agent: gx6631-stb\r\n"
-                 "Connection: close\r\n\r\n",
-                 path, host);
+    /* POST when there are stats to report, plain GET otherwise -- so a box with
+     * nothing to say still works, and the endpoint stays curl-able by hand. */
+    if (post_body && post_body[0]) {
+        n = snprintf(req, sizeof(req),
+                     "POST %s HTTP/1.0\r\n"
+                     "Host: %s\r\n"
+                     "User-Agent: gx6631-stb\r\n"
+                     "Content-Type: application/json\r\n"
+                     "Content-Length: %d\r\n"
+                     "Connection: close\r\n\r\n",
+                     path, host, (int)strlen(post_body));
+    } else {
+        n = snprintf(req, sizeof(req),
+                     "GET %s HTTP/1.0\r\n"
+                     "Host: %s\r\n"
+                     "User-Agent: gx6631-stb\r\n"
+                     "Connection: close\r\n\r\n",
+                     path, host);
+    }
     if (write(fd, req, n) != n) {
         API_LOG("request write FAILED\n");
         close(fd);
         return -1;
+    }
+    if (post_body && post_body[0]) {
+        int blen = (int)strlen(post_body);
+        if (write(fd, post_body, blen) != blen) {
+            API_LOG("POST body write FAILED\n");
+            close(fd);
+            return -1;
+        }
     }
 
     while (total < bufsz - 1) {
@@ -277,6 +304,14 @@ static int _api_parse(const char *body)
     if (!root) {
         API_LOG("JSON parse FAILED -- staying on factory path\n");
         return -1;
+    }
+
+    /* Stats acknowledgement: drop everything the server confirmed it stored, so a
+     * lost response retries rather than double-counts. */
+    {
+        cJSON *ack = cJSON_GetObjectItem(root, "ack_id");
+        if (ack && ack->valueint > 0)
+            app_rist_stats_ack((unsigned)ack->valueint);
     }
 
     channels = cJSON_GetObjectItem(root, "channels");
@@ -341,12 +376,105 @@ static void _api_dump(void)
     GxCore_MutexUnlock(s_mutex);
 }
 
+/* -------------------------------------------------------------- SNTP time */
+/* The box takes its clock from DVB, so with no satellite it runs on a stale
+ * default (Jan 2015 observed). We do one SNTP step at network-up, before any
+ * chain can start.
+ *
+ * Self-contained on purpose: the platform's own net-time path (gx_net_get_time,
+ * app_net_time.c) is compiled out in this build (GET_NET_TIME_SUPPORT=0,
+ * OTT_SUPPORT=0), and adding a busybox applet would be a rootfs dependency. This
+ * is one 48-byte UDP exchange -- no new library, no new binary.
+ *
+ * Deliberately ONE step, at boot only: a clock that leaps while a chain is
+ * running is the hazard, not a clock that is merely wrong. */
+#define SNTP_PORT           123
+#define SNTP_TIMEOUT_SECS   5
+#define NTP_UNIX_DELTA      2208988800u    /* seconds between 1900 and 1970 epochs */
+
+static int s_time_synced = 0;
+
+int app_rist_time_synced(void)
+{
+    return s_time_synced;
+}
+
+static int _api_sntp_sync(const char *host)
+{
+    unsigned char pkt[48];
+    struct addrinfo hints, *res = NULL;
+    struct timeval tv;
+    GxTime now;
+    int fd = -1, ret = -1;
+    unsigned int secs;
+    time_t before, after;
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family   = AF_INET;
+    hints.ai_socktype = SOCK_DGRAM;
+
+    if (getaddrinfo(host, "123", &hints, &res) != 0 || res == NULL) {
+        API_LOG("ntp: resolve FAILED for %s -- leaving the clock alone\n", host);
+        return -1;
+    }
+
+    fd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (fd < 0)
+        goto out;
+
+    tv.tv_sec  = SNTP_TIMEOUT_SECS;
+    tv.tv_usec = 0;
+    setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+    setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
+
+    memset(pkt, 0, sizeof(pkt));
+    pkt[0] = 0x1b;                     /* LI=0, VN=3, Mode=3 (client) */
+
+    if (sendto(fd, pkt, sizeof(pkt), 0, res->ai_addr, res->ai_addrlen) != (int)sizeof(pkt)) {
+        API_LOG("ntp: send FAILED to %s\n", host);
+        goto out;
+    }
+
+    if (recv(fd, pkt, sizeof(pkt), 0) != (int)sizeof(pkt)) {
+        API_LOG("ntp: no reply from %s within %ds\n", host, SNTP_TIMEOUT_SECS);
+        goto out;
+    }
+
+    /* Transmit timestamp: bytes 40..43, seconds since 1900, big endian. */
+    secs = ((unsigned int)pkt[40] << 24) | ((unsigned int)pkt[41] << 16) |
+           ((unsigned int)pkt[42] << 8)  | (unsigned int)pkt[43];
+    if (secs <= NTP_UNIX_DELTA) {
+        API_LOG("ntp: implausible timestamp from %s -- ignoring\n", host);
+        goto out;
+    }
+
+    before = time(NULL);
+    after  = (time_t)(secs - NTP_UNIX_DELTA);
+
+    /* Use the platform's setter, the same one app_time_sync() uses for DVB time. */
+    now.seconds   = (uint32_t)after;
+    now.microsecs = 0;
+    GxCore_SetLocalTime(&now);
+
+    s_time_synced = 1;
+    ret = 0;
+    API_LOG("ntp: clock stepped from %ld to %ld (%+ld s) via %s\n",
+            (long)before, (long)after, (long)(after - before), host);
+
+out:
+    if (fd >= 0)
+        close(fd);
+    if (res)
+        freeaddrinfo(res);
+    return ret;
+}
+
 /* ---------------------------------------------------------------- worker */
 static int _api_fetch_once(void)
 {
     char url[RIST_API_URL_LEN] = {0};
-    char *body = NULL;
-    int   status, kept = -1;
+    char *body = NULL, *post = NULL;
+    int   status, kept = -1, nrec = 0;
 
     _api_url_get(url, sizeof(url));
 
@@ -356,8 +484,25 @@ static int _api_fetch_once(void)
         return -1;
     }
 
-    API_LOG("fetching %s\n", url);
-    status = _api_http_get(url, body, RIST_API_RESP_MAX);
+    /* Build the stats POST body first: piggybacking keeps this to ONE round trip.
+     * A failure to send leaves the records queued for the next cycle, and never
+     * stops the channel list from being fetched. */
+    post = (char *)GxCore_Mallocz(RIST_API_POST_MAX);
+    if (post) {
+        nrec = app_rist_stats_build_body(post, RIST_API_POST_MAX);
+        if (nrec <= 0) {
+            GxCore_Free(post);
+            post = NULL;
+        }
+    }
+
+    API_LOG("fetching %s (%s)\n", url, post ? "POST +stats" : "GET");
+    status = _api_http_get(url, post, body, RIST_API_RESP_MAX);
+    if (post) {
+        if (status != 200)
+            API_LOG("stats: %d record(s) NOT acknowledged -- retrying next cycle\n", nrec);
+        GxCore_Free(post);
+    }
 
     if (status == 200) {
         kept = _api_parse(body);
@@ -378,6 +523,36 @@ static void _api_worker(void *arg)
 
     (void)arg;
     GxCore_ThreadDetach();
+
+    /* Step the clock ONCE, before the first fetch and therefore before any chain
+     * can start (a chain needs the list this fetch produces). Failure is silent:
+     * the box carries on with whatever time it had. */
+    {
+        int i;
+        const char *servers[] = { RIST_NTP_SERVER_1, RIST_NTP_SERVER_2 };
+        char host[RIST_API_URL_LEN] = {0};
+        FILE *f = fopen(RIST_NTP_FILE, "r");
+
+        if (f) {                       /* runtime override, one hostname per line */
+            if (fgets(host, sizeof(host) - 1, f)) {
+                size_t n = strlen(host);
+                while (n && (host[n-1] == '\n' || host[n-1] == '\r' || host[n-1] == ' '))
+                    host[--n] = '\0';
+            }
+            fclose(f);
+        }
+
+        if (host[0]) {
+            _api_sntp_sync(host);
+        } else {
+            for (i = 0; i < (int)(sizeof(servers) / sizeof(servers[0])); i++) {
+                if (_api_sntp_sync(servers[i]) == 0)
+                    break;
+            }
+        }
+        if (!s_time_synced)
+            API_LOG("ntp: NOT synced -- box time stays as-is (stats marked untrusted)\n");
+    }
 
     while (1) {
         int period, waited = 0;

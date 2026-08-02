@@ -37,6 +37,7 @@
 #include "module/app_ioctl.h"                  /* app_ioctl + FRONTEND_LOCK_STATE_GET */
 #include "module/app_nim.h"                    /* AppFrontend_LockState */
 #include "module/app_rist_api.h"               /* recovery API cache lookup (Step E) */
+#include "module/app_rist_stats.h"             /* per-view statistics */
 #include "gxplayer.h"                          /* umbrella -> GxPlayer_MediaPlay/MediaStop */
 #include "../dvb2ip_server/app_ts_record.h"    /* app_ts_record_* + TsRecConfig (DVB2IP-gated) */
 
@@ -150,7 +151,8 @@ static struct {
     /* Startup timing: every stage is logged as T+<ms> from the zap */
     unsigned            t0_ms;
     event_list         *probe_timer;    /* polls player_av until it reports RUNNING */
-    unsigned            probe_ms;
+    unsigned            probe_t0;        /* when the probe started (real elapsed base) */
+    int                 probe_done;      /* probe resolved: got a frame, or gave up */
 
     /* Step D: RIST chain for this program */
     int                 chain_active;    /* kill switch ON *and* service has recovery */
@@ -166,7 +168,7 @@ static struct {
     uint64_t            sent;
     uint64_t            senderr;
 } s_rist = { 0, 0, -1, 0, NULL, NULL, 0, 0, 0, {0},
-             0, NULL, 0,
+             0, NULL, 0, 0,
              0, 0, {0}, -1, -1,
              -1, {0}, {0}, 0, 0, 0 };
 
@@ -557,6 +559,24 @@ int app_rist_screen_delivering(void)
     return (si.status == PLAYER_STATUS_PLAY_RUNNING);
 }
 
+/* "Is a RIST channel still coming up?"
+ *
+ * True from the moment a chain zap starts until the picture appears or the
+ * first-frame probe gives up (RIST_PROBE_MAX_MS). The full-screen arbiter shows
+ * a neutral "Waiting..." while this is true instead of "No signal", which would
+ * otherwise be displayed for the whole ~10s startup even though nothing is wrong.
+ *
+ * Bounded on purpose: once the probe resolves, this goes false and the real
+ * no-signal/error path takes over, so a genuinely failed chain is never masked
+ * behind an indefinite "Waiting...". */
+int app_rist_screen_connecting(void)
+{
+    if (!s_rist.chain_active || s_rist.probe_done)
+        return 0;
+
+    return !app_rist_screen_delivering();
+}
+
 static void _rist_screen_stop(void)
 {
     if (s_rist.screen_started) {
@@ -581,15 +601,20 @@ static int _rist_probe_cb(void *arg)
     memset(&si, 0, sizeof(si));
     if (GxPlayer_MediaGetStatus(RIST_SCREEN_PLAYER, &si) == GXCORE_SUCCESS &&
         si.status == PLAYER_STATUS_PLAY_RUNNING) {
+        /* Measure real elapsed time, not accumulated poll ticks: each timer
+         * fires at >= the requested period, so counting ticks under-reported
+         * the wait (the reason the old figure disagreed with the T+ base). */
         RIST_T("screen: player_av RUNNING -- FIRST FRAME (%ums after the play call)\n",
-               s_rist.probe_ms);
+               _rist_now_ms() - s_rist.probe_t0);
+        app_rist_stats_first_frame(_rist_now_ms() - s_rist.t0_ms);
+        s_rist.probe_done = 1;
         return 0;
     }
 
-    s_rist.probe_ms += RIST_PROBE_POLL_MS;
-    if (s_rist.probe_ms >= RIST_PROBE_MAX_MS) {
-        RIST_T("screen: player_av still not RUNNING after %ums (status=%d) -- giving up on the probe\n",
-               s_rist.probe_ms, (int)si.status);
+    if ((_rist_now_ms() - s_rist.probe_t0) >= RIST_PROBE_MAX_MS) {
+        RIST_T("screen: player_av still not RUNNING after %ums (status=%d) -- giving up\n",
+               _rist_now_ms() - s_rist.probe_t0, (int)si.status);
+        s_rist.probe_done = 1;      /* stop showing "Waiting..." -> real error state */
         return 0;
     }
 
@@ -630,7 +655,8 @@ static int _rist_screen_cb(void *arg)
     /* Poll until the player reports RUNNING, i.e. it has actually decoded the
      * stream -- that is the "first frame" edge, and the tail of the startup
      * budget that neither delay2/delay3 nor the librist logs expose. */
-    s_rist.probe_ms = 0;
+    s_rist.probe_t0   = _rist_now_ms();
+    s_rist.probe_done = 0;
     APP_TIMER_ADD(s_rist.probe_timer, _rist_probe_cb, RIST_PROBE_POLL_MS, TIMER_ONCE);
     return 0;
 }
@@ -811,20 +837,23 @@ static void _rist_capture_begin(void)
      * sender has data waiting the moment it binds. If it fails to start we clear
      * chain_active, which makes the screen fall back to the raw capture rather
      * than waiting on a receiver output that will never come. */
-    if (s_rist.chain_active && _rist_chain_start() < 0)
-        s_rist.chain_active = 0;
+    /* The RIST chain and the screen player are NOT started here: on a chain zap
+     * they are already up from T+0 (app_rist_play_change), since the children and
+     * the receiver do not depend on the tuner at all. This path only feeds the
+     * satellite peer once the tuner locks -- if it never locks, the chain simply
+     * stays recovery-only. */
+    if (s_rist.chain_active) {
+        RIST_T("capture feeding the chain (satellite peer now has a source)\n");
+        app_rist_stats_sat_source(1);
+        return;
+    }
 
-    /* Screen switch: start player_av once data is flowing. Default OFF -> screen
-     * keeps showing the live tuner (app_normal_play did not suppress the decode).
-     * The chain needs longer than the loopback: the receiver has to bring both
-     * peers up and fill its buffer before it emits anything. */
+    /* Loopback (Step C) screen switch only: here the player consumes the capture
+     * directly, so it must wait for the capture to be producing. */
     if (app_rist_screen_enabled()) {
-        int d2 = s_rist.chain_active
-                   ? _rist_read_int_file(RIST_DELAY3_FILE, RIST_DELAY3_MS)
-                   : _rist_read_int_file(RIST_DELAY2_FILE, RIST_SCREEN_DELAY_MS);
-        RIST_LOG("start: screen ON -> player_av in %dms (%s) on udp://@:%d\n",
-                 d2, s_rist.chain_active ? "delay3/chain" : "delay2/loopback",
-                 s_rist.chain_active ? RIST_OUT_PORT : s_rist.dst_port);
+        int d2 = _rist_read_int_file(RIST_DELAY2_FILE, RIST_SCREEN_DELAY_MS);
+        RIST_T("screen ON -> player_av in %dms (delay2/loopback) on udp://@:%d\n",
+               d2, s_rist.dst_port);
         APP_TIMER_ADD(s_rist.screen_timer, _rist_screen_cb, d2, TIMER_ONCE);
     }
 }
@@ -884,7 +913,8 @@ int app_rist_play_change(GxBusPmDataProg *prog)
     s_rist.delay1    = _rist_read_int_file(RIST_DELAY1_FILE, RIST_START_DELAY_MS);
     s_rist.waited_ms = 0;
     s_rist.t0_ms     = _rist_now_ms();      /* T0 = the zap */
-    s_rist.probe_ms  = 0;
+    s_rist.probe_t0  = 0;
+    s_rist.probe_done = 0;
 
     /* Step D decision, taken here so it is already correct when app_normal_play
      * asks app_rist_screen_enabled() for the suppression decision a few lines
@@ -912,8 +942,36 @@ int app_rist_play_change(GxBusPmDataProg *prog)
         }
     }
 
-    RIST_LOG("play_change: prog_id=%d ts_id=%d svc_id=%d tuner=%d -> lock-poll start (delay1 ceiling %dms)\n",
-             prog->id, prog->tp_id, prog->service_id, prog->tuner, s_rist.delay1);
+    /* CHAIN FIRST, at T+0, in parallel with the lock poll.
+     *
+     * ristsender_marker and ristreceiver do not depend on the tuner: the receiver
+     * pulls the recovery peer over IP, so waiting up to delay1 for a lock that may
+     * never come was pure dead time in exactly the case that matters (no satellite).
+     * The capture still waits for lock below and joins later; if lock never comes
+     * the chain simply runs recovery-only.
+     *
+     * Started synchronously (not on a timer) so a spawn failure clears chain_active
+     * BEFORE app_normal_play reads app_rist_screen_enabled() a few lines later --
+     * otherwise the decode would be suppressed for a chain that never came up. */
+    if (s_rist.chain_active) {
+        if (_rist_chain_start() < 0) {
+            s_rist.chain_active = 0;
+            RIST_T("chain start FAILED -> factory decode for this zap\n");
+        } else {
+            int d3 = _rist_read_int_file(RIST_DELAY3_FILE, RIST_DELAY3_MS);
+            RIST_T("screen: player_av in %dms (delay3/chain) on udp://@:%d\n",
+                   d3, RIST_OUT_PORT);
+            APP_TIMER_ADD(s_rist.screen_timer, _rist_screen_cb, d3, TIMER_ONCE);
+        }
+    }
+
+    /* Open the view record now that the path for this zap is settled. */
+    app_rist_stats_view_start(prog->service_id, prog->tp_id,
+                              s_rist.chain_active ? s_rist.rec.name : "",
+                              s_rist.chain_active ? RIST_PATH_RIST : RIST_PATH_TUNER);
+
+    RIST_T("prog_id=%d ts_id=%d svc_id=%d tuner=%d -> capture lock-poll (delay1 ceiling %dms)\n",
+           prog->id, prog->tp_id, prog->service_id, prog->tuner, s_rist.delay1);
 
     /* First lock poll fires soon (RIST_LOCK_POLL_MS); _rist_start_cb re-arms until
      * the frontend reports lock or delay1 elapses, then begins the capture. */

@@ -60,4 +60,15 @@ extern int app_rist_api_count(void);
  */
 extern void app_rist_api_refresh(void);
 
+/**
+ * @brief Was the clock set from the network this boot?
+ *
+ * The box normally takes time from DVB, so with no satellite it runs on a stale
+ * default (Jan 2015 was observed). Stats records carry this flag so the server
+ * knows whether the box's own timestamps mean anything.
+ *
+ * @return 1 if SNTP set the clock, 0 otherwise.
+ */
+extern int app_rist_time_synced(void);
+
 #endif /* __APP_RIST_API_H__ */

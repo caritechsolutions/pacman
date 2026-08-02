@@ -48,6 +48,8 @@ app/dvb2ip_server/app_ts_record.c
 app/module/app_rist_capture.c
 app/include/module/app_rist_api.h
 app/module/app_rist_api.c
+app/include/module/app_rist_stats.h
+app/module/app_rist_stats.c
 app/module/network/app_network_service.c
 app/module/app_play_control.c
 app/full_screen.c"
@@ -58,6 +60,7 @@ OBJS="output/objects/app_dvb2ip_platform.o
 output/objects/app_ts_record.o
 output/objects/app_rist_capture.o
 output/objects/app_rist_api.o
+output/objects/app_rist_stats.o
 output/objects/app_network_service.o
 output/objects/app_play_control.o
 output/objects/full_screen.o"

@@ -38,9 +38,17 @@ static event_list* sp_FullTimer = NULL;
 static event_list *s_play_pause_timer = NULL;
 #define STR_ID_PARENTAL_LOCK    "Parental Lock"
 #if PARENTAL_LOCK_SUPPORT
+#if DVB2IP_SERVER_SUPPORT
+static char* tip_str[] = {STR_ID_NO_SIGNAL, STR_ID_LOCKED,STR_ID_SCRAMBLE,STR_ID_NO_PROGRAM,STR_ID_VIDEO_UNSUPPORT,STR_ID_PARENTAL_LOCK, STR_ID_WAITING, " "};
+#else
 static char* tip_str[] = {STR_ID_NO_SIGNAL, STR_ID_LOCKED,STR_ID_SCRAMBLE,STR_ID_NO_PROGRAM,STR_ID_VIDEO_UNSUPPORT,STR_ID_PARENTAL_LOCK, " "};
+#endif
+#else
+#if DVB2IP_SERVER_SUPPORT
+static char* tip_str[] = {STR_ID_NO_SIGNAL, STR_ID_LOCKED,STR_ID_SCRAMBLE,STR_ID_NO_PROGRAM,STR_ID_VIDEO_UNSUPPORT, STR_ID_WAITING, " "};
 #else
 static char* tip_str[] = {STR_ID_NO_SIGNAL, STR_ID_LOCKED,STR_ID_SCRAMBLE,STR_ID_NO_PROGRAM,STR_ID_VIDEO_UNSUPPORT," "};
+#endif
 #endif
 extern bool app_check_av_running(void);
 extern void pvr_percent_init(void);
@@ -739,7 +747,25 @@ static void full_state_exec(FullArb* arb)
          * The counters are reset too, so the no-signal auto-standby and alert
          * tip cannot fire against a working RIST picture if they are ever
          * enabled in this build. */
+        extern int app_rist_screen_connecting(void);
         extern int app_rist_screen_delivering(void);
+
+        /* A RIST channel takes ~10s to come up (receiver buffer + FSR handshake),
+         * during which the chain is active but not yet delivering -- exactly the
+         * branch that used to show "No signal" for the whole startup, telling the
+         * user something is broken while everything is working. Show the
+         * platform's neutral "Waiting..." instead.
+         *
+         * Bounded by the first-frame probe: once it resolves (picture, or gave up
+         * after 20s) this goes false and the genuine no-signal/error path below
+         * takes over, so a real failure is still surfaced. Chain zaps only --
+         * factory zaps are ~1s and never reach here. */
+        if (app_rist_screen_connecting())
+        {
+            arb->tip = FULL_STATE_CONNECTING;
+            return;
+        }
+
         if (lock == FRONTEND_UNLOCK && app_rist_screen_delivering())
         {
             BadSignalCount = 0;

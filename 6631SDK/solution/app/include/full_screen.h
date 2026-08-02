@@ -6,7 +6,7 @@
  *    Description:
  *
  *        Version:  1.0
- *        Created:  2011Äê08ÔÂ26ÈÕ 08Ê±53·Ö09Ãë
+ *        Created:  2011ï¿½ï¿½08ï¿½ï¿½26ï¿½ï¿½ 08Ê±53ï¿½ï¿½09ï¿½ï¿½
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -53,6 +53,9 @@ typedef enum
     FULL_STATE_UNSUPPORT,
 #if PARENTAL_LOCK_SUPPORT
     FULL_STATE_PARENTAL_LOCK,
+#endif
+#if DVB2IP_SERVER_SUPPORT
+    FULL_STATE_CONNECTING,      /* RIST channel coming up -- neutral "Waiting..." */
 #endif
     FULL_STATE_DUMMY,
 }FullTip;
