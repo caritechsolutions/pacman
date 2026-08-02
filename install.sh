@@ -70,7 +70,19 @@ output/objects/app_network_service.o
 output/objects/app_play_control.o
 output/objects/full_screen.o"
 
-CONFIG_OPT="BR2_MOD_DVB2IP_SERVER"                    # Kconfig symbol to enable
+# Kconfig symbols to enable. config_parse.sh does `source .config` and reads
+# these as plain shell variables, so appending them here is sufficient -- the
+# Kconfig `depends on` clauses are not re-evaluated by the build.
+#   BR2_MOD_DVB2IP_SERVER : the dmx2 clear-TS capture the whole chain feeds from.
+#   BR2_MOD_APP_ETH       : wired ethernet. The box HAS a working eth0 netdev, but
+#     ETH_SUPPORT=0 made app_if_dev_check_type() return IF_TYPE_UNKOWN for it, so
+#     the app skipped the interface entirely. Note Config.in.network's `depends on`
+#     does not list canopus/6631SHNF, so this is NOT selectable via menuconfig --
+#     which is exactly why it is force-appended here. Safe if the port is dead:
+#     enumeration gates eth0 on app_check_netlink() (an ETHTOOL_GLINK carrier
+#     check), so no link => eth0 skipped => WiFi continues as today.
+CONFIG_OPTS="BR2_MOD_DVB2IP_SERVER
+BR2_MOD_APP_ETH"
 
 # ============================================================================
 TS="$(date +%Y%m%d-%H%M%S)"
@@ -177,24 +189,30 @@ done
 
 # ---- 4. enable dvb2ip in .config (idempotent) ------------------------------
 log ""
-log "enabling $CONFIG_OPT in .config:"
+log "enabling Kconfig symbols in .config:"
 CFG="$SDK_ROOT/.config"
-if grep -q "^${CONFIG_OPT}=y" "$CFG"; then
-    log "  already enabled ($CONFIG_OPT=y)"
-    CFG_STATUS="already =y"
-else
-    cp -p "$CFG" "$CFG.bak.$TS"
-    log "  backup : $CFG -> $CFG.bak.$TS"
-    if grep -q "^# ${CONFIG_OPT} is not set" "$CFG"; then
-        sed -i "s/^# ${CONFIG_OPT} is not set\$/${CONFIG_OPT}=y/" "$CFG"
-        CFG_STATUS="flipped 'is not set' -> =y"
-    else
-        printf '%s=y\n' "$CONFIG_OPT" >> "$CFG"
-        CFG_STATUS="appended =y"
+CFG_STATUS="already =y"
+CFG_BACKED_UP=0
+for opt in $CONFIG_OPTS; do
+    if grep -q "^${opt}=y" "$CFG"; then
+        log "  $opt : already enabled"
+        continue
     fi
-    grep -q "^${CONFIG_OPT}=y" "$CFG" || die "failed to set ${CONFIG_OPT}=y in $CFG"
-    log "  $CFG_STATUS"
-fi
+    if [ "$CFG_BACKED_UP" = "0" ]; then
+        cp -p "$CFG" "$CFG.bak.$TS"
+        log "  backup : $CFG -> $CFG.bak.$TS"
+        CFG_BACKED_UP=1
+    fi
+    if grep -q "^# ${opt} is not set" "$CFG"; then
+        sed -i "s/^# ${opt} is not set\$/${opt}=y/" "$CFG"
+        log "  $opt : flipped 'is not set' -> =y"
+    else
+        printf '%s=y\n' "$opt" >> "$CFG"
+        log "  $opt : appended =y"
+    fi
+    grep -q "^${opt}=y" "$CFG" || die "failed to set ${opt}=y in $CFG"
+    CFG_STATUS="changed"
+done
 
 # ---- 5. rebuild scope ------------------------------------------------------
 # A FULL app rebuild is mandatory the first time dvb2ip is enabled, because the
@@ -212,7 +230,7 @@ fi
 # are rare, so paying a full rebuild eliminates the class outright rather than
 # relying on append-only discipline being remembered every time.
 NEED_FULL=0
-[ "${CFG_STATUS:-}" = "already =y" ] || NEED_FULL=1
+[ "${CFG_STATUS:-}" = "already =y" ] || NEED_FULL=1   # any symbol newly set
 grep -q "define DVB2IP_SERVER_SUPPORT 1" "$SDK_ROOT/app/include/app_config.h" 2>/dev/null || NEED_FULL=1
 if [ "$HDR_CHANGED" = "1" ]; then
     NEED_FULL=1
@@ -257,6 +275,12 @@ if grep -q "define DVB2IP_SERVER_SUPPORT 1" "$SDK_ROOT/app/include/app_config.h"
     log "  app_config.h: DVB2IP_SERVER_SUPPORT = 1  (OK)"
 else
     log "  WARNING: DVB2IP_SERVER_SUPPORT is not 1 in app_config.h -- lib present? Kconfig dep?"
+fi
+
+if grep -q "define ETH_SUPPORT 1" "$SDK_ROOT/app/include/app_config.h" 2>/dev/null; then
+    log "  app_config.h: ETH_SUPPORT = 1  (OK -- wired eth0 will be enumerated when it has carrier)"
+else
+    log "  WARNING: ETH_SUPPORT is not 1 in app_config.h -- wired stays disabled, WiFi only."
 fi
 
 log ""
