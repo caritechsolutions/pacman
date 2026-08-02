@@ -597,6 +597,11 @@ void app_rist_api_start(void)
     s_started = 1;
     API_LOG("client started (endpoint override: %s, refresh: %s)\n",
             RIST_API_URL_FILE, RIST_API_PERIOD_FILE);
+
+    /* Resolve + log box_id / chip_sn / ca_id now, at startup, rather than lazily
+     * on the first POST 60s later -- an identity change must be visible on
+     * serial straight away. */
+    app_rist_stats_identity_log();
 }
 
 int app_rist_api_lookup(int service_id, AppRistRecovery *out)

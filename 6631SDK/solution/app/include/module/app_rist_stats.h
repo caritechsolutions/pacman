@@ -68,7 +68,30 @@ extern void app_rist_stats_ack(unsigned ack_id);
 
 /**
  * @brief Stable per-box identifier (MAC address, "aa:bb:cc:dd:ee:ff").
+ *        Placeholder identity -- see chip_sn/ca_id below.
  */
 extern const char *app_rist_stats_box_id(void);
+
+/**
+ * @brief Which interface box_id came from ("eth0"/"wlan0"/"ra0"/"none").
+ */
+extern const char *app_rist_stats_box_iface(void);
+
+/**
+ * @brief Chipset serial from the OTP fuses, as lowercase hex ("" if unavailable).
+ *        Chipset-tied, so it survives a swapped WiFi dongle, and needs no CA stack.
+ */
+extern const char *app_rist_stats_chip_sn(void);
+
+/**
+ * @brief CryptoGuard CA id, or "" until the CA stack is integrated.
+ */
+extern const char *app_rist_stats_ca_id(void);
+
+/**
+ * @brief Resolve and log every identity once, at startup, so an identity change
+ *        shows up on serial instead of as a phantom duplicate box in the stats.
+ */
+extern void app_rist_stats_identity_log(void);
 
 #endif /* __APP_RIST_STATS_H__ */
