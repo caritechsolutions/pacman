@@ -153,6 +153,7 @@ static struct {
     event_list         *probe_timer;    /* polls player_av until it reports RUNNING */
     unsigned            probe_t0;        /* when the probe started (real elapsed base) */
     int                 probe_done;      /* probe resolved: got a frame, or gave up */
+    const char         *probe_player;    /* which player carries the picture this zap */
 
     /* Step D: RIST chain for this program */
     int                 chain_active;    /* kill switch ON *and* service has recovery */
@@ -168,7 +169,7 @@ static struct {
     uint64_t            sent;
     uint64_t            senderr;
 } s_rist = { 0, 0, -1, 0, NULL, NULL, 0, 0, 0, {0},
-             0, NULL, 0, 0,
+             0, NULL, 0, 0, NULL,
              0, 0, {0}, -1, -1,
              -1, {0}, {0}, 0, 0, 0 };
 
@@ -595,25 +596,25 @@ static int _rist_probe_cb(void *arg)
     (void)arg;
     s_rist.probe_timer = NULL;
 
-    if (!s_rist.screen_started)
+    if (!s_rist.probe_player)
         return 0;
 
     memset(&si, 0, sizeof(si));
-    if (GxPlayer_MediaGetStatus(RIST_SCREEN_PLAYER, &si) == GXCORE_SUCCESS &&
+    if (GxPlayer_MediaGetStatus(s_rist.probe_player, &si) == GXCORE_SUCCESS &&
         si.status == PLAYER_STATUS_PLAY_RUNNING) {
         /* Measure real elapsed time, not accumulated poll ticks: each timer
          * fires at >= the requested period, so counting ticks under-reported
          * the wait (the reason the old figure disagreed with the T+ base). */
-        RIST_T("screen: player_av RUNNING -- FIRST FRAME (%ums after the play call)\n",
-               _rist_now_ms() - s_rist.probe_t0);
+        RIST_T("%s RUNNING -- FIRST FRAME (%ums after the play call)\n",
+               s_rist.probe_player, _rist_now_ms() - s_rist.probe_t0);
         app_rist_stats_first_frame(_rist_now_ms() - s_rist.t0_ms);
         s_rist.probe_done = 1;
         return 0;
     }
 
     if ((_rist_now_ms() - s_rist.probe_t0) >= RIST_PROBE_MAX_MS) {
-        RIST_T("screen: player_av still not RUNNING after %ums (status=%d) -- giving up\n",
-               _rist_now_ms() - s_rist.probe_t0, (int)si.status);
+        RIST_T("%s still not RUNNING after %ums (status=%d) -- giving up\n",
+               s_rist.probe_player, _rist_now_ms() - s_rist.probe_t0, (int)si.status);
         s_rist.probe_done = 1;      /* stop showing "Waiting..." -> real error state */
         return 0;
     }
@@ -655,8 +656,9 @@ static int _rist_screen_cb(void *arg)
     /* Poll until the player reports RUNNING, i.e. it has actually decoded the
      * stream -- that is the "first frame" edge, and the tail of the startup
      * budget that neither delay2/delay3 nor the librist logs expose. */
-    s_rist.probe_t0   = _rist_now_ms();
-    s_rist.probe_done = 0;
+    s_rist.probe_t0     = _rist_now_ms();
+    s_rist.probe_done   = 0;
+    s_rist.probe_player = RIST_SCREEN_PLAYER;
     APP_TIMER_ADD(s_rist.probe_timer, _rist_probe_cb, RIST_PROBE_POLL_MS, TIMER_ONCE);
     return 0;
 }
@@ -915,6 +917,7 @@ int app_rist_play_change(GxBusPmDataProg *prog)
     s_rist.t0_ms     = _rist_now_ms();      /* T0 = the zap */
     s_rist.probe_t0  = 0;
     s_rist.probe_done = 0;
+    s_rist.probe_player = NULL;   /* set below per path; NULL = probe inert */
 
     /* Step D decision, taken here so it is already correct when app_normal_play
      * asks app_rist_screen_enabled() for the suppression decision a few lines
@@ -965,10 +968,38 @@ int app_rist_play_change(GxBusPmDataProg *prog)
         }
     }
 
-    /* Open the view record now that the path for this zap is settled. */
-    app_rist_stats_view_start(prog->service_id, prog->tp_id,
-                              s_rist.chain_active ? s_rist.rec.name : "",
-                              s_rist.chain_active ? RIST_PATH_RIST : RIST_PATH_TUNER);
+    /* Open the view record now that the path for this zap is settled.
+     * Name: prefer the API's, fall back to the DVB service name so factory-path
+     * views (which have no API entry) are not recorded blank. */
+    {
+        /* prog_name is a fixed 32-byte field that is not guaranteed to be
+         * NUL-terminated, so copy it bounded rather than handing a bare pointer
+         * to something that will strlen() it. */
+        char dvbname[MAX_PROG_NAME + 1];
+        const char *nm;
+
+        memcpy(dvbname, prog->prog_name, MAX_PROG_NAME);
+        dvbname[MAX_PROG_NAME] = '\0';
+
+        nm = (s_rist.chain_active && s_rist.rec.name[0]) ? s_rist.rec.name : dvbname;
+        app_rist_stats_view_start(prog->service_id, prog->tp_id, nm,
+                                  s_rist.chain_active ? RIST_PATH_RIST : RIST_PATH_TUNER);
+    }
+
+    /* First-frame probe for the FACTORY path. The chain path arms its own probe
+     * once player_av starts; a factory zap decodes on PLAYER_FOR_NORMAL, which
+     * the probe never watched -- so every tuner view was recorded as
+     * first_frame_ms = -1 (i.e. "never showed a picture") even though it did.
+     * Probing the right player makes the failed-view metric meaningful again and
+     * gives us normal zap-to-picture timing for free. app_normal_play issues the
+     * decode a few lines after this hook returns, so the first poll lands after
+     * it has been kicked off. */
+    if (!s_rist.chain_active) {
+        s_rist.probe_t0     = _rist_now_ms();
+        s_rist.probe_done   = 0;
+        s_rist.probe_player = PLAYER_FOR_NORMAL;
+        APP_TIMER_ADD(s_rist.probe_timer, _rist_probe_cb, RIST_PROBE_POLL_MS, TIMER_ONCE);
+    }
 
     RIST_T("prog_id=%d ts_id=%d svc_id=%d tuner=%d -> capture lock-poll (delay1 ceiling %dms)\n",
            prog->id, prog->tp_id, prog->service_id, prog->tuner, s_rist.delay1);

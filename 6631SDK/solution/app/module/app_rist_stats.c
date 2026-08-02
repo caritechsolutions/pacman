@@ -189,6 +189,36 @@ static const char *_sat_str(SatCoverage s)
     return (s == SAT_FULL) ? "full" : (s == SAT_PARTIAL) ? "partial" : "none";
 }
 
+/* Channel names come from DVB and are arbitrary bytes -- an unescaped quote or
+ * backslash would break the whole POST body for the server. Escape those two,
+ * flatten control characters, and replace non-ASCII with '?' so the result is
+ * always valid JSON (and therefore always parseable by json_decode) even if the
+ * broadcaster used a non-UTF-8 charset. Lossy only for exotic names; a mangled
+ * name beats an unparseable batch. */
+static void _json_escape(const char *in, char *out, int outsz)
+{
+    int i = 0;
+
+    if (outsz <= 0)
+        return;
+
+    for (; *in && i < outsz - 2; in++) {
+        unsigned char c = (unsigned char)*in;
+
+        if (c == '"' || c == '\\') {
+            out[i++] = '\\';
+            out[i++] = (char)c;
+        } else if (c < 0x20) {
+            out[i++] = ' ';
+        } else if (c >= 0x7f) {
+            out[i++] = '?';
+        } else {
+            out[i++] = (char)c;
+        }
+    }
+    out[i] = '\0';
+}
+
 int app_rist_stats_build_body(char *buf, int bufsz)
 {
     int i, idx, n = 0, sent = 0, first = 1;
@@ -212,18 +242,20 @@ int app_rist_stats_build_body(char *buf, int bufsz)
     idx = (s_head - s_count + RIST_STATS_MAX_RECORDS) % RIST_STATS_MAX_RECORDS;
     for (i = 0; i < s_count; i++, idx = (idx + 1) % RIST_STATS_MAX_RECORDS) {
         StatRec *r = &s_ring[idx];
+        char esc[RIST_STATS_NAME_LEN * 2 + 2];
         unsigned dur;
         int need;
 
         if (r->open)
             continue;                    /* still being watched: send when it closes */
 
+        _json_escape(r->name, esc, sizeof(esc));
         dur = r->duration_ms;
         need = snprintf(NULL, 0,
                         "%s{\"id\":%u,\"service_id\":%d,\"ts_id\":%d,\"name\":\"%s\","
                         "\"path\":\"%s\",\"start_uptime_ms\":%u,\"duration_ms\":%u,"
                         "\"first_frame_ms\":%d,\"sat_source\":\"%s\"}",
-                        first ? "" : ",", r->id, r->service_id, r->ts_id, r->name,
+                        first ? "" : ",", r->id, r->service_id, r->ts_id, esc,
                         (r->path == RIST_PATH_RIST) ? "rist" : "tuner",
                         r->start_uptime_ms, dur, r->first_frame_ms, _sat_str(r->sat));
 
@@ -234,7 +266,7 @@ int app_rist_stats_build_body(char *buf, int bufsz)
                       "%s{\"id\":%u,\"service_id\":%d,\"ts_id\":%d,\"name\":\"%s\","
                       "\"path\":\"%s\",\"start_uptime_ms\":%u,\"duration_ms\":%u,"
                       "\"first_frame_ms\":%d,\"sat_source\":\"%s\"}",
-                      first ? "" : ",", r->id, r->service_id, r->ts_id, r->name,
+                      first ? "" : ",", r->id, r->service_id, r->ts_id, esc,
                       (r->path == RIST_PATH_RIST) ? "rist" : "tuner",
                       r->start_uptime_ms, dur, r->first_frame_ms, _sat_str(r->sat));
         first = 0;
