@@ -17,6 +17,7 @@
 #define SW_BUFFER_SIZE              (3*188*1024)
 #define HW_BUFFER_SIZE              (1*188*1024)
 #define AV_MODULE_ID                (1)
+#define TS_REC_EXT_STREAM_TYPE      (0x05)  /* private sections: how the uplink declares the marker */
 
 #define PMT_FIXED_LENGTH            (16)
 #define PMT_LOOP_FIXED_LENGTH       (5)
@@ -1059,6 +1060,46 @@ static int32_t _ts_rec_demux_ext_slot_alloc(int32_t index, TsRecConfig *config)
         }
     }
 
+    /* Caller-supplied extra PIDs (the RIST marker). ext_info was a dead hook in
+     * the SDK -- declared in TsRecConfig but never read -- so without this loop
+     * the marker PID never entered the capture's PID set and ristsender_marker
+     * sat forever on "Waiting for first marker...".
+     *
+     * These are passed EXPLICITLY rather than discovered from the broadcast PMT
+     * on purpose: the marker is declared as stream_type 0x05 (private sections),
+     * which _app_pmt_get_si_info() classifies as STREAM_UNKNOWN_TYPE and skips.
+     * That parser has no "other PID" category to put it in, and it runs for every
+     * service on the box, so widening it would be both invasive and wrong. The
+     * API value is authoritative; use it directly.
+     *
+     * DMX_TSOUT_EN only (no DMX_DES_EN): the marker is private data that is not
+     * scrambled, so it must not go through the descrambler. */
+    if(config->ext_info.ext_num > 0)
+    {
+        uint32_t e;
+
+        for(e = 0; e < config->ext_info.ext_num && e < TS_REC_MAX_EXTPID_NUM; e++)
+        {
+            uint32_t ext_pid = config->ext_info.ext_pids[e];
+
+            if(!VALID_PID(ext_pid))
+            {
+                TS_REC_ERR("ext pid %u out of range -- skipped", ext_pid);
+                continue;
+            }
+            if(_ts_rec_slot_find((uint16_t)ext_pid) >= 0)
+                continue;               /* already captured (pcr/video/audio) */
+
+            slot_flags = DMX_REPEAT_MODE|DMX_TSOUT_EN;
+            if(_ts_rec_demux_slot_alloc(index, (uint16_t)ext_pid, slot_flags, DEMUX_SLOT_PSI) < 0)
+            {
+                TS_REC_ERR("demux slot alloc ext pid: %u failed", ext_pid);
+                return -1;
+            }
+            TS_REC_INFO("ext pid %u (0x%04X) added to the capture\n", ext_pid, ext_pid);
+        }
+    }
+
     return 0;
 }
 
@@ -1249,6 +1290,27 @@ static unsigned short _ts_rec_pmt_stream_video_generate(char *buff, unsigned sho
     return i;
 }
 
+/* Minimal PMT stream loop entry: stream_type + PID + zero ES_info_length.
+ * Used to DECLARE the marker PID so downstream sees it in the generated PMT.
+ * The uplink declares the marker as 0x05 (private sections) -- that declaration
+ * is what persuaded the mux to carry it -- so mirror it here. */
+static unsigned short _ts_rec_pmt_stream_ext_generate(char *buff, unsigned short pid,
+                                                      unsigned char stream_type)
+{
+    unsigned short i = 0;
+
+    if(buff == NULL)
+        return 0;
+
+    buff[i++] = stream_type;
+    buff[i++] = ((pid >> 8) & 0x1f);
+    buff[i++] = pid & 0xff;
+    buff[i++] = 0;
+    buff[i++] = 0;
+
+    return i;
+}
+
 static bool _ts_rec_check_audio_iso639(char *lang)
 {
     if((lang == NULL) || (strlen(lang) == 0) || (strlen(lang) > 3))
@@ -1358,7 +1420,7 @@ static unsigned short _ts_rec_pmt_stream_audio_generate(char *buff, unsigned sho
     return i;
 }
 
-static char *_ts_rec_pmt_packet_generate(uint16_t prog_id)
+static char *_ts_rec_pmt_packet_generate(uint16_t prog_id, const TsRecConfig *config)
 {
     char *pmt_data = NULL;
     char *temp_data = NULL;
@@ -1434,6 +1496,32 @@ static char *_ts_rec_pmt_packet_generate(uint16_t prog_id)
     i += temp_len;
     length += temp_len;
 
+    /* Extra PIDs (marker). Declared AFTER video/audio so the entries a normal
+     * decoder cares about stay first; a decoder that does not understand 0x05
+     * simply ignores the entry. */
+    if(config != NULL)
+    {
+        uint32_t e;
+        for(e = 0; e < config->ext_info.ext_num && e < TS_REC_MAX_EXTPID_NUM; e++)
+        {
+            uint32_t ext_pid = config->ext_info.ext_pids[e];
+
+            if(!VALID_PID(ext_pid))
+                continue;
+
+            temp_data = (char*)GxCore_Realloc(pmt_data, length + PMT_LOOP_FIXED_LENGTH);
+            if(temp_data == NULL)
+                goto error_ret;
+
+            pmt_data = temp_data;
+            temp_data = NULL;
+            temp_len = _ts_rec_pmt_stream_ext_generate(pmt_data + i, (unsigned short)ext_pid,
+                                                       TS_REC_EXT_STREAM_TYPE);
+            i += temp_len;
+            length += temp_len;
+        }
+    }
+
     length -= 3;
     pmt_data[1] |= ((length >> 8) & 0x0f);
     pmt_data[2] = (length & 0xff);
@@ -1463,7 +1551,7 @@ error_ret:
     return NULL;
 }
 
-static int32_t _ts_rec_pmt_ts_packet(uint16_t prog_id, AppTsData *ts_data)
+static int32_t _ts_rec_pmt_ts_packet(uint16_t prog_id, const TsRecConfig *config, AppTsData *ts_data)
 {
     char *pmt_data = NULL;
     int32_t ret = 0, data_len = 0;
@@ -1472,7 +1560,7 @@ static int32_t _ts_rec_pmt_ts_packet(uint16_t prog_id, AppTsData *ts_data)
     if(NULL == ts_data)
         return -1;
 
-    if((pmt_data = _ts_rec_pmt_packet_generate(prog_id)) != NULL)
+    if((pmt_data = _ts_rec_pmt_packet_generate(prog_id, config)) != NULL)
     {
         if(GXCORE_SUCCESS == GxBus_PmProgGetById(prog_id, &prog))
         {
@@ -1510,7 +1598,7 @@ static int32_t _ts_rec_user_info_generate(int32_t index, TsRecConfig *config)
     }
     app_ts_data_free(&ts_data);
 
-    _ts_rec_pmt_ts_packet(config->prog_id, &ts_data);
+    _ts_rec_pmt_ts_packet(config->prog_id, config, &ts_data);
     for(i = 0; i < ts_data.pack_num; i++)
     {
         memmove(prog->user_info.userdata + prog->user_info.userdata_len, ts_data.pack_data[i], 188);

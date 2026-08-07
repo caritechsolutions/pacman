@@ -132,6 +132,9 @@
 #define RIST_PID_WATCHDOG       "/tmp/rist_watchdog.pid"
 #define RIST_PID_RECEIVER       "/tmp/rist_receiver.pid"
 
+/* A marker PID must be a real elementary PID: not 0 (PAT) and not the 0x1FFF null PID. */
+#define VALID_MARKER_PID(p)     ((p) > 0 && (p) < 0x1FFF)
+
 #define RIST_LOG(fmt, ...)      printf("[RIST] " fmt, ##__VA_ARGS__)
 #define ULL(x)                  ((unsigned long long)(x))
 
@@ -801,6 +804,26 @@ static void _rist_capture_begin(void)
     memset(&cfg, 0, sizeof(cfg));
     cfg.prog_id  = (uint16_t)s_rist.prog.id;
     cfg.user_pmt = true;                 /* inject PAT/PMT -> self-contained TS */
+
+    /* Step F: the API-supplied marker PID. Without it ristsender_marker never
+     * sees a marker, so rist_start() (only reached inside "if (!first_marker_seen)")
+     * is never called, the satellite peer never materialises, and the receiver
+     * sits in recovery-only FSR.
+     *
+     * Taken from the API rather than the broadcast PMT deliberately: the uplink
+     * declares the marker as stream_type 0x05, which the box's PMT parser
+     * (_app_pmt_get_si_info) rejects as STREAM_UNKNOWN_TYPE and skips -- hence
+     * "can't support stream type!!type = 5" on tune. The API value is
+     * authoritative and the mux does not remap it. */
+    if (s_rist.chain_active && VALID_MARKER_PID(s_rist.rec.marker_pid)) {
+        cfg.ext_info.ext_pids[0] = (uint32_t)s_rist.rec.marker_pid;
+        cfg.ext_info.ext_num     = 1;
+        RIST_T("capture: marker pid %d (0x%04X) from the API -> ext_pids\n",
+               s_rist.rec.marker_pid, s_rist.rec.marker_pid);
+    } else if (s_rist.chain_active) {
+        RIST_LOG("capture: no usable marker_pid from the API (%d) -- sender will "
+                 "wait for a first marker that never comes\n", s_rist.rec.marker_pid);
+    }
 
     s_rist.rec_handle = app_ts_record_start(&cfg);
     if (s_rist.rec_handle == 0 || s_rist.rec_handle == (handle_t)-1) {
