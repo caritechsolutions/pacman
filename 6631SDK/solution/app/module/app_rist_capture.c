@@ -105,7 +105,7 @@
  * kill switch is on, run the full product path:
  *
  *   dmx2 capture -> udp://127.0.0.1:6000
- *     -> rist_watchdog ristsender_marker -i udp://@127.0.0.1:6000
+ *     -> rist_watchdog stb_part7_receiver -i udp://@127.0.0.1:6000
  *                                        -u rist://@127.0.0.1:6100?buffer=8000
  *     -> ristreceiver -i "<local sat peer weight=0>,<API recovery peer weight=1000>"
  *                     -o udp://127.0.0.1:6200
@@ -126,7 +126,12 @@
 #define RIST_DELAY3_MS          3000                /* receiver buffer needs longer than loopback */
 
 #define RIST_BIN_WATCHDOG       "/usr/bin/rist_watchdog"
-#define RIST_BIN_SENDER         "/usr/bin/ristsender_marker"
+/* STB-side Part 7 receiver: validates the headend's markers, counts elementary
+ * streams only, rebuilds each block to 35 packets and re-emits as RIST. Named
+ * for where it runs and what it does; the legacy ristsender_marker stays
+ * installed alongside, so reverting is a one-line change here plus a reflash.
+ * Cross-built and staged into the rootfs by install.sh section 6a. */
+#define RIST_BIN_SENDER         "/usr/bin/stb_part7_receiver"
 #define RIST_BIN_RECEIVER       "/usr/bin/ristreceiver"
 
 #define RIST_PID_WATCHDOG       "/tmp/rist_watchdog.pid"

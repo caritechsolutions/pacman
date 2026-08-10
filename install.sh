@@ -84,6 +84,14 @@ output/objects/full_screen.o"
 CONFIG_OPTS="BR2_MOD_DVB2IP_SERVER
 BR2_MOD_APP_ETH"
 
+# STB-side Part 7 receiver. Source lives in the SHMS repo (single source of
+# truth, shared with the headend sender it must stay in step with) and is
+# fetched + cross-compiled by this script -- see section 6a.
+STB_RX_NAME="stb_part7_receiver"
+STB_RX_SRC_URL="https://raw.githubusercontent.com/caritechsolutions/Satellite-Hybrid-Management-System/main/stb_part7_receiver.c"
+ROOTFS_DIR="${ROOTFS_DIR:-/opt/stb/rootfs-work}"
+RIST_TREES="${RIST_TREES:-/opt/stb/rist}"
+
 # ============================================================================
 TS="$(date +%Y%m%d-%H%M%S)"
 MAKE_LOG="/tmp/dvb2ip_make.log"
@@ -261,6 +269,94 @@ log "=== build: make  (full app rebuild -- this takes a while) ==="
 cd "$SDK_ROOT"
 set +e; . "$ENV_SH"; set -e     # sourcing env scripts can return non-zero benignly
 
+# ---- 6a. cross-build the STB Part 7 receiver -------------------------------
+# Runs INSIDE this script on purpose: the whole workflow is one curl|sh on the
+# toolchain VM, so anything needing ARM compilation has to happen here. Placed
+# after env.sh (the cross gcc is on PATH from it) and before `make bin`, which
+# packs the image tree.
+#
+# The source is fetched from SHMS main rather than kept as a second copy here --
+# one source of truth. The ?cachebust is not decoration: raw.githubusercontent
+# caches for ~5 minutes and has previously served a stale file for a whole
+# debugging cycle.
+log ""
+log "=== cross-build: $STB_RX_NAME (ARM) ==="
+
+src="$TMP/${STB_RX_NAME}.c"
+url="${STB_RX_SRC_URL}?$(date +%s)"
+log "download: $url"
+curl -fsSL "$url" -o "$src" || die "FAILED to fetch ${STB_RX_NAME}.c from SHMS -- refusing to build a stale copy"
+[ -s "$src" ] || die "fetched an empty ${STB_RX_NAME}.c -- refusing to build"
+grep -q "BLOCK_CONTENT_PACKETS" "$src" || die "fetched ${STB_RX_NAME}.c looks wrong (no BLOCK_CONTENT_PACKETS) -- refusing to build"
+log "  fetched $(wc -c < "$src" | tr -d ' ') bytes from SHMS main"
+
+# Pick the librist ARM tree. Several exist at different commits, so rather than
+# hardcoding or guessing "newest", prefer the tree whose built librist.so MATCHES
+# the one already staged in the rootfs -- that is the library the box will
+# actually run, so linking against anything else is the bug we are avoiding.
+# Fall back to newest-by-mtime with a loud warning.
+deployed_so="$(ls -1 "$ROOTFS_DIR"/lib/librist.so.[0-9]* 2>/dev/null | head -1)"
+LIBRIST_TREE=""
+if [ -n "$deployed_so" ] && command -v md5sum >/dev/null 2>&1; then
+    want="$(md5sum "$deployed_so" | cut -d' ' -f1)"
+    log "  rootfs librist: $deployed_so (md5 ${want})"
+    for t in "$RIST_TREES"/*/librist/build-arm; do
+        [ -d "$t" ] || continue
+        cand="$(ls -1 "$t"/librist.so.[0-9]* 2>/dev/null | head -1)"
+        [ -n "$cand" ] || continue
+        if [ "$(md5sum "$cand" | cut -d' ' -f1)" = "$want" ]; then
+            LIBRIST_TREE="$t"
+            log "  librist tree: $t  (MATCHES the rootfs library)"
+            break
+        fi
+    done
+fi
+if [ -z "$LIBRIST_TREE" ]; then
+    # Sort by the LIBRARY's mtime, not the directory's: the build-arm dirs are all
+    # created at checkout time, so `ls -dt` on them ranks by checkout order rather
+    # than by which librist was built most recently.
+    newest_so="$(ls -1t "$RIST_TREES"/*/librist/build-arm/librist.so.[0-9]* 2>/dev/null | head -1)"
+    [ -n "$newest_so" ] && LIBRIST_TREE="$(dirname "$newest_so")"
+    if [ -n "$LIBRIST_TREE" ]; then
+        log "  WARNING: no librist build matches the rootfs copy; using NEWEST tree"
+        log "           $LIBRIST_TREE"
+        log "           if the box misbehaves, suspect a librist mismatch first"
+    fi
+fi
+[ -n "$LIBRIST_TREE" ] || die "no ARM librist build found under $RIST_TREES/*/librist/build-arm -- run ristSTB scripts/cross-build.sh once"
+
+TREE_ROOT="$(dirname "$(dirname "$LIBRIST_TREE")")"      # .../<checkout>
+CROSS_CC="${CROSS_CC:-arm-nationalchip-linux-uclibcgnueabihf-gcc}"
+command -v "$CROSS_CC" >/dev/null 2>&1 || die "$CROSS_CC not on PATH (is $ENV_SH the right toolchain env?)"
+
+if "$CROSS_CC" -mcpu=cortex-a7 -mfpu=vfpv3-d16 -mfloat-abi=hard -std=gnu99 -O2 -Wall \
+       -I "$TREE_ROOT/librist/include" \
+       -I "$LIBRIST_TREE/include" \
+       -I "$LIBRIST_TREE/include/librist" \
+       "$src" -L "$LIBRIST_TREE" -lrist -lpthread \
+       -o "$TMP/$STB_RX_NAME" 2>"$TMP/${STB_RX_NAME}.err"; then
+    log "  compiled OK"
+else
+    log "---- compiler output ----"
+    tail -n 25 "$TMP/${STB_RX_NAME}.err" 2>/dev/null || true
+    die "cross-compile of ${STB_RX_NAME}.c FAILED"
+fi
+
+file "$TMP/$STB_RX_NAME" 2>/dev/null | grep -q 'ARM' \
+    || die "built ${STB_RX_NAME} is not an ARM ELF -- wrong compiler?"
+
+# Land it everywhere the image is assembled from, so nothing is copied by hand.
+for d in "$ROOTFS_DIR/usr/bin" "$SDK_ROOT/output/image/bin_linux/root/usr/bin"; do
+    if [ -d "$d" ]; then
+        cp "$TMP/$STB_RX_NAME" "$d/$STB_RX_NAME" && chmod +x "$d/$STB_RX_NAME"
+        log "  installed -> $d/$STB_RX_NAME"
+    else
+        log "  WARNING: $d does not exist -- ${STB_RX_NAME} NOT placed there"
+    fi
+done
+
+log ""
+log "=== build: make  (continuing) ==="
 { make 2>&1; echo $? > "$TMP/make.rc"; } | tee "$MAKE_LOG" | grep -iE 'dvb2ip|app ok|error|warning: implicit' || true
 mk="$(cat "$TMP/make.rc" 2>/dev/null || echo 1)"
 if [ "$mk" != "0" ]; then
