@@ -15,7 +15,12 @@
 #   3. FORCES A FULL APP REBUILD -- mandatory: enabling the macro inserts two
 #      values into the GXMSG_* enum (app_msg.h), renumbering every later message
 #      id, so any stale object would mis-dispatch messages. A partial rebuild is
-#      NOT safe here.
+#      NOT safe here,
+#   4. cross-builds the ARM stb_part7_receiver and injects it into whichever
+#      rootfs source `make bin` actually consumes (sections 6a-6b), verifying
+#      by reading the result back rather than by assuming the copy landed,
+#   5. checks the partition budget against the flash map and refuses to hand
+#      you an image that cannot flash (section 6d).
 #
 # REF policy: defaults to the working branch (auto-tracks each pushed iteration).
 # Usage:   curl -fsSL <raw-url>/install.sh | sh
@@ -345,15 +350,180 @@ fi
 file "$TMP/$STB_RX_NAME" 2>/dev/null | grep -q 'ARM' \
     || die "built ${STB_RX_NAME} is not an ARM ELF -- wrong compiler?"
 
-# Land it everywhere the image is assembled from, so nothing is copied by hand.
-for d in "$ROOTFS_DIR/usr/bin" "$SDK_ROOT/output/image/bin_linux/root/usr/bin"; do
-    if [ -d "$d" ]; then
-        cp "$TMP/$STB_RX_NAME" "$d/$STB_RX_NAME" && chmod +x "$d/$STB_RX_NAME"
-        log "  installed -> $d/$STB_RX_NAME"
+# Strip. ROOTFS is the tightest partition on the board, and debug_info in a
+# binary that is never debugged on-target is pure partition tax.
+CROSS_STRIP="${CROSS_STRIP:-$(printf '%s' "$CROSS_CC" | sed 's/gcc$/strip/')}"
+sz_before="$(wc -c < "$TMP/$STB_RX_NAME" | tr -d ' ')"
+if command -v "$CROSS_STRIP" >/dev/null 2>&1 && "$CROSS_STRIP" "$TMP/$STB_RX_NAME" 2>/dev/null; then
+    sz_after="$(wc -c < "$TMP/$STB_RX_NAME" | tr -d ' ')"
+    log "  stripped: $sz_before -> $sz_after bytes"
+else
+    log "  WARNING: $CROSS_STRIP unavailable -- shipping UNSTRIPPED ($sz_before bytes)"
+fi
+
+# ---- 6b. put it where `make bin` will actually find it ---------------------
+# The bug this replaces: we used to copy into output/image/bin_linux/root/usr/bin
+# and print "installed ->". That directory is a SCRATCH EXTRACTION -- mkimg.sh
+# starts the rootfs stage with `rm -rf ${flashimg_build_path}/root` and then
+# re-populates it from a source archive. So the copy was deleted seconds later
+# and the log line was a lie that cost a flash cycle.
+#
+# mkimg.sh picks the rootfs source by this precedence (first hit wins):
+#   1. $SDK_ROOT/output/image/rootfs            (directory, copied under fakeroot)
+#   2. $SDK_ROOT/output/image/rootfs.tar.gz
+#   3. $SDK_ROOT/../buildroot/output/rootfs.tar.gz
+#   4. $SDK_ROOT/projects/<family>/<proj>/flash/rootfs.tar.gz
+#   5. $SDK_ROOT/projects/<family>/<proj>/flash/rootfs.bin   (copied verbatim)
+# We resolve the SAME order rather than hardcoding one, and inject there.
+log ""
+log "=== install $STB_RX_NAME into the rootfs source ==="
+
+PROJ_NAME="$(sed -n 's/^BR2_PROJ_NAME="\(.*\)"$/\1/p'   "$SDK_ROOT/.config" | head -1)"
+FAM_NAME="$(sed  -n 's/^BR2_FAMILY_NAME="\(.*\)"$/\1/p' "$SDK_ROOT/.config" | head -1)"
+[ -n "$PROJ_NAME" ] || die "could not read BR2_PROJ_NAME from $SDK_ROOT/.config"
+[ -n "$FAM_NAME"  ] || die "could not read BR2_FAMILY_NAME from $SDK_ROOT/.config"
+PROJ_PATH="$SDK_ROOT/projects/$FAM_NAME/$PROJ_NAME"
+log "  project: $FAM_NAME/$PROJ_NAME"
+
+RFS_KIND=""; RFS_PATH=""
+if   [ -e "$SDK_ROOT/output/image/rootfs" ];              then RFS_KIND=dir;    RFS_PATH="$SDK_ROOT/output/image/rootfs"
+elif [ -e "$SDK_ROOT/output/image/rootfs.tar.gz" ];       then RFS_KIND=targz;  RFS_PATH="$SDK_ROOT/output/image/rootfs.tar.gz"
+elif [ -e "$SDK_ROOT/../buildroot/output/rootfs.tar.gz" ];then RFS_KIND=targz;  RFS_PATH="$SDK_ROOT/../buildroot/output/rootfs.tar.gz"
+elif [ -e "$PROJ_PATH/flash/rootfs.tar.gz" ];             then RFS_KIND=targz;  RFS_PATH="$PROJ_PATH/flash/rootfs.tar.gz"
+elif [ -e "$PROJ_PATH/flash/rootfs.bin" ];                then RFS_KIND=binonly;RFS_PATH="$PROJ_PATH/flash/rootfs.bin"
+else die "no rootfs source found -- 'make bin' would fail anyway. Looked in output/image/ and $PROJ_PATH/flash/"
+fi
+log "  rootfs source: $RFS_PATH  [$RFS_KIND]"
+
+case "$RFS_KIND" in
+binonly)
+    die "the active rootfs source is a PREBUILT squashfs ($RFS_PATH).
+     Nothing can be injected into it here, so ${STB_RX_NAME} would never reach
+     the box. Provide $PROJ_PATH/flash/rootfs.tar.gz (mkimg.sh prefers it) or
+     an output/image/rootfs/ tree, then re-run."
+    ;;
+
+dir)
+    # Priority 1: a plain staging tree. Copy in and read the result back.
+    mkdir -p "$RFS_PATH/usr/bin" || die "cannot create $RFS_PATH/usr/bin"
+    cp "$TMP/$STB_RX_NAME" "$RFS_PATH/usr/bin/$STB_RX_NAME" || die "copy into $RFS_PATH failed"
+    chmod 0755 "$RFS_PATH/usr/bin/$STB_RX_NAME"
+    [ -x "$RFS_PATH/usr/bin/$STB_RX_NAME" ] || die "VERIFY FAILED: $RFS_PATH/usr/bin/$STB_RX_NAME is not executable"
+    log "  VERIFIED in tree: usr/bin/$STB_RX_NAME ($(wc -c < "$RFS_PATH/usr/bin/$STB_RX_NAME" | tr -d ' ') bytes)"
+    ;;
+
+targz)
+    # SURGICAL injection: decompress, delete our member if present, append the
+    # new one, recompress. Every OTHER member is carried across untouched, so
+    # ownership, permissions and -- critically -- symlinks survive by not being
+    # touched at all. lib/librist.so.4 -> librist.so.4.5.0 stays a symlink
+    # because we never re-create it.
+    #
+    # This is deliberately NOT "re-tar $ROOTFS_DIR". Re-tarring a staging tree
+    # trusts that the tree is still an exact superset of the shipped tarball; if
+    # anyone has touched the tarball since, re-tarring silently reverts them.
+    # Injecting one member cannot revert anything.
+    tar --version 2>/dev/null | grep -qi 'gnu tar' \
+        || die "GNU tar required (need --delete); found: $(tar --version 2>&1 | head -1)"
+
+    # Pristine copy, made once, is the way back. Timestamped backups accumulate
+    # per run and the oldest is no longer the original after run 2.
+    if [ ! -f "$RFS_PATH.orig" ]; then
+        cp -p "$RFS_PATH" "$RFS_PATH.orig" || die "could not create $RFS_PATH.orig"
+        log "  pristine backup created: $RFS_PATH.orig"
     else
-        log "  WARNING: $d does not exist -- ${STB_RX_NAME} NOT placed there"
+        log "  pristine backup exists : $RFS_PATH.orig"
     fi
-done
+    # .prev is overwritten each run rather than timestamped: these are ~5 MB
+    # apiece and one per run would quietly fill the toolchain VM. .orig is the
+    # one that matters and it is never rewritten.
+    cp -p "$RFS_PATH" "$RFS_PATH.prev" || die "could not back up $RFS_PATH"
+    log "  previous-run backup    : $RFS_PATH.prev"
+    log "  TO REVERT:  cp -p $RFS_PATH.orig $RFS_PATH"
+
+    log "  reading current archive..."
+    tar tzf "$RFS_PATH" > "$TMP/rfs.before" 2>/dev/null || die "cannot list $RFS_PATH (corrupt archive?)"
+    n_before="$(grep -c . "$TMP/rfs.before" || true)"
+    [ "${n_before:-0}" -gt 100 ] || die "$RFS_PATH lists only ${n_before:-0} entries -- that is not a rootfs, refusing to touch it"
+
+    # Member naming: some archives are './usr/bin/x', some 'usr/bin/x'. Match
+    # whatever this archive already uses or mkimg's extract lands it elsewhere.
+    if head -20 "$TMP/rfs.before" | grep -q '^\./'; then MPFX="./"; else MPFX=""; fi
+    MEMBER="${MPFX}usr/bin/$STB_RX_NAME"
+    log "  entries: $n_before   member path: $MEMBER"
+
+    gzip -dc "$RFS_PATH" > "$TMP/rfs.tar" || die "gunzip of $RFS_PATH failed"
+
+    # Remove any previous copy under EITHER prefix, so re-runs are idempotent
+    # and an old differently-prefixed entry cannot shadow the new one.
+    for m in "usr/bin/$STB_RX_NAME" "./usr/bin/$STB_RX_NAME"; do
+        if grep -qx "$m" "$TMP/rfs.before"; then
+            tar --delete -f "$TMP/rfs.tar" "$m" 2>/dev/null \
+                || die "tar --delete of existing $m failed"
+            log "  removed previous member: $m"
+        fi
+    done
+
+    mkdir -p "$TMP/stage/usr/bin"
+    cp "$TMP/$STB_RX_NAME" "$TMP/stage/usr/bin/$STB_RX_NAME"
+    chmod 0755 "$TMP/stage/usr/bin/$STB_RX_NAME"
+    ( cd "$TMP/stage" && tar -rf "$TMP/rfs.tar" \
+        --owner=0 --group=0 --numeric-owner --mode=0755 "$MEMBER" ) \
+        || die "tar -r (append) of $MEMBER failed"
+
+    gzip -9 -c "$TMP/rfs.tar" > "$TMP/rfs.tar.gz" || die "gzip of the new archive failed"
+
+    # VERIFY BEFORE PUBLISHING. Read the rebuilt archive back and prove both
+    # that our member is in it and that nothing else fell out. Only then does
+    # the real file get replaced -- a failed verify leaves the original in place.
+    tar tzf "$TMP/rfs.tar.gz" > "$TMP/rfs.after" 2>/dev/null \
+        || die "the rebuilt archive is unreadable -- original left untouched"
+    grep -qx "$MEMBER" "$TMP/rfs.after" \
+        || die "VERIFY FAILED: $MEMBER not in the rebuilt archive -- original left untouched"
+    n_after="$(grep -c . "$TMP/rfs.after" || true)"
+    lost="$(sort "$TMP/rfs.before" > "$TMP/b.s"; sort "$TMP/rfs.after" > "$TMP/a.s"; comm -23 "$TMP/b.s" "$TMP/a.s" | grep -c . || true)"
+    if [ "${lost:-0}" -ne 0 ]; then
+        log "  entries present before but missing after:"
+        comm -23 "$TMP/b.s" "$TMP/a.s" | head -20 | while IFS= read -r l; do log "      $l"; done
+        die "VERIFY FAILED: $lost entr(y|ies) lost rebuilding the archive -- original left untouched"
+    fi
+    # `cat >` rather than `mv`: it writes THROUGH the existing inode, so the
+    # archive keeps its original owner and mode. `mv` would drop $TMP's.
+    cat "$TMP/rfs.tar.gz" > "$RFS_PATH" || die "could not write $RFS_PATH"
+
+    # Final read-back of the file that will actually be consumed.
+    tar tzf "$RFS_PATH" 2>/dev/null | grep -qx "$MEMBER" \
+        || die "VERIFY FAILED after write: $MEMBER absent from $RFS_PATH"
+    log "  VERIFIED in archive: $MEMBER   (entries $n_before -> $n_after)"
+    ;;
+esac
+
+# Keep the librist staging tree in step. This does NOT feed the image (see the
+# precedence list above); it exists so the tree stays a truthful mirror.
+if [ -d "$ROOTFS_DIR/usr/bin" ]; then
+    cp "$TMP/$STB_RX_NAME" "$ROOTFS_DIR/usr/bin/$STB_RX_NAME" && chmod 0755 "$ROOTFS_DIR/usr/bin/$STB_RX_NAME"
+    log "  mirrored (not an image source): $ROOTFS_DIR/usr/bin/$STB_RX_NAME"
+fi
+
+# Informational drift check. We no longer re-tar $ROOTFS_DIR, so drift is not a
+# hazard any more -- but if the two HAVE diverged that is worth knowing, because
+# it means the staging tree is not the thing the box runs.
+if [ "$RFS_KIND" = targz ] && [ -d "$ROOTFS_DIR" ]; then
+    ( cd "$ROOTFS_DIR" && find . -type f -o -type l ) 2>/dev/null | sed 's|^\./||' | sort > "$TMP/work.s" || true
+    sed 's|^\./||' "$TMP/rfs.after" | sed -e '/\/$/d' -e '/^$/d' | sort > "$TMP/arch.s" || true
+    only_arch="$(comm -13 "$TMP/work.s" "$TMP/arch.s" | grep -c . || true)"
+    only_work="$(comm -23 "$TMP/work.s" "$TMP/arch.s" | grep -c . || true)"
+    if [ "${only_arch:-0}" -eq 0 ] && [ "${only_work:-0}" -eq 0 ]; then
+        log "  drift check: $ROOTFS_DIR and the archive hold the same file set"
+    else
+        log "  drift check: staging tree and archive DIFFER"
+        log "               in archive but not in $ROOTFS_DIR : $only_arch"
+        log "               in $ROOTFS_DIR but not in archive : $only_work"
+        log "               (harmless here -- we inject one member, we do not re-tar)"
+        comm -13 "$TMP/work.s" "$TMP/arch.s" | head -8 | while IFS= read -r l; do log "                 archive-only: $l"; done
+        comm -23 "$TMP/work.s" "$TMP/arch.s" | head -8 | while IFS= read -r l; do log "                 tree-only   : $l"; done
+    fi
+fi
 
 log ""
 log "=== build: make  (continuing) ==="
@@ -388,6 +558,90 @@ if [ "$mb" != "0" ]; then
     log "---- last 25 lines of $MAKEBIN_LOG ----"
     tail -n 25 "$MAKEBIN_LOG" 2>/dev/null || true
     die "'make bin' failed (rc=$mb). Full log: $MAKEBIN_LOG"
+fi
+
+# ---- 6c. prove the binary survived into the packed rootfs ------------------
+# bin_linux/root is the scratch tree mkimg.sh extracts the rootfs source into
+# and then squashes. Checking it AFTER 'make bin' is a genuine end-to-end proof
+# that the injection above reached the image -- unlike writing to it beforehand,
+# which the extraction wipes.
+log ""
+log "=== verify: $STB_RX_NAME reached the packed rootfs ==="
+PACKED="$SDK_ROOT/output/image/bin_linux/root/usr/bin/$STB_RX_NAME"
+if [ -f "$PACKED" ]; then
+    log "  OK: $PACKED ($(wc -c < "$PACKED" | tr -d ' ') bytes)"
+else
+    log "  the extracted tree does not contain usr/bin/$STB_RX_NAME."
+    log "  rootfs source used for the injection was: $RFS_PATH [$RFS_KIND]"
+    log "  mkimg.sh log lines about the rootfs source:"
+    grep -iE 'rootfs|generate from|copy from' "$MAKEBIN_LOG" 2>/dev/null | head -10 | while IFS= read -r l; do log "      $l"; done
+    die "VERIFY FAILED: $STB_RX_NAME is NOT in the image. Do not flash this build.
+     Most likely mkimg.sh chose a HIGHER-precedence rootfs source than the one
+     we injected into -- the lines above say which."
+fi
+
+# ---- 6d. partition budget --------------------------------------------------
+# ROOTFS on this board is declared 'auto' size at an 'auto' address, so the
+# "99.2% used" figure the box prints is just the 64k block rounding, not a
+# ceiling -- the partition grows with the file. The REAL ceiling is the next
+# partition that pins an absolute address (DATA at 0xDC0000 here): everything
+# before it has to fit underneath. So that is what we check.
+log ""
+log "=== partition budget ==="
+BIN_DIR="$SDK_ROOT/output/image/bin_linux"
+FLASH_CONF="$BIN_DIR/flash.conf"
+[ -f "$FLASH_CONF" ] || FLASH_CONF="$PROJ_PATH/flash/flash.conf"
+if [ -f "$FLASH_CONF" ]; then
+    BLK="$(sed -n 's/^block_size[[:space:]]*\(0x[0-9A-Fa-f]*\).*/\1/p' "$FLASH_CONF" | head -1)"
+    BLK="$(( ${BLK:-0x10000} ))"
+    [ "$BLK" -gt 0 ] || BLK=65536
+    grep -vE '^[[:space:]]*(#|$)' "$FLASH_CONF" | awk 'NF>=9 && $1 ~ /^[A-Z]+$/' > "$TMP/parts" || true
+
+    cursor=0; overflow=0; headroom=""; ceiling_name=""
+    log "  block 0x$(printf '%X' "$BLK")   name      addr       size       file"
+    while read -r pname pfile pcrc pfs pmode pupd pver paddr psize prest; do
+        [ -n "${pname:-}" ] || continue
+        if [ "$paddr" != "auto" ]; then
+            a="$(( paddr ))"
+            if [ "$cursor" -gt "$a" ]; then
+                log "  !! $pname is pinned at 0x$(printf '%X' "$a") but the partitions"
+                log "     before it already run to 0x$(printf '%X' "$cursor") -- OVERFLOW by"
+                log "     $(( cursor - a )) bytes"
+                overflow=1
+            else
+                headroom="$(( a - cursor ))"; ceiling_name="$pname"
+            fi
+            cursor="$a"
+        fi
+        s=0
+        if [ "$psize" = "auto" ]; then
+            if [ "$pfile" != "NULL" ] && [ -f "$BIN_DIR/$pfile" ]; then
+                fsz="$(wc -c < "$BIN_DIR/$pfile" | tr -d ' ')"
+                s="$(( (fsz + BLK - 1) / BLK * BLK ))"
+            fi
+        else
+            case "$psize" in
+                *[kK]) s="$(( ${psize%[kK]} * 1024 ))" ;;
+                *[mM]) s="$(( ${psize%[mM]} * 1024 * 1024 ))" ;;
+                0x*|[0-9]*) s="$(( psize ))" ;;
+            esac
+        fi
+        log "        $(printf '%-8s 0x%08X 0x%08X  %s' "$pname" "$cursor" "$s" "$pfile")"
+        cursor="$(( cursor + s ))"
+    done < "$TMP/parts"
+
+    if [ "$overflow" -ne 0 ]; then
+        die "PARTITION OVERFLOW -- this image will not flash correctly. Do not flash it.
+     Options: shrink the rootfs (strip more binaries / drop unused files), or move
+     $STB_RX_NAME to the APP partition instead of ROOTFS."
+    elif [ -n "$headroom" ]; then
+        log "  headroom before $ceiling_name: $headroom bytes ($(( headroom / 1024 )) KB)"
+        if [ "$headroom" -lt "$BLK" ]; then
+            log "  NOTE: under one erase block spare -- the next addition may not fit."
+        fi
+    fi
+else
+    log "  WARNING: no flash.conf found -- partition budget NOT checked"
 fi
 
 # ---- 7. summary ------------------------------------------------------------
