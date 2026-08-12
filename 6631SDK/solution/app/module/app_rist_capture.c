@@ -447,12 +447,40 @@ static int _rist_chain_start(void)
     /* receiver: two peers, comma separated (stock tools/ristreceiver splits on ',').
      * The local satellite peer is weight=0; the API recovery URL MUST carry
      * weight=1000 or librist classifies it as a second satellite peer and FSR can
-     * never activate. The API returns no weight, so append it here. */
-    snprintf(recv_in, sizeof(recv_in),
-             "rist://127.0.0.1:%d?weight=0&buffer=8000,%s%sweight=1000",
-             RIST_LOCAL_PORT,
-             s_rist.rec.rist_url,
-             strchr(s_rist.rec.rist_url, '?') ? "&" : "?");
+     * never activate. The API returns no weight, so append it here.
+     *
+     * timing-mode=1 is RIST_TIMING_MODE_ARRIVAL, and it is REQUIRED ON BOTH
+     * PEERS. The two peers are fed by two independent senders on two different
+     * machines -- our stb_part7_receiver here, and the headend's ristsender --
+     * yet they deliberately share one flow so FSR can substitute one for the
+     * other. librist's default (RIST_TIMING_MODE_SOURCE) derives source_time
+     * from each sender's RTP timestamp, so one flow ends up carrying two
+     * unrelated CLOCK_MONOTONIC epochs. It calibrates f->time_offset once from
+     * whichever peer arrives first, then classifies the other peer's packets as
+     * out-of-order -- which suppresses receiver_mark_missing() AND freezes
+     * last_seq_found, so NACKs stop entirely. Observed on hardware as
+     * reordered=~180/s (every packet from peer 1) with missing=0 retries=0
+     * while lost climbed. In ARRIVAL mode the receiver discards the sender's
+     * timestamp and stamps arrival locally, so both peers share one clock.
+     *
+     * Setting it on only one peer would be worse than neither: local-arrival
+     * time on one and headend-derived time on the other guarantees the mismatch
+     * instead of merely risking it. */
+    {
+        int need = snprintf(recv_in, sizeof(recv_in),
+                 "rist://127.0.0.1:%d?weight=0&buffer=8000&timing-mode=1,%s%sweight=1000&timing-mode=1",
+                 RIST_LOCAL_PORT,
+                 s_rist.rec.rist_url,
+                 strchr(s_rist.rec.rist_url, '?') ? "&" : "?");
+        /* A clipped URL would silently lose the trailing weight/timing-mode and
+         * present as "FSR never activates" or "every packet reordered" -- two
+         * bugs we have already spent runs on. Fail loudly instead. */
+        if (need < 0 || (size_t)need >= sizeof(recv_in)) {
+            RIST_LOG("chain: recovery URL too long (%d >= %d) -- NOT starting the chain\n",
+                     need, (int)sizeof(recv_in));
+            return -1;
+        }
+    }
     snprintf(recv_out, sizeof(recv_out), "udp://127.0.0.1:%d", RIST_OUT_PORT);
 
     RIST_LOG("chain: ports cap=%d local=%d out=%d  (svc_id=%d \"%s\")\n",
