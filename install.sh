@@ -335,11 +335,20 @@ done
 # later run just pulls it.
 if [ -z "$riststb_dir" ] && [ ! -d "$RISTSTB_CLONE/.git" ]; then
     log "  no riststb clone yet -- cloning $RISTSTB_URL"
-    if git clone --quiet "$RISTSTB_URL" "$RISTSTB_CLONE" 2>&1 | sed 's/^/    /'; then
+    rm -rf "$RISTSTB_CLONE"
+    # Redirect to a file rather than piping: `if cmd | sed` tests SED's exit
+    # status, not the command's, so the failure branch never runs and the script
+    # cheerfully reports a clone that did not happen.
+    #
+    # GIT_TERMINAL_PROMPT=0 because this script is run through a pipe. Without
+    # it git blocks on an interactive username/password prompt that nobody can
+    # answer, which looks like a hang rather than an auth failure.
+    if GIT_TERMINAL_PROMPT=0 git clone --quiet "$RISTSTB_URL" "$RISTSTB_CLONE" > "$TMP/clone.log" 2>&1; then
         log "  cloned into $RISTSTB_CLONE"
     else
+        sed 's/^/    /' "$TMP/clone.log" 2>/dev/null | head -6
         rm -rf "$RISTSTB_CLONE"
-        log "  clone FAILED (private repo without credentials on this host?)"
+        log "  clone FAILED -- no usable credentials for this repo on this host"
     fi
 fi
 [ -z "$riststb_dir" ] && [ -d "$RISTSTB_CLONE/.git" ] && riststb_dir="$RISTSTB_CLONE"
@@ -351,15 +360,17 @@ if [ -n "$riststb_dir" ]; then
 
     # --ff-only on purpose: if someone has local commits or edits on the build
     # VM, stop and say so rather than silently discarding or merging them.
-    if git -C "$riststb_dir" pull --ff-only 2>&1 | sed 's/^/    /'; then
+    if GIT_TERMINAL_PROMPT=0 git -C "$riststb_dir" pull --ff-only > "$TMP/pull.log" 2>&1; then
         after="$(git -C "$riststb_dir" rev-parse HEAD 2>/dev/null || echo unknown)"
         [ "$before" = "$after" ] && log "  already at $after" \
                                  || log "  updated $before -> $after"
     else
-        die "git pull --ff-only failed in $riststb_dir.
-     The tree has local commits or modifications. Resolve it there, or set
-     RISTSTB_DIR= to point at a clean checkout. Refusing to build a tree that
-     does not match origin -- that is how a fix silently fails to ship."
+        sed 's/^/    /' "$TMP/pull.log" 2>/dev/null | head -8
+        die "git pull --ff-only failed in $riststb_dir (output above).
+     Either the tree has local commits/modifications, or there are no usable
+     credentials for the fetch. Resolve it there, or set RISTSTB_DIR= to point
+     at a clean checkout. Refusing to build a tree that does not match origin --
+     that is how a fix silently fails to ship."
     fi
 
     LIBRIST_TREE="$riststb_dir/librist/build-arm"
@@ -367,18 +378,26 @@ if [ -n "$riststb_dir" ]; then
     head_now="$(git -C "$riststb_dir" rev-parse HEAD)"
     built_at="$(cat "$stamp" 2>/dev/null || echo none)"
 
-    if [ ! -f "$LIBRIST_TREE"/librist.so.[0-9]* ] 2>/dev/null; then built_at=none; fi
+    # Only a REGULAR librist.so.* counts as "built" -- build-arm also holds the
+    # soname symlink, which can survive an rm -rf/rebuild cycle misleadingly.
+    find "$LIBRIST_TREE" -maxdepth 1 -type f -name 'librist.so.*' 2>/dev/null | grep -q . \
+        || built_at=none
     if [ "$built_at" != "$head_now" ]; then
         log "  librist needs a rebuild (built=$built_at head=$head_now)"
         log "  running scripts/cross-build.sh -- this takes a few minutes"
         if [ -x "$riststb_dir/scripts/cross-build.sh" ]; then
-            if "$riststb_dir/scripts/cross-build.sh" 2>&1 | sed 's/^/    /'; then
+            # Status via a file, not the pipeline: `if cmd | sed` returns SED's
+            # status, so a FAILED librist build would have been reported as a
+            # success and the stamp written -- permanently skipping the rebuild.
+            { "$riststb_dir/scripts/cross-build.sh" 2>&1; echo $? > "$TMP/cb.rc"; } | sed 's/^/    /'
+            cb="$(cat "$TMP/cb.rc" 2>/dev/null || echo 1)"
+            if [ "$cb" = "0" ]; then
                 printf '%s\n' "$head_now" > "$stamp"
                 log "  librist rebuilt at $head_now"
             else
-                die "librist cross-build FAILED -- see the output above. Not continuing:
-     linking the tools against a stale library is exactly the failure this
-     section exists to prevent."
+                die "librist cross-build FAILED (rc=$cb) -- see the output above. Not
+     continuing: linking the tools against a stale library is exactly the
+     failure this section exists to prevent."
             fi
         else
             die "$riststb_dir/scripts/cross-build.sh not found or not executable"
