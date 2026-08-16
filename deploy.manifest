@@ -1,3 +1,4 @@
+app/Makefile
 app/dvb2ip_server/app_dvb2ip_platform.c
 app/dvb2ip_server/app_ts_record.c
 app/full_screen.c
