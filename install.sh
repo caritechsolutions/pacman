@@ -295,40 +295,89 @@ curl -fsSL "$url" -o "$src" || die "FAILED to fetch ${STB_RX_NAME}.c from SHMS -
 grep -q "BLOCK_CONTENT_PACKETS" "$src" || die "fetched ${STB_RX_NAME}.c looks wrong (no BLOCK_CONTENT_PACKETS) -- refusing to build"
 log "  fetched $(wc -c < "$src" | tr -d ' ') bytes from SHMS main"
 
-# Pick the librist ARM tree. Several exist at different commits, so rather than
-# hardcoding or guessing "newest", prefer the tree whose built librist.so MATCHES
-# the one already staged in the rootfs -- that is the library the box will
-# actually run, so linking against anything else is the bug we are avoiding.
-# Fall back to newest-by-mtime with a loud warning.
-deployed_so="$(ls -1 "$ROOTFS_DIR"/lib/librist.so.[0-9]* 2>/dev/null | head -1)"
+# ---- librist: update the checkout, rebuild only when the source moved -------
+# librist is OUR fork (VSF TR-06-4 Part 6 program selection + Part 7 FSR), so it
+# now changes like any other source in this project and has to reach the box the
+# same way. Until the FSR recovery-agent fix there had never been a reason to
+# rebuild it, and the old selection logic reflected that: it md5-matched a
+# prebuilt tree against the copy already in the rootfs, on the assumption that
+# the library never moved. That assumption is now false -- after a rebuild the
+# two deliberately differ, and matching would have quietly picked the OLD tree
+# and built against the very library we were trying to replace.
+#
+# Rebuilds are conditional on the checked-out commit, recorded in a stamp beside
+# the build dir. cross-build.sh does `rm -rf build-arm` + meson + ninja, which is
+# minutes; running it on every app-only iteration would wreck turnaround.
+RISTSTB_REMOTE="${RISTSTB_REMOTE:-riststb}"
 LIBRIST_TREE=""
-if [ -n "$deployed_so" ] && command -v md5sum >/dev/null 2>&1; then
-    want="$(md5sum "$deployed_so" | cut -d' ' -f1)"
-    log "  rootfs librist: $deployed_so (md5 ${want})"
-    for t in "$RIST_TREES"/*/librist/build-arm; do
-        [ -d "$t" ] || continue
-        cand="$(ls -1 "$t"/librist.so.[0-9]* 2>/dev/null | head -1)"
-        [ -n "$cand" ] || continue
-        if [ "$(md5sum "$cand" | cut -d' ' -f1)" = "$want" ]; then
-            LIBRIST_TREE="$t"
-            log "  librist tree: $t  (MATCHES the rootfs library)"
-            break
+riststb_dir=""
+
+# Find the checkout by its remote rather than by path: several trees live under
+# $RIST_TREES and only one of them is the git clone we are meant to advance.
+for d in "$RIST_TREES"/*; do
+    [ -d "$d/.git" ] || continue
+    if git -C "$d" remote -v 2>/dev/null | grep -q "$RISTSTB_REMOTE"; then
+        riststb_dir="$d"
+        break
+    fi
+done
+[ -n "${RISTSTB_DIR:-}" ] && riststb_dir="$RISTSTB_DIR"      # explicit override wins
+
+if [ -n "$riststb_dir" ]; then
+    log "  riststb checkout: $riststb_dir"
+    before="$(git -C "$riststb_dir" rev-parse HEAD 2>/dev/null || echo unknown)"
+
+    # --ff-only on purpose: if someone has local commits or edits on the build
+    # VM, stop and say so rather than silently discarding or merging them.
+    if git -C "$riststb_dir" pull --ff-only 2>&1 | sed 's/^/    /'; then
+        after="$(git -C "$riststb_dir" rev-parse HEAD 2>/dev/null || echo unknown)"
+        [ "$before" = "$after" ] && log "  already at $after" \
+                                 || log "  updated $before -> $after"
+    else
+        die "git pull --ff-only failed in $riststb_dir.
+     The tree has local commits or modifications. Resolve it there, or set
+     RISTSTB_DIR= to point at a clean checkout. Refusing to build a tree that
+     does not match origin -- that is how a fix silently fails to ship."
+    fi
+
+    LIBRIST_TREE="$riststb_dir/librist/build-arm"
+    stamp="$riststb_dir/librist/.build-arm.commit"
+    head_now="$(git -C "$riststb_dir" rev-parse HEAD)"
+    built_at="$(cat "$stamp" 2>/dev/null || echo none)"
+
+    if [ ! -f "$LIBRIST_TREE"/librist.so.[0-9]* ] 2>/dev/null; then built_at=none; fi
+    if [ "$built_at" != "$head_now" ]; then
+        log "  librist needs a rebuild (built=$built_at head=$head_now)"
+        log "  running scripts/cross-build.sh -- this takes a few minutes"
+        if [ -x "$riststb_dir/scripts/cross-build.sh" ]; then
+            if "$riststb_dir/scripts/cross-build.sh" 2>&1 | sed 's/^/    /'; then
+                printf '%s\n' "$head_now" > "$stamp"
+                log "  librist rebuilt at $head_now"
+            else
+                die "librist cross-build FAILED -- see the output above. Not continuing:
+     linking the tools against a stale library is exactly the failure this
+     section exists to prevent."
+            fi
+        else
+            die "$riststb_dir/scripts/cross-build.sh not found or not executable"
         fi
-    done
-fi
-if [ -z "$LIBRIST_TREE" ]; then
-    # Sort by the LIBRARY's mtime, not the directory's: the build-arm dirs are all
-    # created at checkout time, so `ls -dt` on them ranks by checkout order rather
-    # than by which librist was built most recently.
+    else
+        log "  librist already built at $head_now -- skipping rebuild"
+    fi
+else
+    log "  WARNING: no riststb git checkout found under $RIST_TREES"
+    log "           falling back to the newest prebuilt tree; librist source"
+    log "           changes will NOT reach the box this run."
     newest_so="$(ls -1t "$RIST_TREES"/*/librist/build-arm/librist.so.[0-9]* 2>/dev/null | head -1)"
     [ -n "$newest_so" ] && LIBRIST_TREE="$(dirname "$newest_so")"
-    if [ -n "$LIBRIST_TREE" ]; then
-        log "  WARNING: no librist build matches the rootfs copy; using NEWEST tree"
-        log "           $LIBRIST_TREE"
-        log "           if the box misbehaves, suspect a librist mismatch first"
-    fi
 fi
-[ -n "$LIBRIST_TREE" ] || die "no ARM librist build found under $RIST_TREES/*/librist/build-arm -- run ristSTB scripts/cross-build.sh once"
+
+[ -n "$LIBRIST_TREE" ] && [ -d "$LIBRIST_TREE" ] \
+    || die "no ARM librist build under $RIST_TREES/*/librist/build-arm -- run ristSTB scripts/cross-build.sh once"
+
+LIBRIST_SO="$(ls -1 "$LIBRIST_TREE"/librist.so.[0-9]* 2>/dev/null | head -1)"
+[ -n "$LIBRIST_SO" ] || die "no librist.so.* in $LIBRIST_TREE"
+log "  librist: $LIBRIST_SO"
 
 TREE_ROOT="$(dirname "$(dirname "$LIBRIST_TREE")")"      # .../<checkout>
 CROSS_CC="${CROSS_CC:-arm-nationalchip-linux-uclibcgnueabihf-gcc}"
@@ -375,8 +424,22 @@ fi
 #   4. $SDK_ROOT/projects/<family>/<proj>/flash/rootfs.tar.gz
 #   5. $SDK_ROOT/projects/<family>/<proj>/flash/rootfs.bin   (copied verbatim)
 # We resolve the SAME order rather than hardcoding one, and inject there.
+#
+# Two payloads now: the receiver binary and librist itself. They MUST ship
+# together -- the binary is linked against the library it was just built with,
+# and shipping one without the other is a version skew that would present as a
+# runtime symbol error or, worse, as FSR quietly not working.
 log ""
-log "=== install $STB_RX_NAME into the rootfs source ==="
+log "=== install $STB_RX_NAME + librist into the rootfs source ==="
+
+# Staging tree mirrors the rootfs layout; PAYLOADS lists the member paths.
+LIBRIST_SO_NAME="$(basename "$LIBRIST_SO")"
+mkdir -p "$TMP/stage/usr/bin" "$TMP/stage/lib"
+cp "$TMP/$STB_RX_NAME" "$TMP/stage/usr/bin/$STB_RX_NAME"
+cp "$LIBRIST_SO"       "$TMP/stage/lib/$LIBRIST_SO_NAME"
+chmod 0755 "$TMP/stage/usr/bin/$STB_RX_NAME" "$TMP/stage/lib/$LIBRIST_SO_NAME"
+PAYLOADS="usr/bin/$STB_RX_NAME lib/$LIBRIST_SO_NAME"
+log "  payloads: $PAYLOADS"
 
 PROJ_NAME="$(sed -n 's/^BR2_PROJ_NAME="\(.*\)"$/\1/p'   "$SDK_ROOT/.config" | head -1)"
 FAM_NAME="$(sed  -n 's/^BR2_FAMILY_NAME="\(.*\)"$/\1/p' "$SDK_ROOT/.config" | head -1)"
@@ -404,12 +467,14 @@ binonly)
     ;;
 
 dir)
-    # Priority 1: a plain staging tree. Copy in and read the result back.
-    mkdir -p "$RFS_PATH/usr/bin" || die "cannot create $RFS_PATH/usr/bin"
-    cp "$TMP/$STB_RX_NAME" "$RFS_PATH/usr/bin/$STB_RX_NAME" || die "copy into $RFS_PATH failed"
-    chmod 0755 "$RFS_PATH/usr/bin/$STB_RX_NAME"
-    [ -x "$RFS_PATH/usr/bin/$STB_RX_NAME" ] || die "VERIFY FAILED: $RFS_PATH/usr/bin/$STB_RX_NAME is not executable"
-    log "  VERIFIED in tree: usr/bin/$STB_RX_NAME ($(wc -c < "$RFS_PATH/usr/bin/$STB_RX_NAME" | tr -d ' ') bytes)"
+    # Priority 1: a plain staging tree. Copy in and read each result back.
+    for p in $PAYLOADS; do
+        mkdir -p "$RFS_PATH/$(dirname "$p")" || die "cannot create $RFS_PATH/$(dirname "$p")"
+        cp "$TMP/stage/$p" "$RFS_PATH/$p" || die "copy of $p into $RFS_PATH failed"
+        chmod 0755 "$RFS_PATH/$p"
+        [ -s "$RFS_PATH/$p" ] || die "VERIFY FAILED: $RFS_PATH/$p is empty"
+        log "  VERIFIED in tree: $p ($(wc -c < "$RFS_PATH/$p" | tr -d ' ') bytes)"
+    done
     ;;
 
 targz)
@@ -449,37 +514,52 @@ targz)
     # Member naming: some archives are './usr/bin/x', some 'usr/bin/x'. Match
     # whatever this archive already uses or mkimg's extract lands it elsewhere.
     if head -20 "$TMP/rfs.before" | grep -q '^\./'; then MPFX="./"; else MPFX=""; fi
-    MEMBER="${MPFX}usr/bin/$STB_RX_NAME"
-    log "  entries: $n_before   member path: $MEMBER"
+    log "  entries: $n_before   member prefix: '${MPFX}'"
+
+    # librist must replace the EXACT file the existing symlinks point at. The
+    # rootfs carries lib/librist.so.4 -> librist.so.4.5.0; if a rebuild ever
+    # changes the soname the symlink would dangle and every RIST binary would
+    # fail to start with no obvious cause. Refuse rather than ship that.
+    if ! grep -qx "${MPFX}lib/$LIBRIST_SO_NAME" "$TMP/rfs.before"; then
+        log "  the archive does not contain lib/$LIBRIST_SO_NAME. It has:"
+        grep -E "librist" "$TMP/rfs.before" | while IFS= read -r l; do log "      $l"; done
+        die "librist soname mismatch: built $LIBRIST_SO_NAME, but the rootfs
+     expects a different one. The lib/librist.so.* symlinks point at the name
+     above and would dangle. Update the symlinks in the rootfs deliberately,
+     or rebuild librist at the soname the image expects."
+    fi
 
     gzip -dc "$RFS_PATH" > "$TMP/rfs.tar" || die "gunzip of $RFS_PATH failed"
 
     # Remove any previous copy under EITHER prefix, so re-runs are idempotent
     # and an old differently-prefixed entry cannot shadow the new one.
-    for m in "usr/bin/$STB_RX_NAME" "./usr/bin/$STB_RX_NAME"; do
-        if grep -qx "$m" "$TMP/rfs.before"; then
-            tar --delete -f "$TMP/rfs.tar" "$m" 2>/dev/null \
-                || die "tar --delete of existing $m failed"
-            log "  removed previous member: $m"
-        fi
+    for p in $PAYLOADS; do
+        for m in "$p" "./$p"; do
+            if grep -qx "$m" "$TMP/rfs.before"; then
+                tar --delete -f "$TMP/rfs.tar" "$m" 2>/dev/null \
+                    || die "tar --delete of existing $m failed"
+                log "  removed previous member: $m"
+            fi
+        done
     done
 
-    mkdir -p "$TMP/stage/usr/bin"
-    cp "$TMP/$STB_RX_NAME" "$TMP/stage/usr/bin/$STB_RX_NAME"
-    chmod 0755 "$TMP/stage/usr/bin/$STB_RX_NAME"
-    ( cd "$TMP/stage" && tar -rf "$TMP/rfs.tar" \
-        --owner=0 --group=0 --numeric-owner --mode=0755 "$MEMBER" ) \
-        || die "tar -r (append) of $MEMBER failed"
+    for p in $PAYLOADS; do
+        ( cd "$TMP/stage" && tar -rf "$TMP/rfs.tar" \
+            --owner=0 --group=0 --numeric-owner --mode=0755 "${MPFX}$p" ) \
+            || die "tar -r (append) of ${MPFX}$p failed"
+    done
 
     gzip -9 -c "$TMP/rfs.tar" > "$TMP/rfs.tar.gz" || die "gzip of the new archive failed"
 
     # VERIFY BEFORE PUBLISHING. Read the rebuilt archive back and prove both
-    # that our member is in it and that nothing else fell out. Only then does
+    # that every member is in it and that nothing else fell out. Only then does
     # the real file get replaced -- a failed verify leaves the original in place.
     tar tzf "$TMP/rfs.tar.gz" > "$TMP/rfs.after" 2>/dev/null \
         || die "the rebuilt archive is unreadable -- original left untouched"
-    grep -qx "$MEMBER" "$TMP/rfs.after" \
-        || die "VERIFY FAILED: $MEMBER not in the rebuilt archive -- original left untouched"
+    for p in $PAYLOADS; do
+        grep -qx "${MPFX}$p" "$TMP/rfs.after" \
+            || die "VERIFY FAILED: ${MPFX}$p not in the rebuilt archive -- original left untouched"
+    done
     n_after="$(grep -c . "$TMP/rfs.after" || true)"
     lost="$(sort "$TMP/rfs.before" > "$TMP/b.s"; sort "$TMP/rfs.after" > "$TMP/a.s"; comm -23 "$TMP/b.s" "$TMP/a.s" | grep -c . || true)"
     if [ "${lost:-0}" -ne 0 ]; then
@@ -492,18 +572,28 @@ targz)
     cat "$TMP/rfs.tar.gz" > "$RFS_PATH" || die "could not write $RFS_PATH"
 
     # Final read-back of the file that will actually be consumed.
-    tar tzf "$RFS_PATH" 2>/dev/null | grep -qx "$MEMBER" \
-        || die "VERIFY FAILED after write: $MEMBER absent from $RFS_PATH"
-    log "  VERIFIED in archive: $MEMBER   (entries $n_before -> $n_after)"
+    tar tzf "$RFS_PATH" > "$TMP/rfs.final" 2>/dev/null \
+        || die "VERIFY FAILED after write: cannot read back $RFS_PATH"
+    for p in $PAYLOADS; do
+        grep -qx "${MPFX}$p" "$TMP/rfs.final" \
+            || die "VERIFY FAILED after write: ${MPFX}$p absent from $RFS_PATH"
+        log "  VERIFIED in archive: ${MPFX}$p"
+    done
+    log "  entries $n_before -> $n_after"
     ;;
 esac
 
 # Keep the librist staging tree in step. This does NOT feed the image (see the
-# precedence list above); it exists so the tree stays a truthful mirror.
-if [ -d "$ROOTFS_DIR/usr/bin" ]; then
-    cp "$TMP/$STB_RX_NAME" "$ROOTFS_DIR/usr/bin/$STB_RX_NAME" && chmod 0755 "$ROOTFS_DIR/usr/bin/$STB_RX_NAME"
-    log "  mirrored (not an image source): $ROOTFS_DIR/usr/bin/$STB_RX_NAME"
-fi
+# precedence list above); it exists so the tree stays a truthful mirror -- and
+# the old md5 tree-matching used to read it, so leaving it stale would have been
+# actively misleading.
+for p in $PAYLOADS; do
+    d="$ROOTFS_DIR/$(dirname "$p")"
+    if [ -d "$d" ]; then
+        cp "$TMP/stage/$p" "$ROOTFS_DIR/$p" && chmod 0755 "$ROOTFS_DIR/$p"
+        log "  mirrored (not an image source): $ROOTFS_DIR/$p"
+    fi
+done
 
 # Informational drift check. We no longer re-tar $ROOTFS_DIR, so drift is not a
 # hazard any more -- but if the two HAVE diverged that is worth knowing, because
@@ -566,18 +656,32 @@ fi
 # that the injection above reached the image -- unlike writing to it beforehand,
 # which the extraction wipes.
 log ""
-log "=== verify: $STB_RX_NAME reached the packed rootfs ==="
-PACKED="$SDK_ROOT/output/image/bin_linux/root/usr/bin/$STB_RX_NAME"
-if [ -f "$PACKED" ]; then
-    log "  OK: $PACKED ($(wc -c < "$PACKED" | tr -d ' ') bytes)"
-else
-    log "  the extracted tree does not contain usr/bin/$STB_RX_NAME."
-    log "  rootfs source used for the injection was: $RFS_PATH [$RFS_KIND]"
-    log "  mkimg.sh log lines about the rootfs source:"
-    grep -iE 'rootfs|generate from|copy from' "$MAKEBIN_LOG" 2>/dev/null | head -10 | while IFS= read -r l; do log "      $l"; done
-    die "VERIFY FAILED: $STB_RX_NAME is NOT in the image. Do not flash this build.
+log "=== verify: payloads reached the packed rootfs ==="
+PACKED_ROOT="$SDK_ROOT/output/image/bin_linux/root"
+for p in $PAYLOADS; do
+    if [ -f "$PACKED_ROOT/$p" ]; then
+        log "  OK: $p ($(wc -c < "$PACKED_ROOT/$p" | tr -d ' ') bytes)"
+    else
+        log "  the extracted tree does not contain $p."
+        log "  rootfs source used for the injection was: $RFS_PATH [$RFS_KIND]"
+        log "  mkimg.sh log lines about the rootfs source:"
+        grep -iE 'rootfs|generate from|copy from' "$MAKEBIN_LOG" 2>/dev/null | head -10 | while IFS= read -r l; do log "      $l"; done
+        die "VERIFY FAILED: $p is NOT in the image. Do not flash this build.
      Most likely mkimg.sh chose a HIGHER-precedence rootfs source than the one
      we injected into -- the lines above say which."
+    fi
+done
+
+# The symlink chain has to still resolve, or every RIST binary fails to start
+# with a loader error that says nothing about librist having been replaced.
+for l in "$PACKED_ROOT"/lib/librist.so*; do
+    [ -e "$l" ] || continue
+    if [ -L "$l" ] && [ ! -e "$l" ]; then
+        die "VERIFY FAILED: $l is a dangling symlink after the librist swap."
+    fi
+done
+if [ -L "$PACKED_ROOT/lib/librist.so.4" ]; then
+    log "  OK: lib/librist.so.4 -> $(readlink "$PACKED_ROOT/lib/librist.so.4") (resolves)"
 fi
 
 # ---- 6d. partition budget --------------------------------------------------
