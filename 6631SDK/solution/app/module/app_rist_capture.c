@@ -184,6 +184,14 @@ static struct {
     int                 probe_done;      /* probe resolved: got a frame, or gave up */
     const char         *probe_player;    /* which player carries the picture this zap */
 
+    /* Fallback to factory decode when the chain never delivers a picture.
+     * failed_svc_id latches the service we gave up on so the retry cannot loop:
+     * falling back replays the channel, which re-enters app_rist_play_change,
+     * which would start the chain again and fail again. Cleared as soon as a
+     * different service is selected, so zapping away and back retries. */
+    int                 screen_failed;   /* gave up on the chain for this zap */
+    int                 failed_svc_id;   /* service we fell back on (0 = none) */
+
     /* Step D: RIST chain for this program */
     int                 chain_active;    /* kill switch ON *and* service has recovery */
     int                 chain_running;   /* children actually spawned */
@@ -645,7 +653,16 @@ int app_rist_screen_enabled(void)
      * chain_active is computed in app_rist_play_change(), which runs before the
      * decode gate in app_normal_play, so it is already correct when this is
      * called for the suppression decision. A service with no recovery entry
-     * leaves chain_active 0 -> factory decode, untouched. */
+     * leaves chain_active 0 -> factory decode, untouched.
+     *
+     * screen_failed overrides both: once the chain has been given up on, the
+     * decoder must go back to the tuner. In practice the replay clears
+     * chain_active before this is next consulted, so this is belt and braces --
+     * but the cost of getting the ordering wrong is a permanently dark screen,
+     * which is precisely the failure the fallback exists to prevent. */
+    if (s_rist.screen_failed)
+        return 0;
+
     return on || s_rist.chain_active;
 }
 
@@ -756,6 +773,38 @@ static int _rist_probe_cb(void *arg)
         RIST_T("%s still not RUNNING after %ums (status=%d) -- giving up\n",
                s_rist.probe_player, _rist_now_ms() - s_rist.probe_t0, (int)si.status);
         s_rist.probe_done = 1;      /* stop showing "Waiting..." -> real error state */
+
+        /* FALL BACK TO FACTORY DECODE.
+         *
+         * Until now giving up only stopped the "Waiting..." tip. The decode
+         * suppression stayed on (app_rist_screen_enabled() keys purely on
+         * chain_active), so a chain that never delivered left the tuner muted
+         * and the screen dark indefinitely -- with no way back except a zap.
+         *
+         * The satellite feed is still arriving; the whole premise is that it is
+         * present but needs repair. Showing it unrepaired is a real degraded
+         * mode and strictly better than nothing. This is the net that catches
+         * failures we have not predicted, so it must not depend on knowing why
+         * the chain failed. */
+        if (s_rist.chain_active && !s_rist.screen_failed) {
+            s_rist.screen_failed = 1;
+            s_rist.failed_svc_id = s_rist.rec.service_id;
+
+            RIST_T("chain produced no picture -- falling back to tuner decode "
+                   "for svc_id=%d\n", s_rist.failed_svc_id);
+
+            _rist_screen_stop();     /* release the decoder before the tuner takes it */
+
+            /* Replaying the channel re-runs app_normal_play, which now sees
+             * app_rist_screen_enabled() == 0 and starts the tuner decode. The
+             * failed_svc_id latch stops it from restarting the chain. */
+            {
+                extern int app_play_program_user_info(GxMsgProperty_NodeModify node_modify);
+                GxMsgProperty_NodeModify nm;
+                memset(&nm, 0, sizeof(nm));
+                app_play_program_user_info(nm);
+            }
+        }
         return 0;
     }
 
@@ -1085,13 +1134,31 @@ int app_rist_play_change(GxBusPmDataProg *prog)
      * leaves the factory tuner path completely alone. */
     memset(&s_rist.rec, 0, sizeof(s_rist.rec));
     s_rist.chain_active = 0;
+
+    /* Clear the fallback latch as soon as a DIFFERENT service is selected, so
+     * zapping away and back is a genuine retry. Staying on the same service
+     * keeps the latch, which is what stops the replay from looping. */
+    s_rist.screen_failed = 0;
+    if (s_rist.failed_svc_id && s_rist.failed_svc_id != prog->service_id) {
+        RIST_LOG("play_change: clearing the fallback latch (was svc_id=%d)\n",
+                 s_rist.failed_svc_id);
+        s_rist.failed_svc_id = 0;
+    }
+
     {
         const char *why = NULL;
         int chain_on = _rist_chain_flag(&why);
 
         RIST_LOG("play_change: chain=%s (%s)\n", chain_on ? "ENABLED" : "DISABLED", why);
 
-        if (chain_on) {
+        if (chain_on && s_rist.failed_svc_id
+                     && s_rist.failed_svc_id == prog->service_id) {
+            /* We already gave up on this service this visit. Re-arming here
+             * would restart the chain that the fallback just replaced, and the
+             * replay would fail identically -- an endless zap loop. */
+            RIST_LOG("play_change: svc_id=%d already fell back to tuner decode "
+                     "-> factory path (zap away and back to retry)\n", prog->service_id);
+        } else if (chain_on) {
             if (app_rist_api_lookup(prog->service_id, &s_rist.rec) == 0) {
                 s_rist.chain_active = 1;
                 RIST_T("svc_id=%d IS in the recovery list (\"%s\") -> RIST chain\n",

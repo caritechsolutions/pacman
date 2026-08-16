@@ -62,7 +62,8 @@ app/module/app_rist_stats.c
 app/module/network/app_network_service.c
 app/module/app_play_control.c
 app/include/full_screen.h
-app/full_screen.c"
+app/full_screen.c
+app/Makefile"
 
 # Objects for those sources (flat basename.o), used for the fast INCREMENTAL path
 # once dvb2ip is already enabled.
@@ -185,13 +186,15 @@ for rel in $FILES; do
         # an inserted enum value, a struct field, a changed macro. Those objects
         # keep the old constants and misbehave at RUNTIME with no build error.
         # Detect it here and force a full rebuild below.
+        # Makefile counts too: it carries LDFLAGS, so a change there alters the
+        # LINK, and objects built before it are linked against different terms.
         case "$rel" in
-            *.h) cmp -s "$TMP/$rel" "$dest" || { HDR_CHANGED=1; HDR_LIST="$HDR_LIST $rel"; } ;;
+            *.h|*Makefile) cmp -s "$TMP/$rel" "$dest" || { HDR_CHANGED=1; HDR_LIST="$HDR_LIST $rel"; } ;;
         esac
     else
         # A brand-new header introduces declarations nothing was built against.
         case "$rel" in
-            *.h) HDR_CHANGED=1; HDR_LIST="$HDR_LIST $rel(new)" ;;
+            *.h|*Makefile) HDR_CHANGED=1; HDR_LIST="$HDR_LIST $rel(new)" ;;
         esac
     fi
     cp "$TMP/$rel" "$dest"
