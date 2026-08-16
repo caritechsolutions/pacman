@@ -315,6 +315,9 @@ RISTSTB_REMOTE="${RISTSTB_REMOTE:-riststb}"
 LIBRIST_TREE=""
 riststb_dir=""
 
+RISTSTB_URL="${RISTSTB_URL:-https://github.com/caritechsolutions/riststb}"
+RISTSTB_CLONE="$RIST_TREES/riststb"
+
 # Find the checkout by its remote rather than by path: several trees live under
 # $RIST_TREES and only one of them is the git clone we are meant to advance.
 for d in "$RIST_TREES"/*; do
@@ -324,6 +327,22 @@ for d in "$RIST_TREES"/*; do
         break
     fi
 done
+
+# Nothing found? The pre-existing trees here are GitHub TARBALL EXTRACTIONS
+# (caritechsolutions-ristSTB-<sha>/), not clones -- they have no .git and can
+# never be advanced, which is why the first run of this section silently built
+# against a librist four commits stale. Clone once into a path we own; every
+# later run just pulls it.
+if [ -z "$riststb_dir" ] && [ ! -d "$RISTSTB_CLONE/.git" ]; then
+    log "  no riststb clone yet -- cloning $RISTSTB_URL"
+    if git clone --quiet "$RISTSTB_URL" "$RISTSTB_CLONE" 2>&1 | sed 's/^/    /'; then
+        log "  cloned into $RISTSTB_CLONE"
+    else
+        rm -rf "$RISTSTB_CLONE"
+        log "  clone FAILED (private repo without credentials on this host?)"
+    fi
+fi
+[ -z "$riststb_dir" ] && [ -d "$RISTSTB_CLONE/.git" ] && riststb_dir="$RISTSTB_CLONE"
 [ -n "${RISTSTB_DIR:-}" ] && riststb_dir="$RISTSTB_DIR"      # explicit override wins
 
 if [ -n "$riststb_dir" ]; then
@@ -368,17 +387,48 @@ if [ -n "$riststb_dir" ]; then
         log "  librist already built at $head_now -- skipping rebuild"
     fi
 else
-    log "  WARNING: no riststb git checkout found under $RIST_TREES"
-    log "           falling back to the newest prebuilt tree; librist source"
-    log "           changes will NOT reach the box this run."
-    newest_so="$(ls -1t "$RIST_TREES"/*/librist/build-arm/librist.so.[0-9]* 2>/dev/null | head -1)"
-    [ -n "$newest_so" ] && LIBRIST_TREE="$(dirname "$newest_so")"
+    # Hard stop, not a warning. A warning here already cost a build: it scrolled
+    # past in the middle of a successful-looking run and produced an image that
+    # LOOKED complete while carrying librist from four commits earlier. Anything
+    # that silently ships stale code has to fail loudly instead.
+    if [ "${ALLOW_STALE_LIBRIST:-0}" = "1" ]; then
+        log "  ALLOW_STALE_LIBRIST=1 -- using the newest PREBUILT tree."
+        log "  librist source changes will NOT reach the box this run."
+        newest_so="$(find "$RIST_TREES"/*/librist/build-arm -maxdepth 1 -type f -name 'librist.so.*' 2>/dev/null | head -1)"
+        [ -n "$newest_so" ] && LIBRIST_TREE="$(dirname "$newest_so")"
+    else
+        log ""
+        log "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        log "!! Cannot obtain a riststb GIT checkout, so librist CANNOT be"
+        log "!! rebuilt. Any librist fix would silently NOT reach the box."
+        log "!!"
+        log "!! The trees already under $RIST_TREES are tarball extractions"
+        log "!! (caritechsolutions-ristSTB-<sha>/) with no .git, so they can"
+        log "!! never be updated."
+        log "!!"
+        log "!! Fix it once, then re-run:"
+        log "!!     git clone $RISTSTB_URL $RISTSTB_CLONE"
+        log "!!"
+        log "!! Or point at an existing clone:  RISTSTB_DIR=/path/to/riststb"
+        log "!! Or, to build the APP ONLY and accept the old librist:"
+        log "!!     ALLOW_STALE_LIBRIST=1"
+        log "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        die "refusing to build an image that cannot carry the librist changes"
+    fi
 fi
 
 [ -n "$LIBRIST_TREE" ] && [ -d "$LIBRIST_TREE" ] \
     || die "no ARM librist build under $RIST_TREES/*/librist/build-arm -- run ristSTB scripts/cross-build.sh once"
 
-LIBRIST_SO="$(ls -1 "$LIBRIST_TREE"/librist.so.[0-9]* 2>/dev/null | head -1)"
+# -type f, not a glob. build-arm contains BOTH the real object (librist.so.4.5.0)
+# and the soname symlink (librist.so.4) pointing at it, and a glob sorted
+# alphabetically hands back the SYMLINK first. Copying that follows the link and
+# yields the right bytes under the WRONG NAME -- which then replaced the rootfs's
+# own lib/librist.so.4 symlink with a 721KB regular file, wasting a duplicate
+# copy of the library in the tightest partition on the board. cross-build.sh
+# already does it this way; this now matches.
+LIBRIST_SO="$(find "$LIBRIST_TREE" -maxdepth 1 -type f -name 'librist.so.*' -print 2>/dev/null | head -1)"
+[ -n "$LIBRIST_SO" ] || die "no regular librist.so.* file in $LIBRIST_TREE (only symlinks?)"
 [ -n "$LIBRIST_SO" ] || die "no librist.so.* in $LIBRIST_TREE"
 log "  librist: $LIBRIST_SO"
 
@@ -531,6 +581,25 @@ targz)
      above and would dangle. Update the symlinks in the rootfs deliberately,
      or rebuild librist at the soname the image expects."
     fi
+
+    # None of our payloads may replace a SYMLINK. This is not hypothetical: an
+    # earlier run picked build-arm/librist.so.4 (the soname symlink) instead of
+    # the real librist.so.4.5.0, and injecting it as a regular file destroyed the
+    # rootfs's own lib/librist.so.4 -> librist.so.4.5.0 link, leaving a duplicate
+    # 721KB copy of the library in the tightest partition on the board. The
+    # existence check above passed because the member did exist -- it just was
+    # not a file. Check the TYPE, not merely the name.
+    tar tzvf "$RFS_PATH" > "$TMP/rfs.before.v" 2>/dev/null || true
+    for p in $PAYLOADS; do
+        if grep -E "^l" "$TMP/rfs.before.v" | grep -q " ${MPFX}$p -> "; then
+            log "  in the archive, $p is:"
+            grep -E "^l" "$TMP/rfs.before.v" | grep " ${MPFX}$p -> " | while IFS= read -r l; do log "      $l"; done
+            die "refusing to overwrite the symlink $p with a regular file.
+     Injecting a file here would break the soname chain and duplicate the
+     library in ROOTFS. Point the payload at the real versioned object
+     (librist.so.X.Y.Z), not at the soname link."
+        fi
+    done
 
     gzip -dc "$RFS_PATH" > "$TMP/rfs.tar" || die "gunzip of $RFS_PATH failed"
 
