@@ -125,6 +125,27 @@
 #define RIST_DELAY3_FILE        "/tmp/ristdelay3"   /* player delay when the chain is up */
 #define RIST_DELAY3_MS          3000                /* receiver buffer needs longer than loopback */
 
+/* librist receive buffer, milliseconds. This is the single biggest term in
+ * zap-to-picture: the receiver holds each packet for the full buffer depth
+ * before emitting it, so first frame lands roughly one buffer after the capture
+ * starts feeding. Measured on hardware at 8000: capture active T+111, first
+ * frame T+8998.
+ *
+ * 4000 is a measured choice, not a guess. Through an RF-pull switchover the
+ * deepest drawdown was avg_buffer_time 8003 -> 5504, i.e. ~2.5s consumed, so
+ * 8000 was carrying ~5.5s that never got used. What the remainder does buy is
+ * retransmission depth -- that same window recovered 114 packets needing more
+ * than four NACK round trips, with the recovery peer's RTT spiking to ~985ms --
+ * so this cannot go much lower without turning those recoveries into visible
+ * loss. Roughly: ~2.5s switchover gap + ~1-3s of multi-NACK recovery.
+ *
+ * Overridable per boot for sweeping without a reflash:  echo 3000 > /tmp/ristbuffer
+ * Note the value also sets NACK cadence: rist-common.c derives the rtt_min
+ * floor as recovery_length_min / max_retries (8000/20 = 400ms was in the log),
+ * so halving the buffer halves that floor too. */
+#define RIST_BUFFER_FILE        "/tmp/ristbuffer"
+#define RIST_BUFFER_MS          4000
+
 #define RIST_BIN_WATCHDOG       "/usr/bin/rist_watchdog"
 /* STB-side Part 7 receiver: validates the headend's markers, counts elementary
  * streams only, rebuilds each block to 35 packets and re-emits as RIST. Named
@@ -212,6 +233,64 @@ static int _rist_read_int_file(const char *path, int defval)
         fclose(f);
     }
     return v;
+}
+
+/* Copy src to dst with any "<key>=..." query parameter removed.
+ *
+ * Needed because the recovery URL comes from the API already carrying its own
+ * buffer= (rist://<host>:<port>?buffer=8000), so the box cannot simply append
+ * one: a URL with the parameter twice has no defined precedence in librist's
+ * parser. The box owns its own latency budget, so we strip theirs and add ours.
+ *
+ * This also closes a race. librist sets the flow's buffer from whichever peer
+ * CREATES the flow (flow.c: f->recovery_buffer_ticks = p->recovery_buffer_ticks),
+ * and the max-across-peers rescaling only runs when recovery_length_min differs
+ * from max -- which a single buffer= value never produces. So with the two peers
+ * disagreeing, the effective buffer would depend on which one connected first.
+ * Rewriting both keeps them identical and the outcome deterministic.
+ *
+ * Leaves no trailing separator: if every parameter is dropped the '?' goes too,
+ * so the caller's usual  strchr(url,'?') ? "&" : "?"  logic stays correct.
+ *
+ * Returns 0, or -1 if the result would not fit -- in which case dst may hold a
+ * partial result, so the caller must overwrite it rather than use it. (Output is
+ * never longer than input, so with dst sized like src this cannot actually fire;
+ * it is kept as a guard against a future caller passing a smaller buffer.) */
+static int _rist_url_drop_param(char *dst, size_t dstsz, const char *src, const char *key)
+{
+    const char *q = strchr(src, '?');
+    size_t keylen = strlen(key);
+    size_t n;
+    int first = 1;
+
+    if (!q) {                                   /* no query string at all */
+        if (strlen(src) >= dstsz) return -1;
+        strcpy(dst, src);
+        return 0;
+    }
+
+    n = (size_t)(q - src);                      /* base, excluding the '?' */
+    if (n >= dstsz) return -1;
+    memcpy(dst, src, n);
+    dst[n] = '\0';
+
+    for (q++; *q; ) {
+        const char *amp  = strchr(q, '&');
+        size_t      plen = amp ? (size_t)(amp - q) : strlen(q);
+
+        /* Match "<key>=" exactly -- not "<key>" alone, not "<key>foo=". */
+        if (!(plen > keylen && strncmp(q, key, keylen) == 0 && q[keylen] == '=')) {
+            if (n + 1 + plen + 1 > dstsz) return -1;
+            dst[n++] = first ? '?' : '&';
+            memcpy(dst + n, q, plen);
+            n += plen;
+            dst[n] = '\0';
+            first = 0;
+        }
+        if (!amp) break;
+        q = amp + 1;
+    }
+    return 0;
 }
 
 /* ------------------------------------------------------------------- UDP */
@@ -437,12 +516,35 @@ static void _rist_chain_stop(void)
 static int _rist_chain_start(void)
 {
     static char in_url[96], out_url[96], recv_in[512], recv_out[96];
+    char  rec_url[RIST_API_URL_LEN];
     char *wd_argv[8];
     char *rx_argv[6];
+    int   bufms = _rist_read_int_file(RIST_BUFFER_FILE, RIST_BUFFER_MS);
 
-    /* sender: UDP in from our capture, RIST out listening for the local receiver */
+    if (bufms < 500) {                          /* below this nothing recovers */
+        RIST_LOG("chain: buffer %dms from %s is too small -- using %dms\n",
+                 bufms, RIST_BUFFER_FILE, RIST_BUFFER_MS);
+        bufms = RIST_BUFFER_MS;
+    }
+
+    /* sender: UDP in from our capture, RIST out listening for the local receiver.
+     * The sender's buffer is its retransmit history depth, so it tracks the
+     * receiver's -- keeping packets longer than the receiver will ever ask for
+     * them is just memory. */
     snprintf(in_url,  sizeof(in_url),  "udp://@127.0.0.1:%d", RIST_CAP_PORT);
-    snprintf(out_url, sizeof(out_url), "rist://@127.0.0.1:%d?buffer=8000", RIST_LOCAL_PORT);
+    snprintf(out_url, sizeof(out_url), "rist://@127.0.0.1:%d?buffer=%d",
+             RIST_LOCAL_PORT, bufms);
+
+    /* The API's URL carries its own buffer=; replace it with ours (see
+     * _rist_url_drop_param) so both peers agree and the flow buffer cannot
+     * depend on connection order. If it will not fit, keep the API URL as-is:
+     * a chain on the wrong buffer still works, and refusing to start would
+     * cost the channel entirely. */
+    if (_rist_url_drop_param(rec_url, sizeof(rec_url), s_rist.rec.rist_url, "buffer") < 0) {
+        RIST_LOG("chain: could not rewrite buffer= in the recovery URL (too long)"
+                 " -- using it unchanged, buffer may differ between peers\n");
+        snprintf(rec_url, sizeof(rec_url), "%s", s_rist.rec.rist_url);
+    }
 
     /* receiver: two peers, comma separated (stock tools/ristreceiver splits on ',').
      * The local satellite peer is weight=0; the API recovery URL MUST carry
@@ -468,10 +570,11 @@ static int _rist_chain_start(void)
      * instead of merely risking it. */
     {
         int need = snprintf(recv_in, sizeof(recv_in),
-                 "rist://127.0.0.1:%d?weight=0&buffer=8000&timing-mode=1,%s%sweight=1000&timing-mode=1",
-                 RIST_LOCAL_PORT,
-                 s_rist.rec.rist_url,
-                 strchr(s_rist.rec.rist_url, '?') ? "&" : "?");
+                 "rist://127.0.0.1:%d?weight=0&buffer=%d&timing-mode=1,%s%sweight=1000&timing-mode=1&buffer=%d",
+                 RIST_LOCAL_PORT, bufms,
+                 rec_url,
+                 strchr(rec_url, '?') ? "&" : "?",
+                 bufms);
         /* A clipped URL would silently lose the trailing weight/timing-mode and
          * present as "FSR never activates" or "every packet reordered" -- two
          * bugs we have already spent runs on. Fail loudly instead. */
@@ -483,8 +586,9 @@ static int _rist_chain_start(void)
     }
     snprintf(recv_out, sizeof(recv_out), "udp://127.0.0.1:%d", RIST_OUT_PORT);
 
-    RIST_LOG("chain: ports cap=%d local=%d out=%d  (svc_id=%d \"%s\")\n",
-             RIST_CAP_PORT, RIST_LOCAL_PORT, RIST_OUT_PORT,
+    RIST_LOG("chain: ports cap=%d local=%d out=%d  buffer=%dms%s  (svc_id=%d \"%s\")\n",
+             RIST_CAP_PORT, RIST_LOCAL_PORT, RIST_OUT_PORT, bufms,
+             (bufms == RIST_BUFFER_MS) ? " (default)" : " (/tmp/ristbuffer)",
              s_rist.rec.service_id, s_rist.rec.name);
 
     /* execv, not system(): the URLs contain '&' and '?' which a shell would
