@@ -170,6 +170,7 @@ static struct {
     volatile int        reader_run;
     handle_t            reader_thread;
     handle_t            rec_handle;      /* from app_ts_record_start (0 = none) */
+    int                 ts_rec_held;     /* we hold a app_ts_record_init() reference */
     event_list         *start_timer;
     event_list         *screen_timer;   /* deferred player_av start */
     int                 screen_started;  /* player_av running on the loopback udp:// */
@@ -947,7 +948,7 @@ void app_rist_capture_stop(void)
     _rist_chain_stop();                      /* SIGTERM -> wait -> SIGKILL, both children */
 
     if (!s_rist.active && s_rist.reader_thread <= 0 && s_rist.udp_fd < 0 &&
-        s_rist.rec_handle == 0)
+        s_rist.rec_handle == 0 && !s_rist.ts_rec_held)
         return;
 
     RIST_LOG("stop: tearing down capture\n");
@@ -968,6 +969,15 @@ void app_rist_capture_stop(void)
         s_rist.udp_fd = -1;
     }
 
+    /* Release the reference taken in _rist_capture_begin(). Ordered after the
+     * reader thread is joined and the prog is stopped: this may be the last
+     * reference, in which case it frees ctrl->prog, and nothing may be reading
+     * through a handle into it. */
+    if (s_rist.ts_rec_held) {
+        app_ts_record_destroy();
+        s_rist.ts_rec_held = 0;
+    }
+
     s_rist.active = 0;
     RIST_LOG("stop: done (dmx2 capture released)\n");
 }
@@ -981,10 +991,18 @@ static void _rist_capture_begin(void)
 
     /* dmx2 capture pipeline. Idempotent: if the dvb2ip HTTP server already
      * inited it, this is a no-op; otherwise it inits and spawns the dumpfilter
-     * thread that fills each prog's fifo from DEMUX/DVR instance 2. */
-    if (app_ts_record_init(RIST_FIFO_SIZE, RIST_MAX_PROG) < 0) {
-        RIST_LOG("start: app_ts_record_init FAILED\n");
-        return;
+     * thread that fills each prog's fifo from DEMUX/DVR instance 2.
+     *
+     * Each init() is one reference on the shared module, released by the
+     * destroy() in app_rist_capture_stop(). Taken at most once, so a begin that
+     * fails partway and is retried does not stack references that never come
+     * back -- the module would then never tear down for anyone. */
+    if (!s_rist.ts_rec_held) {
+        if (app_ts_record_init(RIST_FIFO_SIZE, RIST_MAX_PROG) < 0) {
+            RIST_LOG("start: app_ts_record_init FAILED\n");
+            return;
+        }
+        s_rist.ts_rec_held = 1;
     }
 
     memset(&cfg, 0, sizeof(cfg));

@@ -105,6 +105,24 @@ typedef struct _TsRecCtrl
     ProgDmxInfo *prog;
     handle_t mutex;
     bool inited;
+    /* How many independent subsystems currently hold this module open.
+     *
+     * There are two: the dvb2ip HTTP re-streaming server, and the RIST capture
+     * in app_rist_capture.c. Both call app_ts_record_init()/destroy() on this
+     * one global, and destroy() used to tear everything down unconditionally --
+     * stopping every program, freeing ctrl->prog and closing the demux device.
+     *
+     * That is what killed the box on a WAN pull. Losing the network makes
+     * app_dvb2ip_service_change() stop the server and call
+     * app_dvb2ip_resource_free(), which calls destroy() -- pulling the demux
+     * out from under the RIST capture, whose reader thread was mid
+     * app_ts_record_read() on a handle pointing into the array that had just
+     * been freed. The satellite feed stopped and the tuner went to sleep,
+     * though nothing was wrong with the satellite path at all.
+     *
+     * With a count, destroy() only performs the real teardown when the last
+     * holder lets go. */
+    int32_t users;
     TsRecStatus status;
     GxDemuxProperty_Slot slot[TS_REC_DEMUX_SLOT_MAX];
 }TsRecCtrl;
@@ -860,6 +878,9 @@ int32_t app_ts_record_init(int32_t fifo_size, int32_t max_prog)
     if(NULL == ctrl->prog)
     {
         TS_REC_ERR("No enough memory");
+        /* Was a bare return -1 that left ctrl->mutex locked, deadlocking every
+         * later caller. Unlock on the way out like every other exit does. */
+        GxCore_MutexUnlock(ctrl->mutex);
         return -1;
     }
 
@@ -883,6 +904,19 @@ int32_t app_ts_record_init(int32_t fifo_size, int32_t max_prog)
 
     ctrl->inited = true;
 end:
+    /* Count this holder. Reached three ways: a fresh init that just succeeded,
+     * an already-inited early return (the common case -- whichever of dvb2ip
+     * and the RIST capture starts second), and the demux-open failure paths.
+     * Gate on inited so only the first two count; a failed init has nothing to
+     * hold and must not be balanced by a later destroy(). */
+    if(true == ctrl->inited)
+    {
+        ctrl->users++;
+        /* Bare printf, like the [DVB2IP] service_change line: these two counts
+         * are the whole story if the demux ever goes away under someone again,
+         * and they must not depend on a log level being turned up. */
+        printf("[TSREC] init: holder added, users=%d\n", ctrl->users);
+    }
     GxCore_MutexUnlock(ctrl->mutex);
     return ret;
 }
@@ -1929,6 +1963,19 @@ void app_ts_record_destroy(void)
     GxCore_MutexLock(ctrl->mutex);
     if(false == ctrl->inited)
         goto end;
+
+    /* Release this holder's reference. Only the last one out tears the module
+     * down -- see the comment on TsRecCtrl::users. Without this, dvb2ip freeing
+     * its resources on a network drop also destroyed the RIST capture's demux
+     * and the box stopped decoding a satellite feed that was perfectly fine. */
+    if(ctrl->users > 0)
+        ctrl->users--;
+    if(ctrl->users > 0)
+    {
+        printf("[TSREC] destroy: %d holder(s) left, keeping the demux open\n", ctrl->users);
+        goto end;
+    }
+    printf("[TSREC] destroy: last holder released, tearing down the demux\n");
 
     for(i = 0; i < ctrl->max_prog; i++)
     {
