@@ -620,6 +620,34 @@ targz)
         fi
     done
 
+    # The soname link is what the loader actually resolves. Replacing
+    # librist.so.4.5.0 achieves nothing if lib/librist.so.4 is a REGULAR FILE
+    # rather than a link to it -- the loader binds to the file and the new
+    # library is inert. That is precisely the state an earlier run of this
+    # script left behind, so re-running would have shipped the old librist a
+    # second time while reporting every payload VERIFIED.
+    LIBRIST_SONAME="$(printf '%s' "$LIBRIST_SO_NAME" | sed 's/^\(librist\.so\.[0-9]*\).*/\1/')"
+    if [ "$LIBRIST_SONAME" != "$LIBRIST_SO_NAME" ]; then
+        sl="$(grep " ${MPFX}lib/$LIBRIST_SONAME\( -> \|$\)" "$TMP/rfs.before.v" 2>/dev/null | head -1)"
+        if [ -z "$sl" ]; then
+            log "  NOTE: lib/$LIBRIST_SONAME is not in the archive; nothing resolves to"
+            log "        lib/$LIBRIST_SO_NAME by soname. Check the loader can find it."
+        elif [ "${sl%"${sl#?}"}" != "l" ]; then
+            log "  lib/$LIBRIST_SONAME in the archive is:"
+            log "      $sl"
+            die "lib/$LIBRIST_SONAME is a REGULAR FILE, not a symlink to
+     $LIBRIST_SO_NAME. The loader resolves the soname, so it would bind to that
+     stale file and the librist injected here would never be used -- silently.
+
+     A previous run of this script caused this by injecting the soname link as a
+     file. Restore the pristine archive and re-run:
+
+         cp -p $RFS_PATH.orig $RFS_PATH"
+        else
+            log "  soname OK: lib/$LIBRIST_SONAME is a symlink -> ${sl##*-> }"
+        fi
+    fi
+
     gzip -dc "$RFS_PATH" > "$TMP/rfs.tar" || die "gunzip of $RFS_PATH failed"
 
     # Remove any previous copy under EITHER prefix, so re-runs are idempotent
