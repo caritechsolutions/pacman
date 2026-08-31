@@ -3,6 +3,7 @@
 #include "common/memhole.h"
 #include "app_config.h"
 #if DVB2IP_SERVER_SUPPORT
+#include <sys/time.h>                      /* gettimeofday, for the all-pass window */
 #include "app_ts_record.h"
 #include "app_module.h"
 #include "module/app_frontend_board_config.h"
@@ -163,6 +164,59 @@ static int     s_ts_rec_diag_rearm  = 1;    /* re-arm the one-shot DVR-read DIAG
  * PAT/PMT lead the stream. */
 static int     s_ts_rec_psi_ms      = 100;
 
+/* ---------------------------------------------------------------- P1: ALL-PASS
+ * DEMUX_SLOT_MUXTS experiment. The slot type exists in the demux enum (recovered
+ * from DWARF) and the vendor's own autotest allocates it with NO .pid assigned
+ * (module_tsfilter.c:119-137, "sepical slot", behind #if 0) -- which is the shape
+ * of an all-PID slot, but it is untested vendor code.
+ *
+ * Gated on /tmp/ristallpass so ONE flash covers both arms, defaulting OFF: a bad
+ * result is one file away from the working box, and a refused SlotAlloc falls
+ * back to the per-PID slots rather than leaving the box with no capture.
+ *
+ *   echo 0 > /tmp/ristchain      (chain off -- nothing else competing)
+ *   echo 1 > /tmp/ristallpass
+ *   then start ONE stream and read the [ALLPASS] lines.
+ *
+ * The measurement matters more than the return code: an allocation that succeeds
+ * but delivers nothing, or delivers at full rate while the 78ms DVR buffer
+ * overruns, both look like success from SlotAlloc alone. */
+#define TS_REC_ALLPASS_FILE   "/tmp/ristallpass"
+#define TS_REC_ALLPASS_MS     (10000)      /* measurement window */
+
+/* dmx_slot_type: DEMUX_SLOT_MUXTS = 5, recovered from DWARF in libgxdvb.a
+ * (PSI=0 PES=1 PES_AUDIO=2 PES_VIDEO=3 TS=4 MUXTS=5 AUDIO=6 SPDIF=7
+ * AUDIO_SPDIF=8 VIDEO=9). Deliberately NOT referenced by its enum name: the only
+ * in-tree use is behind #if 0 in an autotest that the app Makefile does not
+ * build, so the identifier is not proven visible in this translation unit, and a
+ * build failure costs a flash cycle. DEMUX_SLOT_VIDEO/AUDIO from the same enum
+ * are used below, so the enum almost certainly is visible -- but "almost" is not
+ * worth the round trip. */
+#define TS_REC_SLOT_MUXTS     (5)
+static int      s_ts_rec_allpass    = 0;
+static int32_t  s_ts_rec_mux_slotid = -1;
+
+static int      s_ap_active   = 0;
+static uint64_t s_ap_t0_ms    = 0;
+static uint64_t s_ap_bytes    = 0;
+static uint32_t s_ap_pkts     = 0;
+static uint32_t s_ap_badsync  = 0;
+static uint32_t s_ap_ccerr    = 0;
+static uint8_t  s_ap_seen[8192];   /* PID present bitmap */
+static uint8_t  s_ap_cc[8192];     /* last CC per PID, 0xFF = none seen yet */
+
+/* Milliseconds, local to this file so the experiment does not depend on a helper
+ * from another translation unit. gettimeofday to match _rist_now_ms() in
+ * app_rist_capture.c:216 -- the window is 10s and only ever used as a delta, so
+ * wall-clock is sufficient here. */
+static uint64_t _ts_rec_now_ms(void)
+{
+    struct timeval tv;
+
+    gettimeofday(&tv, NULL);
+    return (uint64_t)tv.tv_sec * 1000ULL + (uint64_t)(tv.tv_usec / 1000);
+}
+
 static void _ts_rec_modid_refresh(void)
 {
     FILE *fp = fopen("/tmp/ristdmx", "r");
@@ -183,8 +237,23 @@ static void _ts_rec_modid_refresh(void)
         fclose(fp);
     }
 
-    printf("[DVB2IP] modid=%d (echo 0..%d > /tmp/ristdmx)  psi=%dms (echo ms > /tmp/ristpsims)\n",
-           s_ts_rec_modid, TS_REC_DEMUX_MOD_MAX - 1, s_ts_rec_psi_ms);
+    fp = fopen(TS_REC_ALLPASS_FILE, "r");
+    if(fp)
+    {
+        int v = 0;
+        if(fscanf(fp, "%d", &v) == 1)
+            s_ts_rec_allpass = (v != 0);
+        fclose(fp);
+    }
+    else
+    {
+        s_ts_rec_allpass = 0;
+    }
+
+    printf("[DVB2IP] modid=%d (echo 0..%d > /tmp/ristdmx)  psi=%dms (echo ms > /tmp/ristpsims)"
+           "  allpass=%d (echo 1 > %s)\n",
+           s_ts_rec_modid, TS_REC_DEMUX_MOD_MAX - 1, s_ts_rec_psi_ms,
+           s_ts_rec_allpass, TS_REC_ALLPASS_FILE);
 }
 
 static void _ts_rec_prog_release(ProgDmxInfo *prog);
@@ -816,6 +885,64 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                                                                      "CIPHERTEXT/UNKNOWN: no 188-framing, no start codes");
                             s_ts_rec_diag_rearm = 0;
                         }
+
+                        /* P1 measurement window. Answers three questions the
+                         * SlotAlloc return code cannot: is it really all-pass
+                         * (distinct PID count), can the pipeline carry the full
+                         * multiplex (achieved rate), and is the 78ms DVR buffer
+                         * overrunning (continuity discontinuities climbing). */
+                        if(s_ap_active)
+                        {
+                            int k;
+
+                            if(s_ap_t0_ms == 0)
+                                s_ap_t0_ms = _ts_rec_now_ms();
+
+                            s_ap_bytes += (uint64_t)read_len;
+                            for(k = 0; k + 187 < read_len; k += 188)
+                            {
+                                uint8_t *p = buffer + k;
+                                uint16_t pid;
+                                uint8_t  cc;
+
+                                s_ap_pkts++;
+                                if(p[0] != 0x47) { s_ap_badsync++; continue; }
+
+                                pid = (uint16_t)(((p[1] & 0x1F) << 8) | p[2]);
+                                s_ap_seen[pid] = 1;
+
+                                if(pid == 0x1FFF) continue;   /* nulls carry no CC   */
+                                if(p[1] & 0x80)   continue;   /* TEI: CC untrusted   */
+                                if(!(p[3] & 0x10)) continue;  /* no payload: no bump  */
+
+                                cc = (uint8_t)(p[3] & 0x0F);
+                                if(s_ap_cc[pid] != 0xFF && cc != ((s_ap_cc[pid] + 1) & 0x0F))
+                                    s_ap_ccerr++;
+                                s_ap_cc[pid] = cc;
+                            }
+
+                            if((_ts_rec_now_ms() - s_ap_t0_ms) >= (uint64_t)TS_REC_ALLPASS_MS)
+                            {
+                                uint64_t ms = _ts_rec_now_ms() - s_ap_t0_ms;
+                                int npid = 0;
+
+                                if(ms == 0) ms = 1;
+                                for(k = 0; k < 8192; k++) if(s_ap_seen[k]) npid++;
+
+                                printf("[ALLPASS] %llu bytes / %llu ms = %llu kbit/s  packets=%u\n",
+                                       (unsigned long long)s_ap_bytes,
+                                       (unsigned long long)ms,
+                                       (unsigned long long)((s_ap_bytes * 8ULL) / ms),
+                                       s_ap_pkts);
+                                printf("[ALLPASS] distinct PIDs=%d  badsync=%u  CC discontinuities=%u\n",
+                                       npid, s_ap_badsync, s_ap_ccerr);
+                                printf("[ALLPASS] PIDs:");
+                                for(k = 0; k < 8192; k++) if(s_ap_seen[k]) printf(" %04x", k);
+                                printf("\n");
+                                s_ap_active = 0;
+                            }
+                        }
+
                         ts_multi_fifo_write(prog->fifo, buffer, read_len);
                         if(read_len > 188)
                             need_delay = false;
@@ -842,6 +969,32 @@ int32_t app_ts_record_init(int32_t fifo_size, int32_t max_prog)
     {
         TS_REC_ERR("params error");
         return -1;
+    }
+
+    /* Bundled with P1 because a flash cycle is expensive and neither of these has
+     * ever been printed on this hardware.
+     *
+     * DMX_SUB_NUM/SLOT_NUM/FILTER_NUM are runtime variables assigned by a
+     * hardcoded stub (dmx_sub_system.c:178-184 -> 2 / 64 / 64). If the numbers
+     * below are anything else, that stub is not what runs and several conclusions
+     * drawn from it need revisiting. Zeros mean the SI subsystem has not been
+     * initialised yet at this point, which is also worth knowing.
+     *
+     * firewall_flag is the TSW at-rest protection state, which decides whether
+     * the captured buffer is readable -- previously only ever inferred from
+     * whether the DVR DIAG line came back as ciphertext.
+     *
+     * Declared extern rather than by header: GxSubsystem_DmxGetHardwareNum lives
+     * in platform/gxbus/include/sub_system/... and resolves through libgxdvb at
+     * link time, but nothing else in solution/app includes that header, so this
+     * avoids depending on its installed path. */
+    {
+        extern void GxSubsystem_DmxGetHardwareNum(uint32_t *dmx, uint32_t *channel_num);
+        uint32_t dmx_num = 0, chan_num = 0;
+
+        GxSubsystem_DmxGetHardwareNum(&dmx_num, &chan_num);
+        printf("[DVB2IP] DMX_SUB_NUM=%u  channel_num=max(slot,filter)=%u  firewall_flag=0x%x\n",
+               dmx_num, chan_num, GxAvdev_GetFirewallFlag());
     }
 
     if(0 == ctrl->mutex)
@@ -1679,28 +1832,87 @@ static int32_t _ts_rec_prog_config(int32_t index, TsRecConfig *config)
     aslot_flags = (DMX_REPEAT_MODE|DMX_PTS_TO_SDRAM|DMX_TSOUT_EN|DMX_DES_EN|DMX_ERR_DISCARD_EN);
     vslot_flags = (DMX_REPEAT_MODE|DMX_PTS_TO_SDRAM|DMX_TSOUT_EN|DMX_DES_EN);
 
-    if(VALID_PID(node_prog.video_pid) && _ts_rec_demux_slot_alloc(index, node_prog.video_pid, vslot_flags, DEMUX_SLOT_VIDEO) < 0)
+    /* P1: all-pass arm. _ts_rec_demux_slot_alloc() cannot be reused -- it rejects
+     * on !VALID_PID (see its head) and a MUXTS slot carries no PID at all, which
+     * is precisely the property under test. Allocate directly, exactly as the
+     * vendor autotest does: .type and .flags only, .pid left zeroed by the memset
+     * and deliberately never assigned. */
+    if(s_ts_rec_allpass)
     {
-        TS_REC_ERR("demux slot pid = %d alloc failed", node_prog.video_pid);
-        return -1;
+        GxDemuxProperty_Slot mslot;
+        int32_t ret;
+
+        memset(&mslot, 0, sizeof(GxDemuxProperty_Slot));
+        mslot.type  = TS_REC_SLOT_MUXTS;
+        /* Same flag set as the per-PID capture MINUS DMX_DES_EN (0x40): the
+         * repair topology wants SCRAMBLED bytes so they match the server's sc=2.
+         * 0x1a = DMX_REPEAT_MODE|DMX_PTS_TO_SDRAM|DMX_TSOUT_EN. */
+        mslot.flags = (DMX_REPEAT_MODE|DMX_PTS_TO_SDRAM|DMX_TSOUT_EN);
+
+        ret = GxAVGetProperty(ctrl->dev, ctrl->dmx_handle, GxDemuxPropertyID_SlotAlloc,
+                              &mslot, sizeof(GxDemuxProperty_Slot));
+        if(ret < 0)
+        {
+            printf("[ALLPASS] SlotAlloc(MUXTS type=%d, no pid) REFUSED ret=%d"
+                   " -> ALL-PASS NOT AVAILABLE on dmx%d. Falling back to per-PID slots.\n",
+                   TS_REC_SLOT_MUXTS, ret, s_ts_rec_modid);
+            s_ts_rec_allpass = 0;
+        }
+        else
+        {
+            s_ts_rec_mux_slotid = mslot.slot_id;
+            printf("[ALLPASS] SlotAlloc OK slot_id=%d type=%d flags=0x%x on dmx%d\n",
+                   mslot.slot_id, mslot.type, mslot.flags, s_ts_rec_modid);
+
+            ret = GxAVSetProperty(ctrl->dev, ctrl->dmx_handle, GxDemuxPropertyID_SlotConfig,
+                                  &mslot, sizeof(GxDemuxProperty_Slot));
+            printf("[ALLPASS] SlotConfig ret=%d\n", ret);
+
+            ret = GxAVSetProperty(ctrl->dev, ctrl->dmx_handle, GxDemuxPropertyID_SlotEnable,
+                                  &mslot, sizeof(GxDemuxProperty_Slot));
+            printf("[ALLPASS] SlotEnable ret=%d -> measuring %dms\n", ret, TS_REC_ALLPASS_MS);
+
+            memset(s_ap_seen, 0x00, sizeof(s_ap_seen));
+            memset(s_ap_cc,   0xFF, sizeof(s_ap_cc));
+            s_ap_bytes = 0; s_ap_pkts = 0; s_ap_badsync = 0; s_ap_ccerr = 0;
+            s_ap_t0_ms = 0;                 /* stamped on the first DVR read */
+            s_ap_active = 1;
+        }
     }
 
-    if(VALID_PID(node_prog.cur_audio_pid) && _ts_rec_demux_slot_alloc(index, node_prog.cur_audio_pid, aslot_flags, DEMUX_SLOT_AUDIO) < 0)
+    if(!s_ts_rec_allpass)
     {
-        TS_REC_ERR("demux slot pid = %d alloc failed", node_prog.cur_audio_pid);
-        return -1;
+        if(VALID_PID(node_prog.video_pid) && _ts_rec_demux_slot_alloc(index, node_prog.video_pid, vslot_flags, DEMUX_SLOT_VIDEO) < 0)
+        {
+            TS_REC_ERR("demux slot pid = %d alloc failed", node_prog.video_pid);
+            return -1;
+        }
+
+        if(VALID_PID(node_prog.cur_audio_pid) && _ts_rec_demux_slot_alloc(index, node_prog.cur_audio_pid, aslot_flags, DEMUX_SLOT_AUDIO) < 0)
+        {
+            TS_REC_ERR("demux slot pid = %d alloc failed", node_prog.cur_audio_pid);
+            return -1;
+        }
     }
 
-    if(true == config->user_pmt && _ts_rec_user_info_generate(index, config) < 0)
+    /* Under all-pass both of these are wrong for the measurement: the generated
+     * PAT/PMT are packets the multiplex never carried (and they bypass the DVR
+     * read, stealing loop iterations from it), and the ext slots are redundant
+     * when every PID is already delivered. Skip both so what the window counts is
+     * exactly what the MUXTS slot produced. */
+    if(!s_ts_rec_allpass)
     {
-        TS_REC_ERR("user info generate failed");
-        return -1;
-    }
+        if(true == config->user_pmt && _ts_rec_user_info_generate(index, config) < 0)
+        {
+            TS_REC_ERR("user info generate failed");
+            return -1;
+        }
 
-    if(_ts_rec_demux_ext_slot_alloc(index, config) < 0)
-    {
-        TS_REC_ERR("demux ext alloc failed");
-        return -1;
+        if(_ts_rec_demux_ext_slot_alloc(index, config) < 0)
+        {
+            TS_REC_ERR("demux ext alloc failed");
+            return -1;
+        }
     }
 
 #if CA_SUPPORT
