@@ -126,6 +126,12 @@ typedef struct _TsRecCtrl
     int32_t users;
     TsRecStatus status;
     GxDemuxProperty_Slot slot[TS_REC_DEMUX_SLOT_MAX];
+    /* Occupancy, tracked separately because NO field of GxDemuxProperty_Slot can
+     * stand in for it: pid 0 is the PAT and slot_id 0 is a real slot id, so a
+     * zeroed entry is indistinguishable from a legitimately allocated one. The
+     * table used to infer "free" from pid == 0, which made a PID-0 slot invisible
+     * and let its index be handed out twice. */
+    uint8_t              slot_used[TS_REC_DEMUX_SLOT_MAX];
 }TsRecCtrl;
 
 enum LogLevel
@@ -795,7 +801,7 @@ static int32_t _ts_rec_slot_find(uint16_t pid)
 
     for(i = 0; i < TS_REC_DEMUX_SLOT_MAX; i++)
     {
-        if(ctrl->slot[i].pid == pid)
+        if(ctrl->slot_used[i] && ctrl->slot[i].pid == pid)
             return i;
     }
 
@@ -809,7 +815,7 @@ static int32_t _ts_rec_free_slot_get(void)
 
     for(i = 0; i < TS_REC_DEMUX_SLOT_MAX; i++)
     {
-        if(0 == ctrl->slot[i].pid)
+        if(0 == ctrl->slot_used[i])
             return i;
     }
 
@@ -825,6 +831,7 @@ static int32_t _ts_rec_slot_add(GxDemuxProperty_Slot slot)
         return -1;
 
     ctrl->slot[slot_index] = slot;
+    ctrl->slot_used[slot_index] = 1;
 
     return slot_index;
 }
@@ -2111,6 +2118,7 @@ static void _ts_rec_prog_release(ProgDmxInfo *prog)
         {
             _ts_rec_demux_slot_free(&ctrl->slot[slot_index[i]]);
             memset(&ctrl->slot[slot_index[i]], 0, sizeof(GxDemuxProperty_Slot));
+            ctrl->slot_used[slot_index[i]] = 0;
         }
     }
 #if DVB2IP_SERVER_USE_STATIC_SCREEN
@@ -2165,6 +2173,7 @@ static void _ts_rec_prog_release(ProgDmxInfo *prog)
         {
             _ts_rec_demux_slot_free(&ctrl->slot[*(ext_slot_idx + i)]);
             memset(&ctrl->slot[*(ext_slot_idx + i)], 0, sizeof(GxDemuxProperty_Slot));
+            ctrl->slot_used[*(ext_slot_idx + i)] = 0;
         }
 
         ext_slot_idx[i] = -1;
@@ -2293,6 +2302,7 @@ void app_ts_record_destroy(void)
     _ts_rec_demux_device_close();
 
     memset(ctrl->slot, 0, sizeof(GxDemuxProperty_Slot) * TS_REC_DEMUX_SLOT_MAX);
+    memset(ctrl->slot_used, 0, sizeof(ctrl->slot_used));
     ctrl->inited = false;
 end:
     GxCore_MutexUnlock(ctrl->mutex);
