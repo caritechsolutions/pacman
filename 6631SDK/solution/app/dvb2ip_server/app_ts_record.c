@@ -165,22 +165,33 @@ static int     s_ts_rec_diag_rearm  = 1;    /* re-arm the one-shot DVR-read DIAG
 static int     s_ts_rec_psi_ms      = 100;
 
 /* ---------------------------------------------------------------- P1: ALL-PASS
- * DEMUX_SLOT_MUXTS experiment. The slot type exists in the demux enum (recovered
- * from DWARF) and the vendor's own autotest allocates it with NO .pid assigned
- * (module_tsfilter.c:119-137, "sepical slot", behind #if 0) -- which is the shape
- * of an all-PID slot, but it is untested vendor code.
+ * DEMUX_SLOT_MUXTS experiment.
  *
- * Gated on /tmp/ristallpass so ONE flash covers both arms, defaulting OFF: a bad
- * result is one file away from the working box, and a refused SlotAlloc falls
- * back to the per-PID slots rather than leaving the box with no capture.
+ * FIRST RUN RESULT (2026-09-03): SlotAlloc/Config/Enable all returned 0 and the
+ * slot then carried 68 packets in 10.2s, ALL of them PID 0x0000. That was read
+ * as "allocated but empty". It is not: it is a slot on PID 0, working correctly.
+ *
+ * The bug was mine. "No .pid assigned" is not "no PID" -- the struct is
+ * zero-initialised and 0x0000 is a perfectly legal PID, the PAT. The vendor
+ * autotest has the identical ambiguity: sg_MuxSlot is a file-scope static, so
+ * its .pid is 0 there too. Neither test ever asked for all-pass.
+ *
+ * The result is still informative: the driver HONOURED the pid field on a MUXTS
+ * slot, so slot type alone does not mean "ignore pid". If an all-pass path
+ * exists it needs an explicit wildcard pid, which is what the knob below is for.
  *
  *   echo 0 > /tmp/ristchain      (chain off -- nothing else competing)
- *   echo 1 > /tmp/ristallpass
- *   then start ONE stream and read the [ALLPASS] lines.
+ *   echo <pid> > /tmp/ristallpass
+ *        1     -> MUXTS with pid 0x0000 (the original run; reproduces the PAT)
+ *        8191  -> 0x1FFF, the null PID
+ *        8192  -> 0x2000, the conventional "all PIDs" sentinel
+ *   then zap. The pid is a runtime knob so candidates can be tried without a
+ *   reflash: distinct PIDs > 1 in the window means all-pass, anything else does
+ *   not.
  *
  * The measurement matters more than the return code: an allocation that succeeds
- * but delivers nothing, or delivers at full rate while the 78ms DVR buffer
- * overruns, both look like success from SlotAlloc alone. */
+ * but delivers one PID, and one that delivers at full rate while the 78ms DVR
+ * buffer overruns, both look like success from SlotAlloc alone. */
 #define TS_REC_ALLPASS_FILE   "/tmp/ristallpass"
 #define TS_REC_ALLPASS_MS     (10000)      /* measurement window */
 
@@ -194,6 +205,7 @@ static int     s_ts_rec_psi_ms      = 100;
  * worth the round trip. */
 #define TS_REC_SLOT_MUXTS     (5)
 static int      s_ts_rec_allpass    = 0;
+static int32_t  s_ts_rec_mux_pid    = 0;   /* pid handed to the MUXTS slot */
 static int32_t  s_ts_rec_mux_slotid = -1;
 
 static int      s_ap_active   = 0;
@@ -242,7 +254,13 @@ static void _ts_rec_modid_refresh(void)
     {
         int v = 0;
         if(fscanf(fp, "%d", &v) == 1)
+        {
             s_ts_rec_allpass = (v != 0);
+            /* 0/1 keep the original pid-0 behaviour; anything larger is used as
+             * the MUXTS pid directly, so wildcard candidates (8191 = 0x1FFF,
+             * 8192 = 0x2000) can be tried without a reflash. */
+            s_ts_rec_mux_pid = (v > 1) ? v : 0;
+        }
         fclose(fp);
     }
     else
@@ -251,9 +269,9 @@ static void _ts_rec_modid_refresh(void)
     }
 
     printf("[DVB2IP] modid=%d (echo 0..%d > /tmp/ristdmx)  psi=%dms (echo ms > /tmp/ristpsims)"
-           "  allpass=%d (echo 1 > %s)\n",
+           "  allpass=%d muxpid=0x%04x (echo <pid> > %s)\n",
            s_ts_rec_modid, TS_REC_DEMUX_MOD_MAX - 1, s_ts_rec_psi_ms,
-           s_ts_rec_allpass, TS_REC_ALLPASS_FILE);
+           s_ts_rec_allpass, s_ts_rec_mux_pid, TS_REC_ALLPASS_FILE);
 }
 
 static void _ts_rec_prog_release(ProgDmxInfo *prog);
@@ -883,6 +901,30 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                                    (nsync >= npkt && nsc > 0)      ? "CLEAR TS (already decodable)" :
                                    (nsync >= npkt && nsc == 0)     ? "CIPHERTEXT: clear headers, encrypted payloads" :
                                                                      "CIPHERTEXT/UNKNOWN: no 188-framing, no start codes");
+                            /* Demux subsystem counts. Deliberately read HERE and
+                             * not at app_ts_record_init(): DMX_SUB_NUM and friends
+                             * are plain globals assigned only by get_hard_num(),
+                             * reached only via GxSubSystem_DmxInit() <-
+                             * GxSubSystem_SiEngineInit() (si_sub_engine.c:699,
+                             * behind a si_first_init guard). Before the SI engine
+                             * runs they are zero -- which is exactly what the first
+                             * flash printed. By the first DVR read the play path
+                             * including SI has been through, so this reads a real
+                             * value. The stub can only ever write 2/64/64, so
+                             * anything else here means the stub is not what runs.
+                             *
+                             * extern rather than by header: the declaration lives
+                             * in platform/gxbus/include/sub_system/... which nothing
+                             * else in solution/app includes, and it resolves through
+                             * libgxdvb at link time. */
+                            {
+                                extern void GxSubsystem_DmxGetHardwareNum(uint32_t *dmx, uint32_t *channel_num);
+                                uint32_t dmx_num = 0, chan_num = 0;
+
+                                GxSubsystem_DmxGetHardwareNum(&dmx_num, &chan_num);
+                                printf("[DVB2IP] DMX_SUB_NUM=%u  channel_num=max(slot,filter)=%u  firewall_flag=0x%x\n",
+                                       dmx_num, chan_num, GxAvdev_GetFirewallFlag());
+                            }
                             s_ts_rec_diag_rearm = 0;
                         }
 
@@ -971,31 +1013,6 @@ int32_t app_ts_record_init(int32_t fifo_size, int32_t max_prog)
         return -1;
     }
 
-    /* Bundled with P1 because a flash cycle is expensive and neither of these has
-     * ever been printed on this hardware.
-     *
-     * DMX_SUB_NUM/SLOT_NUM/FILTER_NUM are runtime variables assigned by a
-     * hardcoded stub (dmx_sub_system.c:178-184 -> 2 / 64 / 64). If the numbers
-     * below are anything else, that stub is not what runs and several conclusions
-     * drawn from it need revisiting. Zeros mean the SI subsystem has not been
-     * initialised yet at this point, which is also worth knowing.
-     *
-     * firewall_flag is the TSW at-rest protection state, which decides whether
-     * the captured buffer is readable -- previously only ever inferred from
-     * whether the DVR DIAG line came back as ciphertext.
-     *
-     * Declared extern rather than by header: GxSubsystem_DmxGetHardwareNum lives
-     * in platform/gxbus/include/sub_system/... and resolves through libgxdvb at
-     * link time, but nothing else in solution/app includes that header, so this
-     * avoids depending on its installed path. */
-    {
-        extern void GxSubsystem_DmxGetHardwareNum(uint32_t *dmx, uint32_t *channel_num);
-        uint32_t dmx_num = 0, chan_num = 0;
-
-        GxSubsystem_DmxGetHardwareNum(&dmx_num, &chan_num);
-        printf("[DVB2IP] DMX_SUB_NUM=%u  channel_num=max(slot,filter)=%u  firewall_flag=0x%x\n",
-               dmx_num, chan_num, GxAvdev_GetFirewallFlag());
-    }
 
     if(0 == ctrl->mutex)
     {
@@ -1844,6 +1861,9 @@ static int32_t _ts_rec_prog_config(int32_t index, TsRecConfig *config)
 
         memset(&mslot, 0, sizeof(GxDemuxProperty_Slot));
         mslot.type  = TS_REC_SLOT_MUXTS;
+        /* Set explicitly. The first run left this at 0 by memset and got the PAT
+         * back, which is what a pid-0 slot should do -- the field is honoured. */
+        mslot.pid   = (uint16_t)s_ts_rec_mux_pid;
         /* Same flag set as the per-PID capture MINUS DMX_DES_EN (0x40): the
          * repair topology wants SCRAMBLED bytes so they match the server's sc=2.
          * 0x1a = DMX_REPEAT_MODE|DMX_PTS_TO_SDRAM|DMX_TSOUT_EN. */
@@ -1853,16 +1873,16 @@ static int32_t _ts_rec_prog_config(int32_t index, TsRecConfig *config)
                               &mslot, sizeof(GxDemuxProperty_Slot));
         if(ret < 0)
         {
-            printf("[ALLPASS] SlotAlloc(MUXTS type=%d, no pid) REFUSED ret=%d"
+            printf("[ALLPASS] SlotAlloc(MUXTS type=%d pid=0x%04x) REFUSED ret=%d"
                    " -> ALL-PASS NOT AVAILABLE on dmx%d. Falling back to per-PID slots.\n",
-                   TS_REC_SLOT_MUXTS, ret, s_ts_rec_modid);
+                   TS_REC_SLOT_MUXTS, s_ts_rec_mux_pid, ret, s_ts_rec_modid);
             s_ts_rec_allpass = 0;
         }
         else
         {
             s_ts_rec_mux_slotid = mslot.slot_id;
-            printf("[ALLPASS] SlotAlloc OK slot_id=%d type=%d flags=0x%x on dmx%d\n",
-                   mslot.slot_id, mslot.type, mslot.flags, s_ts_rec_modid);
+            printf("[ALLPASS] SlotAlloc OK slot_id=%d type=%d pid=0x%04x flags=0x%x on dmx%d\n",
+                   mslot.slot_id, mslot.type, mslot.pid, mslot.flags, s_ts_rec_modid);
 
             ret = GxAVSetProperty(ctrl->dev, ctrl->dmx_handle, GxDemuxPropertyID_SlotConfig,
                                   &mslot, sizeof(GxDemuxProperty_Slot));
