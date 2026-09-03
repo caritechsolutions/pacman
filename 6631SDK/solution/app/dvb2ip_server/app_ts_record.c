@@ -195,6 +195,23 @@ static int     s_ts_rec_psi_ms      = 100;
 #define TS_REC_ALLPASS_FILE   "/tmp/ristallpass"
 #define TS_REC_ALLPASS_MS     (10000)      /* measurement window */
 
+/* Slot-budget probe. `echo 1 > /tmp/ristslotprobe`, then zap.
+ *
+ * WHY: every "64 slots" figure in this tree is a SOFTWARE array bound, not a
+ * hardware query -- TS_REC_DEMUX_SLOT_MAX here, HW_DEMUX_SLOT_MAX in the player
+ * library, and DMX_SUB_SLOT_NUM in a subsystem that is never initialised in this
+ * build. None of them asks the driver anything. This does: it allocates slots on
+ * successive unused PIDs until SlotAlloc refuses, prints how many the driver
+ * actually granted, then frees every one of them and lets the normal capture
+ * proceed. Bounded so a driver that never refuses cannot spin.
+ *
+ * Probes from 0x1000 upward: high enough not to collide with this transponder's
+ * live PIDs (max seen 0x1FF0), and the slots are freed immediately either way. */
+#define TS_REC_SLOTPROBE_FILE "/tmp/ristslotprobe"
+#define TS_REC_SLOTPROBE_MAX  (128)
+#define TS_REC_SLOTPROBE_BASE (0x1000)
+static int      s_ts_rec_slotprobe  = 0;
+
 /* dmx_slot_type: DEMUX_SLOT_MUXTS = 5, recovered from DWARF in libgxdvb.a
  * (PSI=0 PES=1 PES_AUDIO=2 PES_VIDEO=3 TS=4 MUXTS=5 AUDIO=6 SPDIF=7
  * AUDIO_SPDIF=8 VIDEO=9). Deliberately NOT referenced by its enum name: the only
@@ -249,6 +266,19 @@ static void _ts_rec_modid_refresh(void)
         fclose(fp);
     }
 
+    fp = fopen(TS_REC_SLOTPROBE_FILE, "r");
+    if(fp)
+    {
+        int v = 0;
+        if(fscanf(fp, "%d", &v) == 1)
+            s_ts_rec_slotprobe = (v != 0);
+        fclose(fp);
+    }
+    else
+    {
+        s_ts_rec_slotprobe = 0;
+    }
+
     fp = fopen(TS_REC_ALLPASS_FILE, "r");
     if(fp)
     {
@@ -269,9 +299,10 @@ static void _ts_rec_modid_refresh(void)
     }
 
     printf("[DVB2IP] modid=%d (echo 0..%d > /tmp/ristdmx)  psi=%dms (echo ms > /tmp/ristpsims)"
-           "  allpass=%d muxpid=0x%04x (echo <pid> > %s)\n",
+           "  allpass=%d muxpid=0x%04x (echo <pid> > %s)  slotprobe=%d\n",
            s_ts_rec_modid, TS_REC_DEMUX_MOD_MAX - 1, s_ts_rec_psi_ms,
-           s_ts_rec_allpass, s_ts_rec_mux_pid, TS_REC_ALLPASS_FILE);
+           s_ts_rec_allpass, s_ts_rec_mux_pid, TS_REC_ALLPASS_FILE,
+           s_ts_rec_slotprobe);
 }
 
 static void _ts_rec_prog_release(ProgDmxInfo *prog);
@@ -1848,6 +1879,44 @@ static int32_t _ts_rec_prog_config(int32_t index, TsRecConfig *config)
 
     aslot_flags = (DMX_REPEAT_MODE|DMX_PTS_TO_SDRAM|DMX_TSOUT_EN|DMX_DES_EN|DMX_ERR_DISCARD_EN);
     vslot_flags = (DMX_REPEAT_MODE|DMX_PTS_TO_SDRAM|DMX_TSOUT_EN|DMX_DES_EN);
+
+    /* Slot-budget probe. Runs before anything else is allocated so the count is
+     * the driver's own free-slot budget on this instance, then hands every slot
+     * back so the normal capture below is unaffected. */
+    if(s_ts_rec_slotprobe)
+    {
+        GxDemuxProperty_Slot probe[TS_REC_SLOTPROBE_MAX];
+        int granted = 0, q;
+        int32_t pret = 0;
+
+        for(q = 0; q < TS_REC_SLOTPROBE_MAX; q++)
+        {
+            memset(&probe[q], 0, sizeof(GxDemuxProperty_Slot));
+            probe[q].pid   = (uint16_t)(TS_REC_SLOTPROBE_BASE + q);
+            probe[q].type  = DEMUX_SLOT_PSI;
+            probe[q].flags = (DMX_REPEAT_MODE|DMX_TSOUT_EN);
+
+            pret = GxAVGetProperty(ctrl->dev, ctrl->dmx_handle, GxDemuxPropertyID_SlotAlloc,
+                                   &probe[q], sizeof(GxDemuxProperty_Slot));
+            if(pret < 0)
+                break;
+            granted++;
+        }
+
+        printf("[SLOTPROBE] dmx%d granted %d slot(s) before refusal (ret=%d, cap probed=%d)\n",
+               s_ts_rec_modid, granted, pret, TS_REC_SLOTPROBE_MAX);
+        if(granted > 0)
+            printf("[SLOTPROBE] first slot_id=%d  last slot_id=%d\n",
+                   probe[0].slot_id, probe[granted - 1].slot_id);
+        if(granted == TS_REC_SLOTPROBE_MAX)
+            printf("[SLOTPROBE] NOTE: hit the probe ceiling, the driver did not refuse."
+                   " Real budget is >= %d.\n", TS_REC_SLOTPROBE_MAX);
+
+        for(q = 0; q < granted; q++)
+            GxAVSetProperty(ctrl->dev, ctrl->dmx_handle, GxDemuxPropertyID_SlotFree,
+                            &probe[q], sizeof(GxDemuxProperty_Slot));
+        printf("[SLOTPROBE] freed %d slot(s); continuing with the normal capture\n", granted);
+    }
 
     /* P1: all-pass arm. _ts_rec_demux_slot_alloc() cannot be reused -- it rejects
      * on !VALID_PID (see its head) and a MUXTS slot carries no PID at all, which
