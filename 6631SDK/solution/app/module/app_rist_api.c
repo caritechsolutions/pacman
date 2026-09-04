@@ -347,14 +347,22 @@ static int _api_parse(const char *body)
         p8cut = cJSON_GetObjectItem(c, "part8_pcr_cut");
         p8pcr = cJSON_GetObjectItem(c, "part8_server_pcr_pid");
 
-        /* service_id + rist_url are the minimum needed to act on an entry. */
-        if (!sid || !url || !url->valuestring)
+        /* A service id plus SOME peer to connect to is the minimum. It used to
+         * be rist_url specifically; a Part 8 channel is a standalone record on
+         * the headend with no marker and no Part 7 peer, so it carries
+         * part8_rist_url and no rist_url at all. Requiring rist_url would drop
+         * exactly the channels this box is being pointed at. */
+        if (!sid)
+            continue;
+        if ((!url || !url->valuestring)
+            && !(p8 && p8->valueint && p8url && p8url->valuestring))
             continue;
 
         s_chan[kept].service_id = sid->valueint;
         s_chan[kept].ts_id      = tsid ? tsid->valueint : 0;
         s_chan[kept].marker_pid = mpid ? mpid->valueint : 0;
-        snprintf(s_chan[kept].rist_url, RIST_API_URL_LEN, "%s", url->valuestring);
+        snprintf(s_chan[kept].rist_url, RIST_API_URL_LEN, "%s",
+                 (url && url->valuestring) ? url->valuestring : "");
         snprintf(s_chan[kept].name, RIST_API_NAME_LEN, "%s",
                  (name && name->valuestring) ? name->valuestring : "");
 

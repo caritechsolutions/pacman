@@ -596,6 +596,17 @@ static int _rist_chain_start(void)
         const char *peer = (s_rist.rec.part8 && s_rist.rec.part8_rist_url[0])
                          ? s_rist.rec.part8_rist_url : s_rist.rec.rist_url;
 
+        /* A Part 8 channel is a standalone record with no Part 7 peer, so
+         * rist_url can legitimately be empty -- but then part8_rist_url must be
+         * the one we picked. Neither present means the entry should never have
+         * been cached; refuse rather than starting a chain aimed at "". */
+        if (!peer || !peer[0]) {
+            RIST_LOG("chain: no recovery peer in the API record for service %d "
+                     "-- staying on the factory decode path\n",
+                     s_rist.rec.service_id);
+            return -1;
+        }
+
         RIST_LOG("chain: recovery peer = %s (%s)\n", peer,
                  (peer == s_rist.rec.rist_url) ? "Part 7 marker path"
                                                : "Part 8 per-channel sender");
