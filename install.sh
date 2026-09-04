@@ -316,6 +316,14 @@ LIBRIST_TREE=""
 riststb_dir=""
 
 RISTSTB_URL="${RISTSTB_URL:-https://github.com/caritechsolutions/riststb}"
+# librist now changes per iteration like any other source, so the riststb
+# checkout has to track the SAME branch this script does. Without this the VM's
+# clone stays on whatever branch it happens to sit on -- main, in practice --
+# `git pull --ff-only` advances that instead, and the box silently builds
+# against a librist without the change. That is the two-bundled-copies failure
+# in a different costume. Override with RISTSTB_REF= if the librist work is on a
+# different branch from the app work.
+RISTSTB_REF="${RISTSTB_REF:-$REF}"
 RISTSTB_CLONE="$RIST_TREES/riststb"
 
 # Find the checkout by its remote rather than by path: several trees live under
@@ -357,6 +365,32 @@ fi
 if [ -n "$riststb_dir" ]; then
     log "  riststb checkout: $riststb_dir"
     before="$(git -C "$riststb_dir" rev-parse HEAD 2>/dev/null || echo unknown)"
+
+    # Refuse to touch a dirty tree at all -- switching branches under local edits
+    # would either fail confusingly or carry them onto the new branch.
+    if [ -n "$(git -C "$riststb_dir" status --porcelain 2>/dev/null)" ]; then
+        git -C "$riststb_dir" status --short | sed 's/^/    /' | head -8
+        die "riststb checkout $riststb_dir has local modifications (above).
+     Resolve them there, or set RISTSTB_DIR= to point at a clean checkout.
+     Refusing to build a tree that does not match origin."
+    fi
+
+    # Put the checkout on the branch this iteration expects. Fetch first so the
+    # ref exists locally; if origin has no such branch, fall through to the old
+    # behaviour rather than failing -- librist does not change every iteration.
+    if GIT_TERMINAL_PROMPT=0 git -C "$riststb_dir" fetch origin > "$TMP/fetch.log" 2>&1; then
+        if git -C "$riststb_dir" rev-parse --verify -q "origin/$RISTSTB_REF" >/dev/null; then
+            cur_ref="$(git -C "$riststb_dir" rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+            [ "$cur_ref" = "$RISTSTB_REF" ] || log "  switching riststb $cur_ref -> $RISTSTB_REF"
+            git -C "$riststb_dir" checkout -q -B "$RISTSTB_REF" "origin/$RISTSTB_REF" \
+                || die "could not check out $RISTSTB_REF in $riststb_dir"
+        else
+            log "  origin has no branch $RISTSTB_REF -- staying on $(git -C "$riststb_dir" rev-parse --abbrev-ref HEAD)"
+        fi
+    else
+        sed 's/^/    /' "$TMP/fetch.log" 2>/dev/null | head -6
+        log "  WARNING: fetch failed -- using the checkout as-is"
+    fi
 
     # --ff-only on purpose: if someone has local commits or edits on the build
     # VM, stop and say so rather than silently discarding or merging them.

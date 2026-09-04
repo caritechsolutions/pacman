@@ -122,6 +122,7 @@
 #define RIST_OUT_PORT           6200    /* receiver -> player_av (UDP)  */
 
 #define RIST_CHAIN_FLAG_FILE    "/tmp/ristchain"
+#define RIST_PCRCUT_FILE        "/tmp/ristpcrcut"   /* 1 = PCR-boundary cutting */
 #define RIST_DELAY3_FILE        "/tmp/ristdelay3"   /* player delay when the chain is up */
 #define RIST_DELAY3_MS          3000                /* receiver buffer needs longer than loopback */
 
@@ -540,6 +541,21 @@ static int _rist_chain_start(void)
      * The sender's buffer is its retransmit history depth, so it tracks the
      * receiver's -- keeping packets longer than the receiver will ever ask for
      * them is just memory. */
+    /* Part 8 PCR-boundary packetisation, OFF unless /tmp/ristpcrcut says 1.
+     *
+     * When on, the sender re-cuts its input so a payload starts at every packet
+     * carrying a PCR on this service's PCR PID. The server's sender runs the
+     * same librist with the same parameter, so both sides derive identical
+     * payload boundaries from identical bytes and a repair lands where the box
+     * expects it. Off, the sender is one datagram in, one payload out exactly as
+     * today -- so this cannot disturb the Part 7 chain until it is switched on.
+     *
+     * The PID comes from the same program record the capture's slot set is
+     * built from, so the cutter and the slot set cannot disagree about it. */
+    if (_rist_read_int_file(RIST_PCRCUT_FILE, 0) == 1 && VALID_MARKER_PID(s_rist.prog.pcr_pid))
+        snprintf(in_url,  sizeof(in_url),  "udp://@127.0.0.1:%d?pcr_cut=%u",
+                 RIST_CAP_PORT, (unsigned)s_rist.prog.pcr_pid);
+    else
     snprintf(in_url,  sizeof(in_url),  "udp://@127.0.0.1:%d", RIST_CAP_PORT);
     snprintf(out_url, sizeof(out_url), "rist://@127.0.0.1:%d?buffer=%d",
              RIST_LOCAL_PORT, bufms);
