@@ -552,11 +552,32 @@ static int _rist_chain_start(void)
      *
      * The PID comes from the same program record the capture's slot set is
      * built from, so the cutter and the slot set cannot disagree about it. */
-    if (_rist_read_int_file(RIST_PCRCUT_FILE, 0) == 1 && VALID_MARKER_PID(s_rist.prog.pcr_pid))
+    /* Two ways to turn it on, and the API is the production one: the headend
+     * sets part8_pcr_cut on a channel whose per-channel Part 8 sender is
+     * running. /tmp/ristpcrcut stays as the bench override so a box can be
+     * tested against a headend that has not been switched over yet.
+     *
+     * The PID is OURS either way -- never part8_server_pcr_pid. That value is
+     * the headend's pre-uplink PID and is carried for diagnosis only; the PID
+     * present in the bytes this cutter is about to split is the one the tuned
+     * PMT reports. */
+    if ((s_rist.rec.part8_pcr_cut || _rist_read_int_file(RIST_PCRCUT_FILE, 0) == 1)
+        && VALID_MARKER_PID(s_rist.prog.pcr_pid))
         snprintf(in_url,  sizeof(in_url),  "udp://@127.0.0.1:%d?pcr_cut=%u",
                  RIST_CAP_PORT, (unsigned)s_rist.prog.pcr_pid);
     else
     snprintf(in_url,  sizeof(in_url),  "udp://@127.0.0.1:%d", RIST_CAP_PORT);
+
+    /* A mismatch here is not fatal but it is always a misconfiguration, and it
+     * is invisible in the stream, so say so once at chain start rather than
+     * leaving it to be found by a repair that lands in the wrong place. */
+    if (s_rist.rec.part8 && s_rist.rec.part8_server_pcr_pid
+        && s_rist.rec.part8_server_pcr_pid != (int)s_rist.prog.pcr_pid) {
+        RIST_LOG("chain: WARNING headend PCR PID 0x%04X != ours 0x%04X -- the "
+                 "uplink is renumbering, so the two filtered streams differ and "
+                 "Part 8 repairs will not align\n",
+                 s_rist.rec.part8_server_pcr_pid, s_rist.prog.pcr_pid);
+    }
     snprintf(out_url, sizeof(out_url), "rist://@127.0.0.1:%d?buffer=%d",
              RIST_LOCAL_PORT, bufms);
 
@@ -565,10 +586,25 @@ static int _rist_chain_start(void)
      * depend on connection order. If it will not fit, keep the API URL as-is:
      * a chain on the wrong buffer still works, and refusing to start would
      * cost the channel entirely. */
-    if (_rist_url_drop_param(rec_url, sizeof(rec_url), s_rist.rec.rist_url, "buffer") < 0) {
-        RIST_LOG("chain: could not rewrite buffer= in the recovery URL (too long)"
-                 " -- using it unchanged, buffer may differ between peers\n");
-        snprintf(rec_url, sizeof(rec_url), "%s", s_rist.rec.rist_url);
+    /* Which recovery peer to attach to. part8_rist_url is only ever set when the
+     * headend has a per-channel Part 8 sender actually running for this service
+     * (getRecoveryChannels checks the unit is active before advertising it), so
+     * an empty one means Part 7 -- and Part 7 is what rist_url has always
+     * meant. It is not overwritten, so a channel serves both kinds of box at
+     * once from the same ingest. */
+    {
+        const char *peer = (s_rist.rec.part8 && s_rist.rec.part8_rist_url[0])
+                         ? s_rist.rec.part8_rist_url : s_rist.rec.rist_url;
+
+        RIST_LOG("chain: recovery peer = %s (%s)\n", peer,
+                 (peer == s_rist.rec.rist_url) ? "Part 7 marker path"
+                                               : "Part 8 per-channel sender");
+
+        if (_rist_url_drop_param(rec_url, sizeof(rec_url), peer, "buffer") < 0) {
+            RIST_LOG("chain: could not rewrite buffer= in the recovery URL (too long)"
+                     " -- using it unchanged, buffer may differ between peers\n");
+            snprintf(rec_url, sizeof(rec_url), "%s", peer);
+        }
     }
 
     /* receiver: two peers, comma separated (stock tools/ristreceiver splits on ',').

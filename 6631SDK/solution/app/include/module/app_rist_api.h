@@ -26,6 +26,30 @@ typedef struct _AppRistRecovery
     int  marker_pid;
     char rist_url[RIST_API_URL_LEN];
     char name[RIST_API_NAME_LEN];
+
+    /* ---- Part 8, all optional. A headend that serves only Part 7 sends none
+     * of these, cJSON leaves them absent, and every field below stays 0/"" --
+     * which is exactly the factory Part 7 behaviour. */
+
+    /* 1 = this channel has a Part 8 per-channel recovery sender running. */
+    int  part8;
+
+    /* Where that sender listens. Used INSTEAD of rist_url when part8 is set;
+     * rist_url keeps its Part 7 meaning and is left alone so a box that falls
+     * back to Part 7 still has it. */
+    char part8_rist_url[RIST_API_URL_LEN];
+
+    /* 1 = cut our own sender's payloads at PCR boundaries, so our framing
+     * matches the headend's. The PID is NOT taken from the API: see below. */
+    int  part8_pcr_cut;
+
+    /* The headend's PCR PID, PRE-UPLINK. DIAGNOSTIC ONLY -- never feed this to
+     * our own ?pcr_cut. Ours must be the PID in the bytes WE are cutting, which
+     * is what the tuned PMT says (GxBus_PmProgGetById -> prog.pcr_pid) after the
+     * uplink mux has had its way. The headend refuses to enable Part 8 on a
+     * channel that remaps, so the two agree today; keeping them separate means
+     * a future remap breaks loudly here rather than silently misaligning. */
+    int  part8_server_pcr_pid;
 } AppRistRecovery;
 
 /**

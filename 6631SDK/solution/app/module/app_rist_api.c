@@ -329,6 +329,7 @@ static int _api_parse(const char *body)
     for (i = 0; i < num && kept < RIST_API_MAX_CHANNELS; i++) {
         cJSON *c = cJSON_GetArrayItem(channels, i);
         cJSON *sid, *tsid, *mpid, *url, *name;
+        cJSON *p8, *p8url, *p8cut, *p8pcr;
 
         if (!c)
             continue;
@@ -338,6 +339,13 @@ static int _api_parse(const char *body)
         mpid = cJSON_GetObjectItem(c, "marker_pid");
         url  = cJSON_GetObjectItem(c, "rist_url");
         name = cJSON_GetObjectItem(c, "name");
+
+        /* Part 8. Absent on a Part 7-only headend, and absent is the answer
+         * that keeps this box exactly as it is today. */
+        p8    = cJSON_GetObjectItem(c, "part8");
+        p8url = cJSON_GetObjectItem(c, "part8_rist_url");
+        p8cut = cJSON_GetObjectItem(c, "part8_pcr_cut");
+        p8pcr = cJSON_GetObjectItem(c, "part8_server_pcr_pid");
 
         /* service_id + rist_url are the minimum needed to act on an entry. */
         if (!sid || !url || !url->valuestring)
@@ -349,6 +357,18 @@ static int _api_parse(const char *body)
         snprintf(s_chan[kept].rist_url, RIST_API_URL_LEN, "%s", url->valuestring);
         snprintf(s_chan[kept].name, RIST_API_NAME_LEN, "%s",
                  (name && name->valuestring) ? name->valuestring : "");
+
+        /* Part 8 needs BOTH the flag and a URL to connect to. A record with the
+         * flag and no URL is a headend half way through a config change, and
+         * acting on it would point the chain at nothing -- so it is treated as
+         * "no Part 8" and the box uses the Part 7 path it already has. */
+        if (p8 && p8->valueint && p8url && p8url->valuestring) {
+            s_chan[kept].part8 = 1;
+            snprintf(s_chan[kept].part8_rist_url, RIST_API_URL_LEN, "%s",
+                     p8url->valuestring);
+            s_chan[kept].part8_pcr_cut        = p8cut ? p8cut->valueint : 0;
+            s_chan[kept].part8_server_pcr_pid = p8pcr ? p8pcr->valueint : 0;
+        }
         kept++;
     }
 
@@ -370,6 +390,11 @@ static void _api_dump(void)
                 i, s_chan[i].service_id, s_chan[i].ts_id,
                 s_chan[i].marker_pid, s_chan[i].marker_pid, s_chan[i].name);
         API_LOG("      rist_url=%s\n", s_chan[i].rist_url);
+        if (s_chan[i].part8) {
+            API_LOG("      PART 8: url=%s pcr_cut=%d server_pcr_pid=%d (0x%04X)\n",
+                    s_chan[i].part8_rist_url, s_chan[i].part8_pcr_cut,
+                    s_chan[i].part8_server_pcr_pid, s_chan[i].part8_server_pcr_pid);
+        }
     }
     if (s_chan_num == 0)
         API_LOG("  (none -- every channel stays on the factory decode path)\n");
