@@ -40,6 +40,7 @@
 #include "module/app_rist_stats.h"             /* per-view statistics */
 #include "gxplayer.h"                          /* umbrella -> GxPlayer_MediaPlay/MediaStop */
 #include "module/player/gxmedia_api.h"        /* Part 8 dmx3 tail: memory-fed demux */
+#include "module/si/si_filter.h"             /* U1 probe: section filters on dmx3 */
 #include "../dvb2ip_server/app_ts_record.h"    /* app_ts_record_* + TsRecConfig (DVB2IP-gated) */
 
 #include <stdio.h>
@@ -162,6 +163,33 @@
  * buffer (4000ms default) before it emits anything at all. */
 #define RIST_P8_TAIL_FIRSTFRAME_MS  12000
 #define RIST_P8_TAIL_POLL_MS        500
+
+/* U1 PROBE. Does a MEMORY-FED demux run hardware SECTION FILTERS?
+ *
+ * This is the single unknown the whole SI/EPG/CAS-off-the-repaired-stream
+ * architecture rests on, and nothing in this SDK demonstrates it. Three
+ * subsystems ASSUME it -- gxfrontend_net.c feeds demux 0 from SDRAM and is
+ * registered as a frontend, app_pdmx.c makes the consumers' demux SDRAM-fed
+ * while moving the tuner elsewhere, dvbsource_tscache.c does the same -- but
+ * all three are compiled out or config-gated off on this build, so not one of
+ * them has ever run here.
+ *
+ * The probe uses the PLATFORM'S OWN SI filter API rather than a hand-rolled
+ * slot+filter, because what has to be proven is not "can I get bytes out of
+ * the hardware" -- it is "would app_epg and app_time get their tables". Those
+ * go through GxBus_SiFilterCreate()/GxBus_SiFilterRead(), so the probe does
+ * too, on the same demux id and with ts_src = DEMUX_SDRAM.
+ *
+ * Needs the tables to be IN the stream: /tmp/ristp8psi=1. Without it the
+ * capture carries the box's own PAT/PMT and no SDT/EIT/TDT at all, and a
+ * silent probe would mean nothing.
+ *
+ *   echo 1 > /tmp/ristp8psi
+ *   echo 1 > /tmp/ristp8sec
+ */
+#define RIST_P8_SECPROBE_FILE   "/tmp/ristp8sec"
+#define RIST_P8_SECPROBE_MAX    4
+#define RIST_P8_SECPROBE_BUF    4096
 #define RIST_PID_P8_SENDER      "/tmp/rist_p8_sender.pid"
 #define RIST_DELAY3_FILE        "/tmp/ristdelay3"   /* player delay when the chain is up */
 #define RIST_DELAY3_MS          3000                /* receiver buffer needs longer than loopback */
@@ -256,6 +284,12 @@ static struct {
     uint64_t            p8_rx_bytes;     /* read off the socket */
     int                 p8_saw_bytes;    /* logged the first accepted inject */
     int                 p8_saw_frame;    /* vpts moved / decoder reported RUNNING */
+
+    /* U1 section-filter probe */
+    int                 p8_sec_on;
+    int16_t             p8_sec_id[RIST_P8_SECPROBE_MAX];
+    uint32_t            p8_sec_sections[RIST_P8_SECPROBE_MAX];
+    uint32_t            p8_sec_bytes[RIST_P8_SECPROBE_MAX];
     AppRistRecovery     rec;             /* API entry for the tuned service */
     pid_t               pid_watchdog;    /* rist_watchdog (owns ristsender_marker) */
     pid_t               pid_receiver;    /* ristreceiver (standalone, not watchdogged) */
@@ -285,6 +319,10 @@ s_rist = {
     .pid_receiver   = -1,
     .p8_tail_fd     = -1,
     .p8_tail_thread = -1,
+    /* -1 is "no filter". Guarded by p8_sec_on everywhere, but a sentinel array
+     * that reads as "filter 0 exists" at boot is the kind of thing that only
+     * bites once someone removes the guard. */
+    .p8_sec_id      = { -1, -1, -1, -1 },
 };
 
 /* Milliseconds since an arbitrary epoch; only differences are used, so the
@@ -691,6 +729,174 @@ static AudioCodecType _rist_p8_acodec(uint32_t t)
     }
 }
 
+/* ------------------------------------------------ U1: section filter probe */
+/*
+ * The four tables the target architecture needs, and who would consume each.
+ * PAT is included because it is the cheapest positive control: if PAT sections
+ * arrive and SDT/EIT do not, the filters work and the STREAM is short of tables;
+ * if nothing arrives at all, the filters do not fire on a memory-fed demux and
+ * the architecture is dead.
+ */
+static const struct {
+    const char *name;
+    uint16_t    pid;
+    uint8_t     tid;
+    uint8_t     tid_mask;
+    const char *consumer;
+} s_p8_sec_tab[RIST_P8_SECPROBE_MAX] = {
+    { "PAT", 0x0000, 0x00, 0xFF, "positive control"        },
+    { "SDT", 0x0011, 0x42, 0xFF, "app_sdt / service names" },
+    /* EIT p/f actual is 0x4E; schedule is 0x50-0x6F. 0xF0 accepts 0x40-0x4F,
+     * which covers p/f actual without dragging in the whole schedule. */
+    { "EIT", 0x0012, 0x4E, 0xF0, "app_epg"                 },
+    { "TDT", 0x0014, 0x70, 0xFF, "app_time"                },
+};
+
+static void _rist_p8_sec_stop(void)
+{
+    int i;
+
+    if (!s_rist.p8_sec_on)
+        return;
+    for (i = 0; i < RIST_P8_SECPROBE_MAX; i++) {
+        if (s_rist.p8_sec_id[i] >= 0) {
+            GxBus_SiFilterStop(RIST_P8_DMX_MODID, s_rist.p8_sec_id[i]);
+            GxBus_SiFilterDestroy(RIST_P8_DMX_MODID, s_rist.p8_sec_id[i]);
+            s_rist.p8_sec_id[i] = -1;
+        }
+    }
+    s_rist.p8_sec_on = 0;
+    RIST_LOG("p8sec: probe filters released\n");
+}
+
+static void _rist_p8_sec_start(void)
+{
+    int i, made = 0;
+
+    if (_rist_read_int_file(RIST_P8_SECPROBE_FILE, 0) != 1)
+        return;
+
+    if (_rist_read_int_file(RIST_P8_PSI_FILE, 0) != 1) {
+        RIST_LOG("p8sec: " RIST_P8_SECPROBE_FILE " is set but " RIST_P8_PSI_FILE
+                 " is NOT -- the capture carries the box's own PAT/PMT and no\n");
+        RIST_LOG("p8sec:   SDT/EIT/TDT, so a silent probe would prove nothing. "
+                 "Refusing to run it.\n");
+        return;
+    }
+
+    for (i = 0; i < RIST_P8_SECPROBE_MAX; i++) {
+        GxSiFilter f;
+
+        s_rist.p8_sec_id[i]       = -1;
+        s_rist.p8_sec_sections[i] = 0;
+        s_rist.p8_sec_bytes[i]    = 0;
+
+        memset(&f, 0, sizeof(f));
+        f.pid         = s_p8_sec_tab[i].pid;
+        f.match_depth = 1;
+        f.eq_or_neq   = EQ_MATCH;
+        f.match[0]    = s_p8_sec_tab[i].tid;
+        f.mask[0]     = s_p8_sec_tab[i].tid_mask;
+        /* CRC off: a table that fails CRC still proves the filter fired, and
+         * proving the filter fired is the entire point of this probe. */
+        f.crc         = CRC_OFF;
+        f.soft_filter = SOFT_OFF;
+
+        /* ts_src = DEMUX_SDRAM (3), demux_id = 3. ts_demux_connect() inside
+         * si_filter.c will open demux 3 and set source = 3 -- the same config
+         * the media module set, so the two are compatible. That overlap is
+         * itself part of what this probe tests. */
+        s_rist.p8_sec_id[i] = GxBus_SiFilterCreate(3, RIST_P8_DMX_MODID, &f);
+        if (s_rist.p8_sec_id[i] < 0) {
+            RIST_LOG("p8sec: %s (pid 0x%04X) FilterCreate FAILED on dmx%d\n",
+                     s_p8_sec_tab[i].name, s_p8_sec_tab[i].pid, RIST_P8_DMX_MODID);
+            continue;
+        }
+        if (GxBus_SiFilterStart(RIST_P8_DMX_MODID, s_rist.p8_sec_id[i]) != GXCORE_SUCCESS) {
+            RIST_LOG("p8sec: %s FilterStart FAILED\n", s_p8_sec_tab[i].name);
+            GxBus_SiFilterDestroy(RIST_P8_DMX_MODID, s_rist.p8_sec_id[i]);
+            s_rist.p8_sec_id[i] = -1;
+            continue;
+        }
+        RIST_LOG("p8sec: %s pid 0x%04X tid 0x%02X/0x%02X -> filter %d (%s)\n",
+                 s_p8_sec_tab[i].name, s_p8_sec_tab[i].pid, s_p8_sec_tab[i].tid,
+                 s_p8_sec_tab[i].tid_mask, s_rist.p8_sec_id[i], s_p8_sec_tab[i].consumer);
+        made++;
+    }
+
+    if (!made) {
+        RIST_LOG("p8sec: NO filters could be created on dmx%d -- U1 answered NO "
+                 "at the allocation step\n", RIST_P8_DMX_MODID);
+        return;
+    }
+    s_rist.p8_sec_on = 1;
+    RIST_LOG("p8sec: %d/%d filters armed on dmx%d (ts_src=DEMUX_SDRAM). "
+             "Sections below or nothing.\n", made, RIST_P8_SECPROBE_MAX, RIST_P8_DMX_MODID);
+}
+
+/* Polled, from the tail's existing watchdog. GxBus_SiFilterRead() is a read of
+ * the filter's fifo -- a non-zero return IS a section, which is the answer. */
+static void _rist_p8_sec_poll(void)
+{
+    static uint8_t buf[RIST_P8_SECPROBE_BUF];
+    int i;
+
+    if (!s_rist.p8_sec_on)
+        return;
+
+    for (i = 0; i < RIST_P8_SECPROBE_MAX; i++) {
+        size_t n;
+
+        if (s_rist.p8_sec_id[i] < 0)
+            continue;
+        n = GxBus_SiFilterRead(RIST_P8_DMX_MODID, s_rist.p8_sec_id[i],
+                               buf, sizeof(buf));
+        if (n == 0)
+            continue;
+
+        if (s_rist.p8_sec_sections[i] == 0) {
+            /* The first section of each table, with its head bytes, so the log
+             * shows a real table and not merely a non-zero length. */
+            RIST_LOG("p8sec: *** %s SECTION on dmx%d, %u bytes: "
+                     "%02X %02X %02X %02X %02X %02X %02X %02X ***\n",
+                     s_p8_sec_tab[i].name, RIST_P8_DMX_MODID, (unsigned)n,
+                     buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
+        }
+        s_rist.p8_sec_sections[i]++;
+        s_rist.p8_sec_bytes[i] += (uint32_t)n;
+    }
+}
+
+static void _rist_p8_sec_report(uint32_t elapsed_ms)
+{
+    int i, any = 0;
+
+    if (!s_rist.p8_sec_on)
+        return;
+
+    for (i = 0; i < RIST_P8_SECPROBE_MAX; i++) {
+        if (s_rist.p8_sec_id[i] < 0)
+            continue;
+        RIST_LOG("p8sec:   %s pid 0x%04X: %u sections, %u bytes  (%s)\n",
+                 s_p8_sec_tab[i].name, s_p8_sec_tab[i].pid,
+                 s_rist.p8_sec_sections[i], s_rist.p8_sec_bytes[i],
+                 s_p8_sec_tab[i].consumer);
+        if (s_rist.p8_sec_sections[i])
+            any = 1;
+    }
+    RIST_LOG("p8sec: U1 VERDICT at T+%ums: section filters on a memory-fed "
+             "demux %s\n", elapsed_ms,
+             any ? "DO FIRE -- the SI/CAS architecture is buildable"
+                 : "produced NOTHING -- see the note below");
+    if (!any) {
+        RIST_LOG("p8sec:   Before concluding they cannot: check ts_in/inj_ok "
+                 "above are non-zero (bytes reached dmx%d at all), and that\n",
+                 RIST_P8_DMX_MODID);
+        RIST_LOG("p8sec:   the PAT control is genuinely in the stream "
+                 "(" RIST_P8_PSI_FILE "=1 slots pid 0x0000).\n");
+    }
+}
+
 static void _rist_p8_tail_stop(void);
 static int  _rist_screen_cb(void *arg);   /* defined further down; the tail's
                                            * watchdog hands the screen back to
@@ -806,8 +1012,19 @@ static int _rist_p8_tail_poll_cb(void *arg)
                  (int)st.video.state, (int)st.video.err_code,
                  (int)st.audio.state, (int)st.audio.err_code);
 
-    if (s_rist.p8_saw_frame)
-        return 0;                       /* decoding: stop polling, leave it alone */
+    _rist_p8_sec_poll();
+    _rist_p8_sec_report(elapsed);
+
+    if (s_rist.p8_saw_frame) {
+        /* Video is decoding, so the tail's own job is done -- but the section
+         * probe is a separate question and has to keep running to answer it.
+         * Keep polling on the same timer rather than stopping here. */
+        if (s_rist.p8_sec_on) {
+            APP_TIMER_ADD(s_rist.p8_tail_timer, _rist_p8_tail_poll_cb,
+                          RIST_P8_TAIL_POLL_MS, TIMER_ONCE);
+        }
+        return 0;
+    }
 
     if (elapsed >= RIST_P8_TAIL_FIRSTFRAME_MS) {
         RIST_LOG("p8tail: NO FIRST FRAME after %ums -- REINJECTION DID NOT DECODE.\n",
@@ -847,6 +1064,7 @@ static void _rist_p8_tail_stop(void)
         close(s_rist.p8_tail_fd);
         s_rist.p8_tail_fd = -1;
     }
+    _rist_p8_sec_stop();
     if (s_rist.p8_mod) {
         if (s_rist.p8_mod_started)
             GxMediaApi_ModuleStop(s_rist.p8_mod, 0);
@@ -972,6 +1190,7 @@ static int _rist_p8_tail_start(void)
 
     s_rist.p8_tail_dmx3 = 1;
     s_rist.p8_tail_t0   = _rist_now_ms();
+    _rist_p8_sec_start();          /* U1 probe; inert unless both knobs are set */
     RIST_LOG("p8tail: reading udp://@127.0.0.1:%d -> dmx%d  (first-frame deadline %dms)\n",
              RIST_P8_OUT_PORT, RIST_P8_DMX_MODID, RIST_P8_TAIL_FIRSTFRAME_MS);
     APP_TIMER_ADD(s_rist.p8_tail_timer, _rist_p8_tail_poll_cb,
