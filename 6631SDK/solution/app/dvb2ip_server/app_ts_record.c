@@ -228,6 +228,41 @@ static int      s_ts_rec_slotprobe  = 0;
  * worth the round trip. */
 #define TS_REC_SLOT_MUXTS     (5)
 static int      s_ts_rec_allpass    = 0;
+
+/* WHOLE-TP MUXER TEST. `echo 1 > /tmp/ristmuxtest`, then zap.
+ *
+ * THE LAST UNTESTED DOOR. The MUXTS experiment above tested a demux SLOT and
+ * proved it per-PID: 0x2000 was refused by the 13-bit pid field's range check,
+ * and 0x1FFF delivered 65,411 packets of PID 0x1FFF -- which is the null PID,
+ * i.e. the slot did its job and we asked for nulls. That killed the slot path.
+ *
+ * It said nothing about THIS path, because this one allocates no slot at all.
+ * hw_demux.c:918/941 (hw_demux_config_muxer) sets FifoConfig.source =
+ * DVR_INPUT_TSPORT when ext_info.is_rawts -- documented in gxplayer_pvr.h:42 as
+ * 整个频点录制, "record the entire transponder" -- and then `goto out`, skipping
+ * every slot allocation. dvbsource_tscache.c:296 does the identical thing when
+ * _track_cache.num == 0, and every slot-allocating function in that file returns
+ * early in the same condition. Two independent subsystems, one semantic:
+ * TSPORT = no slots = the whole stream; DMX = slots = selected PIDs.
+ *
+ * AND THE DESTINATION IS A PARAMETER, NOT MEMHOLE. _ts_rec_dvr_config() below
+ * already sets dst = DVR_OUTPUT_MEM with DVR_FLAG_MEM_NOT_PROTECTED and reads it
+ * back with GxAVModuleRead() -- the readable dmx2 path this capture has always
+ * used. The memhole variant is #if DVB2IP_SERVER_USE_STATIC_SCREEN, a compile
+ * option that supplies explicit buffer pointers, and it is not what runs here.
+ * So the test is one field: src = TSPORT instead of DMX, same destination, same
+ * reader, same measurement window.
+ *
+ * A rejected config falls back to DVR_INPUT_DMX so a failed experiment cannot
+ * take the capture down with it. */
+#define TS_REC_MUXTEST_FILE   "/tmp/ristmuxtest"
+/* dvr_input enum, recovered from DWARF in libgxdvb.a:
+ *   TSPORT=0 MEM=1 DMX=2 T2MI=3 DVR0..3=4..7
+ * Numeric for the same reason TS_REC_SLOT_MUXTS is: DVR_INPUT_DMX is proven
+ * visible in this translation unit, DVR_INPUT_TSPORT is not, and a build failure
+ * costs a flash cycle. */
+#define TS_REC_DVR_IN_TSPORT  (0)
+static int      s_ts_rec_muxtest    = 0;
 static int32_t  s_ts_rec_mux_pid    = 0;   /* pid handed to the MUXTS slot */
 static int32_t  s_ts_rec_mux_slotid = -1;
 
@@ -239,6 +274,9 @@ static uint32_t s_ap_badsync  = 0;
 static uint32_t s_ap_ccerr    = 0;
 static uint8_t  s_ap_seen[8192];   /* PID present bitmap */
 static uint8_t  s_ap_cc[8192];     /* last CC per PID, 0xFF = none seen yet */
+/* Which experiment armed the window, so one log cannot be mistaken for the
+ * other. The two answer different questions and only one of them is still open. */
+static const char *s_ap_tag = "ALLPASS";
 
 /* Milliseconds, local to this file so the experiment does not depend on a helper
  * from another translation unit. gettimeofday to match _rist_now_ms() in
@@ -304,11 +342,35 @@ static void _ts_rec_modid_refresh(void)
         s_ts_rec_allpass = 0;
     }
 
+    fp = fopen(TS_REC_MUXTEST_FILE, "r");
+    if(fp)
+    {
+        int v = 0;
+        if(fscanf(fp, "%d", &v) == 1)
+            s_ts_rec_muxtest = (v != 0);
+        fclose(fp);
+    }
+    else
+    {
+        s_ts_rec_muxtest = 0;
+    }
+
+    /* Mutually exclusive: both reconfigure the same DVR and both arm the same
+     * measurement window, so running them together would produce one log that
+     * answers neither question. The untested one wins. */
+    if(s_ts_rec_muxtest && s_ts_rec_allpass)
+    {
+        printf("[MUXTEST] %s and %s are both set -- MUXTEST wins (the slot path "
+               "is already answered on hardware)\n",
+               TS_REC_MUXTEST_FILE, TS_REC_ALLPASS_FILE);
+        s_ts_rec_allpass = 0;
+    }
+
     printf("[DVB2IP] modid=%d (echo 0..%d > /tmp/ristdmx)  psi=%dms (echo ms > /tmp/ristpsims)"
-           "  allpass=%d muxpid=0x%04x (echo <pid> > %s)  slotprobe=%d\n",
+           "  allpass=%d muxpid=0x%04x (echo <pid> > %s)  slotprobe=%d  muxtest=%d (echo 1 > %s)\n",
            s_ts_rec_modid, TS_REC_DEMUX_MOD_MAX - 1, s_ts_rec_psi_ms,
            s_ts_rec_allpass, s_ts_rec_mux_pid, TS_REC_ALLPASS_FILE,
-           s_ts_rec_slotprobe);
+           s_ts_rec_slotprobe, s_ts_rec_muxtest, TS_REC_MUXTEST_FILE);
 }
 
 static void _ts_rec_prog_release(ProgDmxInfo *prog);
@@ -1009,16 +1071,40 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                                 if(ms == 0) ms = 1;
                                 for(k = 0; k < 8192; k++) if(s_ap_seen[k]) npid++;
 
-                                printf("[ALLPASS] %llu bytes / %llu ms = %llu kbit/s  packets=%u\n",
+                                printf("[%s] %llu bytes / %llu ms = %llu kbit/s  packets=%u\n",
+                                       s_ap_tag,
                                        (unsigned long long)s_ap_bytes,
                                        (unsigned long long)ms,
                                        (unsigned long long)((s_ap_bytes * 8ULL) / ms),
                                        s_ap_pkts);
-                                printf("[ALLPASS] distinct PIDs=%d  badsync=%u  CC discontinuities=%u\n",
-                                       npid, s_ap_badsync, s_ap_ccerr);
-                                printf("[ALLPASS] PIDs:");
+                                printf("[%s] distinct PIDs=%d  badsync=%u  CC discontinuities=%u\n",
+                                       s_ap_tag, npid, s_ap_badsync, s_ap_ccerr);
+                                printf("[%s] PIDs:", s_ap_tag);
                                 for(k = 0; k < 8192; k++) if(s_ap_seen[k]) printf(" %04x", k);
                                 printf("\n");
+
+                                /* State the verdict rather than leaving it to be
+                                 * read off the numbers. The discriminator is the
+                                 * distinct PID count: one PID is what a per-PID
+                                 * path delivers, and 0x1FFF alone is what the
+                                 * dead slot path delivered. */
+                                if(s_ts_rec_muxtest)
+                                {
+                                    if(npid > 1)
+                                        printf("[MUXTEST] *** VERDICT: WHOLE-TP CAPTURE WORKS -- %d distinct PIDs "
+                                               "with NO slots allocated, %llu kbit/s ***\n",
+                                               npid, (unsigned long long)((s_ap_bytes * 8ULL) / ms));
+                                    else if(npid == 1 && s_ap_seen[0x1FFF])
+                                        printf("[MUXTEST] *** VERDICT: NULLS ONLY (pid 0x1FFF) -- same dead end as "
+                                               "the slot path. Whole-TP door confirmed SHUT. ***\n");
+                                    else
+                                        printf("[MUXTEST] *** VERDICT: %d distinct PID(s), %llu kbit/s -- NOT the "
+                                               "multiplex. Whole-TP door SHUT. ***\n",
+                                               npid, (unsigned long long)((s_ap_bytes * 8ULL) / ms));
+                                    if(s_ap_pkts == 0)
+                                        printf("[MUXTEST]   Zero packets: the DVR accepted src=TSPORT but nothing "
+                                               "flows from it. Door shut, silently.\n");
+                                }
                                 s_ap_active = 0;
                             }
                         }
@@ -1156,6 +1242,19 @@ static int32_t _ts_rec_dvr_config(int32_t index)
     memset(&dvrconf, 0, sizeof(GxDvrProperty_Config));
     dvrconf.src = DVR_INPUT_DMX;
     dvrconf.dst = DVR_OUTPUT_MEM;
+    /* THE WHOLE TEST IS THIS ONE FIELD. Everything downstream -- the
+     * DVR_OUTPUT_MEM destination, the MEM_NOT_PROTECTED flag that keeps it
+     * readable, GxAVModuleRead() in the reader thread, the measurement window --
+     * is the path this capture already uses and has been proven on. Only the
+     * INPUT SELECTOR changes: the TS port instead of the demux output. */
+    if(s_ts_rec_muxtest)
+    {
+        dvrconf.src = TS_REC_DVR_IN_TSPORT;
+        printf("[MUXTEST] DVR %d config: src=TSPORT(%d) dst=MEM  sw=%d hw=%d "
+               "flags=MEM_NOT_PROTECTED  (no slots will be allocated)\n",
+               s_ts_rec_modid, TS_REC_DVR_IN_TSPORT,
+               SW_BUFFER_SIZE, HW_BUFFER_SIZE);
+    }
     dvrconf.dst_buf.sw_buffer_size = SW_BUFFER_SIZE;
     dvrconf.dst_buf.hw_buffer_size = HW_BUFFER_SIZE;
     /* Request UNPROTECTED (clear) DVR memory. Without this flag the DVR driver
@@ -1179,9 +1278,28 @@ static int32_t _ts_rec_dvr_config(int32_t index)
 
     if(GxAVSetProperty(ctrl->dev, prog->dvr_handle, GxDvrPropertyID_Config, &dvrconf, sizeof(dvrconf)) < 0)
     {
+        /* A refused TSPORT config is a RESULT, not a crash: it means this SoC
+         * does not wire a TS-port tap into the DVR input mux, and the whole-TP
+         * door is shut for that reason. Report it, disarm, and fall back to the
+         * normal source so the box keeps working on the same zap. */
+        if(s_ts_rec_muxtest)
+        {
+            printf("[MUXTEST] *** VERDICT: GxDvrPropertyID_Config REJECTED src=TSPORT(%d) ***\n",
+                   TS_REC_DVR_IN_TSPORT);
+            printf("[MUXTEST]   The DVR input selector will not take the TS port on this chip.\n");
+            printf("[MUXTEST]   Whole-TP capture is NOT available. Falling back to src=DMX.\n");
+            s_ts_rec_muxtest = 0;
+            dvrconf.src = DVR_INPUT_DMX;
+            if(GxAVSetProperty(ctrl->dev, prog->dvr_handle, GxDvrPropertyID_Config,
+                               &dvrconf, sizeof(dvrconf)) >= 0)
+                return 0;
+        }
         TS_REC_ERR("dvr config failed!\n");
         goto err;
     }
+
+    if(s_ts_rec_muxtest)
+        printf("[MUXTEST] DVR config ACCEPTED with src=TSPORT -- measuring below\n");
 
     return 0;
 err:
@@ -1984,11 +2102,28 @@ static int32_t _ts_rec_prog_config(int32_t index, TsRecConfig *config)
             memset(s_ap_cc,   0xFF, sizeof(s_ap_cc));
             s_ap_bytes = 0; s_ap_pkts = 0; s_ap_badsync = 0; s_ap_ccerr = 0;
             s_ap_t0_ms = 0;                 /* stamped on the first DVR read */
+            s_ap_tag   = "ALLPASS";
             s_ap_active = 1;
         }
     }
 
-    if(!s_ts_rec_allpass)
+    /* MUXTEST arms here, after the DVR is configured and running. No slot is
+     * allocated at all -- that is the point, and it mirrors hw_demux.c:941's
+     * `goto out`. If the TS port really is feeding the DVR, the reader will see
+     * the multiplex with nothing having asked for a single PID. */
+    if(s_ts_rec_muxtest)
+    {
+        printf("[MUXTEST] no slots allocated (src=TSPORT). Measuring %dms of "
+               "whatever the DVR delivers.\n", TS_REC_ALLPASS_MS);
+        memset(s_ap_seen, 0x00, sizeof(s_ap_seen));
+        memset(s_ap_cc,   0xFF, sizeof(s_ap_cc));
+        s_ap_bytes = 0; s_ap_pkts = 0; s_ap_badsync = 0; s_ap_ccerr = 0;
+        s_ap_t0_ms = 0;                 /* stamped on the first DVR read */
+        s_ap_tag   = "MUXTEST";
+        s_ap_active = 1;
+    }
+
+    if(!s_ts_rec_allpass && !s_ts_rec_muxtest)
     {
         if(VALID_PID(node_prog.video_pid) && _ts_rec_demux_slot_alloc(index, node_prog.video_pid, vslot_flags, DEMUX_SLOT_VIDEO) < 0)
         {
@@ -2008,7 +2143,7 @@ static int32_t _ts_rec_prog_config(int32_t index, TsRecConfig *config)
      * read, stealing loop iterations from it), and the ext slots are redundant
      * when every PID is already delivered. Skip both so what the window counts is
      * exactly what the MUXTS slot produced. */
-    if(!s_ts_rec_allpass)
+    if(!s_ts_rec_allpass && !s_ts_rec_muxtest)
     {
         if(true == config->user_pmt && _ts_rec_user_info_generate(index, config) < 0)
         {

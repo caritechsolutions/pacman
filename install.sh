@@ -947,6 +947,23 @@ if [ -f "$PACKED_ROOT/usr/bin/$STB_P8_NAME" ]; then
     fi
 fi
 
+# The app itself. The RIST binaries above are separate payloads injected into the
+# rootfs; the app is built by `make` and lands inside the squashfs, so a stale app
+# is invisible in every check above -- and a diagnostic that silently ran the OLD
+# app would produce a "result" that means nothing. Grep the built ELF for a string
+# only the current app has.
+if [ -f "$SDK_ROOT/output/out.elf" ]; then
+    if strings "$SDK_ROOT/output/out.elf" | grep -q 'MUXTEST'; then
+        log "  OK: the built app carries the MUXTEST diagnostic"
+    else
+        die "VERIFY FAILED: output/out.elf has no MUXTEST string, so the app that
+     would be flashed predates this change. A diagnostic run against a stale app
+     reports a number that answers nothing. Do not flash this build."
+    fi
+else
+    log "  NOTE: output/out.elf not found -- app freshness NOT verified"
+fi
+
 # The symlink chain has to still resolve, or every RIST binary fails to start
 # with a loader error that says nothing about librist having been replaced.
 for l in "$PACKED_ROOT"/lib/librist.so*; do
