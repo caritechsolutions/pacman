@@ -1085,16 +1085,42 @@ static void app_normal_play(GxMsgProperty_NodeByPosGet *prog_node)
     app_ioctl(prog_node->prog_data.tuner, FRONTEND_CONFIG_GET, &config);
     g_AppPlayOps.normal_play.tuner = config.tuner;
     g_AppPlayOps.normal_play.dmx_id = config.dmx_id;
-#if PDMX_SUPPORT
-    if(true == app_program_need_predemux(prog_node)
-            && false == app_frontend_hard_cap(prog_node->prog_data.tuner, prog_node->prog_data.pdmx_flag))
     {
-        g_AppPlayOps.normal_play.ts_src = 3;
-    }
-    else
+        int p8_dmx0 = 0;
+#if DVB2IP_SERVER_SUPPORT
+        /* dvb2ip Part 8, dmx0 tail: play this program off the MEMORY source.
+         *
+         * The demux id is unchanged -- every consumer (app_sdt, app_epg,
+         * app_time, the ECM path) keeps the dmx_id it is already bound to and
+         * learns nothing. All that changes is where demux 0 gets its bytes, and
+         * the mechanism is the SDK's own: this ts_src reaches the URL as
+         * &tsid:3 (app_player_url_get below), and dvbsource_normal.c sets
+         * cfg_dmx.source from it on every play. The pdmx branch below does
+         * exactly this for pre-demux, and app_demux_param_adjust() does it for
+         * timeshift.
+         *
+         * Asked BEFORE app_rist_play_change() runs, because the URL is built a
+         * few lines down and the chain starts after that. If the chain then
+         * fails, the block following that call puts this back on the tuner
+         * before the play is issued. */
+        int app_rist_p8_dmx0_wanted(GxBusPmDataProg *prog);
+        p8_dmx0 = app_rist_p8_dmx0_wanted(&prog_node->prog_data);
 #endif
-    {
-        g_AppPlayOps.normal_play.ts_src = config.ts_src;
+        if (p8_dmx0)
+        {
+            g_AppPlayOps.normal_play.ts_src = 3;
+        }
+#if PDMX_SUPPORT
+        else if(true == app_program_need_predemux(prog_node)
+                && false == app_frontend_hard_cap(prog_node->prog_data.tuner, prog_node->prog_data.pdmx_flag))
+        {
+            g_AppPlayOps.normal_play.ts_src = 3;
+        }
+#endif
+        else
+        {
+            g_AppPlayOps.normal_play.ts_src = config.ts_src;
+        }
     }
 
 #if CA_SUPPORT
@@ -1153,6 +1179,36 @@ static void app_normal_play(GxMsgProperty_NodeByPosGet *prog_node)
          * player owns the screen this zap. Non-blocking (arms deferred timers). */
         int app_rist_play_change(GxBusPmDataProg *prog);
         app_rist_play_change(&prog_node->prog_data);
+
+        /* dmx0 tail, the revert half. We asked for the memory source above and
+         * built the URL on that answer; if the chain or the DVR feed did not
+         * come up, demux 0 would be pointed at an SDRAM buffer nobody is
+         * writing -- a black screen with a perfectly healthy tuner behind it.
+         * Rebuild the URL on the tuner source instead. Cheap, and it happens
+         * before GxPlayer_MediaPlay() below, so the failure costs nothing.
+         *
+         * Guarded on ts_src == 3 so it can never undo the pdmx branch, which
+         * sets the same value for its own reasons. */
+        if (g_AppPlayOps.normal_play.ts_src == 3)
+        {
+            int app_rist_p8_dmx0_active(void);
+            int app_rist_p8_dmx0_asked(void);
+            if (app_rist_p8_dmx0_asked() && !app_rist_p8_dmx0_active())
+            {
+                g_AppPlayOps.normal_play.ts_src = config.ts_src;
+                app_player_url_get(play->url, &prog_node->prog_data,
+                        g_AppPlayOps.normal_play.ts_src,
+                        g_AppPlayOps.normal_play.dmx_id);
+#if QUICK_SWITCH_SUPPORT
+                /* app_player_url_get() rebuilds the URL from scratch, so the
+                 * tscache suffix appended above is gone with it. Inert on this
+                 * build (QUICK_SWITCH_SUPPORT is 0) but it would be a silent
+                 * loss of quick-switch on the fallback path if it were ever
+                 * turned on. */
+                strcat(play->url, url_tmp);
+#endif
+            }
+        }
     }
 #endif
     if (GUI_CheckDialog(WND_SYSTEM_SETTING) != GXCORE_SUCCESS)
