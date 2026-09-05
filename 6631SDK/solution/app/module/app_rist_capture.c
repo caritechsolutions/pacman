@@ -4,18 +4,21 @@
  * PATH (this build):
  *   channel zap (app_normal_play) -> app_rist_play_change(prog)
  *     -> deferred _rist_start_cb  (APP_TIMER_ADD; does NOT block the zap thread)
- *        -> app_ts_record_start({prog_id, user_pmt=true})   [dvb2ip capture]
+ *        -> app_ts_record_start({prog_id, user_pmt})   [dvb2ip capture]
  *           captures the selected program on DEMUX/DVR instance 2 (the
  *           UNPROTECTED instance that yields CLEAR TS -- runtime-selectable via
- *           /tmp/ristdmx, default 2) and injects PAT/PMT.
+ *           /tmp/ristdmx, default 2).
+ *           PART 7: user_pmt=true  -- the box injects its own PAT/PMT.
+ *           PART 8: user_pmt=false -- the BROADCAST PSI is captured instead,
+ *             because the headend cuts the broadcast stream and the two ends
+ *             must number the same bytes. Not a mode; see _rist_capture_begin.
  *        -> reader thread: app_ts_record_read() -> sendto() 1316-byte
  *           (7 x 188) TS-over-UDP datagrams to a runtime destination
  *           (/tmp/ristcap "ip:port", default below).
  *
- * The dmx2 capture already emits a self-contained CLEAR transport stream
- * (app-injected PAT/PMT + clear video/audio), proven byte-correct on the
- * dvb2ip HTTP path, so we forward those bytes VERBATIM -- no decrypt, no
- * separate PSI injection here.
+ * Either way the dmx2 capture emits CLEAR TS, proven byte-correct on the dvb2ip
+ * HTTP path, and we forward those bytes VERBATIM -- no decrypt, no separate PSI
+ * injection here.
  *
  * The UDP output is the feed for RIST later (rist_watchdog ./ristsender_marker
  * -i udp://addr:port).
@@ -143,7 +146,9 @@
  * DEFAULT OFF, unlike /tmp/ristchain which defaults ON. A box that has never
  * heard of Part 8 boots to exactly what it does today. */
 #define RIST_P8_FLAG_FILE       "/tmp/ristp8"       /* 1 = Part 8 video path */
-#define RIST_P8_PSI_FILE        "/tmp/ristp8psi"    /* 1 = broadcast PSI passthrough */
+/* /tmp/ristp8psi is GONE. Broadcast PSI is not a mode -- see the capture block
+ * in _rist_capture_begin(). A knob here could only ever select "cut different
+ * bytes from the headend", which is never a thing anyone wants. */
 #define RIST_P8_CAP_PORT        6300    /* capture -> p8 sender  (UDP)  */
 #define RIST_P8_LOCAL_PORT      6400    /* p8 sender -> receiver (RIST) */
 #define RIST_P8_OUT_PORT        6500    /* receiver -> player_av (UDP)  */
@@ -205,11 +210,9 @@
  * go through GxBus_SiFilterCreate()/GxBus_SiFilterRead(), so the probe does
  * too, on the same demux id and with ts_src = DEMUX_SDRAM.
  *
- * Needs the tables to be IN the stream: /tmp/ristp8psi=1. Without it the
- * capture carries the box's own PAT/PMT and no SDT/EIT/TDT at all, and a
- * silent probe would mean nothing.
+ * The tables are always in the stream now -- the Part 8 capture takes the
+ * broadcast PSI unconditionally -- so this needs one knob, not two:
  *
- *   echo 1 > /tmp/ristp8psi
  *   echo 1 > /tmp/ristp8sec
  */
 #define RIST_P8_SECPROBE_FILE   "/tmp/ristp8sec"
@@ -829,15 +832,22 @@ static const struct {
 } s_p8_sec_tab[RIST_P8_SECPROBE_MAX] = {
     { "PAT", 0x0000, 0x00, 0xFF, "positive control"        },
     { "SDT", 0x0011, 0x42, 0xFF, "app_sdt / service names" },
-    /* P2. EIT p/f actual is 0x4E; SCHEDULE actual is 0x50-0x5F. Mask 0xE0
-     * accepts 0x40-0x5F, so BOTH land in this one filter -- because the
-     * question is not "does EIT arrive" but "which EIT arrives". This box asks
-     * for exactly 0x4E and 0x50: gxepg.c:66-76 defaults epg_day=3 and
-     * cur_tp_only=1, so gxepg_table.c:169-192 walks c_EpgTableId[] = {0x4E,
-     * 0x4F, 0x50, 0x60, ...} up to EPG_TID_60 keeping only the even indices.
-     * 0x4E is small and repeats every couple of seconds; 0x50 is the large,
-     * low-rate one and is the only part genuinely at risk in the chain. The
-     * per-table-id histogram below is what separates them in the log. */
+    /* EIT p/f actual is 0x4E; SCHEDULE actual is 0x50-0x5F. Mask 0xE0 accepts
+     * 0x40-0x5F so BOTH land in this one filter.
+     *
+     * FULL SCHEDULE EPG IS EXPECTED TO WORK, and nothing in this chain argues
+     * otherwise. The RIST buffer is a DELAY LINE, not a lossy cache: every
+     * packet that enters leaves 2000ms later, in order. Nothing is evicted for
+     * being large or low-rate, sections are never held or reassembled inside
+     * it, and app_epg assembles 0x50 off dmx0 exactly as it always did off the
+     * tuner -- it was already assembling sections spread over many seconds.
+     * Buffer depth governs how much recovery time there is, never which data
+     * survives.
+     *
+     * The breakdown below is INSTRUMENTATION, not a predicted limitation: this
+     * box filters 0x4E and 0x50 (gxepg.c:66-76 epg_day=3 cur_tp_only=1 ->
+     * gxepg_table.c:169-192 over c_EpgTableId[]), and counting them separately
+     * is what turns "EPG works" into an answer rather than an impression. */
     { "EIT", 0x0012, 0x4E, 0xE0, "app_epg (0x4E now/next + 0x50 schedule)" },
     { "TDT", 0x0014, 0x70, 0xFF, "app_time"                },
 };
@@ -865,14 +875,6 @@ static void _rist_p8_sec_start(void)
 
     if (_rist_read_int_file(RIST_P8_SECPROBE_FILE, 0) != 1)
         return;
-
-    if (_rist_read_int_file(RIST_P8_PSI_FILE, 0) != 1) {
-        RIST_LOG("p8sec: " RIST_P8_SECPROBE_FILE " is set but " RIST_P8_PSI_FILE
-                 " is NOT -- the capture carries the box's own PAT/PMT and no\n");
-        RIST_LOG("p8sec:   SDT/EIT/TDT, so a silent probe would prove nothing. "
-                 "Refusing to run it.\n");
-        return;
-    }
 
     for (i = 0; i < RIST_P8_SECPROBE_MAX; i++) {
         GxSiFilter f;
@@ -998,9 +1000,9 @@ static void _rist_p8_sec_report(uint32_t elapsed_ms)
             RIST_LOG("p8sec:     EIT breakdown: now/next (0x4E,0x4F) %u "
                      "sections, SCHEDULE (0x50-0x5F) %u sections\n", pf, sch);
             if (pf && !sch)
-                RIST_LOG("p8sec:     -> now/next EPG only. Schedule EIT is not "
-                         "arriving; check the dmx2 slot for 0x0012 is not "
-                         "overflowing.\n");
+                RIST_LOG("p8sec:     -> 0x50 absent. NOT a buffer effect -- the "
+                         "delay line drops nothing. Look at the dmx2 slot for "
+                         "0x0012, or at whether this TP carries schedule EIT.\n");
         }
     }
     RIST_LOG("p8sec: U1 VERDICT at T+%ums: section filters on a memory-fed "
@@ -1011,8 +1013,8 @@ static void _rist_p8_sec_report(uint32_t elapsed_ms)
         RIST_LOG("p8sec:   Before concluding they cannot: check ts_in/inj_ok "
                  "above are non-zero (bytes reached dmx%d at all), and that\n",
                  s_rist.p8_dmx);
-        RIST_LOG("p8sec:   the PAT control is genuinely in the stream "
-                 "(" RIST_P8_PSI_FILE "=1 slots pid 0x0000).\n");
+        RIST_LOG("p8sec:   the capture logged its BROADCAST PSI line above "
+                 "(pid 0x0000 slotted).\n");
     }
 }
 
@@ -2184,51 +2186,79 @@ static void _rist_capture_begin(void)
     cfg.prog_id  = (uint16_t)s_rist.prog.id;
     cfg.user_pmt = true;                 /* inject PAT/PMT -> self-contained TS */
 
-    /* Part 8 PSI mode, OFF by default even when the Part 8 path is on.
+    /* PART 8 CAPTURES THE BROADCAST PSI. NOT A MODE, NOT A KNOB.
      *
-     * user_pmt=false makes the capture carry the BROADCAST PAT/PMT instead of
-     * the box's own generated pair, which is what Part 8 eventually needs: the
-     * headend filters the broadcast PSI through untouched, so the box has to
-     * hold the same bytes or the two streams differ at exactly the PIDs a
-     * sequence number indexes.
+     * user_pmt=false means the capture carries the BROADCAST PAT/PMT off the
+     * transponder instead of the box's own generated pair, and the SI PIDs are
+     * slotted alongside the service's own.
      *
-     * It is not the default yet because Step 1's success condition is a picture,
-     * and the self-contained PAT/PMT is the shape already proven to decode here.
-     * The broadcast PAT lists every service on the transponder while only this
-     * service's PMT and ES are captured, so a player that picks the first
-     * program in the PAT can land on one whose PMT was never slotted. That is a
-     * real risk to a first bring-up and it is unrelated to the cutter, so it is
-     * a knob to test deliberately rather than a default to be surprised by.
+     * WHY IT IS UNCONDITIONAL: the sequence numbering has to match the headend,
+     * and the headend cuts the BROADCAST stream. part8_recovery_server is fed
+     * by `tsp -P filter --pid ...` over a fixed PSI set plus this service's
+     * PMT/PCR/ES (P8_PSI_PIDS = "0,1,16,17,18,19,20" in
+     * rist-monitor/services/part8-service.php:57). If this capture carried the
+     * box's injected PAT/PMT instead, the two ends would be packetising
+     * DIFFERENT BYTES and no sequence number could ever line up -- not a
+     * tuning problem, an arithmetic impossibility. The broadcast PSI is part of
+     * what gets cut and numbered.
      *
-     *   echo 1 > /tmp/ristp8psi   (then re-zap)
+     * That is the OPPOSITE of the Part 7 capture, which injects (user_pmt=true)
+     * because it has no byte-level counterpart to match. The injected-PSI shape
+     * is a Part 7 artifact and does not belong here.
+     *
+     * The list below is the SAME SEVEN PIDS the headend filters, not a subset:
+     *   0x00 PAT  0x01 CAT  0x10 NIT  0x11 SDT  0x12 EIT  0x13 RST  0x14 TDT
+     * The earlier four-PID set (PAT/SDT/EIT/TDT) was chosen for what the
+     * consumers need, which is the wrong question -- it would have diverged
+     * from the server at 0x01/0x10/0x13 wherever this transponder carries them.
+     *
+     * It also feeds BOTH ends of the box: the cutter gets the bytes it must
+     * number identically, and dmx0 gets the SDT/EIT/TDT app_epg and app_time
+     * read off the repaired stream. One capture, both jobs.
      *
      * PID 0 reaching the slot allocator is why app_ts_record.c's ext-pid loop
-     * had to stop rejecting it. */
-    /* THE dmx0 TAIL DEFAULTS IT ON, and that is not a preference. SI off the
-     * repaired stream is the entire reason that tail exists: app_sdt, app_epg
-     * and app_time section-filter demux 0, and once demux 0 is fed from memory
-     * the only tables they can ever see are the ones we captured. Without
-     * broadcast PSI the capture carries the box's own generated PAT/PMT and no
-     * SDT/EIT/TDT at all, so service names, EPG and the clock would go stale
-     * the moment the tail was selected -- silently, and looking exactly like a
-     * fade. The one-of-34-services risk that kept it off for Step 1 does not
-     * apply here: the player is given vpid/apid/pcrpid explicitly on the URL
-     * and never picks a program out of the PAT. */
-    if (s_rist.p8_active
-        && _rist_read_int_file(RIST_P8_PSI_FILE, s_rist.p8_dmx0_want ? 1 : 0) == 1) {
-        static const uint32_t p8_psi[] = { 0x0000, 0x0011, 0x0012, 0x0014 };
+     * had to stop rejecting it; user_pmt=false is what slots the broadcast PMT
+     * (app_ts_record.c:1302-1310). */
+    if (s_rist.p8_active) {
+        /* Keep in step with P8_PSI_PIDS on the headend. If that list changes,
+         * this one has to change with it or the two ends cut different bytes. */
+        static const uint32_t p8_psi[] = {
+            0x0000, 0x0001, 0x0010, 0x0011, 0x0012, 0x0013, 0x0014
+        };
         uint32_t k;
 
-        cfg.user_pmt = false;            /* -> the PMT PID is slotted for us */
+        cfg.user_pmt = false;            /* -> the broadcast PMT PID is slotted */
         for (k = 0; k < sizeof(p8_psi) / sizeof(p8_psi[0])
                     && cfg.ext_info.ext_num < TS_REC_MAX_EXTPID_NUM; k++) {
             cfg.ext_info.ext_pids[cfg.ext_info.ext_num++] = p8_psi[k];
         }
-        RIST_LOG("p8: broadcast PSI passthrough ON -- user_pmt=false, "
-                 "ext pids 0x0000 0x0011 0x0012 0x0014 (+ PMT slotted by the driver)\n");
-    } else if (s_rist.p8_active) {
-        RIST_T("p8: self-contained PAT/PMT (user_pmt=true); "
-               "echo 1 > " RIST_P8_PSI_FILE " for broadcast PSI\n");
+        RIST_LOG("p8: BROADCAST PSI capture (user_pmt=false) -- PAT 0x0000 CAT 0x0001 "
+                 "NIT 0x0010 SDT 0x0011 EIT 0x0012 RST 0x0013 TDT 0x0014\n");
+        RIST_LOG("p8:   + broadcast PMT 0x%04X, PCR 0x%04X, video 0x%04X, audio 0x%04X"
+                 "  -- the same bytes the headend cuts\n",
+                 s_rist.prog.pmt_pid, s_rist.prog.pcr_pid,
+                 s_rist.prog.video_pid, s_rist.prog.cur_audio_pid);
+        /* One consequence worth naming, because it changes a path that was
+         * already proven: the player_av (Step 1) tail now receives the
+         * BROADCAST PAT, which lists every service on the transponder while
+         * only this one's PMT and ES are captured. A player that picks the
+         * first program in the PAT can land on a service whose PMT was never
+         * slotted. The dmx0 and dmx3 tails are immune -- GxMedia_DemuxConfig
+         * is handed vidPid/audPid/pcrPid explicitly and never reads a PAT --
+         * so this only affects the diagnostic fallback, and it is the price of
+         * cutting the same bytes as the headend. */
+        if (_rist_p8_tail_mode() == RIST_P8_TAIL_PLAYER_AV)
+            RIST_LOG("p8:   NOTE tail=player_av with a broadcast PAT listing "
+                     "the whole TP -- if the picture is the wrong service, that "
+                     "is why (dmx0/dmx3 name their PIDs and are immune)\n");
+        /* HONEST LIMIT, and it is the remaining alignment gap. The PSI half now
+         * matches the headend exactly. The ES half matches only for a service
+         * with one video and one audio: the headend filters EVERY stream this
+         * service declares, while this capture slots video + CURRENT audio +
+         * PCR. A second audio track, subtitles or teletext would be in the
+         * server's cut and not in ours. Fine for numbering-free Step 1 and for
+         * the dmx0 tail's own decode; it must be closed before the sequence
+         * anchor is trusted. */
     }
 
     /* Step F: the API-supplied marker PID. Without it ristsender_marker never
