@@ -39,6 +39,7 @@
 #include "module/app_rist_api.h"               /* recovery API cache lookup (Step E) */
 #include "module/app_rist_stats.h"             /* per-view statistics */
 #include "gxplayer.h"                          /* umbrella -> GxPlayer_MediaPlay/MediaStop */
+#include "module/player/gxmedia_api.h"        /* Part 8 dmx3 tail: memory-fed demux */
 #include "../dvb2ip_server/app_ts_record.h"    /* app_ts_record_* + TsRecConfig (DVB2IP-gated) */
 
 #include <stdio.h>
@@ -53,6 +54,7 @@
 #include <sys/prctl.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <errno.h>
 
 #if DVB2IP_SERVER_SUPPORT
 
@@ -145,6 +147,21 @@
 #define RIST_P8_LOCAL_PORT      6400    /* p8 sender -> receiver (RIST) */
 #define RIST_P8_OUT_PORT        6500    /* receiver -> player_av (UDP)  */
 #define RIST_BIN_P8_SENDER      "/usr/bin/stb_part8_receiver"
+
+/* Step 2 tail selector. Absent or "player_av" keeps the Step 1 path, which is
+ * proven on hardware; "dmx3" runs the reinjection experiment. The proven path
+ * stays one echo away on purpose -- reinjection into a memory-fed demux has
+ * never been demonstrated on this box, so it is a hypothesis under test, not a
+ * design decision already made. */
+#define RIST_P8_TAIL_FILE       "/tmp/ristp8tail"
+/* dmx0/dmx1 are the AV path, dmx2 is our capture, TS_REC_DEMUX_MOD_MAX is 4 --
+ * so 3 is the one free demux instance on this chip. */
+#define RIST_P8_DMX_MODID       3
+/* How long the dmx3 tail gets to produce a first frame before it is declared
+ * a failure and player_av takes over. Generous: the receiver holds a full
+ * buffer (4000ms default) before it emits anything at all. */
+#define RIST_P8_TAIL_FIRSTFRAME_MS  12000
+#define RIST_P8_TAIL_POLL_MS        500
 #define RIST_PID_P8_SENDER      "/tmp/rist_p8_sender.pid"
 #define RIST_DELAY3_FILE        "/tmp/ristdelay3"   /* player delay when the chain is up */
 #define RIST_DELAY3_MS          3000                /* receiver buffer needs longer than loopback */
@@ -221,6 +238,24 @@ static struct {
     int                 chain_active;    /* kill switch ON *and* service has recovery */
     int                 chain_running;   /* children actually spawned */
     int                 p8_active;       /* Part 8 video path (Step 1) for this zap */
+
+    /* Part 8 Step 2: the dmx3 reinjection tail. Everything here is inert unless
+     * /tmp/ristp8tail says dmx3. */
+    int                 p8_tail_dmx3;    /* the tail selected for this zap */
+    handle_t            p8_mod;          /* GxMediaApi_ModuleOpen3 handle, 0 = none */
+    int                 p8_mod_started;
+    int                 p8_tail_fd;      /* UDP socket reading the receiver output */
+    int                 p8_tail_run;
+    handle_t            p8_tail_thread;
+    event_list         *p8_tail_timer;   /* first-frame watchdog */
+    uint32_t            p8_tail_t0;
+    uint64_t            p8_inj_bytes;    /* accepted by GxMediaApi_ModuleInjectData */
+    uint64_t            p8_inj_calls;
+    uint64_t            p8_inj_busy;     /* returned 0: ES fifos above the gate */
+    uint64_t            p8_inj_err;      /* returned <0 */
+    uint64_t            p8_rx_bytes;     /* read off the socket */
+    int                 p8_saw_bytes;    /* logged the first accepted inject */
+    int                 p8_saw_frame;    /* vpts moved / decoder reported RUNNING */
     AppRistRecovery     rec;             /* API entry for the tuned service */
     pid_t               pid_watchdog;    /* rist_watchdog (owns ristsender_marker) */
     pid_t               pid_receiver;    /* ristreceiver (standalone, not watchdogged) */
@@ -231,10 +266,26 @@ static struct {
     int                 dst_port;
     uint64_t            sent;
     uint64_t            senderr;
-} s_rist = { 0, 0, -1, 0, NULL, NULL, 0, 0, 0, {0},
-             0, NULL, 0, 0, NULL,
-             0, 0, {0}, -1, -1,
-             -1, {0}, {0}, 0, 0, 0 };
+}
+/*
+ * DESIGNATED, not positional. The positional list this replaces had drifted out
+ * of step with the struct: its three -1 values were landing on chain_active,
+ * chain_running and p8_active rather than on the descriptors they were written
+ * for, which left udp_fd initialised to 0 -- so a teardown before any capture
+ * had opened would have run close(0) on stdin. Nothing had tripped it, because
+ * every path that reaches the teardown has opened the socket first, but adding
+ * fields in the middle is exactly how a latent one becomes a live one.
+ *
+ * Everything not named here is zero-initialised, which is what these want.
+ */
+s_rist = {
+    .reader_thread  = -1,
+    .udp_fd         = -1,
+    .pid_watchdog   = -1,
+    .pid_receiver   = -1,
+    .p8_tail_fd     = -1,
+    .p8_tail_thread = -1,
+};
 
 /* Milliseconds since an arbitrary epoch; only differences are used, so the
  * 32-bit wrap (~49 days) is harmless. */
@@ -567,6 +618,367 @@ static void _rist_chain_stop(void)
     s_rist.chain_running = 0;
 }
 
+/* ===================================================================== *
+ *  Part 8, Step 2: the dmx3 reinjection tail.
+ *
+ *  THIS IS AN EXPERIMENT AND IT IS BUILT TO REPORT, NOT TO ASSERT. Feeding a
+ *  demux instance from memory and having it run its own filter+decode chain has
+ *  never been demonstrated on this box. What the SDK does give us is the
+ *  mechanism, and it is not ambiguous:
+ *
+ *    GxMedia_DemuxOpen() with source_type GXMEDIA_SOURCE_TS opens a DVR module
+ *    configured src = DVR_INPUT_MEM, dst = DVR_OUTPUT_DMX (gxmedia_demux.c), and
+ *    GxMedia_ModuleConfig() forces tsid = -1, which GxMedia_DemuxConfig() turns
+ *    into dmx_config.source = DEMUX_SDRAM. So the memory-fed path is wired by
+ *    the SDK itself; what is unproven is whether it decodes here.
+ *
+ *  ONE CORRECTION TO THE PLAN, and it matters: this demux does NOT lock a
+ *  service from PSI. GxMedia_DemuxConfig() takes AudPid/VidPid/PcrPid and
+ *  allocates slots for exactly those three -- it never reads a PAT or a PMT.
+ *  So there is no "it might pick program 0 of 34" risk on this path, and
+ *  broadcast PSI passthrough is not required for it to decode: PSI packets we
+ *  send simply have no slot and are dropped inside the demux. The PIDs come
+ *  from the box's own PMT read, the same record the capture's slot set and the
+ *  cutter's PCR PID come from, so all three cannot disagree.
+ *
+ *  Decoder contention needs nothing new. app_rist_screen_enabled() is already
+ *  true whenever chain_active is set, and app_play_control.c already responds by
+ *  calling app_player_close(PLAYER_FOR_NORMAL) -- which is exactly what releases
+ *  the single video decoder. The dmx3 module then opens video/audio module 0,
+ *  the same hardware player_av would have taken.
+ * ===================================================================== */
+
+/* "dmx3" selects the experiment; anything else (including the file being
+ * absent) keeps the proven Step 1 tail. */
+static int _rist_p8_tail_is_dmx3(void)
+{
+    FILE *f = fopen(RIST_P8_TAIL_FILE, "r");
+    char  buf[16] = {0};
+    int   dmx3 = 0;
+
+    if (!f)
+        return 0;
+    if (fgets(buf, sizeof(buf) - 1, f))
+        dmx3 = (strncmp(buf, "dmx3", 4) == 0);
+    fclose(f);
+    return dmx3;
+}
+
+static VideoCodecType _rist_p8_vcodec(uint32_t t)
+{
+    switch (t) {
+    case GXBUS_PM_PROG_MPEG:  return VIDEO_CODEC_MPEG12;
+    case GXBUS_PM_PROG_AVS:   return VIDEO_CODEC_AVS;
+    case GXBUS_PM_PROG_H264:  return VIDEO_CODEC_H264;
+    case GXBUS_PM_PROG_H265:  return VIDEO_CODEC_H265;
+    case GXBUS_PM_PROG_MPEG4: return VIDEO_CODEC_MPEG4;
+    default:                  return VIDEO_CODEC_UNKNOWN;
+    }
+}
+
+static AudioCodecType _rist_p8_acodec(uint32_t t)
+{
+    switch (t) {
+    case GXBUS_PM_AUDIO_MPEG1:    return AUDIO_CODEC_MPEG1;
+    case GXBUS_PM_AUDIO_MPEG2:    return AUDIO_CODEC_MPEG2;
+    case GXBUS_PM_AUDIO_AAC_LATM: return AUDIO_CODEC_AAC_LATM;
+    case GXBUS_PM_AUDIO_AAC_ADTS: return AUDIO_CODEC_AAC_ADTS;
+    case GXBUS_PM_AUDIO_AC3:      return AUDIO_CODEC_AC3;
+    case GXBUS_PM_AUDIO_EAC3:     return AUDIO_CODEC_EAC3;
+    case GXBUS_PM_AUDIO_DTS:      return AUDIO_CODEC_DTS;
+    case GXBUS_PM_AUDIO_DRA:      return AUDIO_CODEC_DRA1;
+    default:                      return AUDIO_CODEC_UNKNOWN;
+    }
+}
+
+static void _rist_p8_tail_stop(void);
+static int  _rist_screen_cb(void *arg);   /* defined further down; the tail's
+                                           * watchdog hands the screen back to
+                                           * player_av when dmx3 does not decode */
+
+/* The reader: receiver output on loopback -> GxMediaApi_ModuleInjectData.
+ *
+ * InjectData returns the accepted length, 0 when the ES fifos are above 7/8
+ * (gxmedia_demux.c backs off there deliberately), or <0 on a real failure.
+ * ZERO IS NOT AN ERROR -- treating it as one would turn normal back-pressure
+ * into a torn-down chain -- but a run of zeros with nothing decoding is the
+ * signature of "the demux accepted nothing", so it is counted separately. */
+static void _rist_p8_tail_reader(void *arg)
+{
+    static uint8_t buf[64 * 1024];
+
+    (void)arg;
+    RIST_T("p8tail: reader thread up on udp://@:%d\n", RIST_P8_OUT_PORT);
+
+    while (s_rist.p8_tail_run) {
+        struct timeval tv = { .tv_sec = 0, .tv_usec = 200000 };
+        fd_set rf;
+        int n;
+
+        if (s_rist.p8_tail_fd < 0)
+            break;
+        FD_ZERO(&rf);
+        FD_SET(s_rist.p8_tail_fd, &rf);
+        if (select(s_rist.p8_tail_fd + 1, &rf, NULL, NULL, &tv) <= 0)
+            continue;
+
+        n = (int)recv(s_rist.p8_tail_fd, buf, sizeof(buf), 0);
+        if (n <= 0)
+            continue;
+        s_rist.p8_rx_bytes += (uint64_t)n;
+
+        if (s_rist.p8_mod_started) {
+            GxMediaModuleInject inj;
+            int r;
+
+            memset(&inj, 0, sizeof(inj));
+            inj.source_type = GXMEDIA_SOURCE_TS;
+            inj.buf         = buf;
+            inj.len         = n;
+
+            r = GxMediaApi_ModuleInjectData(s_rist.p8_mod, inj);
+            s_rist.p8_inj_calls++;
+            if (r > 0) {
+                s_rist.p8_inj_bytes += (uint64_t)r;
+                if (!s_rist.p8_saw_bytes) {
+                    s_rist.p8_saw_bytes = 1;
+                    RIST_LOG("p8tail: STAGE 4 -- first inject ACCEPTED %d of %d bytes\n", r, n);
+                }
+            } else if (r == 0) {
+                s_rist.p8_inj_busy++;
+            } else {
+                s_rist.p8_inj_err++;
+            }
+        }
+    }
+
+    RIST_T("p8tail: reader thread exiting\n");
+}
+
+/* First-frame watchdog AND the stage report. Runs until it sees a frame or the
+ * deadline passes; on the deadline it tears dmx3 down and hands the screen to
+ * player_av, so the failure mode of this experiment is the Step 1 picture, not
+ * a black screen. */
+static int _rist_p8_tail_poll_cb(void *arg)
+{
+    GxMediaModuleInfo  info;
+    GxMediaModuleState st;
+    uint32_t elapsed;
+    int have_info, have_state;
+
+    (void)arg;
+    s_rist.p8_tail_timer = NULL;
+
+    if (!s_rist.p8_mod || !s_rist.p8_tail_run)
+        return 0;
+
+    elapsed = _rist_now_ms() - s_rist.p8_tail_t0;
+
+    memset(&info, 0, sizeof(info));
+    memset(&st,   0, sizeof(st));
+    have_info  = (GxMediaApi_ModuleInfo(s_rist.p8_mod, &info)  == GXCORE_SUCCESS);
+    have_state = (GxMediaApi_ModuleState(s_rist.p8_mod, &st)   == GXCORE_SUCCESS);
+
+    /* A moving vpts is the only unambiguous "the decoder consumed a frame"
+     * signal available here; the fifo levels say whether the bytes got that
+     * far. Both are reported every poll so a stall names its own stage. */
+    if (!s_rist.p8_saw_frame && have_info && info.vpts > 0) {
+        s_rist.p8_saw_frame = 1;
+        RIST_LOG("p8tail: STAGE 6 -- FIRST FRAME at T+%ums (vpts=%lld stc=%lld)\n",
+                 elapsed, (long long)info.vpts, (long long)info.stc);
+    }
+
+    RIST_LOG("p8tail: T+%ums rx=%llu inj_ok=%llu busy=%llu err=%llu%s%s\n",
+             elapsed,
+             (unsigned long long)s_rist.p8_rx_bytes,
+             (unsigned long long)s_rist.p8_inj_bytes,
+             (unsigned long long)s_rist.p8_inj_busy,
+             (unsigned long long)s_rist.p8_inj_err,
+             have_info  ? "" : "  [ModuleInfo unavailable]",
+             have_state ? "" : "  [ModuleState unavailable]");
+    if (have_info)
+        RIST_LOG("p8tail:   fifo ts_used=%d vid_used=%d aud_used=%d  apts=%lld vpts=%lld\n",
+                 info.demux.ts_used_size, info.video.esv_used_size,
+                 info.audio.esa_used_size,
+                 (long long)info.apts, (long long)info.vpts);
+    if (have_state)
+        RIST_LOG("p8tail:   dec video state=%d err=%d  audio state=%d err=%d\n",
+                 (int)st.video.state, (int)st.video.err_code,
+                 (int)st.audio.state, (int)st.audio.err_code);
+
+    if (s_rist.p8_saw_frame)
+        return 0;                       /* decoding: stop polling, leave it alone */
+
+    if (elapsed >= RIST_P8_TAIL_FIRSTFRAME_MS) {
+        RIST_LOG("p8tail: NO FIRST FRAME after %ums -- REINJECTION DID NOT DECODE.\n",
+                 elapsed);
+        RIST_LOG("p8tail:   rx=%llu bytes, injected=%llu, busy=%llu, err=%llu\n",
+                 (unsigned long long)s_rist.p8_rx_bytes,
+                 (unsigned long long)s_rist.p8_inj_bytes,
+                 (unsigned long long)s_rist.p8_inj_busy,
+                 (unsigned long long)s_rist.p8_inj_err);
+        RIST_LOG("p8tail:   %s\n",
+                 (s_rist.p8_rx_bytes == 0)   ? "STAGE 3 FAILED: nothing arrived from the receiver" :
+                 (s_rist.p8_inj_bytes == 0)  ? "STAGE 4 FAILED: the demux accepted no bytes" :
+                                               "STAGE 5/6 FAILED: bytes went in, no frames came out");
+        RIST_LOG("p8tail: falling back to player_av (Step 1 path) for this zap\n");
+        _rist_p8_tail_stop();
+        /* Hand the screen to the proven tail rather than leaving it black. */
+        if (!s_rist.screen_started)
+            APP_TIMER_ADD(s_rist.screen_timer, _rist_screen_cb, 100, TIMER_ONCE);
+        return 0;
+    }
+
+    APP_TIMER_ADD(s_rist.p8_tail_timer, _rist_p8_tail_poll_cb,
+                  RIST_P8_TAIL_POLL_MS, TIMER_ONCE);
+    return 0;
+}
+
+static void _rist_p8_tail_stop(void)
+{
+    if (s_rist.p8_tail_run) {
+        s_rist.p8_tail_run = 0;
+        if (s_rist.p8_tail_thread > 0) {
+            GxCore_ThreadJoin(s_rist.p8_tail_thread);
+            s_rist.p8_tail_thread = -1;
+        }
+    }
+    if (s_rist.p8_tail_fd >= 0) {
+        close(s_rist.p8_tail_fd);
+        s_rist.p8_tail_fd = -1;
+    }
+    if (s_rist.p8_mod) {
+        if (s_rist.p8_mod_started)
+            GxMediaApi_ModuleStop(s_rist.p8_mod, 0);
+        GxMediaApi_ModuleClose(s_rist.p8_mod);
+        s_rist.p8_mod = 0;
+        s_rist.p8_mod_started = 0;
+        RIST_LOG("p8tail: dmx%d module closed\n", RIST_P8_DMX_MODID);
+    }
+    s_rist.p8_tail_dmx3 = 0;
+}
+
+/* Open, configure and start the memory-fed module, then start the reader.
+ * Returns 0 on success. Every failure returns <0 and the caller falls back to
+ * player_av -- there is no path here that leaves the screen with no owner. */
+static int _rist_p8_tail_start(void)
+{
+    GxMediaModuleMod     mod;
+    GxMediaModuleModPara mpara;
+    GxMediaModulePara    para;
+    struct sockaddr_in   sa;
+    int one = 1;
+
+    if (!VALID_MARKER_PID(s_rist.prog.video_pid)) {
+        RIST_LOG("p8tail: no video PID in the program record -- not starting dmx%d\n",
+                 RIST_P8_DMX_MODID);
+        return -1;
+    }
+
+    memset(&mod, 0, sizeof(mod));
+    /* Our own demux instance. Everything else stays 0: there is ONE hardware
+     * video decoder and one audio decoder on this chip, and normal play has
+     * already released them (app_player_close(PLAYER_FOR_NORMAL), driven by
+     * app_rist_screen_enabled()). Asking for a second decoder id would fail or,
+     * worse, half-succeed. */
+    mod.demux.demux_modid = RIST_P8_DMX_MODID;
+
+    memset(&mpara, 0, sizeof(mpara));
+    mpara.source_type   = GXMEDIA_SOURCE_TS;   /* -> DVR_INPUT_MEM -> DEMUX_SDRAM */
+    mpara.protect_mode  = GXMEDIA_OUTPUT_NORMAL;   /* NCN is FTA; no CAS in Step 2 */
+    mpara.a_stream_type = GXMEDIA_AVSTREAM_ES;
+
+    s_rist.p8_mod = GxMediaApi_ModuleOpen3(mod, mpara);
+    /* The API returns -1 on failure and a cast pointer on success, so test the
+     * two failure values rather than <= 0: a user-space pointer with the top bit
+     * set would read as negative and a valid module would be thrown away. */
+    if (s_rist.p8_mod == 0 || s_rist.p8_mod == (handle_t)-1) {
+        RIST_LOG("p8tail: STAGE 1 FAILED -- GxMediaApi_ModuleOpen3(dmx%d) returned %d\n",
+                 RIST_P8_DMX_MODID, (int)s_rist.p8_mod);
+        s_rist.p8_mod = 0;
+        return -1;
+    }
+    RIST_LOG("p8tail: STAGE 1 -- module open on dmx%d (source=TS -> DEMUX_SDRAM)\n",
+             RIST_P8_DMX_MODID);
+
+    memset(&para, 0, sizeof(para));
+    para.tsid   = -1;                  /* ModuleConfig forces this anyway */
+    para.vidPid = (int)s_rist.prog.video_pid;
+    para.audPid = (int)s_rist.prog.cur_audio_pid;
+    para.pcrPid = (int)s_rist.prog.pcr_pid;
+    para.freq_HZ   = 45000;
+    para.sync_mode = 2;
+    para.vparam.codectype   = _rist_p8_vcodec(s_rist.prog.video_type);
+    para.vparam.decode_mode = 0;
+    para.aparam.codectype   = _rist_p8_acodec(s_rist.prog.cur_audio_type);
+    para.aparam.stream_data = GXMEDIA_AVSTREAM_ES;
+
+    if (GxMediaApi_ModuleConfig(s_rist.p8_mod, para) != GXCORE_SUCCESS) {
+        RIST_LOG("p8tail: STAGE 2 FAILED -- ModuleConfig(v=0x%04X a=0x%04X pcr=0x%04X "
+                 "vcodec=0x%X acodec=0x%X)\n",
+                 para.vidPid, para.audPid, para.pcrPid,
+                 (unsigned)para.vparam.codectype, (unsigned)para.aparam.codectype);
+        _rist_p8_tail_stop();
+        return -1;
+    }
+    RIST_LOG("p8tail: STAGE 2 -- configured v=0x%04X a=0x%04X pcr=0x%04X "
+             "vcodec=0x%X acodec=0x%X\n",
+             para.vidPid, para.audPid, para.pcrPid,
+             (unsigned)para.vparam.codectype, (unsigned)para.aparam.codectype);
+
+    if (GxMediaApi_ModuleStart(s_rist.p8_mod) != GXCORE_SUCCESS) {
+        RIST_LOG("p8tail: STAGE 3 FAILED -- ModuleStart\n");
+        _rist_p8_tail_stop();
+        return -1;
+    }
+    s_rist.p8_mod_started = 1;
+    RIST_LOG("p8tail: STAGE 3 -- module started\n");
+
+    s_rist.p8_tail_fd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (s_rist.p8_tail_fd < 0) {
+        RIST_LOG("p8tail: socket() failed: %s\n", strerror(errno));
+        _rist_p8_tail_stop();
+        return -1;
+    }
+    setsockopt(s_rist.p8_tail_fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
+    memset(&sa, 0, sizeof(sa));
+    sa.sin_family      = AF_INET;
+    sa.sin_addr.s_addr = inet_addr("127.0.0.1");
+    sa.sin_port        = htons(RIST_P8_OUT_PORT);
+    if (bind(s_rist.p8_tail_fd, (struct sockaddr *)&sa, sizeof(sa)) < 0) {
+        RIST_LOG("p8tail: bind 127.0.0.1:%d failed: %s\n",
+                 RIST_P8_OUT_PORT, strerror(errno));
+        _rist_p8_tail_stop();
+        return -1;
+    }
+
+    s_rist.p8_rx_bytes  = 0;
+    s_rist.p8_inj_bytes = 0;
+    s_rist.p8_inj_calls = 0;
+    s_rist.p8_inj_busy  = 0;
+    s_rist.p8_inj_err   = 0;
+    s_rist.p8_saw_bytes = 0;
+    s_rist.p8_saw_frame = 0;
+    s_rist.p8_tail_run  = 1;
+    if (GxCore_ThreadCreate("app_rist_p8tail", &s_rist.p8_tail_thread,
+                            _rist_p8_tail_reader, NULL, 64 * 1024,
+                            GXOS_DEFAULT_PRIORITY) != GXCORE_SUCCESS) {
+        RIST_LOG("p8tail: reader thread create FAILED\n");
+        s_rist.p8_tail_run    = 0;
+        s_rist.p8_tail_thread = -1;
+        _rist_p8_tail_stop();
+        return -1;
+    }
+
+    s_rist.p8_tail_dmx3 = 1;
+    s_rist.p8_tail_t0   = _rist_now_ms();
+    RIST_LOG("p8tail: reading udp://@127.0.0.1:%d -> dmx%d  (first-frame deadline %dms)\n",
+             RIST_P8_OUT_PORT, RIST_P8_DMX_MODID, RIST_P8_TAIL_FIRSTFRAME_MS);
+    APP_TIMER_ADD(s_rist.p8_tail_timer, _rist_p8_tail_poll_cb,
+                  RIST_P8_TAIL_POLL_MS, TIMER_ONCE);
+    return 0;
+}
+
 /*
  * Part 8, Step 1: the video path.
  *
@@ -624,6 +1036,12 @@ static int _rist_p8_chain_start(void)
     snprintf(recv_in, sizeof(recv_in), "rist://127.0.0.1:%d?buffer=%d",
              RIST_P8_LOCAL_PORT, bufms);
     snprintf(recv_out, sizeof(recv_out), "udp://127.0.0.1:%d", RIST_P8_OUT_PORT);
+
+    RIST_LOG("p8: tail=%s  (%s)\n",
+             _rist_p8_tail_is_dmx3() ? "dmx3" : "player_av",
+             _rist_p8_tail_is_dmx3()
+               ? "STEP 2 experiment: reinject into a memory-fed demux"
+               : "STEP 1 path, proven on hardware; echo dmx3 > " RIST_P8_TAIL_FILE);
 
     RIST_LOG("p8: ports cap=%d local=%d out=%d  buffer=%dms  pcr_cut=0x%04X (%u)"
              "  svc_id=%d prog=%d\n",
@@ -945,6 +1363,14 @@ int app_rist_screen_connecting(void)
 
 static void _rist_screen_stop(void)
 {
+    /* The dmx3 tail holds the same video decoder player_av would, so it has to
+     * be released at every point player_av would have been -- otherwise the
+     * next zap's owner finds the decoder taken. */
+    if (s_rist.p8_tail_dmx3 || s_rist.p8_mod) {
+        RIST_LOG("screen: stopping the dmx%d tail\n", RIST_P8_DMX_MODID);
+        _rist_p8_tail_stop();
+        s_rist.screen_started = 0;
+    }
     if (s_rist.screen_started) {
         RIST_LOG("screen: stopping player_av\n");
         GxPlayer_MediaStop(RIST_SCREEN_PLAYER);
@@ -1040,6 +1466,22 @@ static int _rist_screen_cb(void *arg)
     }
     if (s_rist.screen_started)
         return 0;
+
+    /* STEP 2. The dmx3 tail owns the screen when it is selected AND it starts.
+     * If it refuses to start we fall straight through to player_av in the same
+     * zap -- the experiment failing must cost a log line, not a picture. The
+     * knob is read here rather than at chain start so it takes effect on the
+     * zap it is set for. */
+    if (s_rist.p8_active && !s_rist.p8_tail_dmx3 && _rist_p8_tail_is_dmx3()) {
+        RIST_LOG("screen: tail=dmx3 -- reinjecting into demux %d instead of player_av\n",
+                 RIST_P8_DMX_MODID);
+        if (_rist_p8_tail_start() == 0) {
+            s_rist.screen_started = 1;   /* the tail owns the decoder now */
+            return 0;
+        }
+        RIST_LOG("screen: dmx%d tail did not start -> player_av (Step 1 path)\n",
+                 RIST_P8_DMX_MODID);
+    }
 
     _rist_screen_url(url, sizeof(url));
     RIST_T("screen: starting player_av on \"%s\"\n", url);

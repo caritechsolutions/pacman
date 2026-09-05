@@ -373,13 +373,31 @@ if [ -n "$riststb_dir" ]; then
     log "  riststb checkout: $riststb_dir"
     before="$(git -C "$riststb_dir" rev-parse HEAD 2>/dev/null || echo unknown)"
 
+    # THIS SCRIPT USED TO FAIL ITS OWN GUARD. The librist build stamp was written
+    # to $riststb_dir/librist/.build-arm.commit -- inside the checkout, and NOT
+    # covered by librist/.gitignore (which ignores build*, so build-arm/ is fine
+    # and the dotfile is not). The next run then saw "?? librist/.build-arm.commit"
+    # in git status --porcelain and refused to build, blaming the user for a file
+    # it had created itself.
+    #
+    # The stamp is build state, not source, so it now lives outside the checkout
+    # entirely (see $stamp below). Remove a legacy one so the first run after
+    # this fix heals itself instead of dying once more.
+    if [ -f "$riststb_dir/librist/.build-arm.commit" ]; then
+        rm -f "$riststb_dir/librist/.build-arm.commit"
+        log "  removed the legacy in-tree build stamp (it tripped the guard below)"
+    fi
+
     # Refuse to touch a dirty tree at all -- switching branches under local edits
     # would either fail confusingly or carry them onto the new branch.
     if [ -n "$(git -C "$riststb_dir" status --porcelain 2>/dev/null)" ]; then
         git -C "$riststb_dir" status --short | sed 's/^/    /' | head -8
         die "riststb checkout $riststb_dir has local modifications (above).
      Resolve them there, or set RISTSTB_DIR= to point at a clean checkout.
-     Refusing to build a tree that does not match origin."
+     Refusing to build a tree that does not match origin.
+
+     (If the only entry is a build artefact this script wrote, that was the
+     .build-arm.commit bug and this version has already removed it -- re-run.)"
     fi
 
     # Put the checkout on the branch this iteration expects. Fetch first so the
@@ -415,7 +433,11 @@ if [ -n "$riststb_dir" ]; then
     fi
 
     LIBRIST_TREE="$riststb_dir/librist/build-arm"
-    stamp="$riststb_dir/librist/.build-arm.commit"
+    # OUTSIDE the checkout, keyed by which checkout it describes, so two trees
+    # under $RIST_TREES cannot share a stamp and neither can dirty its own repo.
+    P8_STAMP_DIR="$RIST_TREES/.build-stamps"
+    mkdir -p "$P8_STAMP_DIR" 2>/dev/null || true
+    stamp="$P8_STAMP_DIR/$(printf '%s' "$riststb_dir" | tr '/' '_').commit"
     head_now="$(git -C "$riststb_dir" rev-parse HEAD)"
     built_at="$(cat "$stamp" 2>/dev/null || echo none)"
 
