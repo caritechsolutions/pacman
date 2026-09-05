@@ -278,6 +278,33 @@ static uint8_t  s_ap_cc[8192];     /* last CC per PID, 0xFF = none seen yet */
  * other. The two answer different questions and only one of them is still open. */
 static const char *s_ap_tag = "ALLPASS";
 
+/* FRAMING SCAN. The first MUXTEST run returned "1096 distinct PIDs" and that
+ * number was WORTHLESS -- badsync was 392188 of 393391 packets (99.69%), so the
+ * PIDs came from ~1203 chance 0x47 bytes in unframed data. Against random bytes
+ * you would expect 1537 hits and 1119 distinct 13-bit values; we saw 1203 and
+ * 1096, a ratio of 0.98. It was noise, and the "npid > 1" verdict was too weak a
+ * test to notice.
+ *
+ * So this scan asks the question the PID count could not: IS THERE TS IN THERE
+ * AT ALL, at any framing? For each candidate stride it counts 0x47 at every
+ * phase; real TS gives one phase a hit rate near 1.0 and every other phase ~1/256.
+ *
+ *   188 : plain TS
+ *   192 : M2TS/TTS -- 4-byte timestamp then the packet. The first hex dump was
+ *         "f3 6b 9f 64 47 07 31 db", a 0x47 at offset 4, which is exactly what a
+ *         4-byte prefix looks like. One sample proves nothing; this counts.
+ *   204 : 188 + 16 bytes of Reed-Solomon, i.e. pre-FEC-stripping TS.
+ *
+ * Bounded to the first 2MB of the window so the scan cannot cost the capture
+ * anything at 7.4MB/s. */
+#define TS_REC_FS_NSTRIDE   3
+#define TS_REC_FS_MAXSTRIDE 204
+#define TS_REC_FS_BUDGET    (2u * 1024u * 1024u)
+static const int s_fs_stride[TS_REC_FS_NSTRIDE] = { 188, 192, 204 };
+static uint32_t  s_fs_hit[TS_REC_FS_NSTRIDE][TS_REC_FS_MAXSTRIDE];
+static uint32_t  s_fs_bytes = 0;   /* bytes fed to the scan so far */
+static uint64_t  s_fs_pos   = 0;   /* running byte offset across reads */
+
 /* Milliseconds, local to this file so the experiment does not depend on a helper
  * from another translation unit. gettimeofday to match _rist_now_ms() in
  * app_rist_capture.c:216 -- the window is 10s and only ever used as a delta, so
@@ -1041,6 +1068,35 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                                 s_ap_t0_ms = _ts_rec_now_ms();
 
                             s_ap_bytes += (uint64_t)read_len;
+
+                            /* Framing scan over a bounded prefix of the window.
+                             * Phases are stepped, not recomputed with %, so this
+                             * is three increments and three compares per byte. */
+                            if(s_fs_bytes < TS_REC_FS_BUDGET)
+                            {
+                                int  take = read_len;
+                                int  b, sidx;
+                                int  ph[TS_REC_FS_NSTRIDE];
+
+                                if((uint32_t)take > TS_REC_FS_BUDGET - s_fs_bytes)
+                                    take = (int)(TS_REC_FS_BUDGET - s_fs_bytes);
+
+                                for(sidx = 0; sidx < TS_REC_FS_NSTRIDE; sidx++)
+                                    ph[sidx] = (int)(s_fs_pos % (uint64_t)s_fs_stride[sidx]);
+
+                                for(b = 0; b < take; b++)
+                                {
+                                    if(buffer[b] == 0x47)
+                                        for(sidx = 0; sidx < TS_REC_FS_NSTRIDE; sidx++)
+                                            s_fs_hit[sidx][ph[sidx]]++;
+                                    for(sidx = 0; sidx < TS_REC_FS_NSTRIDE; sidx++)
+                                        if(++ph[sidx] >= s_fs_stride[sidx])
+                                            ph[sidx] = 0;
+                                }
+                                s_fs_bytes += (uint32_t)take;
+                            }
+                            s_fs_pos += (uint64_t)read_len;
+
                             for(k = 0; k + 187 < read_len; k += 188)
                             {
                                 uint8_t *p = buffer + k;
@@ -1083,27 +1139,80 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                                 for(k = 0; k < 8192; k++) if(s_ap_seen[k]) printf(" %04x", k);
                                 printf("\n");
 
-                                /* State the verdict rather than leaving it to be
-                                 * read off the numbers. The discriminator is the
-                                 * distinct PID count: one PID is what a per-PID
-                                 * path delivers, and 0x1FFF alone is what the
-                                 * dead slot path delivered. */
-                                if(s_ts_rec_muxtest)
+                                /* FRAMING SCAN REPORT -- print this FIRST,
+                                 * because it decides whether the PID list above
+                                 * means anything at all. */
                                 {
-                                    if(npid > 1)
-                                        printf("[MUXTEST] *** VERDICT: WHOLE-TP CAPTURE WORKS -- %d distinct PIDs "
-                                               "with NO slots allocated, %llu kbit/s ***\n",
-                                               npid, (unsigned long long)((s_ap_bytes * 8ULL) / ms));
-                                    else if(npid == 1 && s_ap_seen[0x1FFF])
-                                        printf("[MUXTEST] *** VERDICT: NULLS ONLY (pid 0x1FFF) -- same dead end as "
-                                               "the slot path. Whole-TP door confirmed SHUT. ***\n");
-                                    else
-                                        printf("[MUXTEST] *** VERDICT: %d distinct PID(s), %llu kbit/s -- NOT the "
-                                               "multiplex. Whole-TP door SHUT. ***\n",
-                                               npid, (unsigned long long)((s_ap_bytes * 8ULL) / ms));
-                                    if(s_ap_pkts == 0)
-                                        printf("[MUXTEST]   Zero packets: the DVR accepted src=TSPORT but nothing "
-                                               "flows from it. Door shut, silently.\n");
+                                    int sidx, best_ph[TS_REC_FS_NSTRIDE];
+                                    uint32_t best_hit[TS_REC_FS_NSTRIDE];
+                                    int win_s = -1;
+                                    uint32_t win_hit = 0, win_exp = 0;
+
+                                    for(sidx = 0; sidx < TS_REC_FS_NSTRIDE; sidx++)
+                                    {
+                                        int ph;
+                                        best_ph[sidx] = 0; best_hit[sidx] = 0;
+                                        for(ph = 0; ph < s_fs_stride[sidx]; ph++)
+                                            if(s_fs_hit[sidx][ph] > best_hit[sidx])
+                                            { best_hit[sidx] = s_fs_hit[sidx][ph]; best_ph[sidx] = ph; }
+                                    }
+                                    for(sidx = 0; sidx < TS_REC_FS_NSTRIDE; sidx++)
+                                    {
+                                        /* one slot per stride-length of scanned bytes */
+                                        uint32_t expect = s_fs_bytes / (uint32_t)s_fs_stride[sidx];
+                                        if(expect == 0) expect = 1;
+                                        printf("[%s] framing stride=%d: best phase=%d  %u/%u hits (%u%%)\n",
+                                               s_ap_tag, s_fs_stride[sidx], best_ph[sidx],
+                                               best_hit[sidx], expect,
+                                               (unsigned)((best_hit[sidx] * 100u) / expect));
+                                        if(best_hit[sidx] > win_hit)
+                                        { win_hit = best_hit[sidx]; win_s = sidx; win_exp = expect; }
+                                    }
+
+                                    if(s_ts_rec_muxtest)
+                                    {
+                                        unsigned pct = (win_exp ? (win_hit * 100u) / win_exp : 0);
+                                        unsigned badpct = (s_ap_pkts ? (s_ap_badsync * 100u) / s_ap_pkts : 100);
+
+                                        printf("[MUXTEST] sync check: badsync %u/%u = %u%% of 188-strided positions\n",
+                                               s_ap_badsync, s_ap_pkts, badpct);
+
+                                        if(badpct <= 2 && npid > 1)
+                                        {
+                                            printf("[MUXTEST] *** VERDICT: WHOLE-TP CAPTURE WORKS -- %d distinct PIDs, "
+                                                   "%llu kbit/s, badsync %u%% ***\n",
+                                                   npid, (unsigned long long)((s_ap_bytes * 8ULL) / ms), badpct);
+                                        }
+                                        else if(win_s >= 0 && pct >= 90 && s_fs_stride[win_s] != 188)
+                                        {
+                                            printf("[MUXTEST] *** VERDICT: TS IS PRESENT BUT FRAMED AT STRIDE %d, PHASE %d "
+                                                   "(%u%% of slots carry 0x47) ***\n",
+                                                   s_fs_stride[win_s], best_ph[win_s], pct);
+                                            printf("[MUXTEST]   The port delivers the multiplex; it is simply not plain "
+                                                   "188-byte TS. Deframe at that stride/phase and the door is OPEN.\n");
+                                        }
+                                        else if(win_s >= 0 && pct >= 90)
+                                        {
+                                            printf("[MUXTEST] *** VERDICT: 188-framing found at PHASE %d, but the packet "
+                                                   "walk starts at phase 0 -- realign and re-read. ***\n",
+                                                   best_ph[win_s]);
+                                        }
+                                        else
+                                        {
+                                            printf("[MUXTEST] *** VERDICT: NO TS FRAMING AT ANY STRIDE OR PHASE "
+                                                   "(best %u%%, chance is ~0%%..1%%). ***\n", pct);
+                                            printf("[MUXTEST]   %llu kbit/s of data arrives and it is NOT transport "
+                                                   "stream -- encrypted at rest, or a foreign framing.\n",
+                                                   (unsigned long long)((s_ap_bytes * 8ULL) / ms));
+                                            printf("[MUXTEST]   The PID list above is NOISE: %u chance 0x47 bytes out of "
+                                                   "%u positions. Ignore it.\n",
+                                                   s_ap_pkts - s_ap_badsync, s_ap_pkts);
+                                            printf("[MUXTEST]   Whole-TP capture via TSPORT: door SHUT.\n");
+                                        }
+                                        if(s_ap_pkts == 0)
+                                            printf("[MUXTEST]   Zero packets: the DVR accepted src=TSPORT but nothing "
+                                                   "flows from it. Door shut, silently.\n");
+                                    }
                                 }
                                 s_ap_active = 0;
                             }
@@ -2102,6 +2211,8 @@ static int32_t _ts_rec_prog_config(int32_t index, TsRecConfig *config)
             memset(s_ap_cc,   0xFF, sizeof(s_ap_cc));
             s_ap_bytes = 0; s_ap_pkts = 0; s_ap_badsync = 0; s_ap_ccerr = 0;
             s_ap_t0_ms = 0;                 /* stamped on the first DVR read */
+            memset(s_fs_hit, 0, sizeof(s_fs_hit));
+            s_fs_bytes = 0; s_fs_pos = 0;
             s_ap_tag   = "ALLPASS";
             s_ap_active = 1;
         }
@@ -2119,6 +2230,8 @@ static int32_t _ts_rec_prog_config(int32_t index, TsRecConfig *config)
         memset(s_ap_cc,   0xFF, sizeof(s_ap_cc));
         s_ap_bytes = 0; s_ap_pkts = 0; s_ap_badsync = 0; s_ap_ccerr = 0;
         s_ap_t0_ms = 0;                 /* stamped on the first DVR read */
+        memset(s_fs_hit, 0, sizeof(s_fs_hit));
+        s_fs_bytes = 0; s_fs_pos = 0;
         s_ap_tag   = "MUXTEST";
         s_ap_active = 1;
     }
