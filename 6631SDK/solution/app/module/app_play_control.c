@@ -1085,42 +1085,16 @@ static void app_normal_play(GxMsgProperty_NodeByPosGet *prog_node)
     app_ioctl(prog_node->prog_data.tuner, FRONTEND_CONFIG_GET, &config);
     g_AppPlayOps.normal_play.tuner = config.tuner;
     g_AppPlayOps.normal_play.dmx_id = config.dmx_id;
-    {
-        int p8_dmx0 = 0;
-#if DVB2IP_SERVER_SUPPORT
-        /* dvb2ip Part 8, dmx0 tail: play this program off the MEMORY source.
-         *
-         * The demux id is unchanged -- every consumer (app_sdt, app_epg,
-         * app_time, the ECM path) keeps the dmx_id it is already bound to and
-         * learns nothing. All that changes is where demux 0 gets its bytes, and
-         * the mechanism is the SDK's own: this ts_src reaches the URL as
-         * &tsid:3 (app_player_url_get below), and dvbsource_normal.c sets
-         * cfg_dmx.source from it on every play. The pdmx branch below does
-         * exactly this for pre-demux, and app_demux_param_adjust() does it for
-         * timeshift.
-         *
-         * Asked BEFORE app_rist_play_change() runs, because the URL is built a
-         * few lines down and the chain starts after that. If the chain then
-         * fails, the block following that call puts this back on the tuner
-         * before the play is issued. */
-        int app_rist_p8_dmx0_wanted(GxBusPmDataProg *prog);
-        p8_dmx0 = app_rist_p8_dmx0_wanted(&prog_node->prog_data);
-#endif
-        if (p8_dmx0)
-        {
-            g_AppPlayOps.normal_play.ts_src = 3;
-        }
 #if PDMX_SUPPORT
-        else if(true == app_program_need_predemux(prog_node)
-                && false == app_frontend_hard_cap(prog_node->prog_data.tuner, prog_node->prog_data.pdmx_flag))
-        {
-            g_AppPlayOps.normal_play.ts_src = 3;
-        }
+    if(true == app_program_need_predemux(prog_node)
+            && false == app_frontend_hard_cap(prog_node->prog_data.tuner, prog_node->prog_data.pdmx_flag))
+    {
+        g_AppPlayOps.normal_play.ts_src = 3;
+    }
+    else
 #endif
-        else
-        {
-            g_AppPlayOps.normal_play.ts_src = config.ts_src;
-        }
+    {
+        g_AppPlayOps.normal_play.ts_src = config.ts_src;
     }
 
 #if CA_SUPPORT
@@ -1180,34 +1154,27 @@ static void app_normal_play(GxMsgProperty_NodeByPosGet *prog_node)
         int app_rist_play_change(GxBusPmDataProg *prog);
         app_rist_play_change(&prog_node->prog_data);
 
-        /* dmx0 tail, the revert half. We asked for the memory source above and
-         * built the URL on that answer; if the chain or the DVR feed did not
-         * come up, demux 0 would be pointed at an SDRAM buffer nobody is
-         * writing -- a black screen with a perfectly healthy tuner behind it.
-         * Rebuild the URL on the tuner source instead. Cheap, and it happens
-         * before GxPlayer_MediaPlay() below, so the failure costs nothing.
+        /* Part 8 dmx0 tail: point the SI CONSUMERS at the repaired stream.
          *
-         * Guarded on ts_src == 3 so it can never undo the pdmx branch, which
-         * sets the same value for its own reasons. */
-        if (g_AppPlayOps.normal_play.ts_src == 3)
+         * Deliberately AFTER app_player_url_get() above, so play->url keeps the
+         * TUNER source. That is not an oversight -- on this tail normal play is
+         * suppressed and our GxMediaApi module owns demux 0 and the decoder, so
+         * the URL is unused; and if the tail fails, suppression lifts and normal
+         * play runs, at which point a tsid:3 URL would point demux 0 at a buffer
+         * nobody is writing. Tuner in the URL is right in both cases.
+         *
+         * What DOES need the 3 is the SI side. app_time reads
+         * normal_play.ts_src for the TDT subtable (app_time.c:352 ->
+         * gxextra.c:98), and app_sdt/app_pat take normal_play.dmx_id, which
+         * stays 0. Those consumers start after this point, so they pick it up.
+         *
+         * Confirmed, not merely wanted: app_rist_play_change() has already
+         * applied the Part 8 gate and the failed_svc_id latch, so this is false
+         * whenever the zap fell through to the factory path. */
         {
-            int app_rist_p8_dmx0_active(void);
-            int app_rist_p8_dmx0_asked(void);
-            if (app_rist_p8_dmx0_asked() && !app_rist_p8_dmx0_active())
-            {
-                g_AppPlayOps.normal_play.ts_src = config.ts_src;
-                app_player_url_get(play->url, &prog_node->prog_data,
-                        g_AppPlayOps.normal_play.ts_src,
-                        g_AppPlayOps.normal_play.dmx_id);
-#if QUICK_SWITCH_SUPPORT
-                /* app_player_url_get() rebuilds the URL from scratch, so the
-                 * tscache suffix appended above is gone with it. Inert on this
-                 * build (QUICK_SWITCH_SUPPORT is 0) but it would be a silent
-                 * loss of quick-switch on the fallback path if it were ever
-                 * turned on. */
-                strcat(play->url, url_tmp);
-#endif
-            }
+            int app_rist_p8_dmx0_confirmed(void);
+            if (app_rist_p8_dmx0_confirmed())
+                g_AppPlayOps.normal_play.ts_src = 3;
         }
     }
 #endif

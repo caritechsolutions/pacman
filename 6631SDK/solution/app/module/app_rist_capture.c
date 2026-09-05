@@ -218,28 +218,20 @@
 
 /* ---- the dmx0 tail ---------------------------------------------------- *
  *
- * The DVR module index is the demux index it feeds (gxfrontend_net.c opens
- * GXAV_MOD_DVR with the same DEMUX_ID as its demux), so demux 0 is fed by DVR
- * 0. That slot is free while we run: the dmx2 capture opens DVR 2
- * (app_ts_record.c:1149, GXAV_MOD_DVR with s_ts_rec_modid). The only other
- * claimant is GxMedia_DemuxOpen(), which hardcodes DVR 0
- * (gxmedia_demux.c:138,150) -- that is the dmx3 tail, and the two tails are
- * alternatives, never concurrent.
+ * SAME MECHANISM AS THE dmx3 TAIL, DIFFERENT INSTANCE. Not a second
+ * implementation: GxMediaApi_ModuleOpen3() takes the demux modid as a
+ * parameter, so "memory-fed demux 3" and "memory-fed demux 0" are one code
+ * path with one number changed. Two implementations of this would drift.
  *
- * We do NOT open or configure demux 0. The player does that from the URL. All
- * we own is the memory side: DVR 0, src = DVR_INPUT_MEM, dst = DVR_OUTPUT_DMX,
- * then GxAVModuleWrite() per datagram -- exactly _GxFrontendNet_TSRConfig()
- * (gxfrontend_net.c:118-143) and its writer at :316/:334, which is the one
- * complete, readable implementation of this in the tree. (The pdmx path does
- * the same thing, but pdmx.h and the library behind pdmx_start() are not in
- * this repo, so it is architecture we can read and code we cannot.) */
+ * Why instance 0 is the one that matters: GxAvdev_OpenModule() is a REFCOUNTED
+ * SINGLETON per (type, id) -- gxavdev.c:62-86, `if (-1 == module_handle[type][id])
+ * module_handle[type][id] = GxAVOpenModule(...)`, and every later opener gets
+ * that same handle back. So every consumer that opens demux 0 by instance
+ * number shares one hardware module, and configuring it memory-fed configures
+ * it for all of them at once. That shared handle IS the process-wide demux
+ * object; it just lives as an array slot in the avdev layer rather than as a
+ * named global. */
 #define RIST_P8_DMX0_MODID      0
-#define RIST_P8_DMX0_POLL_MS    1000
-/* Buffer geometry copied from gxfrontend_net.c's SW_BUFFER_SIZE /
- * HW_BUFFER_SIZE / ALMOST_FULL_GATE rather than invented. */
-#define RIST_P8_DVR_SW_BUF      (188 * 1024 * 2)
-#define RIST_P8_DVR_HW_BUF      (188 * 1024 * 4)
-#define RIST_P8_DVR_FULL_GATE   (188 * 30)
 #define RIST_PID_P8_SENDER      "/tmp/rist_p8_sender.pid"
 #define RIST_DELAY3_FILE        "/tmp/ristdelay3"   /* player delay when the chain is up */
 #define RIST_DELAY3_MS          3000                /* receiver buffer needs longer than loopback */
@@ -327,7 +319,7 @@ static struct {
 
     /* Part 8 Step 2: the dmx3 reinjection tail. Everything here is inert unless
      * /tmp/ristp8tail says dmx3. */
-    int                 p8_tail_dmx3;    /* the tail selected for this zap */
+    int                 p8_tail_on;      /* a memory-fed tail is up this zap */
     handle_t            p8_mod;          /* GxMediaApi_ModuleOpen3 handle, 0 = none */
     int                 p8_mod_started;
     int                 p8_tail_fd;      /* UDP socket reading the receiver output */
@@ -343,27 +335,21 @@ static struct {
     int                 p8_saw_bytes;    /* logged the first accepted inject */
     int                 p8_saw_frame;    /* vpts moved / decoder reported RUNNING */
 
-    /* The dmx0 tail: demux 0 fed from the repaired stream full time. Nothing
-     * here touches the demux -- see the RIST_P8_TAIL_FILE comment. We own DVR 0
-     * (the memory side) and one variable in app_play_control. */
+    /* Which demux instance the tail feeds this zap: 3 for the Step 2
+     * experiment, 0 for the target architecture. Latched at chain start and
+     * never re-read from the knob mid-zap, because the teardown has to release
+     * the same instance the setup opened. */
+    int                 p8_dmx;
     int                 p8_dmx0_asked;   /* app_normal_play was told ts_src=3 this zap */
     int                 p8_dmx0_want;    /* play_change confirmed the dmx0 tail this zap */
-    int                 p8_dmx0;         /* the DVR feed is actually up */
-    handle_t            p8_dvr_dev;
-    handle_t            p8_dvr_mod;
-    int                 p8_dvr_running;  /* GxDvrPropertyID_Run issued */
-    int                 p8_dvr_fd;
-    int                 p8_dvr_run;      /* reader thread keep-going */
-    handle_t            p8_dvr_thread;
-    event_list         *p8_dvr_timer;
-    uint32_t            p8_dvr_t0;
-    uint64_t            p8_dvr_rx;       /* bytes off the socket */
-    uint64_t            p8_dvr_wr;       /* bytes accepted by GxAVModuleWrite */
-    uint64_t            p8_dvr_werr;     /* write returned <= 0 */
-    int                 p8_dvr_saw_write;
 
     /* U1 section-filter probe */
     int                 p8_sec_on;
+    /* P2: how many sections of each EIT table_id arrived. Indexed
+     * table_id - 0x40, so 0x4E -> 14 (now/next) and 0x50..0x5F -> 16..31
+     * (schedule). One counter per id is what turns "EPG works" into "now/next
+     * works, schedule does/does not". */
+    uint32_t            p8_sec_eit_tid[32];
     int16_t             p8_sec_id[RIST_P8_SECPROBE_MAX];
     uint32_t            p8_sec_sections[RIST_P8_SECPROBE_MAX];
     uint32_t            p8_sec_bytes[RIST_P8_SECPROBE_MAX];
@@ -396,10 +382,10 @@ s_rist = {
     .pid_receiver   = -1,
     .p8_tail_fd     = -1,
     .p8_tail_thread = -1,
-    .p8_dvr_dev     = -1,
-    .p8_dvr_mod     = -1,
-    .p8_dvr_fd      = -1,
-    .p8_dvr_thread  = -1,
+    /* Default to the Step 2 instance so a stale read before the tail is
+     * selected can never name demux 0 -- the one instance whose teardown would
+     * disturb the consumers. */
+    .p8_dmx         = RIST_P8_DMX_MODID,
     /* -1 is "no filter". Guarded by p8_sec_on everywhere, but a sentinel array
      * that reads as "filter 0 exists" at boot is the kind of thing that only
      * bites once someone removes the guard. */
@@ -799,11 +785,6 @@ static const char *_rist_p8_tail_name(int mode)
     }
 }
 
-static int _rist_p8_tail_is_dmx3(void)
-{
-    return _rist_p8_tail_mode() == RIST_P8_TAIL_DMX3;
-}
-
 static VideoCodecType _rist_p8_vcodec(uint32_t t)
 {
     switch (t) {
@@ -848,9 +829,16 @@ static const struct {
 } s_p8_sec_tab[RIST_P8_SECPROBE_MAX] = {
     { "PAT", 0x0000, 0x00, 0xFF, "positive control"        },
     { "SDT", 0x0011, 0x42, 0xFF, "app_sdt / service names" },
-    /* EIT p/f actual is 0x4E; schedule is 0x50-0x6F. 0xF0 accepts 0x40-0x4F,
-     * which covers p/f actual without dragging in the whole schedule. */
-    { "EIT", 0x0012, 0x4E, 0xF0, "app_epg"                 },
+    /* P2. EIT p/f actual is 0x4E; SCHEDULE actual is 0x50-0x5F. Mask 0xE0
+     * accepts 0x40-0x5F, so BOTH land in this one filter -- because the
+     * question is not "does EIT arrive" but "which EIT arrives". This box asks
+     * for exactly 0x4E and 0x50: gxepg.c:66-76 defaults epg_day=3 and
+     * cur_tp_only=1, so gxepg_table.c:169-192 walks c_EpgTableId[] = {0x4E,
+     * 0x4F, 0x50, 0x60, ...} up to EPG_TID_60 keeping only the even indices.
+     * 0x4E is small and repeats every couple of seconds; 0x50 is the large,
+     * low-rate one and is the only part genuinely at risk in the chain. The
+     * per-table-id histogram below is what separates them in the log. */
+    { "EIT", 0x0012, 0x4E, 0xE0, "app_epg (0x4E now/next + 0x50 schedule)" },
     { "TDT", 0x0014, 0x70, 0xFF, "app_time"                },
 };
 
@@ -862,8 +850,8 @@ static void _rist_p8_sec_stop(void)
         return;
     for (i = 0; i < RIST_P8_SECPROBE_MAX; i++) {
         if (s_rist.p8_sec_id[i] >= 0) {
-            GxBus_SiFilterStop(RIST_P8_DMX_MODID, s_rist.p8_sec_id[i]);
-            GxBus_SiFilterDestroy(RIST_P8_DMX_MODID, s_rist.p8_sec_id[i]);
+            GxBus_SiFilterStop(s_rist.p8_dmx, s_rist.p8_sec_id[i]);
+            GxBus_SiFilterDestroy(s_rist.p8_dmx, s_rist.p8_sec_id[i]);
             s_rist.p8_sec_id[i] = -1;
         }
     }
@@ -892,6 +880,8 @@ static void _rist_p8_sec_start(void)
         s_rist.p8_sec_id[i]       = -1;
         s_rist.p8_sec_sections[i] = 0;
         s_rist.p8_sec_bytes[i]    = 0;
+        if (i == 0)
+            memset(s_rist.p8_sec_eit_tid, 0, sizeof(s_rist.p8_sec_eit_tid));
 
         memset(&f, 0, sizeof(f));
         f.pid         = s_p8_sec_tab[i].pid;
@@ -904,19 +894,22 @@ static void _rist_p8_sec_start(void)
         f.crc         = CRC_OFF;
         f.soft_filter = SOFT_OFF;
 
-        /* ts_src = DEMUX_SDRAM (3), demux_id = 3. ts_demux_connect() inside
-         * si_filter.c will open demux 3 and set source = 3 -- the same config
-         * the media module set, so the two are compatible. That overlap is
-         * itself part of what this probe tests. */
-        s_rist.p8_sec_id[i] = GxBus_SiFilterCreate(3, RIST_P8_DMX_MODID, &f);
+        /* ts_src = DEMUX_SDRAM (3), on whichever instance the tail took. On
+         * the dmx0 tail that is the SAME instance app_epg and app_time filter,
+         * so this probe reads the very demux the real consumers read -- which
+         * is what makes its per-table counts an answer about them and not just
+         * about itself. ts_demux_connect() is a no-op here because si_filter
+         * opened demux 0 at boot and never re-writes source (si_filter.c:227,
+         * and the close at :201-209 is #if 0'd out). */
+        s_rist.p8_sec_id[i] = GxBus_SiFilterCreate(3, s_rist.p8_dmx, &f);
         if (s_rist.p8_sec_id[i] < 0) {
             RIST_LOG("p8sec: %s (pid 0x%04X) FilterCreate FAILED on dmx%d\n",
-                     s_p8_sec_tab[i].name, s_p8_sec_tab[i].pid, RIST_P8_DMX_MODID);
+                     s_p8_sec_tab[i].name, s_p8_sec_tab[i].pid, s_rist.p8_dmx);
             continue;
         }
-        if (GxBus_SiFilterStart(RIST_P8_DMX_MODID, s_rist.p8_sec_id[i]) != GXCORE_SUCCESS) {
+        if (GxBus_SiFilterStart(s_rist.p8_dmx, s_rist.p8_sec_id[i]) != GXCORE_SUCCESS) {
             RIST_LOG("p8sec: %s FilterStart FAILED\n", s_p8_sec_tab[i].name);
-            GxBus_SiFilterDestroy(RIST_P8_DMX_MODID, s_rist.p8_sec_id[i]);
+            GxBus_SiFilterDestroy(s_rist.p8_dmx, s_rist.p8_sec_id[i]);
             s_rist.p8_sec_id[i] = -1;
             continue;
         }
@@ -928,12 +921,12 @@ static void _rist_p8_sec_start(void)
 
     if (!made) {
         RIST_LOG("p8sec: NO filters could be created on dmx%d -- U1 answered NO "
-                 "at the allocation step\n", RIST_P8_DMX_MODID);
+                 "at the allocation step\n", s_rist.p8_dmx);
         return;
     }
     s_rist.p8_sec_on = 1;
     RIST_LOG("p8sec: %d/%d filters armed on dmx%d (ts_src=DEMUX_SDRAM). "
-             "Sections below or nothing.\n", made, RIST_P8_SECPROBE_MAX, RIST_P8_DMX_MODID);
+             "Sections below or nothing.\n", made, RIST_P8_SECPROBE_MAX, s_rist.p8_dmx);
 }
 
 /* Polled, from the tail's existing watchdog. GxBus_SiFilterRead() is a read of
@@ -951,17 +944,21 @@ static void _rist_p8_sec_poll(void)
 
         if (s_rist.p8_sec_id[i] < 0)
             continue;
-        n = GxBus_SiFilterRead(RIST_P8_DMX_MODID, s_rist.p8_sec_id[i],
+        n = GxBus_SiFilterRead(s_rist.p8_dmx, s_rist.p8_sec_id[i],
                                buf, sizeof(buf));
         if (n == 0)
             continue;
+
+        /* P2 histogram. buf[0] is the section's table_id. */
+        if (s_p8_sec_tab[i].pid == 0x0012 && buf[0] >= 0x40 && buf[0] <= 0x5F)
+            s_rist.p8_sec_eit_tid[buf[0] - 0x40]++;
 
         if (s_rist.p8_sec_sections[i] == 0) {
             /* The first section of each table, with its head bytes, so the log
              * shows a real table and not merely a non-zero length. */
             RIST_LOG("p8sec: *** %s SECTION on dmx%d, %u bytes: "
                      "%02X %02X %02X %02X %02X %02X %02X %02X ***\n",
-                     s_p8_sec_tab[i].name, RIST_P8_DMX_MODID, (unsigned)n,
+                     s_p8_sec_tab[i].name, s_rist.p8_dmx, (unsigned)n,
                      buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
         }
         s_rist.p8_sec_sections[i]++;
@@ -985,6 +982,26 @@ static void _rist_p8_sec_report(uint32_t elapsed_ms)
                  s_p8_sec_tab[i].consumer);
         if (s_rist.p8_sec_sections[i])
             any = 1;
+
+        /* P2, spelled out: which EIT actually made it. "EPG works" is two
+         * answers, not one, and the schedule half is the one that can fail on
+         * its own. */
+        if (s_p8_sec_tab[i].pid == 0x0012) {
+            uint32_t pf = s_rist.p8_sec_eit_tid[0x4E - 0x40]
+                        + s_rist.p8_sec_eit_tid[0x4F - 0x40];
+            uint32_t sch = 0;
+            int t;
+
+            for (t = 0x50 - 0x40; t < 32; t++)
+                sch += s_rist.p8_sec_eit_tid[t];
+
+            RIST_LOG("p8sec:     EIT breakdown: now/next (0x4E,0x4F) %u "
+                     "sections, SCHEDULE (0x50-0x5F) %u sections\n", pf, sch);
+            if (pf && !sch)
+                RIST_LOG("p8sec:     -> now/next EPG only. Schedule EIT is not "
+                         "arriving; check the dmx2 slot for 0x0012 is not "
+                         "overflowing.\n");
+        }
     }
     RIST_LOG("p8sec: U1 VERDICT at T+%ums: section filters on a memory-fed "
              "demux %s\n", elapsed_ms,
@@ -993,7 +1010,7 @@ static void _rist_p8_sec_report(uint32_t elapsed_ms)
     if (!any) {
         RIST_LOG("p8sec:   Before concluding they cannot: check ts_in/inj_ok "
                  "above are non-zero (bytes reached dmx%d at all), and that\n",
-                 RIST_P8_DMX_MODID);
+                 s_rist.p8_dmx);
         RIST_LOG("p8sec:   the PAT control is genuinely in the stream "
                  "(" RIST_P8_PSI_FILE "=1 slots pid 0x0000).\n");
     }
@@ -1153,8 +1170,114 @@ static int _rist_p8_tail_poll_cb(void *arg)
     return 0;
 }
 
+/* Put the consumers' demux back on the tuner.
+ *
+ * ONLY for the dmx0 tail, and it is not optional there. GxMediaApi_ModuleClose()
+ * releases our ES slots and drops the refcount, but it does NOT restore
+ * dmx_config.source -- the instance stays DEMUX_SDRAM. On demux 3 that is
+ * harmless, nothing else uses it. On demux 0 it is the factory fallback:
+ *
+ *   - GxFrontend_QueryStatus() (gxfrontend.c:2352) asks the NIM's demux -- 0 --
+ *     for GxDemuxPropertyID_TSLockQuery. Left on SDRAM it never reports TS sync,
+ *     so the next zap's lock poll times out on the delay1 ceiling instead of
+ *     locking, on EVERY channel, Part 8 or not.
+ *   - app_sdt/app_pat/TDT would filter a demux nothing feeds.
+ *
+ * The next factory play would eventually rewrite it (dvbsource_normal.c on the
+ * play URL, app_epg_enable via GxDmxSetSource), but "eventually, if the right
+ * consumer happens to restart" is not a fallback. Write it back here, at the
+ * point we took it, so /tmp/ristp8 off is genuinely untouched behaviour.
+ *
+ * The handle comes from GxAvdev_OpenModule(), which is a refcounted singleton
+ * per (type, id) (gxavdev.c:62-86): this returns the SAME handle every consumer
+ * holds, so the config lands on the instance they are using, and the matching
+ * close only decrements. */
+static void _rist_p8_dmx_restore_tuner(void)
+{
+    GxDemuxProperty_ConfigDemux cfg;
+    AppFrontend_Config          fe = {0};
+    handle_t dev, mod;
+
+    if (s_rist.p8_dmx != RIST_P8_DMX0_MODID)
+        return;
+
+    app_ioctl(s_rist.prog.tuner, FRONTEND_CONFIG_GET, &fe);
+
+    dev = GxAvdev_CreateDevice(0);
+    if (dev < 0) {
+        RIST_LOG("p8tail: RESTORE FAILED -- no device; demux %d is still on "
+                 "SDRAM and the tuner lock will not report\n", RIST_P8_DMX0_MODID);
+        return;
+    }
+    mod = GxAvdev_OpenModule(dev, GXAV_MOD_DEMUX, RIST_P8_DMX0_MODID);
+    if (mod < 0) {
+        RIST_LOG("p8tail: RESTORE FAILED -- demux %d would not open; it is still "
+                 "on SDRAM\n", RIST_P8_DMX0_MODID);
+        GxAvdev_DestroyDevice(dev);
+        return;
+    }
+
+    /* Same field-for-field shape the NIM writes at FRONTEND_OPEN
+     * (app_nim_dvbs.c:405-413), so what we put back is what was there. */
+    memset(&cfg, 0, sizeof(cfg));
+    cfg.source           = fe.ts_src;
+    cfg.ts_select        = FRONTEND;
+    cfg.stream_mode      = DEMUX_PARALLEL;
+    cfg.time_gate        = 0xf;
+    cfg.byt_cnt_err_gate = 0x03;
+    cfg.sync_loss_gate   = 0x03;
+    cfg.sync_lock_gate   = 0x03;
+    if (GxAVSetProperty(dev, mod, GxDemuxPropertyID_Config,
+                        &cfg, sizeof(cfg)) < 0)
+        RIST_LOG("p8tail: RESTORE FAILED -- demux %d config rejected; it is "
+                 "still on SDRAM\n", RIST_P8_DMX0_MODID);
+    else
+        RIST_LOG("p8tail: demux %d restored to the tuner (source=%u)\n",
+                 RIST_P8_DMX0_MODID, (unsigned)fe.ts_src);
+
+    GxAvdev_CloseModule(dev, mod);
+    GxAvdev_DestroyDevice(dev);
+}
+
+/* Re-point app_epg at whichever source demux 0 is now on.
+ *
+ * D1, AND IT IS THE ONLY CONSUMER THAT NEEDS THIS. Every other consumer just
+ * allocates slots through the shared demux handle and is order-independent:
+ * slots and filters sit downstream of the source selector, so they follow it
+ * whenever it changes. app_epg does not. app_epg_enable() lands in
+ * GxEpg_SubtChannelCreate(), which does an unconditional
+ * GxDmxSetSource(epg_cfg.dmx_id, epg_cfg.ts_src) (gxepg_table.c:123) -- and
+ * epg_cfg.dmx_id is TS_2_DMX, which is 0 on this build (app_nim.h:28-32;
+ * CA_SUPPORT is 0 and SUBTTRANS_SUPPORT is undefined). So EPG WRITES demux 0's
+ * source, and left alone it writes the tuner's -- silently undoing the
+ * memory-fed tail the next time EPG restarts.
+ *
+ * Driven from the tail's start and stop rather than from app_normal_play,
+ * because ordering is the whole point. app_prepare_for_play() issues its
+ * app_epg_enable() BEFORE app_rist_play_change() runs, so anything decided
+ * there would be a zap stale -- wrong on the first Part 8 zap and wrong again
+ * on the zap that leaves it. Driving it from the tail re-points EPG at exactly
+ * the moment demux 0 changes hands, in both directions.
+ *
+ * The disable is not optional on either side: app_epg_enable() early-returns
+ * when s_Switch.flag is already EPG_ON (app_epg.c:157), so without tearing the
+ * channel down first the call is a no-op and EPG keeps filtering the source it
+ * was created on. */
+static void _rist_p8_epg_repoint(uint32_t ts_src, const char *why)
+{
+    void app_epg_disable(void);
+    void app_epg_enable(uint32_t ts_src, uint32_t dmx_id);
+
+    app_epg_disable();
+    app_epg_enable(ts_src, TS_2_DMX);
+    RIST_LOG("p8tail: app_epg re-pointed at ts_src=%u on demux %d (%s)\n",
+             (unsigned)ts_src, TS_2_DMX, why);
+}
+
 static void _rist_p8_tail_stop(void)
 {
+    const int was_dmx0 = (s_rist.p8_dmx == RIST_P8_DMX0_MODID);
+
     if (s_rist.p8_tail_run) {
         s_rist.p8_tail_run = 0;
         if (s_rist.p8_tail_thread > 0) {
@@ -1173,15 +1296,27 @@ static void _rist_p8_tail_stop(void)
         GxMediaApi_ModuleClose(s_rist.p8_mod);
         s_rist.p8_mod = 0;
         s_rist.p8_mod_started = 0;
-        RIST_LOG("p8tail: dmx%d module closed\n", RIST_P8_DMX_MODID);
+        RIST_LOG("p8tail: dmx%d module closed\n", s_rist.p8_dmx);
+        /* Ordered AFTER the module close: closing releases our ES slots, and
+         * the source write should be the last thing that touches the instance
+         * so nothing we own is still reading through it. */
+        _rist_p8_dmx_restore_tuner();
+        if (was_dmx0) {
+            AppFrontend_Config fe = {0};
+            app_ioctl(s_rist.prog.tuner, FRONTEND_CONFIG_GET, &fe);
+            _rist_p8_epg_repoint(fe.ts_src, "tail down -- back on the tuner");
+        }
     }
-    s_rist.p8_tail_dmx3 = 0;
+    s_rist.p8_tail_on = 0;
+    /* Back to the safe default. A stale 0 here would aim a later teardown at
+     * the consumers' demux. */
+    s_rist.p8_dmx = RIST_P8_DMX_MODID;
 }
 
 /* Open, configure and start the memory-fed module, then start the reader.
  * Returns 0 on success. Every failure returns <0 and the caller falls back to
  * player_av -- there is no path here that leaves the screen with no owner. */
-static int _rist_p8_tail_start(void)
+static int _rist_p8_tail_start(int demux_modid)
 {
     GxMediaModuleMod     mod;
     GxMediaModuleModPara mpara;
@@ -1189,9 +1324,14 @@ static int _rist_p8_tail_start(void)
     struct sockaddr_in   sa;
     int one = 1;
 
+    /* Latched here and used by teardown, so setup and teardown can never name
+     * different instances -- releasing the wrong one would take the consumers'
+     * demux down with it. */
+    s_rist.p8_dmx = demux_modid;
+
     if (!VALID_MARKER_PID(s_rist.prog.video_pid)) {
         RIST_LOG("p8tail: no video PID in the program record -- not starting dmx%d\n",
-                 RIST_P8_DMX_MODID);
+                 s_rist.p8_dmx);
         return -1;
     }
 
@@ -1201,7 +1341,7 @@ static int _rist_p8_tail_start(void)
      * already released them (app_player_close(PLAYER_FOR_NORMAL), driven by
      * app_rist_screen_enabled()). Asking for a second decoder id would fail or,
      * worse, half-succeed. */
-    mod.demux.demux_modid = RIST_P8_DMX_MODID;
+    mod.demux.demux_modid = s_rist.p8_dmx;
 
     memset(&mpara, 0, sizeof(mpara));
     mpara.source_type   = GXMEDIA_SOURCE_TS;   /* -> DVR_INPUT_MEM -> DEMUX_SDRAM */
@@ -1214,12 +1354,12 @@ static int _rist_p8_tail_start(void)
      * set would read as negative and a valid module would be thrown away. */
     if (s_rist.p8_mod == 0 || s_rist.p8_mod == (handle_t)-1) {
         RIST_LOG("p8tail: STAGE 1 FAILED -- GxMediaApi_ModuleOpen3(dmx%d) returned %d\n",
-                 RIST_P8_DMX_MODID, (int)s_rist.p8_mod);
+                 s_rist.p8_dmx, (int)s_rist.p8_mod);
         s_rist.p8_mod = 0;
         return -1;
     }
     RIST_LOG("p8tail: STAGE 1 -- module open on dmx%d (source=TS -> DEMUX_SDRAM)\n",
-             RIST_P8_DMX_MODID);
+             s_rist.p8_dmx);
 
     memset(&para, 0, sizeof(para));
     para.tsid   = -1;                  /* ModuleConfig forces this anyway */
@@ -1290,378 +1430,34 @@ static int _rist_p8_tail_start(void)
         return -1;
     }
 
-    s_rist.p8_tail_dmx3 = 1;
+    s_rist.p8_tail_on = 1;
     s_rist.p8_tail_t0   = _rist_now_ms();
     _rist_p8_sec_start();          /* U1 probe; inert unless both knobs are set */
     RIST_LOG("p8tail: reading udp://@127.0.0.1:%d -> dmx%d  (first-frame deadline %dms)\n",
-             RIST_P8_OUT_PORT, RIST_P8_DMX_MODID, RIST_P8_TAIL_FIRSTFRAME_MS);
+             RIST_P8_OUT_PORT, s_rist.p8_dmx, RIST_P8_TAIL_FIRSTFRAME_MS);
+
+    /* Only on the dmx0 tail. On dmx3 the consumers' demux never changed, so
+     * rebuilding the EPG channel would cost a rescan for nothing. */
+    if (s_rist.p8_dmx == RIST_P8_DMX0_MODID)
+        _rist_p8_epg_repoint(3, "demux 0 is now memory-fed");
+
     APP_TIMER_ADD(s_rist.p8_tail_timer, _rist_p8_tail_poll_cb,
                   RIST_P8_TAIL_POLL_MS, TIMER_ONCE);
     return 0;
 }
 
-/* ===================================================================== *
- *  THE dmx0 TAIL -- demux 0 fed from the repaired stream, full time.
+/* --- what app_play_control asks -----------------------------------------
  *
- *      tuner -> dmx2 capture -> cutter -> RIST sender -> RIST receiver
- *                                                            |
- *      dmx0  <---- DVR 0 (DVR_INPUT_MEM -> DVR_OUTPUT_DMX) <--+
- *        `-> video/audio decode, app_sdt, app_epg, app_time, (CAS later)
+ * ONE question, asked AFTER app_rist_play_change() has settled the path for
+ * this zap: "are the SI consumers to be pointed at the repaired stream?"
  *
- *  Division of labour, and it is the whole point of this shape:
- *
- *    app_play_control sets g_AppPlayOps.normal_play.ts_src = 3 for this zap.
- *    The play URL then carries &tsid:3&dmxid:0, and dvbsource_normal.c does
- *    cfg_dmx.source = 3 on demux 0 when the player starts -- the same one
- *    unconditional write it performs on every play today. NOBODY ELSE TOUCHES
- *    THE DEMUX. Two owners with different opinions of the source is the one
- *    thing this design must not create (dmx_sub_system.c returns -1 for it).
- *
- *    This file owns only the memory side: DVR 0 configured MEM -> DMX, and a
- *    reader that writes the receiver's output into it.
- *
- *  Which also means the screen is NOT suppressed on this tail. Step 1 and
- *  Step 2 both take the decoder away from normal play; here normal play IS the
- *  decode path, just sourced from SDRAM, so app_rist_screen_enabled() has to
- *  return 0 or GxPlayer_MediaPlay() never runs and the URL we went to the
- *  trouble of building is never used.
- * ===================================================================== */
-
-static void _rist_p8_dmx0_stop(void);
-
-/* Write granularity. gxfrontend_net.c:330-331 rounds every write down to a
- * multiple of TS_PACKET_SIZE*4 and carries the remainder to the next round, so
- * the DVR is only ever handed whole 4-packet groups. Our datagrams are 1316
- * bytes (7 x 188), which is NOT a multiple of 752 -- so writing them straight
- * through would hand the hardware a length shape the one working reference in
- * this tree deliberately avoids. Match it rather than assume it does not
- * matter. */
-#define RIST_P8_DVR_ALIGN       (188 * 4)
-/* Bound on the back-pressure spin. The reference loops forever on
- * is_importing_data; here a wedged DVR would pin a thread and silently stop
- * draining the socket, so it gives up after this many 10ms rounds (~2s) and
- * says so instead. */
-#define RIST_P8_DVR_MAX_RETRY   200
-
-/* Receiver output on loopback -> GxAVModuleWrite() into DVR 0.
- *
- * A short or zero write is back-pressure from a full hardware fifo, not a
- * failure: gxfrontend_net.c:332-337 retries with a 10ms delay until the whole
- * buffer has gone in. Dropping the remainder instead would tear TS packets in
- * half and the demux would resync by discarding whatever followed -- which
- * would show up as intermittent video corruption, three layers away from the
- * line that caused it. */
-static void _rist_p8_dvr_reader(void *arg)
+ * It cannot be asked before, because the answer depends on the chain having
+ * been accepted (the failed_svc_id latch, the Part 8 gate). And it must not be
+ * re-derived from the knob file at the call site -- see the latch comment in
+ * play_change. */
+int app_rist_p8_dmx0_confirmed(void)
 {
-    static uint8_t buf[64 * 1024];
-    size_t carry = 0;              /* bytes held back for alignment */
-
-    (void)arg;
-    RIST_T("p8dmx0: reader thread up on udp://@127.0.0.1:%d\n", RIST_P8_OUT_PORT);
-
-    while (s_rist.p8_dvr_run) {
-        struct timeval tv = { .tv_sec = 0, .tv_usec = 200000 };
-        fd_set rf;
-        int    n;
-        size_t have, aligned, done = 0;
-
-        if (s_rist.p8_dvr_fd < 0)
-            break;
-        FD_ZERO(&rf);
-        FD_SET(s_rist.p8_dvr_fd, &rf);
-        if (select(s_rist.p8_dvr_fd + 1, &rf, NULL, NULL, &tv) <= 0)
-            continue;
-
-        /* Append after the carry so the two are one contiguous run. */
-        n = (int)recv(s_rist.p8_dvr_fd, buf + carry, sizeof(buf) - carry, 0);
-        if (n <= 0)
-            continue;
-        s_rist.p8_dvr_rx += (uint64_t)n;
-
-        if (!s_rist.p8_dvr_running) {
-            carry = 0;
-            continue;
-        }
-
-        have    = carry + (size_t)n;
-        aligned = have - (have % RIST_P8_DVR_ALIGN);
-
-        while (done < aligned && s_rist.p8_dvr_run) {
-            int retry = 0;
-            int w;
-
-            do {
-                w = GxAVModuleWrite(s_rist.p8_dvr_dev, s_rist.p8_dvr_mod,
-                                    buf + done, (int)(aligned - done), 0);
-                if (w > 0)
-                    break;
-                s_rist.p8_dvr_werr++;
-                GxCore_ThreadDelay(10);
-            } while (++retry < RIST_P8_DVR_MAX_RETRY && s_rist.p8_dvr_run);
-
-            if (w <= 0) {
-                /* Genuinely stuck. Drop what is left of this round rather than
-                 * pin the thread: the socket has to keep draining or the whole
-                 * chain backs up behind one wedged fifo. The werr count above
-                 * is what says this happened. */
-                RIST_LOG("p8dmx0: DVR %d refused %u bytes for ~%dms -- dropping "
-                         "this round (werr=%llu)\n",
-                         RIST_P8_DMX0_MODID, (unsigned)(aligned - done),
-                         RIST_P8_DVR_MAX_RETRY * 10,
-                         (unsigned long long)s_rist.p8_dvr_werr);
-                done = aligned;
-                break;
-            }
-
-            done += (size_t)w;
-            s_rist.p8_dvr_wr += (uint64_t)w;
-            if (!s_rist.p8_dvr_saw_write) {
-                s_rist.p8_dvr_saw_write = 1;
-                RIST_LOG("p8dmx0: STAGE 3 -- first write ACCEPTED %d of %u bytes "
-                         "into DVR %d\n", w, (unsigned)aligned, RIST_P8_DMX0_MODID);
-            }
-        }
-
-        carry = have - aligned;
-        if (carry)
-            memmove(buf, buf + aligned, carry);
-        /* Paranoia: a carry that could not shrink would eventually run the
-         * buffer up to its end and recv() would start reading zero bytes. */
-        if (carry >= sizeof(buf) - RIST_DGRAM)
-            carry = 0;
-    }
-
-    RIST_T("p8dmx0: reader thread exiting\n");
-}
-
-/* Progress report. Unlike the dmx3 tail this has NO first-frame deadline and no
- * teardown-on-timeout: the decode it feeds is normal play on demux 0, and the
- * existing screen_failed / failed_svc_id fallback already covers "the chain
- * never produced a picture". A second watchdog racing that one would be two
- * mechanisms fighting over the same zap. */
-static int _rist_p8_dmx0_poll_cb(void *arg)
-{
-    uint32_t elapsed;
-
-    (void)arg;
-    s_rist.p8_dvr_timer = NULL;
-
-    if (!s_rist.p8_dmx0)
-        return 0;
-
-    elapsed = _rist_now_ms() - s_rist.p8_dvr_t0;
-    RIST_LOG("p8dmx0: T+%ums rx=%llu wrote=%llu werr=%llu\n",
-             elapsed,
-             (unsigned long long)s_rist.p8_dvr_rx,
-             (unsigned long long)s_rist.p8_dvr_wr,
-             (unsigned long long)s_rist.p8_dvr_werr);
-
-    if (elapsed > 15000 && s_rist.p8_dvr_rx == 0) {
-        RIST_LOG("p8dmx0:   NOTHING has arrived from the receiver on udp://@:%d "
-                 "in %ums.\n", RIST_P8_OUT_PORT, elapsed);
-        RIST_LOG("p8dmx0:   That is upstream of the demux -- check the sender's "
-                 "[RUN] ts_pkts/pcrs lines above.\n");
-    } else if (elapsed > 15000 && s_rist.p8_dvr_wr == 0) {
-        RIST_LOG("p8dmx0:   Bytes are arriving but DVR %d has accepted NONE. "
-                 "The memory feed is not running.\n", RIST_P8_DMX0_MODID);
-    }
-
-    /* Report for the first 30s, then go quiet -- this runs for the whole life
-     * of the channel, not just bring-up. */
-    if (elapsed < 30000)
-        APP_TIMER_ADD(s_rist.p8_dvr_timer, _rist_p8_dmx0_poll_cb,
-                      RIST_P8_DMX0_POLL_MS, TIMER_ONCE);
-    return 0;
-}
-
-static void _rist_p8_dmx0_stop(void)
-{
-    if (s_rist.p8_dvr_run) {
-        s_rist.p8_dvr_run = 0;
-        if (s_rist.p8_dvr_thread > 0) {
-            GxCore_ThreadJoin(s_rist.p8_dvr_thread);
-            s_rist.p8_dvr_thread = -1;
-        }
-    }
-    if (s_rist.p8_dvr_fd >= 0) {
-        close(s_rist.p8_dvr_fd);
-        s_rist.p8_dvr_fd = -1;
-    }
-    if (s_rist.p8_dvr_timer) {
-        APP_TIMER_REMOVE(s_rist.p8_dvr_timer);
-        s_rist.p8_dvr_timer = NULL;
-    }
-    if (s_rist.p8_dvr_mod >= 0 && s_rist.p8_dvr_dev >= 0) {
-        if (s_rist.p8_dvr_running)
-            GxAVSetProperty(s_rist.p8_dvr_dev, s_rist.p8_dvr_mod,
-                            GxDvrPropertyID_Stop, NULL, 0);
-        GxAVCloseModule(s_rist.p8_dvr_dev, s_rist.p8_dvr_mod);
-        RIST_LOG("p8dmx0: DVR %d released\n", RIST_P8_DMX0_MODID);
-    }
-    if (s_rist.p8_dvr_dev >= 0)
-        GxAVDestroyDevice(s_rist.p8_dvr_dev);
-    s_rist.p8_dvr_mod     = -1;
-    s_rist.p8_dvr_dev     = -1;
-    s_rist.p8_dvr_running = 0;
-    s_rist.p8_dmx0        = 0;
-}
-
-/* Open and run the memory feed. Returns 0 on success; every failure returns <0
- * with everything released, and the caller puts the play back on the tuner
- * BEFORE it is issued -- so a failure here costs a normal picture, not a black
- * screen. */
-static int _rist_p8_dmx0_start(void)
-{
-    GxDvrProperty_Config        dvrconf;
-    GxDvrProperty_TSRFlowControl ctrl;
-    struct sockaddr_in          sa;
-    int one = 1;
-
-    s_rist.p8_dvr_dev = GxAVCreateDevice(0);
-    if (s_rist.p8_dvr_dev < 0) {
-        RIST_LOG("p8dmx0: STAGE 1 FAILED -- GxAVCreateDevice returned %d\n",
-                 (int)s_rist.p8_dvr_dev);
-        s_rist.p8_dvr_dev = -1;
-        return -1;
-    }
-    s_rist.p8_dvr_mod = GxAVOpenModule(s_rist.p8_dvr_dev, GXAV_MOD_DVR,
-                                       RIST_P8_DMX0_MODID);
-    if (s_rist.p8_dvr_mod < 0) {
-        RIST_LOG("p8dmx0: STAGE 1 FAILED -- GXAV_MOD_DVR %d would not open (%d). "
-                 "Something else holds it.\n",
-                 RIST_P8_DMX0_MODID, (int)s_rist.p8_dvr_mod);
-        s_rist.p8_dvr_mod = -1;
-        _rist_p8_dmx0_stop();
-        return -1;
-    }
-    RIST_LOG("p8dmx0: STAGE 1 -- DVR %d open (feeds demux %d)\n",
-             RIST_P8_DMX0_MODID, RIST_P8_DMX0_MODID);
-
-    memset(&ctrl, 0, sizeof(ctrl));
-    ctrl.flags = DVR_FLOW_CONTROL_ES;
-    GxAVSetProperty(s_rist.p8_dvr_dev, s_rist.p8_dvr_mod,
-                    GxDvrPropertyID_TSRFlowControl, &ctrl, sizeof(ctrl));
-
-    /* NO DVR_FLAG_MEM_NOT_PROTECTED here, deliberately.
-     *
-     * app_ts_record.c:1163 needs that flag because it runs DMX -> MEM and the
-     * driver otherwise sets hwbuf_security=1 and encrypts the captured buffer
-     * at rest -- which is what made the dvb2ip TS body come out as ciphertext.
-     * This is the opposite direction, MEM -> DMX, and gxfrontend_net.c's
-     * _GxFrontendNet_TSRConfig() -- the working reference for exactly this
-     * direction -- sets no flags at all. Noted rather than left blank because
-     * "the bytes go in and come out as garbage" is the same symptom, and it
-     * cost a session to diagnose the first time. */
-    memset(&dvrconf, 0, sizeof(dvrconf));
-    dvrconf.src = DVR_INPUT_MEM;
-    dvrconf.dst = DVR_OUTPUT_DMX;
-    dvrconf.src_buf.sw_buffer_size   = RIST_P8_DVR_SW_BUF;
-    dvrconf.src_buf.hw_buffer_size   = RIST_P8_DVR_HW_BUF;
-    dvrconf.src_buf.almost_full_gate = RIST_P8_DVR_FULL_GATE;
-    dvrconf.dst_buf.sw_buffer_size   = RIST_P8_DVR_SW_BUF;
-    dvrconf.dst_buf.hw_buffer_size   = RIST_P8_DVR_HW_BUF;
-    dvrconf.dst_buf.almost_full_gate = RIST_P8_DVR_FULL_GATE;
-    if (GxAVSetProperty(s_rist.p8_dvr_dev, s_rist.p8_dvr_mod,
-                        GxDvrPropertyID_Config, &dvrconf, sizeof(dvrconf)) < 0) {
-        RIST_LOG("p8dmx0: STAGE 2 FAILED -- DVR config (MEM -> DMX)\n");
-        _rist_p8_dmx0_stop();
-        return -1;
-    }
-    if (GxAVSetProperty(s_rist.p8_dvr_dev, s_rist.p8_dvr_mod,
-                        GxDvrPropertyID_Run, NULL, 0) < 0) {
-        RIST_LOG("p8dmx0: STAGE 2 FAILED -- DVR run\n");
-        _rist_p8_dmx0_stop();
-        return -1;
-    }
-    s_rist.p8_dvr_running = 1;
-    RIST_LOG("p8dmx0: STAGE 2 -- DVR %d running, src=MEM dst=DMX\n",
-             RIST_P8_DMX0_MODID);
-
-    s_rist.p8_dvr_fd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (s_rist.p8_dvr_fd < 0) {
-        RIST_LOG("p8dmx0: socket() failed: %s\n", strerror(errno));
-        _rist_p8_dmx0_stop();
-        return -1;
-    }
-    setsockopt(s_rist.p8_dvr_fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
-    memset(&sa, 0, sizeof(sa));
-    sa.sin_family      = AF_INET;
-    sa.sin_addr.s_addr = inet_addr("127.0.0.1");
-    sa.sin_port        = htons(RIST_P8_OUT_PORT);
-    if (bind(s_rist.p8_dvr_fd, (struct sockaddr *)&sa, sizeof(sa)) < 0) {
-        RIST_LOG("p8dmx0: bind 127.0.0.1:%d failed: %s\n",
-                 RIST_P8_OUT_PORT, strerror(errno));
-        _rist_p8_dmx0_stop();
-        return -1;
-    }
-
-    s_rist.p8_dvr_rx        = 0;
-    s_rist.p8_dvr_wr        = 0;
-    s_rist.p8_dvr_werr      = 0;
-    s_rist.p8_dvr_saw_write = 0;
-    s_rist.p8_dvr_run       = 1;
-    if (GxCore_ThreadCreate("app_rist_p8dvr", &s_rist.p8_dvr_thread,
-                            _rist_p8_dvr_reader, NULL, 64 * 1024,
-                            GXOS_DEFAULT_PRIORITY) != GXCORE_SUCCESS) {
-        RIST_LOG("p8dmx0: reader thread create FAILED\n");
-        s_rist.p8_dvr_run    = 0;
-        s_rist.p8_dvr_thread = -1;
-        _rist_p8_dmx0_stop();
-        return -1;
-    }
-
-    s_rist.p8_dmx0   = 1;
-    s_rist.p8_dvr_t0 = _rist_now_ms();
-    RIST_LOG("p8dmx0: reading udp://@127.0.0.1:%d -> DVR %d -> demux %d\n",
-             RIST_P8_OUT_PORT, RIST_P8_DMX0_MODID, RIST_P8_DMX0_MODID);
-    RIST_LOG("p8dmx0: demux %d source is set by the PLAYER from &tsid:3 -- "
-             "nothing here writes it\n", RIST_P8_DMX0_MODID);
-    APP_TIMER_ADD(s_rist.p8_dvr_timer, _rist_p8_dmx0_poll_cb,
-                  RIST_P8_DMX0_POLL_MS, TIMER_ONCE);
-    return 0;
-}
-
-/* --- what app_play_control asks, and when ------------------------------- *
- *
- * WANTED is asked BEFORE app_rist_play_change(), because ts_src has to be
- * decided before app_player_url_get() builds the URL. It therefore cannot
- * consult chain state (there is none yet) and reads the same knobs and applies
- * the same fallback latch that play_change is about to.
- *
- * ACTIVE is asked AFTER, once the chain has either come up or not, so a failed
- * start can be put back on the tuner before GxPlayer_MediaPlay() is issued. */
-int app_rist_p8_dmx0_wanted(GxBusPmDataProg *prog)
-{
-    int want = 1;
-
-    if (prog == NULL)
-        want = 0;
-    else if (_rist_read_int_file(RIST_P8_FLAG_FILE, 0) != 1)
-        want = 0;
-    else if (_rist_p8_tail_mode() != RIST_P8_TAIL_DMX0)
-        want = 0;
-    /* Same latch play_change applies: a service we already fell back on this
-     * visit goes down the factory path, so it must not get tsid:3 either. */
-    else if (s_rist.failed_svc_id && s_rist.failed_svc_id == prog->service_id)
-        want = 0;
-
-    /* Latched, because the revert check afterwards must ask "did WE put a 3 in
-     * that URL", not "would we still want to". Re-deriving it there would give
-     * the wrong answer in exactly the case that matters -- play_change having
-     * just decided against the Part 8 path -- and the revert would be skipped
-     * on a URL that is already pointing demux 0 at an unfed buffer. */
-    s_rist.p8_dmx0_asked = want;
-    return want;
-}
-
-int app_rist_p8_dmx0_asked(void)
-{
-    return s_rist.p8_dmx0_asked;
-}
-
-int app_rist_p8_dmx0_active(void)
-{
-    return s_rist.p8_dmx0;
+    return s_rist.p8_dmx0_want;
 }
 
 /*
@@ -1978,22 +1774,25 @@ int app_rist_screen_enabled(void)
     if (s_rist.screen_failed)
         return 0;
 
-    /* THE dmx0 TAIL INVERTS THIS. Step 1 and Step 2 both take the decoder away
-     * from normal play, because the picture comes from player_av or from our
-     * own dmx3 module. On the dmx0 tail normal play IS the decode path -- it is
-     * simply sourced from SDRAM instead of the tuner -- so suppressing it would
-     * close the very player whose &tsid:3 URL points demux 0 at memory, and
-     * nothing would decode at all.
+    /* D2, DECODE CONTENTION. All three tails answer this the same way: YES,
+     * suppress factory decode. There is ONE hardware video decoder, and on
+     * every Part 8 tail something else owns it --
      *
-     * Keyed on p8_dmx0_want (what we asked app_normal_play for this zap) rather
-     * than on p8_dmx0 (whether the feed came up), because the two are read at
-     * different moments: app_normal_play consults this right after
-     * app_rist_play_change() returns, and if the feed failed there, that same
-     * caller has already put ts_src back on the tuner. Either way normal play
-     * must run. */
-    if (s_rist.p8_dmx0_want)
-        return 0;
-
+     *   player_av : the loopback player (Step 1)
+     *   dmx3      : our GxMediaApi module on demux 3 (Step 2)
+     *   dmx0      : our GxMediaApi module on demux 0 -- the same module, same
+     *               video/audio mod id 0, just bound to the instance the
+     *               consumers already use.
+     *
+     * So there is no inversion here and no special case: chain_active drives
+     * app_player_close(PLAYER_FOR_NORMAL) at app_play_control.c:1155 exactly as
+     * it does for Part 7, and the memory-fed module takes the decoder that
+     * releases.
+     *
+     * The fallback is the same single mechanism too: any chain or tail failure
+     * clears chain_active (and p8_active) BEFORE app_normal_play reads this, so
+     * suppression lifts in the same zap and factory decode runs. There is no
+     * path that suppresses the tuner decode for a tail that did not come up. */
     return on || s_rist.chain_active;
 }
 
@@ -2068,22 +1867,20 @@ int app_rist_screen_connecting(void)
 
 static void _rist_screen_stop(void)
 {
-    /* The dmx3 tail holds the same video decoder player_av would, so it has to
-     * be released at every point player_av would have been -- otherwise the
-     * next zap's owner finds the decoder taken. */
-    if (s_rist.p8_tail_dmx3 || s_rist.p8_mod) {
-        RIST_LOG("screen: stopping the dmx%d tail\n", RIST_P8_DMX_MODID);
+    /* The memory-fed tail holds the same video decoder player_av would, so it
+     * has to be released at every point player_av would have been -- otherwise
+     * the next zap's owner finds the decoder taken. It also holds udp/6500.
+     *
+     * On the dmx0 tail this is ALSO what hands demux 0 back to the tuner: the
+     * module close releases our ES slots, and the next factory play writes
+     * source = <tuner> through dvbsource_normal.c while app_epg_enable() writes
+     * it again via GxDmxSetSource(). Two independent writers, both on the
+     * normal path, so the factory fallback does not depend on us restoring
+     * anything by hand. */
+    if (s_rist.p8_tail_on || s_rist.p8_mod) {
+        RIST_LOG("screen: stopping the dmx%d tail\n", s_rist.p8_dmx);
         _rist_p8_tail_stop();
         s_rist.screen_started = 0;
-    }
-    /* The dmx0 feed has to go at exactly the same points. It does not hold the
-     * decoder -- normal play does -- but it does hold DVR 0 and udp/6500, and
-     * leaving either behind means the next zap's feed cannot bind. Releasing it
-     * is also what puts demux 0 back on the tuner in practice: the next play
-     * carries &tsid:<tuner> and dvbsource_normal.c rewrites the source. */
-    if (s_rist.p8_dmx0) {
-        RIST_LOG("screen: stopping the dmx%d feed\n", RIST_P8_DMX0_MODID);
-        _rist_p8_dmx0_stop();
     }
     if (s_rist.screen_started) {
         RIST_LOG("screen: stopping player_av\n");
@@ -2181,20 +1978,35 @@ static int _rist_screen_cb(void *arg)
     if (s_rist.screen_started)
         return 0;
 
-    /* STEP 2. The dmx3 tail owns the screen when it is selected AND it starts.
+    /* A memory-fed tail owns the screen when one is selected AND it starts.
      * If it refuses to start we fall straight through to player_av in the same
-     * zap -- the experiment failing must cost a log line, not a picture. The
-     * knob is read here rather than at chain start so it takes effect on the
-     * zap it is set for. */
-    if (s_rist.p8_active && !s_rist.p8_tail_dmx3 && _rist_p8_tail_is_dmx3()) {
-        RIST_LOG("screen: tail=dmx3 -- reinjecting into demux %d instead of player_av\n",
-                 RIST_P8_DMX_MODID);
-        if (_rist_p8_tail_start() == 0) {
-            s_rist.screen_started = 1;   /* the tail owns the decoder now */
-            return 0;
+     * zap -- the Step 1 path is the diagnostic fallback, and a tail failing
+     * must cost a log line, not a picture.
+     *
+     * dmx0 is deliberately opened HERE rather than at chain start. Opening it
+     * at chain start would put demux 0 on the memory source before the capture
+     * has begun, and GxFrontend_QueryStatus() (gxfrontend.c:2352) asks the
+     * NIM's demux -- demux 0 -- for GxDemuxPropertyID_TSLockQuery. A
+     * memory-fed demux 0 has no TS sync from the tuner, so the lock poll that
+     * gates _rist_capture_begin() would never see LOCKED and the capture would
+     * only ever start on the delay1 ceiling. Opening after delay3 means the
+     * lock check runs against a still-tuner-fed demux 0 and behaves exactly as
+     * it does today. The consumers' SLOTS are unaffected by the later source
+     * change: slots and filters sit downstream of the source selector. */
+    if (s_rist.p8_active && !s_rist.p8_tail_on) {
+        int mode = _rist_p8_tail_mode();
+        if (mode == RIST_P8_TAIL_DMX3 || mode == RIST_P8_TAIL_DMX0) {
+            int modid = (mode == RIST_P8_TAIL_DMX0)
+                          ? RIST_P8_DMX0_MODID : RIST_P8_DMX_MODID;
+            RIST_LOG("screen: tail=%s -- feeding demux %d from the receiver "
+                     "instead of player_av\n", _rist_p8_tail_name(mode), modid);
+            if (_rist_p8_tail_start(modid) == 0) {
+                s_rist.screen_started = 1;   /* the tail owns the decoder now */
+                return 0;
+            }
+            RIST_LOG("screen: dmx%d tail did not start -> player_av (Step 1 path)\n",
+                     modid);
         }
-        RIST_LOG("screen: dmx%d tail did not start -> player_av (Step 1 path)\n",
-                 RIST_P8_DMX_MODID);
     }
 
     _rist_screen_url(url, sizeof(url));
@@ -2604,15 +2416,16 @@ int app_rist_play_change(GxBusPmDataProg *prog)
         } else if (p8_on) {
             s_rist.p8_active    = 1;
             s_rist.chain_active = 1;     /* drives capture dest, screen, probe */
-            /* Latched here, from the same knobs app_rist_p8_dmx0_wanted() read
-             * a moment ago in app_normal_play. It must not be re-read from the
-             * file later in the zap: the URL has already been built on the
-             * earlier answer, and a knob changed in between would leave the
-             * player and the feed disagreeing about where demux 0 points. */
+            /* Latched once here, not re-read from the knob later in the zap.
+             * app_normal_play asks this straight after we return, to decide
+             * what ts_src the SI consumers get; the tail itself opens later on
+             * the delay3 timer. A knob changed in between would leave the
+             * consumers and the tail disagreeing about demux 0. */
             s_rist.p8_dmx0_want = (_rist_p8_tail_mode() == RIST_P8_TAIL_DMX0);
             RIST_T("svc_id=%d -> PART 8 video path (tail=%s%s)\n",
                    prog->service_id, _rist_p8_tail_name(_rist_p8_tail_mode()),
-                   s_rist.p8_dmx0_want ? ", normal play stays on demux 0" : "");
+                   s_rist.p8_dmx0_want
+                     ? ", SI consumers to ts_src=3 on demux 0" : "");
         } else if (chain_on && s_rist.failed_svc_id
                      && s_rist.failed_svc_id == prog->service_id) {
             /* We already gave up on this service this visit. Re-arming here
@@ -2655,18 +2468,6 @@ int app_rist_play_change(GxBusPmDataProg *prog)
             s_rist.p8_active     = 0;
             s_rist.p8_dmx0_want  = 0;
             RIST_T("chain start FAILED -> factory decode for this zap\n");
-        } else if (s_rist.p8_dmx0_want) {
-            /* The dmx0 tail has no player_av to schedule. The feed can start
-             * immediately -- the DVR buffers on our side and the player will
-             * point demux 0 at it a few lines later in app_normal_play -- and
-             * starting it here rather than on a timer means a failure is known
-             * before the play is issued, which is what lets the caller put
-             * ts_src back on the tuner instead of showing a black screen. */
-            if (_rist_p8_dmx0_start() < 0) {
-                RIST_LOG("p8dmx0: feed did NOT start -- this zap plays off the "
-                         "tuner (chain left running for the log)\n");
-                s_rist.p8_dmx0_want = 0;
-            }
         } else {
             int d3 = _rist_read_int_file(RIST_DELAY3_FILE, RIST_DELAY3_MS);
             RIST_T("screen: player_av in %dms (delay3/chain) on udp://@:%d\n",
@@ -2701,13 +2502,12 @@ int app_rist_play_change(GxBusPmDataProg *prog)
      * gives us normal zap-to-picture timing for free. app_normal_play issues the
      * decode a few lines after this hook returns, so the first poll lands after
      * it has been kicked off. */
-    /* The dmx0 tail belongs on this side of the fence too, even though
-     * chain_active is set: the picture comes from PLAYER_FOR_NORMAL there, not
-     * from player_av, so it is the same player this probe was written for. Left
-     * out, every dmx0 view would be recorded as first_frame_ms = -1 -- "never
-     * showed a picture" -- which is exactly the metric we need to be able to
-     * trust when judging whether this tail works. */
-    if (!s_rist.chain_active || s_rist.p8_dmx0_want) {
+    /* NOT armed for the dmx0 tail, even though it might look like it should be.
+     * PLAYER_FOR_NORMAL is closed on every Part 8 tail (D2 above) -- the picture
+     * comes from our GxMediaApi module, not from a player this probe can query.
+     * The dmx0 tail reports its own first frame from a moving vpts, in
+     * _rist_p8_tail_poll_cb's STAGE 6 line. */
+    if (!s_rist.chain_active) {
         s_rist.probe_t0     = _rist_now_ms();
         s_rist.probe_done   = 0;
         s_rist.probe_player = PLAYER_FOR_NORMAL;
