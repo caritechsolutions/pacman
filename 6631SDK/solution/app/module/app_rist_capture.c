@@ -123,6 +123,29 @@
 
 #define RIST_CHAIN_FLAG_FILE    "/tmp/ristchain"
 #define RIST_PCRCUT_FILE        "/tmp/ristpcrcut"   /* 1 = PCR-boundary cutting */
+
+/* ---------------------------------------------------------------- Part 8
+ * Step 1: the video path only. Capture -> box cutter -> local RIST receiver ->
+ * player_av, on loopback, with NO recovery peer, no NACK, no FSR and no
+ * sync-to-server. The question it answers is whether the box can decode its own
+ * PCR-cut-and-reassembled stream; alignment with the headend only starts to
+ * matter once there is a peer to NACK, and there is not one yet.
+ *
+ * ITS OWN PORTS. A Part 8 chain must never be able to half-attach to a Part 7
+ * one -- same capture port would mean two senders reading one stream, same out
+ * port would mean two writers into player_av -- and both are the kind of fault
+ * that looks like "the picture is wrong" rather than "the ports collided".
+ * Separate hundreds, same pattern.
+ *
+ * DEFAULT OFF, unlike /tmp/ristchain which defaults ON. A box that has never
+ * heard of Part 8 boots to exactly what it does today. */
+#define RIST_P8_FLAG_FILE       "/tmp/ristp8"       /* 1 = Part 8 video path */
+#define RIST_P8_PSI_FILE        "/tmp/ristp8psi"    /* 1 = broadcast PSI passthrough */
+#define RIST_P8_CAP_PORT        6300    /* capture -> p8 sender  (UDP)  */
+#define RIST_P8_LOCAL_PORT      6400    /* p8 sender -> receiver (RIST) */
+#define RIST_P8_OUT_PORT        6500    /* receiver -> player_av (UDP)  */
+#define RIST_BIN_P8_SENDER      "/usr/bin/stb_part8_receiver"
+#define RIST_PID_P8_SENDER      "/tmp/rist_p8_sender.pid"
 #define RIST_DELAY3_FILE        "/tmp/ristdelay3"   /* player delay when the chain is up */
 #define RIST_DELAY3_MS          3000                /* receiver buffer needs longer than loopback */
 
@@ -197,6 +220,7 @@ static struct {
     /* Step D: RIST chain for this program */
     int                 chain_active;    /* kill switch ON *and* service has recovery */
     int                 chain_running;   /* children actually spawned */
+    int                 p8_active;       /* Part 8 video path (Step 1) for this zap */
     AppRistRecovery     rec;             /* API entry for the tuned service */
     pid_t               pid_watchdog;    /* rist_watchdog (owns ristsender_marker) */
     pid_t               pid_receiver;    /* ristreceiver (standalone, not watchdogged) */
@@ -308,6 +332,19 @@ static int _rist_url_drop_param(char *dst, size_t dstsz, const char *src, const 
  * compiled default. Returns 1 if the destination changed, 0 otherwise. Unicast
  * is the intended use (multicast does not cross an AP-isolated WiFi) -- just put
  * the laptop IP in the file, e.g.  echo 192.168.1.50:6000 > /tmp/ristcap  */
+/* Which chain owns the ports this zap. Two accessors rather than two copies of
+ * the ternary at every call site: getting one of them wrong would cross the two
+ * chains' wiring in a way that presents as a picture fault. */
+static int _rist_cap_port(void)
+{
+    return s_rist.p8_active ? RIST_P8_CAP_PORT : RIST_CAP_PORT;
+}
+
+static int _rist_out_port(void)
+{
+    return s_rist.p8_active ? RIST_P8_OUT_PORT : RIST_OUT_PORT;
+}
+
 static int _rist_resolve_dest(void)
 {
     char ip[24];
@@ -324,7 +361,7 @@ static int _rist_resolve_dest(void)
     if (s_rist.chain_active) {
         strncpy(ip, "127.0.0.1", sizeof(ip) - 1);
         ip[sizeof(ip) - 1] = '\0';
-        port = RIST_CAP_PORT;
+        port = _rist_cap_port();
         goto apply;
     }
 
@@ -519,8 +556,109 @@ static void _rist_chain_stop(void)
     /* Receiver first: it is the consumer, so stopping it first avoids a burst of
      * "peer gone" churn in the sender during teardown. */
     _rist_reap(&s_rist.pid_receiver, RIST_PID_RECEIVER, "ristreceiver");
-    _rist_reap(&s_rist.pid_watchdog, RIST_PID_WATCHDOG, "rist_watchdog(+sender)");
+    /* pid_watchdog holds the Part 7 watchdog OR the Part 8 sender -- one slot,
+     * one chain at a time -- so the pidfile has to follow the mode or a Part 8
+     * run leaves /tmp/rist_p8_sender.pid behind for the next boot's sweep to
+     * act on. */
+    if (s_rist.p8_active)
+        _rist_reap(&s_rist.pid_watchdog, RIST_PID_P8_SENDER, "stb_part8_receiver");
+    else
+        _rist_reap(&s_rist.pid_watchdog, RIST_PID_WATCHDOG, "rist_watchdog(+sender)");
     s_rist.chain_running = 0;
+}
+
+/*
+ * Part 8, Step 1: the video path.
+ *
+ *   dmx2 capture --UDP 6300--> stb_part8_receiver --RIST 6400--> ristreceiver
+ *                --UDP 6500--> player_av
+ *
+ * Everything is on 127.0.0.1. That is not a stylistic preference: the headend's
+ * recovery server spent a whole session reading zero bytes off a multicast group
+ * it had bound but never joined (no IP_ADD_MEMBERSHIP), on a bridge that was
+ * NO-CARRIER anyway. Every local hop on this box stays unicast loopback.
+ *
+ * ONE PEER on the receiver, unlike the Part 7 chain's two. There is no recovery
+ * peer in Step 1, so there is nothing to weight, nothing to NACK and no reason
+ * for timing-mode=1 -- that exists to reconcile two senders' clocks onto one
+ * flow, and here there is one sender.
+ *
+ * NOT WATCHDOGGED. The Part 7 sender runs under rist_watchdog because it can
+ * legitimately sit waiting for a first marker that may never arrive. The Part 8
+ * sender has no such state -- it binds, cuts and emits -- so a restart loop
+ * would hide a real failure rather than survive a transient. It is spawned
+ * directly and a failure falls through to factory decode.
+ */
+static int _rist_p8_chain_start(void)
+{
+    static char in_url[96], out_url[96], recv_in[128], recv_out[96];
+    char *tx_argv[8];
+    char *rx_argv[6];
+    int   bufms = _rist_read_int_file(RIST_BUFFER_FILE, RIST_BUFFER_MS);
+
+    if (bufms < 500) {
+        RIST_LOG("p8: buffer %dms from %s is too small -- using %dms\n",
+                 bufms, RIST_BUFFER_FILE, RIST_BUFFER_MS);
+        bufms = RIST_BUFFER_MS;
+    }
+
+    /* The cutter's PID comes from THIS service's PMT, via the program record the
+     * capture's own slot set is built from -- so the slot set and the cutter
+     * cannot disagree about which PID carries the PCR. The headend derives its
+     * -C the same way, from the service's PMT rather than by scanning, after
+     * scanning handed an NCN channel TLC-GUYANA's PCR PID and it never cut.
+     *
+     * Without a usable PID there is nothing to cut on, and running uncut would
+     * produce a stream that decodes here but can never align with the headend --
+     * a false pass for the thing Step 1 exists to prove. Refuse instead. */
+    if (!VALID_MARKER_PID(s_rist.prog.pcr_pid)) {
+        RIST_LOG("p8: no usable PCR PID from the PMT (0x%04X) -- NOT starting "
+                 "the Part 8 path, staying on factory decode\n", s_rist.prog.pcr_pid);
+        return -1;
+    }
+
+    snprintf(in_url, sizeof(in_url), "udp://@127.0.0.1:%d?pcr_cut=%u",
+             RIST_P8_CAP_PORT, (unsigned)s_rist.prog.pcr_pid);
+    snprintf(out_url, sizeof(out_url), "rist://@127.0.0.1:%d?buffer=%d",
+             RIST_P8_LOCAL_PORT, bufms);
+    snprintf(recv_in, sizeof(recv_in), "rist://127.0.0.1:%d?buffer=%d",
+             RIST_P8_LOCAL_PORT, bufms);
+    snprintf(recv_out, sizeof(recv_out), "udp://127.0.0.1:%d", RIST_P8_OUT_PORT);
+
+    RIST_LOG("p8: ports cap=%d local=%d out=%d  buffer=%dms  pcr_cut=0x%04X (%u)"
+             "  svc_id=%d prog=%d\n",
+             RIST_P8_CAP_PORT, RIST_P8_LOCAL_PORT, RIST_P8_OUT_PORT, bufms,
+             s_rist.prog.pcr_pid, (unsigned)s_rist.prog.pcr_pid,
+             s_rist.prog.service_id, s_rist.prog.id);
+
+    tx_argv[0] = (char *)RIST_BIN_P8_SENDER;
+    tx_argv[1] = (char *)"-i";
+    tx_argv[2] = in_url;
+    tx_argv[3] = (char *)"-u";
+    tx_argv[4] = out_url;
+    tx_argv[5] = NULL;
+
+    rx_argv[0] = (char *)RIST_BIN_RECEIVER;
+    rx_argv[1] = (char *)"-i";
+    rx_argv[2] = recv_in;
+    rx_argv[3] = (char *)"-o";
+    rx_argv[4] = recv_out;
+    rx_argv[5] = NULL;
+
+    RIST_T("p8: spawning children\n");
+    s_rist.pid_watchdog = _rist_spawn(tx_argv, RIST_PID_P8_SENDER, "stb_part8_receiver");
+    s_rist.pid_receiver = _rist_spawn(rx_argv, RIST_PID_RECEIVER, "ristreceiver");
+    RIST_T("p8: children spawned (sender=%d receiver=%d)\n",
+           (int)s_rist.pid_watchdog, (int)s_rist.pid_receiver);
+
+    if (s_rist.pid_watchdog <= 0 || s_rist.pid_receiver <= 0) {
+        RIST_LOG("p8: start FAILED -> tearing down (factory decode this zap)\n");
+        _rist_chain_stop();
+        return -1;
+    }
+
+    s_rist.chain_running = 1;
+    return 0;
 }
 
 static int _rist_chain_start(void)
@@ -530,6 +668,12 @@ static int _rist_chain_start(void)
     char *wd_argv[8];
     char *rx_argv[6];
     int   bufms = _rist_read_int_file(RIST_BUFFER_FILE, RIST_BUFFER_MS);
+
+    /* The two chains are mutually exclusive -- one capture, one player_av -- so
+     * Part 8 short-circuits here rather than being woven into the Part 7 arm
+     * below. Everything after this line is the Part 7 path exactly as it was. */
+    if (s_rist.p8_active)
+        return _rist_p8_chain_start();
 
     if (bufms < 500) {                          /* below this nothing recovers */
         RIST_LOG("chain: buffer %dms from %s is too small -- using %dms\n",
@@ -753,7 +897,7 @@ static void _rist_screen_url(char *out, int outsz)
     }
     /* Chain up -> decode the RECEIVER's corrected output, not the raw capture. */
     snprintf(out, outsz, "udp://@:%d%s",
-             s_rist.chain_active ? RIST_OUT_PORT : s_rist.dst_port,
+             s_rist.chain_active ? _rist_out_port() : s_rist.dst_port,
              RIST_SCREEN_URL_OPTS);
 }
 
@@ -1072,6 +1216,42 @@ static void _rist_capture_begin(void)
     cfg.prog_id  = (uint16_t)s_rist.prog.id;
     cfg.user_pmt = true;                 /* inject PAT/PMT -> self-contained TS */
 
+    /* Part 8 PSI mode, OFF by default even when the Part 8 path is on.
+     *
+     * user_pmt=false makes the capture carry the BROADCAST PAT/PMT instead of
+     * the box's own generated pair, which is what Part 8 eventually needs: the
+     * headend filters the broadcast PSI through untouched, so the box has to
+     * hold the same bytes or the two streams differ at exactly the PIDs a
+     * sequence number indexes.
+     *
+     * It is not the default yet because Step 1's success condition is a picture,
+     * and the self-contained PAT/PMT is the shape already proven to decode here.
+     * The broadcast PAT lists every service on the transponder while only this
+     * service's PMT and ES are captured, so a player that picks the first
+     * program in the PAT can land on one whose PMT was never slotted. That is a
+     * real risk to a first bring-up and it is unrelated to the cutter, so it is
+     * a knob to test deliberately rather than a default to be surprised by.
+     *
+     *   echo 1 > /tmp/ristp8psi   (then re-zap)
+     *
+     * PID 0 reaching the slot allocator is why app_ts_record.c's ext-pid loop
+     * had to stop rejecting it. */
+    if (s_rist.p8_active && _rist_read_int_file(RIST_P8_PSI_FILE, 0) == 1) {
+        static const uint32_t p8_psi[] = { 0x0000, 0x0011, 0x0012, 0x0014 };
+        uint32_t k;
+
+        cfg.user_pmt = false;            /* -> the PMT PID is slotted for us */
+        for (k = 0; k < sizeof(p8_psi) / sizeof(p8_psi[0])
+                    && cfg.ext_info.ext_num < TS_REC_MAX_EXTPID_NUM; k++) {
+            cfg.ext_info.ext_pids[cfg.ext_info.ext_num++] = p8_psi[k];
+        }
+        RIST_LOG("p8: broadcast PSI passthrough ON -- user_pmt=false, "
+                 "ext pids 0x0000 0x0011 0x0012 0x0014 (+ PMT slotted by the driver)\n");
+    } else if (s_rist.p8_active) {
+        RIST_T("p8: self-contained PAT/PMT (user_pmt=true); "
+               "echo 1 > " RIST_P8_PSI_FILE " for broadcast PSI\n");
+    }
+
     /* Step F: the API-supplied marker PID. Without it ristsender_marker never
      * sees a marker, so rist_start() (only reached inside "if (!first_marker_seen)")
      * is never called, the satellite peer never materialises, and the receiver
@@ -1087,10 +1267,12 @@ static void _rist_capture_begin(void)
         cfg.ext_info.ext_num     = 1;
         RIST_T("capture: marker pid %d (0x%04X) from the API -> ext_pids\n",
                s_rist.rec.marker_pid, s_rist.rec.marker_pid);
-    } else if (s_rist.chain_active) {
+    } else if (s_rist.chain_active && !s_rist.p8_active) {
         RIST_LOG("capture: no usable marker_pid from the API (%d) -- sender will "
                  "wait for a first marker that never comes\n", s_rist.rec.marker_pid);
     }
+    /* Part 8 has no marker by design, so it takes neither branch: there is
+     * nothing for the headend to insert and nothing here to validate. */
 
     s_rist.rec_handle = app_ts_record_start(&cfg);
     if (s_rist.rec_handle == 0 || s_rist.rec_handle == (handle_t)-1) {
@@ -1196,6 +1378,7 @@ int app_rist_play_change(GxBusPmDataProg *prog)
     if (!s_swept) {
         s_swept = 1;
         _rist_pid_sweep(RIST_PID_WATCHDOG, "rist_watchdog");
+        _rist_pid_sweep(RIST_PID_P8_SENDER, "stb_part8_receiver");
         _rist_pid_sweep(RIST_PID_RECEIVER, "ristreceiver");
     }
 
@@ -1215,6 +1398,7 @@ int app_rist_play_change(GxBusPmDataProg *prog)
      * leaves the factory tuner path completely alone. */
     memset(&s_rist.rec, 0, sizeof(s_rist.rec));
     s_rist.chain_active = 0;
+    s_rist.p8_active    = 0;
 
     /* Clear the fallback latch as soon as a DIFFERENT service is selected, so
      * zapping away and back is a genuine retry. Staying on the same service
@@ -1229,10 +1413,32 @@ int app_rist_play_change(GxBusPmDataProg *prog)
     {
         const char *why = NULL;
         int chain_on = _rist_chain_flag(&why);
+        int p8_on    = (_rist_read_int_file(RIST_P8_FLAG_FILE, 0) == 1);
 
-        RIST_LOG("play_change: chain=%s (%s)\n", chain_on ? "ENABLED" : "DISABLED", why);
+        RIST_LOG("play_change: chain=%s (%s)  part8=%s\n",
+                 chain_on ? "ENABLED" : "DISABLED", why, p8_on ? "ON" : "off");
 
-        if (chain_on && s_rist.failed_svc_id
+        /* PART 8 WINS, and takes no API record.
+         *
+         * Step 1 has no recovery peer, so there is nothing to look up: the box
+         * cuts its own capture and decodes it on its own screen. Requiring an
+         * API entry would make a bench test depend on the headend for a step
+         * that does not involve the headend at all.
+         *
+         * It also has to short-circuit the Part 7 arm below rather than sit
+         * beside it -- one capture and one player_av cannot serve two chains --
+         * and the failed_svc_id latch still applies, so a Part 8 chain that gave
+         * up this visit does not immediately restart into the same failure. */
+        if (p8_on && s_rist.failed_svc_id
+                  && s_rist.failed_svc_id == prog->service_id) {
+            RIST_LOG("play_change: svc_id=%d already fell back this visit "
+                     "-> factory path (zap away and back to retry)\n", prog->service_id);
+        } else if (p8_on) {
+            s_rist.p8_active    = 1;
+            s_rist.chain_active = 1;     /* drives capture dest, screen, probe */
+            RIST_T("svc_id=%d -> PART 8 video path (Step 1, no recovery peer)\n",
+                   prog->service_id);
+        } else if (chain_on && s_rist.failed_svc_id
                      && s_rist.failed_svc_id == prog->service_id) {
             /* We already gave up on this service this visit. Re-arming here
              * would restart the chain that the fallback just replaced, and the
@@ -1266,12 +1472,17 @@ int app_rist_play_change(GxBusPmDataProg *prog)
      * otherwise the decode would be suppressed for a chain that never came up. */
     if (s_rist.chain_active) {
         if (_rist_chain_start() < 0) {
+            /* Both, not just chain_active: p8_active still set would leave the
+             * capture aimed at the Part 8 port and player_av pointed at an out
+             * port nothing is writing -- a black screen instead of the factory
+             * fallback this branch exists to give. */
             s_rist.chain_active = 0;
+            s_rist.p8_active    = 0;
             RIST_T("chain start FAILED -> factory decode for this zap\n");
         } else {
             int d3 = _rist_read_int_file(RIST_DELAY3_FILE, RIST_DELAY3_MS);
             RIST_T("screen: player_av in %dms (delay3/chain) on udp://@:%d\n",
-                   d3, RIST_OUT_PORT);
+                   d3, _rist_out_port());
             APP_TIMER_ADD(s_rist.screen_timer, _rist_screen_cb, d3, TIMER_ONCE);
         }
     }

@@ -1213,7 +1213,14 @@ static int32_t _ts_rec_demux_slot_alloc(int32_t index, uint16_t pid, int32_t slo
     ProgDmxInfo *prog = &ctrl->prog[index];
     GxDemuxProperty_Slot slot;
 
-    if(!VALID_PID(pid))
+    /* Range check only. PID 0 is the PAT and IS slottable -- the demux delivers
+     * it, proven by accident when a memset left .pid = 0 on an experimental slot
+     * and it returned 68 real broadcast PAT packets. VALID_PID() excludes 0
+     * because every OTHER caller here (video, audio, pcr, pmt) must never pass
+     * it, and they all still filter it at their own call sites. The one caller
+     * that legitimately wants 0 is the ext-pid loop, for Part 8's broadcast PSI
+     * passthrough, so the blanket rejection moves out of the shared helper. */
+    if(pid > 0x1FFE)
         return -1;
 
     memset(&slot, 0, sizeof(GxDemuxProperty_Slot));
@@ -1324,7 +1331,12 @@ static int32_t _ts_rec_demux_ext_slot_alloc(int32_t index, TsRecConfig *config)
         {
             uint32_t ext_pid = config->ext_info.ext_pids[e];
 
-            if(!VALID_PID(ext_pid))
+            /* 0 IS allowed here, unlike everywhere else in this file: PID 0 is
+             * the PAT, and Part 8's broadcast-PSI passthrough needs it. The
+             * caller is explicit about every PID it asks for, so there is no
+             * "accidentally zero" case to protect against -- that risk belongs
+             * to the derived PIDs above, which still use VALID_PID(). */
+            if(ext_pid > 0x1FFE)
             {
                 TS_REC_ERR("ext pid %u out of range -- skipped", ext_pid);
                 continue;

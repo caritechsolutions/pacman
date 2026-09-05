@@ -95,6 +95,13 @@ BR2_MOD_APP_ETH"
 # fetched + cross-compiled by this script -- see section 6a.
 STB_RX_NAME="stb_part7_receiver"
 STB_RX_SRC_URL="https://raw.githubusercontent.com/caritechsolutions/Satellite-Hybrid-Management-System/main/stb_part7_receiver.c"
+
+# STB-side Part 8 sender. Separate binary, same source-of-truth repo. It is
+# linked against librist/src/pcr_cut.c from the riststb checkout -- the SAME
+# FILE the headend's sender compiles -- so the two ends cannot drift on where a
+# payload starts. That is also what the pre-flash strings check proves.
+STB_P8_NAME="stb_part8_receiver"
+STB_P8_SRC_URL="https://raw.githubusercontent.com/caritechsolutions/Satellite-Hybrid-Management-System/main/stb_part8_receiver.c"
 ROOTFS_DIR="${ROOTFS_DIR:-/opt/stb/rootfs-work}"
 RIST_TREES="${RIST_TREES:-/opt/stb/rist}"
 
@@ -516,6 +523,80 @@ else
     log "  WARNING: $CROSS_STRIP unavailable -- shipping UNSTRIPPED ($sz_before bytes)"
 fi
 
+# ---- 6a-2. cross-build the STB Part 8 sender -------------------------------
+# Same toolchain, same librist tree, one extra translation unit: pcr_cut.c out
+# of the riststb checkout. That file is NOT in librist.so -- RIST_PRIV hides its
+# symbols from the shared library, which is why ristsender compiles it in too --
+# so it has to be listed here rather than linked.
+#
+# The whole point of Part 8 framing is that both ends split identical bytes
+# identically, so this compiles the SAME FILE the headend's part8_recovery_server
+# uses. If it is ever not linked, the box runs uncut while the headend cuts, and
+# nothing downstream says so -- hence the strings check below.
+log ""
+log "=== cross-build: $STB_P8_NAME (ARM) ==="
+
+p8src="$TMP/${STB_P8_NAME}.c"
+p8url="${STB_P8_SRC_URL}?$(date +%s)"
+log "download: $p8url"
+curl -fsSL "$p8url" -o "$p8src" || die "FAILED to fetch ${STB_P8_NAME}.c from SHMS -- refusing to build a stale copy"
+[ -s "$p8src" ] || die "fetched an empty ${STB_P8_NAME}.c -- refusing to build"
+grep -q "rist_pcr_cut_feed" "$p8src" \
+    || die "fetched ${STB_P8_NAME}.c does not call rist_pcr_cut_feed -- wrong file, refusing to build"
+log "  fetched $(wc -c < "$p8src" | tr -d ' ') bytes from SHMS main"
+
+PCR_CUT_C="$TREE_ROOT/librist/src/pcr_cut.c"
+if [ ! -f "$PCR_CUT_C" ]; then
+    die "no $PCR_CUT_C in the riststb checkout.
+     The Part 8 cutter lives in librist/src/pcr_cut.c on the riststb branch that
+     carries it. RISTSTB_REF is currently '$RISTSTB_REF' -- point it at the
+     branch with pcr_cut, e.g.  RISTSTB_REF=claude/gx6631-ts-userspace-rist-fe2wkc"
+fi
+log "  cutter : $PCR_CUT_C"
+
+if "$CROSS_CC" -mcpu=cortex-a7 -mfpu=vfpv3-d16 -mfloat-abi=hard -std=gnu99 -O2 -Wall \
+       -I "$TREE_ROOT/librist/include" \
+       -I "$TREE_ROOT/librist/src" \
+       -I "$LIBRIST_TREE/include" \
+       -I "$LIBRIST_TREE/include/librist" \
+       "$p8src" "$PCR_CUT_C" -L "$LIBRIST_TREE" -lrist -lpthread \
+       -o "$TMP/$STB_P8_NAME" 2>"$TMP/${STB_P8_NAME}.err"; then
+    log "  compiled OK"
+else
+    log "---- compiler output ----"
+    tail -n 25 "$TMP/${STB_P8_NAME}.err" 2>/dev/null || true
+    die "cross-compile of ${STB_P8_NAME}.c FAILED"
+fi
+
+file "$TMP/$STB_P8_NAME" 2>/dev/null | grep -q 'ARM' \
+    || die "built ${STB_P8_NAME} is not an ARM ELF -- wrong compiler?"
+
+# PRE-FLASH PROOF THAT THE CUTTER IS LINKED. Done BEFORE the strip, because
+# strip removes the symbol table and the string below is the only evidence left
+# afterwards. A binary without it would run, bind, forward -- and never cut,
+# which looks like "the box decodes but nothing aligns" three steps later.
+if "${CROSS_CC%gcc}nm" "$TMP/$STB_P8_NAME" 2>/dev/null | grep -q ' T rist_pcr_cut_feed'; then
+    log "  cutter linked: rist_pcr_cut_feed present in the symbol table"
+else
+    strings "$TMP/$STB_P8_NAME" | grep -q 'PCR-boundary framing ON' \
+        || die "the built ${STB_P8_NAME} contains neither rist_pcr_cut_feed nor its
+     start-up log string. The cutter is NOT linked. Do not flash this build."
+    log "  cutter linked: start-up string present (nm unavailable)"
+fi
+
+sz_before="$(wc -c < "$TMP/$STB_P8_NAME" | tr -d ' ')"
+if command -v "$CROSS_STRIP" >/dev/null 2>&1 && "$CROSS_STRIP" "$TMP/$STB_P8_NAME" 2>/dev/null; then
+    log "  stripped: $sz_before -> $(wc -c < "$TMP/$STB_P8_NAME" | tr -d ' ') bytes"
+else
+    log "  WARNING: $CROSS_STRIP unavailable -- shipping UNSTRIPPED ($sz_before bytes)"
+fi
+
+# Survives the strip, so it is also checkable on the box itself:
+#     strings /usr/bin/stb_part8_receiver | grep 'PCR-boundary framing'
+strings "$TMP/$STB_P8_NAME" | grep -q 'PCR-boundary framing ON' \
+    || die "post-strip ${STB_P8_NAME} lost its cutter start-up string -- refusing to ship"
+log "  post-strip check: 'PCR-boundary framing ON' present"
+
 # ---- 6b. put it where `make bin` will actually find it ---------------------
 # The bug this replaces: we used to copy into output/image/bin_linux/root/usr/bin
 # and print "installed ->". That directory is a SCRATCH EXTRACTION -- mkimg.sh
@@ -536,15 +617,20 @@ fi
 # and shipping one without the other is a version skew that would present as a
 # runtime symbol error or, worse, as FSR quietly not working.
 log ""
-log "=== install $STB_RX_NAME + librist into the rootfs source ==="
+log "=== install $STB_RX_NAME + $STB_P8_NAME + librist into the rootfs source ==="
 
 # Staging tree mirrors the rootfs layout; PAYLOADS lists the member paths.
 LIBRIST_SO_NAME="$(basename "$LIBRIST_SO")"
 mkdir -p "$TMP/stage/usr/bin" "$TMP/stage/lib"
 cp "$TMP/$STB_RX_NAME" "$TMP/stage/usr/bin/$STB_RX_NAME"
+cp "$TMP/$STB_P8_NAME" "$TMP/stage/usr/bin/$STB_P8_NAME"
 cp "$LIBRIST_SO"       "$TMP/stage/lib/$LIBRIST_SO_NAME"
-chmod 0755 "$TMP/stage/usr/bin/$STB_RX_NAME" "$TMP/stage/lib/$LIBRIST_SO_NAME"
-PAYLOADS="usr/bin/$STB_RX_NAME lib/$LIBRIST_SO_NAME"
+chmod 0755 "$TMP/stage/usr/bin/$STB_RX_NAME" "$TMP/stage/usr/bin/$STB_P8_NAME" \
+           "$TMP/stage/lib/$LIBRIST_SO_NAME"
+# Three payloads now. They MUST ship together: both binaries are linked against
+# the library they were just built with, and the Part 8 one additionally carries
+# a copy of that library's cutter.
+PAYLOADS="usr/bin/$STB_RX_NAME usr/bin/$STB_P8_NAME lib/$LIBRIST_SO_NAME"
 log "  payloads: $PAYLOADS"
 
 PROJ_NAME="$(sed -n 's/^BR2_PROJ_NAME="\(.*\)"$/\1/p'   "$SDK_ROOT/.config" | head -1)"
@@ -824,6 +910,20 @@ for p in $PAYLOADS; do
      we injected into -- the lines above say which."
     fi
 done
+
+# The cutter, checked on the copy that is actually going to be flashed rather
+# than on the build artefact. Between those two points the file has been tarred,
+# injected, extracted and squashed; this is the last place to catch a Part 8
+# binary that reached the image without its cut rule.
+if [ -f "$PACKED_ROOT/usr/bin/$STB_P8_NAME" ]; then
+    if strings "$PACKED_ROOT/usr/bin/$STB_P8_NAME" | grep -q 'PCR-boundary framing ON'; then
+        log "  OK: $STB_P8_NAME in the image carries the cutter"
+    else
+        die "VERIFY FAILED: $STB_P8_NAME is in the image but has no cutter string.
+     It would bind, forward and never cut, which looks like a decode problem
+     rather than a build problem. Do not flash this build."
+    fi
+fi
 
 # The symlink chain has to still resolve, or every RIST binary fails to start
 # with a loader error that says nothing about librist having been replaced.
