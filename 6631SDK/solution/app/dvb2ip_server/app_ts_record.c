@@ -263,6 +263,13 @@ static int      s_ts_rec_allpass    = 0;
  * costs a flash cycle. */
 #define TS_REC_DVR_IN_TSPORT  (0)
 static int      s_ts_rec_muxtest    = 0;
+/* The live whole-TP mode, requested per capture via TsRecConfig.full_tp rather
+ * than by a knob file -- app_rist_capture already decides the Part 8 path from
+ * /tmp/ristp8 and a second reader of the same knob could disagree with it.
+ * s_ts_rec_muxtest is the diagnostic form of the same switch; both land here so
+ * the DVR is configured in exactly one place. */
+static int      s_ts_rec_fulltp     = 0;
+#define TS_REC_FULLTP()   (s_ts_rec_fulltp || s_ts_rec_muxtest)
 static int32_t  s_ts_rec_mux_pid    = 0;   /* pid handed to the MUXTS slot */
 static int32_t  s_ts_rec_mux_slotid = -1;
 
@@ -277,6 +284,38 @@ static uint8_t  s_ap_cc[8192];     /* last CC per PID, 0xFF = none seen yet */
 /* Which experiment armed the window, so one log cannot be mistaken for the
  * other. The two answer different questions and only one of them is still open. */
 static const char *s_ap_tag = "ALLPASS";
+
+/* CONTINUOUS CAPTURE HEALTH, for whole-TP. The ALLPASS/MUXTEST window is a
+ * one-shot 10s measurement; at 59 Mb/s sustained the question is not "does it
+ * start" but "where does it shed after a minute", so this runs for the life of
+ * the capture and reports every TS_REC_HEALTH_MS.
+ *
+ * ON THE KERNEL TSW LINES: dvr_v100_isr_tsw_full and dvr_v100_tsw_dealwith are
+ * driver printk's. Userspace cannot hook them -- they appear on the same serial
+ * console and have to be read there. What userspace CAN see is the symptom, and
+ * that is what these count: a torn capture shows up as badsync (the read no
+ * longer starts on a packet boundary) and as CC discontinuities (packets went
+ * missing). Both are reported per interval AND cumulative, because a rate that
+ * is zero for a minute and then jumps is the signature of an overrun burst. */
+#define TS_REC_HEALTH_MS   (5000)
+static int      s_ht_on    = 0;
+static uint64_t s_ht_bytes, s_ht_pkts, s_ht_bad, s_ht_ccerr, s_ht_reads, s_ht_short;
+static uint64_t s_ht_bytes_p, s_ht_pkts_p, s_ht_bad_p, s_ht_ccerr_p;   /* previous report */
+static uint64_t s_ht_t0, s_ht_last;
+static uint8_t  s_ht_cc[8192];
+static uint16_t s_ht_npid;
+
+/* Stage (a) of the four-stage chain report, read by app_rist_capture so one line
+ * can show capture -> sender -> receiver -> dmx0 and a gap can name its stage. */
+void app_ts_record_health_get(uint64_t *bytes, uint64_t *pkts,
+                              uint64_t *bad, uint64_t *ccerr, uint32_t *npid)
+{
+    if(bytes) *bytes = s_ht_bytes;
+    if(pkts)  *pkts  = s_ht_pkts;
+    if(bad)   *bad   = s_ht_bad;
+    if(ccerr) *ccerr = s_ht_ccerr;
+    if(npid)  *npid  = s_ht_npid;
+}
 
 /* FRAMING SCAN. The first MUXTEST run returned "1096 distinct PIDs" and that
  * number was WORTHLESS -- badsync was 392188 of 393391 packets (99.69%), so the
@@ -1055,6 +1094,71 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                             s_ts_rec_diag_rearm = 0;
                         }
 
+                        /* CONTINUOUS health, whole-TP only. Same walk as the
+                         * window below but it never disarms. */
+                        if(s_ht_on)
+                        {
+                            uint64_t now_ms = _ts_rec_now_ms();
+                            int h;
+
+                            if(s_ht_t0 == 0) { s_ht_t0 = now_ms; s_ht_last = now_ms; }
+
+                            s_ht_reads++;
+                            if(read_len < 188 || (read_len % 188) != 0)
+                                s_ht_short++;   /* not a whole number of packets */
+                            s_ht_bytes += (uint64_t)read_len;
+
+                            for(h = 0; h + 187 < read_len; h += 188)
+                            {
+                                uint8_t *q = buffer + h;
+                                uint16_t qpid;
+                                uint8_t  qcc;
+
+                                s_ht_pkts++;
+                                if(q[0] != 0x47) { s_ht_bad++; continue; }
+                                qpid = (uint16_t)(((q[1] & 0x1F) << 8) | q[2]);
+                                if(qpid == 0x1FFF) continue;
+                                if(q[1] & 0x80)    continue;   /* TEI: CC untrusted */
+                                if(!(q[3] & 0x10)) continue;   /* no payload: no bump */
+                                qcc = (uint8_t)(q[3] & 0x0F);
+                                if(s_ht_cc[qpid] == 0xFF)
+                                {
+                                    if(s_ht_npid < 8192) s_ht_npid++;
+                                }
+                                else if(qcc != ((s_ht_cc[qpid] + 1) & 0x0F))
+                                    s_ht_ccerr++;
+                                s_ht_cc[qpid] = qcc;
+                            }
+
+                            if(now_ms - s_ht_last >= (uint64_t)TS_REC_HEALTH_MS)
+                            {
+                                uint64_t iv  = now_ms - s_ht_last;
+                                uint64_t dby = s_ht_bytes - s_ht_bytes_p;
+                                uint64_t dpk = s_ht_pkts  - s_ht_pkts_p;
+                                uint64_t exp = (dby / 188);   /* packets the bytes imply */
+                                uint64_t dbd = s_ht_bad   - s_ht_bad_p;
+                                uint64_t dcc = s_ht_ccerr - s_ht_ccerr_p;
+
+                                if(iv == 0) iv = 1;
+                                printf("[FULLTP] (a) capture out: %llu kbit/s  pkts +%llu/%llu (%llu tot)"
+                                       "  pids=%u  badsync +%llu (%llu)  CC +%llu (%llu)"
+                                       "  reads=%llu short=%llu\n",
+                                       (unsigned long long)((dby * 8ULL) / iv),
+                                       (unsigned long long)dpk, (unsigned long long)exp,
+                                       (unsigned long long)s_ht_pkts, s_ht_npid,
+                                       (unsigned long long)dbd, (unsigned long long)s_ht_bad,
+                                       (unsigned long long)dcc, (unsigned long long)s_ht_ccerr,
+                                       (unsigned long long)s_ht_reads,
+                                       (unsigned long long)s_ht_short);
+                                if(dbd)
+                                    printf("[FULLTP]   BADSYNC IS NON-ZERO -- the capture is TEARING. "
+                                           "Look for dvr_v100_isr_tsw_full / tsw_dealwith above.\n");
+                                s_ht_bytes_p = s_ht_bytes; s_ht_pkts_p = s_ht_pkts;
+                                s_ht_bad_p = s_ht_bad;     s_ht_ccerr_p = s_ht_ccerr;
+                                s_ht_last = now_ms;
+                            }
+                        }
+
                         /* P1 measurement window. Answers three questions the
                          * SlotAlloc return code cannot: is it really all-pass
                          * (distinct PID count), can the pipeline carry the full
@@ -1356,11 +1460,12 @@ static int32_t _ts_rec_dvr_config(int32_t index)
      * readable, GxAVModuleRead() in the reader thread, the measurement window --
      * is the path this capture already uses and has been proven on. Only the
      * INPUT SELECTOR changes: the TS port instead of the demux output. */
-    if(s_ts_rec_muxtest)
+    if(TS_REC_FULLTP())
     {
         dvrconf.src = TS_REC_DVR_IN_TSPORT;
-        printf("[MUXTEST] DVR %d config: src=TSPORT(%d) dst=MEM  sw=%d hw=%d "
+        printf("[%s] DVR %d config: src=TSPORT(%d) dst=MEM  sw=%d hw=%d "
                "flags=MEM_NOT_PROTECTED  (no slots will be allocated)\n",
+               s_ts_rec_muxtest ? "MUXTEST" : "FULLTP",
                s_ts_rec_modid, TS_REC_DVR_IN_TSPORT,
                SW_BUFFER_SIZE, HW_BUFFER_SIZE);
     }
@@ -1391,13 +1496,14 @@ static int32_t _ts_rec_dvr_config(int32_t index)
          * does not wire a TS-port tap into the DVR input mux, and the whole-TP
          * door is shut for that reason. Report it, disarm, and fall back to the
          * normal source so the box keeps working on the same zap. */
-        if(s_ts_rec_muxtest)
+        if(TS_REC_FULLTP())
         {
-            printf("[MUXTEST] *** VERDICT: GxDvrPropertyID_Config REJECTED src=TSPORT(%d) ***\n",
+            printf("[FULLTP] *** GxDvrPropertyID_Config REJECTED src=TSPORT(%d) ***\n",
                    TS_REC_DVR_IN_TSPORT);
-            printf("[MUXTEST]   The DVR input selector will not take the TS port on this chip.\n");
-            printf("[MUXTEST]   Whole-TP capture is NOT available. Falling back to src=DMX.\n");
+            printf("[FULLTP]   The DVR input selector will not take the TS port on this chip.\n");
+            printf("[FULLTP]   Whole-TP capture is NOT available. Falling back to src=DMX.\n");
             s_ts_rec_muxtest = 0;
+            s_ts_rec_fulltp  = 0;
             dvrconf.src = DVR_INPUT_DMX;
             if(GxAVSetProperty(ctrl->dev, prog->dvr_handle, GxDvrPropertyID_Config,
                                &dvrconf, sizeof(dvrconf)) >= 0)
@@ -1407,8 +1513,9 @@ static int32_t _ts_rec_dvr_config(int32_t index)
         goto err;
     }
 
-    if(s_ts_rec_muxtest)
-        printf("[MUXTEST] DVR config ACCEPTED with src=TSPORT -- measuring below\n");
+    if(TS_REC_FULLTP())
+        printf("[%s] DVR config ACCEPTED with src=TSPORT -- whole multiplex to the "
+               "read buffer\n", s_ts_rec_muxtest ? "MUXTEST" : "FULLTP");
 
     return 0;
 err:
@@ -2117,6 +2224,25 @@ static int32_t _ts_rec_prog_config(int32_t index, TsRecConfig *config)
     if(_ts_rec_demux_module_config(node_prog.tuner) < 0)
         return -1;
 
+    /* Latched before _ts_rec_dvr_config() reads it, and cleared on every start
+     * so a previous whole-TP capture cannot leave the next per-PID one pointed
+     * at the TS port. */
+    s_ts_rec_fulltp = (config != NULL && config->full_tp) ? 1 : 0;
+    if(s_ts_rec_fulltp)
+    {
+        memset(s_ht_cc, 0xFF, sizeof(s_ht_cc));
+        s_ht_bytes = s_ht_pkts = s_ht_bad = s_ht_ccerr = 0;
+        s_ht_reads = s_ht_short = 0;
+        s_ht_bytes_p = s_ht_pkts_p = s_ht_bad_p = s_ht_ccerr_p = 0;
+        s_ht_npid = 0;
+        s_ht_t0 = s_ht_last = 0;    /* stamped on the first read */
+        s_ht_on = 1;
+    }
+    else
+    {
+        s_ht_on = 0;
+    }
+
     if(_ts_rec_dvr_config(index) < 0)
         return -1;
 
@@ -2236,7 +2362,7 @@ static int32_t _ts_rec_prog_config(int32_t index, TsRecConfig *config)
         s_ap_active = 1;
     }
 
-    if(!s_ts_rec_allpass && !s_ts_rec_muxtest)
+    if(!s_ts_rec_allpass && !TS_REC_FULLTP())
     {
         if(VALID_PID(node_prog.video_pid) && _ts_rec_demux_slot_alloc(index, node_prog.video_pid, vslot_flags, DEMUX_SLOT_VIDEO) < 0)
         {
@@ -2256,7 +2382,11 @@ static int32_t _ts_rec_prog_config(int32_t index, TsRecConfig *config)
      * read, stealing loop iterations from it), and the ext slots are redundant
      * when every PID is already delivered. Skip both so what the window counts is
      * exactly what the MUXTS slot produced. */
-    if(!s_ts_rec_allpass && !s_ts_rec_muxtest)
+    /* No generated PAT/PMT and no ext PIDs under whole-TP: the broadcast tables
+     * are already in the stream, and an injected pair would be packets the
+     * multiplex never carried -- which is exactly the byte-level divergence from
+     * the headend that Part 8's sequence numbering cannot tolerate. */
+    if(!s_ts_rec_allpass && !TS_REC_FULLTP())
     {
         if(true == config->user_pmt && _ts_rec_user_info_generate(index, config) < 0)
         {

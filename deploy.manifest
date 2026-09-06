@@ -1,6 +1,7 @@
 app/Makefile
 app/dvb2ip_server/app_dvb2ip_platform.c
 app/dvb2ip_server/app_ts_record.c
+app/dvb2ip_server/app_ts_record.h
 app/full_screen.c
 app/include/full_screen.h
 app/include/module/app_rist_api.h

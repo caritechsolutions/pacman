@@ -268,6 +268,16 @@
  * buffer after the capture starts feeding. /tmp/ristbuffer still overrides. */
 #define RIST_P8_BUFFER_MS       2000
 
+/* Send buffer for the capture -> sender hop. 4 MB is ~540ms at 59 Mb/s, which
+ * covers a reader burst without the kernel dropping on our behalf. The kernel
+ * halves nothing and doubles this, then clamps to net.core.wmem_max -- the
+ * achieved value is what gets logged. */
+#define RIST_UDP_SNDBUF         (4 * 1024 * 1024)
+
+/* Chain report cadence. 5s: often enough that a shedding stage is obvious
+ * within a zap, rare enough that a minute of serial stays readable. */
+#define RIST_P8_CHAIN_REPORT_MS (5000)
+
 #define RIST_BIN_WATCHDOG       "/usr/bin/rist_watchdog"
 /* STB-side Part 7 receiver: validates the headend's markers, counts elementary
  * streams only, rebuilds each block to 35 packets and re-emits as RIST. Named
@@ -329,6 +339,13 @@ static struct {
     int                 p8_tail_run;
     handle_t            p8_tail_thread;
     event_list         *p8_tail_timer;   /* first-frame watchdog */
+    /* Four-stage chain report. Separate timer from the first-frame watchdog
+     * because that one stops once a frame arrives, and the whole question here
+     * is what happens after a minute, not whether it starts. */
+    event_list         *p8_chain_timer;
+    uint32_t            p8_chain_t0;
+    uint32_t            p8_chain_last;
+    uint64_t            p8_cr_a, p8_cr_b, p8_cr_c, p8_cr_d;  /* previous sample */
     uint32_t            p8_tail_t0;
     uint64_t            p8_inj_bytes;    /* accepted by GxMediaApi_ModuleInjectData */
     uint64_t            p8_inj_calls;
@@ -569,6 +586,29 @@ static int _rist_udp_open(void)
         return -1;
     }
     setsockopt(s_rist.udp_fd, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl));
+
+    /* SEND BUFFER, and it is not decoration at this rate.
+     *
+     * Part 7 ran this hop at ~2.5 Mb/s and still lost datagrams on LOOPBACK
+     * when the reader burst ahead of the sender. Whole-TP is 59 Mb/s -- 23x the
+     * load -- and a loopback UDP drop here is indistinguishable downstream from
+     * satellite loss, which is exactly the confusion Part 8 exists to remove.
+     *
+     * The kernel doubles what it accepts and clamps to net.core.wmem_max, so the
+     * ACHIEVED value is logged rather than the asked one: on a box where wmem_max
+     * is small this silently becomes a 64KB buffer (~9ms at this rate) and the
+     * log is the only place that would say so. */
+    {
+        int want = RIST_UDP_SNDBUF, got = 0;
+        socklen_t gl = sizeof(got);
+
+        setsockopt(s_rist.udp_fd, SOL_SOCKET, SO_SNDBUF, &want, sizeof(want));
+        if (getsockopt(s_rist.udp_fd, SOL_SOCKET, SO_SNDBUF, &got, &gl) == 0)
+            RIST_LOG("udp: SO_SNDBUF asked %d got %d (%d ms at 59 Mb/s)\n",
+                     want, got, got / 7400);
+        else
+            RIST_LOG("udp: SO_SNDBUF asked %d, achieved value unreadable\n", want);
+    }
 
     s_rist.dst_ip[0] = '\0';
     s_rist.dst_port  = 0;
@@ -1016,6 +1056,96 @@ static void _rist_p8_sec_report(uint32_t elapsed_ms)
         RIST_LOG("p8sec:   the capture logged its BROADCAST PSI line above "
                  "(pid 0x0000 slotted).\n");
     }
+}
+
+/* THE FOUR-STAGE CHAIN REPORT.
+ *
+ * At 59 Mb/s there are three hops that can shed and they fail identically from
+ * the outside -- a picture that breaks up. One line, four counters, so a gap
+ * names the stage that dropped it rather than leaving three suspects:
+ *
+ *   (a) capture out    app_ts_record's own read accounting (DVR -> our buffer)
+ *   (b) into sender    datagrams we put on udp/6300
+ *   (c) out of receiver bytes read off udp/6500
+ *   (d) into dmx0      bytes GxMediaApi_ModuleInjectData accepted
+ *
+ * (a)->(b) is our reader plus SO_SNDBUF. (b)->(c) is the RIST pair, and a
+ * shortfall there is the sender's cutter dropping pre-first-PCR packets (a
+ * one-off ~30) or genuine loopback loss. (c)->(d) is demux back-pressure, which
+ * shows as inj_busy rather than loss.
+ *
+ * Rates are per interval; totals are cumulative. A stage that is fine for a
+ * minute and then sheds is the signature this exists to catch. */
+static int _rist_p8_chain_report_cb(void *arg)
+{
+    uint64_t a_by = 0, a_pk = 0, a_bad = 0, a_cc = 0;
+    uint32_t a_pid = 0;
+    uint64_t b_by, c_by, d_by;
+    uint32_t now, iv, elapsed;
+
+    (void)arg;
+    s_rist.p8_chain_timer = NULL;
+
+    if (!s_rist.p8_active || !s_rist.chain_active)
+        return 0;
+
+    now     = _rist_now_ms();
+    elapsed = now - s_rist.p8_chain_t0;
+    iv      = now - s_rist.p8_chain_last;
+    if (iv == 0)
+        iv = 1;
+
+    app_ts_record_health_get(&a_by, &a_pk, &a_bad, &a_cc, &a_pid);
+    b_by = s_rist.sent * (uint64_t)RIST_DGRAM;
+    c_by = s_rist.p8_rx_bytes;
+    d_by = s_rist.p8_inj_bytes;
+
+    RIST_LOG("p8chain T+%us  (a)cap %llu kb/s  (b)->snd %llu kb/s  "
+             "(c)rcv-> %llu kb/s  (d)->dmx%d %llu kb/s\n",
+             elapsed / 1000,
+             (unsigned long long)(((a_by - s_rist.p8_cr_a) * 8ULL) / iv),
+             (unsigned long long)(((b_by - s_rist.p8_cr_b) * 8ULL) / iv),
+             (unsigned long long)(((c_by - s_rist.p8_cr_c) * 8ULL) / iv),
+             s_rist.p8_dmx,
+             (unsigned long long)(((d_by - s_rist.p8_cr_d) * 8ULL) / iv));
+    RIST_LOG("p8chain   totals a=%llu b=%llu c=%llu d=%llu  senderr=%llu "
+             "inj_busy=%llu inj_err=%llu\n",
+             (unsigned long long)a_by, (unsigned long long)b_by,
+             (unsigned long long)c_by, (unsigned long long)d_by,
+             (unsigned long long)s_rist.senderr,
+             (unsigned long long)s_rist.p8_inj_busy,
+             (unsigned long long)s_rist.p8_inj_err);
+    RIST_LOG("p8chain   capture health: pkts=%llu pids=%u badsync=%llu CC=%llu\n",
+             (unsigned long long)a_pk, a_pid,
+             (unsigned long long)a_bad, (unsigned long long)a_cc);
+
+    /* Name the stage rather than leaving three numbers to be compared by eye.
+     * 2% tolerance: (b) is quantised to whole 1316-byte datagrams and (c)/(d)
+     * lag by the receiver buffer, so small steady gaps are expected. */
+    if (a_by > 1000000) {
+        if (b_by < a_by - a_by / 50)
+            RIST_LOG("p8chain   GAP a->b: the reader/sendto hop is shedding "
+                     "(senderr=%llu). Check SO_SNDBUF above.\n",
+                     (unsigned long long)s_rist.senderr);
+        else if (c_by && c_by < b_by - b_by / 50)
+            RIST_LOG("p8chain   GAP b->c: loss across the RIST pair on loopback.\n");
+        else if (d_by && d_by < c_by - c_by / 50)
+            RIST_LOG("p8chain   GAP c->d: dmx%d is refusing bytes "
+                     "(inj_busy=%llu) -- demux back-pressure.\n",
+                     s_rist.p8_dmx, (unsigned long long)s_rist.p8_inj_busy);
+    }
+    if (a_bad)
+        RIST_LOG("p8chain   *** badsync %llu at the CAPTURE -- the whole-TP read is "
+                 "tearing; everything downstream is downstream of that ***\n",
+                 (unsigned long long)a_bad);
+
+    s_rist.p8_cr_a = a_by; s_rist.p8_cr_b = b_by;
+    s_rist.p8_cr_c = c_by; s_rist.p8_cr_d = d_by;
+    s_rist.p8_chain_last = now;
+
+    APP_TIMER_ADD(s_rist.p8_chain_timer, _rist_p8_chain_report_cb,
+                  RIST_P8_CHAIN_REPORT_MS, TIMER_ONCE);
+    return 0;
 }
 
 static void _rist_p8_tail_stop(void);
@@ -1563,6 +1693,15 @@ static int _rist_p8_chain_start(void)
     }
 
     s_rist.chain_running = 1;
+
+    /* Armed here, not at tail start: if the tail never opens, (a) and (b) are
+     * still the numbers that say why, and a chain that feeds nothing is exactly
+     * when the report is most worth having. */
+    s_rist.p8_chain_t0   = _rist_now_ms();
+    s_rist.p8_chain_last = s_rist.p8_chain_t0;
+    s_rist.p8_cr_a = s_rist.p8_cr_b = s_rist.p8_cr_c = s_rist.p8_cr_d = 0;
+    APP_TIMER_ADD(s_rist.p8_chain_timer, _rist_p8_chain_report_cb,
+                  RIST_P8_CHAIN_REPORT_MS, TIMER_ONCE);
     return 0;
 }
 
@@ -2121,6 +2260,7 @@ void app_rist_capture_stop(void)
     APP_TIMER_REMOVE(s_rist.start_timer);
     APP_TIMER_REMOVE(s_rist.screen_timer);
     APP_TIMER_REMOVE(s_rist.probe_timer);
+    APP_TIMER_REMOVE(s_rist.p8_chain_timer);
     _rist_screen_stop();                     /* release the video decoder for the next player */
     _rist_chain_stop();                      /* SIGTERM -> wait -> SIGKILL, both children */
 
@@ -2186,79 +2326,46 @@ static void _rist_capture_begin(void)
     cfg.prog_id  = (uint16_t)s_rist.prog.id;
     cfg.user_pmt = true;                 /* inject PAT/PMT -> self-contained TS */
 
-    /* PART 8 CAPTURES THE BROADCAST PSI. NOT A MODE, NOT A KNOB.
+    /* PART 8 CAPTURES THE WHOLE TRANSPONDER.
      *
-     * user_pmt=false means the capture carries the BROADCAST PAT/PMT off the
-     * transponder instead of the box's own generated pair, and the SI PIDs are
-     * slotted alongside the service's own.
+     * Proven on hardware before this was wired in: DVR src = DVR_INPUT_TSPORT
+     * with NO demux slot allocated delivers 201 distinct PIDs at 59083 kbit/s
+     * with badsync 0 of 393390 packets and framing stride 188 phase 0 at 100%.
+     * The PID list carried PAT 0x0000, CAT 0x0001, SDT 0x0011, EIT 0x0012,
+     * TDT 0x0014, both PMTs (0x008D/0x008E) and both services' ES, in 59
+     * consecutive video/audio/PCR groupings.
      *
-     * WHY IT IS UNCONDITIONAL: the sequence numbering has to match the headend,
-     * and the headend cuts the BROADCAST stream. part8_recovery_server is fed
-     * by `tsp -P filter --pid ...` over a fixed PSI set plus this service's
-     * PMT/PCR/ES (P8_PSI_PIDS = "0,1,16,17,18,19,20" in
-     * rist-monitor/services/part8-service.php:57). If this capture carried the
-     * box's injected PAT/PMT instead, the two ends would be packetising
-     * DIFFERENT BYTES and no sequence number could ever line up -- not a
-     * tuning problem, an arithmetic impossibility. The broadcast PSI is part of
-     * what gets cut and numbered.
+     * THAT REPLACES THE SEVEN-PID BROADCAST-PSI CAPTURE, and it is strictly
+     * better on the two things that capture existed for:
      *
-     * That is the OPPOSITE of the Part 7 capture, which injects (user_pmt=true)
-     * because it has no byte-level counterpart to match. The injected-PSI shape
-     * is a Part 7 artifact and does not belong here.
+     *   Byte alignment with the headend. The server filters a fixed PSI set
+     *   plus EVERY stream the service declares. A slot capture could match the
+     *   PSI half exactly and the ES half only for a one-video-one-audio
+     *   service -- a second audio track, subtitles or teletext were in the
+     *   server's cut and not in ours. With the whole multiplex there is nothing
+     *   left to enumerate and nothing left to get wrong: we hold a superset and
+     *   can filter in software to precisely the server's set.
      *
-     * The list below is the SAME SEVEN PIDS the headend filters, not a subset:
-     *   0x00 PAT  0x01 CAT  0x10 NIT  0x11 SDT  0x12 EIT  0x13 RST  0x14 TDT
-     * The earlier four-PID set (PAT/SDT/EIT/TDT) was chosen for what the
-     * consumers need, which is the wrong question -- it would have diverged
-     * from the server at 0x01/0x10/0x13 wherever this transponder carries them.
+     *   SI for the consumers. app_epg/app_sdt/app_time needed 0x0011/0x0012/
+     *   0x0014 in the stream. They are there because nothing was filtered out,
+     *   so the demux slot budget stops being part of the question at all.
      *
-     * It also feeds BOTH ends of the box: the cutter gets the bytes it must
-     * number identically, and dmx0 gets the SDT/EIT/TDT app_epg and app_time
-     * read off the repaired stream. One capture, both jobs.
-     *
-     * PID 0 reaching the slot allocator is why app_ts_record.c's ext-pid loop
-     * had to stop rejecting it; user_pmt=false is what slots the broadcast PMT
-     * (app_ts_record.c:1302-1310). */
+     * user_pmt and ext_info are left at their zero values deliberately: under
+     * full_tp app_ts_record ignores both (see TsRecConfig), because there is
+     * nothing to choose. An injected PAT/PMT would be packets the multiplex
+     * never carried -- the exact byte-level divergence the numbering cannot
+     * tolerate. */
     if (s_rist.p8_active) {
-        /* Keep in step with P8_PSI_PIDS on the headend. If that list changes,
-         * this one has to change with it or the two ends cut different bytes. */
-        static const uint32_t p8_psi[] = {
-            0x0000, 0x0001, 0x0010, 0x0011, 0x0012, 0x0013, 0x0014
-        };
-        uint32_t k;
-
-        cfg.user_pmt = false;            /* -> the broadcast PMT PID is slotted */
-        for (k = 0; k < sizeof(p8_psi) / sizeof(p8_psi[0])
-                    && cfg.ext_info.ext_num < TS_REC_MAX_EXTPID_NUM; k++) {
-            cfg.ext_info.ext_pids[cfg.ext_info.ext_num++] = p8_psi[k];
-        }
-        RIST_LOG("p8: BROADCAST PSI capture (user_pmt=false) -- PAT 0x0000 CAT 0x0001 "
-                 "NIT 0x0010 SDT 0x0011 EIT 0x0012 RST 0x0013 TDT 0x0014\n");
-        RIST_LOG("p8:   + broadcast PMT 0x%04X, PCR 0x%04X, video 0x%04X, audio 0x%04X"
-                 "  -- the same bytes the headend cuts\n",
+        cfg.full_tp = true;
+        RIST_LOG("p8: WHOLE-TP capture (DVR src=TSPORT, no slots) -- the entire "
+                 "multiplex, broadcast PSI included\n");
+        RIST_LOG("p8:   this service: PMT 0x%04X PCR 0x%04X video 0x%04X audio 0x%04X"
+                 "  (cutter frames on the PCR PID)\n",
                  s_rist.prog.pmt_pid, s_rist.prog.pcr_pid,
                  s_rist.prog.video_pid, s_rist.prog.cur_audio_pid);
-        /* One consequence worth naming, because it changes a path that was
-         * already proven: the player_av (Step 1) tail now receives the
-         * BROADCAST PAT, which lists every service on the transponder while
-         * only this one's PMT and ES are captured. A player that picks the
-         * first program in the PAT can land on a service whose PMT was never
-         * slotted. The dmx0 and dmx3 tails are immune -- GxMedia_DemuxConfig
-         * is handed vidPid/audPid/pcrPid explicitly and never reads a PAT --
-         * so this only affects the diagnostic fallback, and it is the price of
-         * cutting the same bytes as the headend. */
-        if (_rist_p8_tail_mode() == RIST_P8_TAIL_PLAYER_AV)
-            RIST_LOG("p8:   NOTE tail=player_av with a broadcast PAT listing "
-                     "the whole TP -- if the picture is the wrong service, that "
-                     "is why (dmx0/dmx3 name their PIDs and are immune)\n");
-        /* HONEST LIMIT, and it is the remaining alignment gap. The PSI half now
-         * matches the headend exactly. The ES half matches only for a service
-         * with one video and one audio: the headend filters EVERY stream this
-         * service declares, while this capture slots video + CURRENT audio +
-         * PCR. A second audio track, subtitles or teletext would be in the
-         * server's cut and not in ours. Fine for numbering-free Step 1 and for
-         * the dmx0 tail's own decode; it must be closed before the sequence
-         * anchor is trusted. */
+        RIST_LOG("p8:   tail=%s -- dmx0 demuxes the multiplex as if from the tuner; "
+                 "decode + EPG/SDT/time run natively off it\n",
+                 _rist_p8_tail_name(_rist_p8_tail_mode()));
     }
 
     /* Step F: the API-supplied marker PID. Without it ristsender_marker never

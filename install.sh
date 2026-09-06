@@ -54,6 +54,7 @@ ENV_SH="${ENV_SH:-/opt/stb/env.sh}"
 # the stale declaration -- exactly how FULL_STATE_CONNECTING failed to compile.
 FILES="app/dvb2ip_server/app_dvb2ip_platform.c
 app/dvb2ip_server/app_ts_record.c
+app/dvb2ip_server/app_ts_record.h
 app/module/app_rist_capture.c
 app/include/module/app_rist_api.h
 app/module/app_rist_api.c
