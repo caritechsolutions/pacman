@@ -51,6 +51,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <fcntl.h>                             /* open() for the wmem_max sysctl */
 #include <signal.h>
 #include <sys/socket.h>
 #include <sys/time.h>
@@ -602,10 +603,41 @@ static int _rist_udp_open(void)
         int want = RIST_UDP_SNDBUF, got = 0;
         socklen_t gl = sizeof(got);
 
+        /* RAISE THE CEILING FIRST. The first whole-TP run asked for 4MB and got
+         * 327680 -- the kernel doubles what it accepts and clamps to
+         * net.core.wmem_max, which is 163840 here. 327680 is 44ms at 59 Mb/s,
+         * and the receiver side got 8MB from the same request because rmem_max
+         * is generous and wmem_max is not.
+         *
+         * setsockopt cannot exceed the sysctl, so write the sysctl. Best effort
+         * and deliberately unchecked for permission: on a box where /proc is
+         * read-only this simply does not take, and the achieved value logged
+         * below is what tells us either way. */
+        {
+            int fd = open("/proc/sys/net/core/wmem_max", O_WRONLY);
+            if (fd >= 0) {
+                char v[16];
+                int n = snprintf(v, sizeof(v), "%d", RIST_UDP_SNDBUF);
+                if (write(fd, v, (size_t)n) < 0)
+                    RIST_LOG("udp: could not raise net.core.wmem_max: %s\n",
+                             strerror(errno));
+                close(fd);
+            } else {
+                RIST_LOG("udp: net.core.wmem_max not writable (%s) -- SO_SNDBUF "
+                         "will be clamped to whatever it already is\n",
+                         strerror(errno));
+            }
+        }
+
         setsockopt(s_rist.udp_fd, SOL_SOCKET, SO_SNDBUF, &want, sizeof(want));
-        if (getsockopt(s_rist.udp_fd, SOL_SOCKET, SO_SNDBUF, &got, &gl) == 0)
+        if (getsockopt(s_rist.udp_fd, SOL_SOCKET, SO_SNDBUF, &got, &gl) == 0) {
             RIST_LOG("udp: SO_SNDBUF asked %d got %d (%d ms at 59 Mb/s)\n",
                      want, got, got / 7400);
+            if (got < 1024 * 1024)
+                RIST_LOG("udp:   under 1MB -- net.core.wmem_max is still "
+                         "clamping. sysctl -w net.core.wmem_max=%d\n",
+                         RIST_UDP_SNDBUF);
+        }
         else
             RIST_LOG("udp: SO_SNDBUF asked %d, achieved value unreadable\n", want);
     }

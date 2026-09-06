@@ -262,6 +262,29 @@ static int      s_ts_rec_allpass    = 0;
  * visible in this translation unit, DVR_INPUT_TSPORT is not, and a build failure
  * costs a flash cycle. */
 #define TS_REC_DVR_IN_TSPORT  (0)
+
+/* DVR BUFFERS FOR WHOLE-TP -- the stock ones are nowhere near enough.
+ *
+ * HW_BUFFER_SIZE is 1*188*1024 = 192512 bytes. At the measured 59 Mb/s that is
+ * 26 MILLISECONDS, and the first live run showed exactly what it costs:
+ * dvr_v100_tsw_dealwith firing every ~36ms for the whole capture, the driver's
+ * own numbers saying it wanted 19 packets and had room for 3 ("d!!! :3572 :564"
+ * -- both multiples of 188), decaying to ":0" as the buffer went solid, with
+ * periodic dvr_v100_isr_tsw_full on top.
+ *
+ * These are the whole-TP sizes: ~208ms of hardware buffer and ~312ms of
+ * software, about 3.8MB more than the per-service capture takes. The per-service
+ * path keeps the stock sizes -- it runs at ~2.5 Mb/s where 26ms was never the
+ * problem, and there is no reason to spend the memory there.
+ *
+ * /tmp/ristfulltpbuf overrides the HARDWARE size in KB. It is the one number
+ * likely to need tuning against whatever memory this box actually has free, and
+ * finding that out should not cost a reflash. A driver that cannot allocate
+ * rejects the config, which falls back to src=DMX and says so. */
+#define FULLTP_HW_BUFFER_SIZE  (8 * 188 * 1024)    /* ~208ms at 59 Mb/s */
+#define FULLTP_SW_BUFFER_SIZE  (12 * 188 * 1024)   /* ~312ms */
+#define TS_REC_FULLTPBUF_FILE  "/tmp/ristfulltpbuf"
+static int s_ts_rec_fulltp_hw = FULLTP_HW_BUFFER_SIZE;
 static int      s_ts_rec_muxtest    = 0;
 /* The live whole-TP mode, requested per capture via TsRecConfig.full_tp rather
  * than by a knob file -- app_rist_capture already decides the Part 8 path from
@@ -406,6 +429,21 @@ static void _ts_rec_modid_refresh(void)
     else
     {
         s_ts_rec_allpass = 0;
+    }
+
+    fp = fopen(TS_REC_FULLTPBUF_FILE, "r");
+    if(fp)
+    {
+        int kb = 0;
+        /* Floor 188KB (one stock buffer), ceiling 32MB -- past that the
+         * allocation is more likely to fail than to help on 128MB of DDR. */
+        if(fscanf(fp, "%d", &kb) == 1 && kb >= 188 && kb <= 32768)
+            s_ts_rec_fulltp_hw = kb * 1024;
+        fclose(fp);
+    }
+    else
+    {
+        s_ts_rec_fulltp_hw = FULLTP_HW_BUFFER_SIZE;
     }
 
     fp = fopen(TS_REC_MUXTEST_FILE, "r");
@@ -1463,14 +1501,28 @@ static int32_t _ts_rec_dvr_config(int32_t index)
     if(TS_REC_FULLTP())
     {
         dvrconf.src = TS_REC_DVR_IN_TSPORT;
-        printf("[%s] DVR %d config: src=TSPORT(%d) dst=MEM  sw=%d hw=%d "
-               "flags=MEM_NOT_PROTECTED  (no slots will be allocated)\n",
+        printf("[%s] DVR %d config: src=TSPORT(%d) dst=MEM  sw=%d hw=%d (%d ms) "
+               "gate=%d  flags=MEM_NOT_PROTECTED  (no slots)\n",
                s_ts_rec_muxtest ? "MUXTEST" : "FULLTP",
                s_ts_rec_modid, TS_REC_DVR_IN_TSPORT,
-               SW_BUFFER_SIZE, HW_BUFFER_SIZE);
+               FULLTP_SW_BUFFER_SIZE, s_ts_rec_fulltp_hw,
+               s_ts_rec_fulltp_hw / 7400, s_ts_rec_fulltp_hw / 4);
+        printf("[%s]   stock hw was %d (%d ms) -- 26ms is what made "
+               "dvr_v100_tsw_dealwith fire continuously; echo <KB> > %s to "
+               "retune without a reflash\n",
+               s_ts_rec_muxtest ? "MUXTEST" : "FULLTP",
+               HW_BUFFER_SIZE, HW_BUFFER_SIZE / 7400, TS_REC_FULLTPBUF_FILE);
     }
     dvrconf.dst_buf.sw_buffer_size = SW_BUFFER_SIZE;
     dvrconf.dst_buf.hw_buffer_size = HW_BUFFER_SIZE;
+    if(TS_REC_FULLTP())
+    {
+        dvrconf.dst_buf.sw_buffer_size   = FULLTP_SW_BUFFER_SIZE;
+        dvrconf.dst_buf.hw_buffer_size   = s_ts_rec_fulltp_hw;
+        /* Raise the interrupt earlier so the driver has a chance to drain before
+         * the buffer is solid rather than after. */
+        dvrconf.dst_buf.almost_full_gate = s_ts_rec_fulltp_hw / 4;
+    }
     /* Request UNPROTECTED (clear) DVR memory. Without this flag the DVR driver
      * sets hwbuf_security=1 and encrypts the captured buffer at rest (see
      * platform/gxbus/player/interface/gx_fifo_muxts.c:65). That is why the
