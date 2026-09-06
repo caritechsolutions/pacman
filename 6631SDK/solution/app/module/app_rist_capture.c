@@ -51,7 +51,6 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#include <fcntl.h>                             /* open() for the wmem_max sysctl */
 #include <signal.h>
 #include <sys/socket.h>
 #include <sys/time.h>
@@ -277,7 +276,10 @@
  * covers a reader burst without the kernel dropping on our behalf. The kernel
  * halves nothing and doubles this, then clamps to net.core.wmem_max -- the
  * achieved value is what gets logged. */
-#define RIST_UDP_SNDBUF         (4 * 1024 * 1024)
+/* 1MB asked, ~135ms at 59 Mb/s. Not 4MB: the kernel doubles what it accepts,
+ * and on 54MB of managed RAM an 8MB socket buffer is how the sender got
+ * OOM-killed. Two full-rate runs at the clamped 327680 had senderr=0. */
+#define RIST_UDP_SNDBUF         (1024 * 1024)
 
 /* Chain report cadence. 5s: often enough that a shedding stage is obvious
  * within a zap, rare enough that a minute of serial stays readable. */
@@ -607,40 +609,26 @@ static int _rist_udp_open(void)
         int want = RIST_UDP_SNDBUF, got = 0;
         socklen_t gl = sizeof(got);
 
-        /* RAISE THE CEILING FIRST. The first whole-TP run asked for 4MB and got
-         * 327680 -- the kernel doubles what it accepts and clamps to
-         * net.core.wmem_max, which is 163840 here. 327680 is 44ms at 59 Mb/s,
-         * and the receiver side got 8MB from the same request because rmem_max
-         * is generous and wmem_max is not.
+        /* NO net.core.wmem_max RAISE HERE, AND THAT IS DELIBERATE.
          *
-         * setsockopt cannot exceed the sysctl, so write the sysctl. Best effort
-         * and deliberately unchecked for permission: on a box where /proc is
-         * read-only this simply does not take, and the achieved value logged
-         * below is what tells us either way. */
-        {
-            int fd = open("/proc/sys/net/core/wmem_max", O_WRONLY);
-            if (fd >= 0) {
-                char v[16];
-                int n = snprintf(v, sizeof(v), "%d", RIST_UDP_SNDBUF);
-                if (write(fd, v, (size_t)n) < 0)
-                    RIST_LOG("udp: could not raise net.core.wmem_max: %s\n",
-                             strerror(errno));
-                close(fd);
-            } else {
-                RIST_LOG("udp: net.core.wmem_max not writable (%s) -- SO_SNDBUF "
-                         "will be clamped to whatever it already is\n",
-                         strerror(errno));
-            }
-        }
-
+         * A previous version wrote the sysctl so the 4MB request would not be
+         * clamped. It worked -- and the granted buffer went from 327680 to
+         * 8388608, which is 8MB of kernel socket memory on a box whose OOM dump
+         * says managed:54472kB with free:3060kB against min:3072kB. Together
+         * with the other buffers raised in the same build it added ~17MB to a
+         * box that had 3MB, and the OOM killer took stb_part8_receiver mid-run.
+         *
+         * The evidence says the clamp was never the problem: two full-rate runs
+         * at 327680 (44ms) sent 7.4 MB/s with senderr=0 throughout. Ask for a
+         * modest buffer, let the sysctl clamp it, and log what was granted. */
         setsockopt(s_rist.udp_fd, SOL_SOCKET, SO_SNDBUF, &want, sizeof(want));
         if (getsockopt(s_rist.udp_fd, SOL_SOCKET, SO_SNDBUF, &got, &gl) == 0) {
             RIST_LOG("udp: SO_SNDBUF asked %d got %d (%d ms at 59 Mb/s)\n",
                      want, got, got / 7400);
-            if (got < 1024 * 1024)
-                RIST_LOG("udp:   under 1MB -- net.core.wmem_max is still "
-                         "clamping. sysctl -w net.core.wmem_max=%d\n",
-                         RIST_UDP_SNDBUF);
+            if (got < 262144)
+                RIST_LOG("udp:   under 256KB (%d ms) -- raise net.core.wmem_max "
+                         "only if senderr starts climbing; it is a real cost on "
+                         "%dMB of RAM\n", got / 7400, 54);
         }
         else
             RIST_LOG("udp: SO_SNDBUF asked %d, achieved value unreadable\n", want);
@@ -1117,6 +1105,7 @@ static int _rist_p8_chain_report_cb(void *arg)
     uint64_t a_by = 0, a_pk = 0, a_bad = 0, a_cc = 0;
     uint32_t a_pid = 0;
     uint64_t b_by, c_by, d_by;
+    uint64_t d_a, d_b, d_c, d_d;      /* per-interval deltas */
     uint32_t now, iv, elapsed;
 
     (void)arg;
@@ -1136,14 +1125,19 @@ static int _rist_p8_chain_report_cb(void *arg)
     c_by = s_rist.p8_rx_bytes;
     d_by = s_rist.p8_inj_bytes;
 
+    d_a = a_by - s_rist.p8_cr_a;
+    d_b = b_by - s_rist.p8_cr_b;
+    d_c = c_by - s_rist.p8_cr_c;
+    d_d = d_by - s_rist.p8_cr_d;
+
     RIST_LOG("p8chain T+%us  (a)cap %llu kb/s  (b)->snd %llu kb/s  "
              "(c)rcv-> %llu kb/s  (d)->dmx%d %llu kb/s\n",
              elapsed / 1000,
-             (unsigned long long)(((a_by - s_rist.p8_cr_a) * 8ULL) / iv),
-             (unsigned long long)(((b_by - s_rist.p8_cr_b) * 8ULL) / iv),
-             (unsigned long long)(((c_by - s_rist.p8_cr_c) * 8ULL) / iv),
+             (unsigned long long)((d_a * 8ULL) / iv),
+             (unsigned long long)((d_b * 8ULL) / iv),
+             (unsigned long long)((d_c * 8ULL) / iv),
              s_rist.p8_dmx,
-             (unsigned long long)(((d_by - s_rist.p8_cr_d) * 8ULL) / iv));
+             (unsigned long long)((d_d * 8ULL) / iv));
     RIST_LOG("p8chain   totals a=%llu b=%llu c=%llu d=%llu  senderr=%llu "
              "inj_busy=%llu inj_err=%llu\n",
              (unsigned long long)a_by, (unsigned long long)b_by,
@@ -1158,18 +1152,35 @@ static int _rist_p8_chain_report_cb(void *arg)
     /* Name the stage rather than leaving three numbers to be compared by eye.
      * 2% tolerance: (b) is quantised to whole 1316-byte datagrams and (c)/(d)
      * lag by the receiver buffer, so small steady gaps are expected. */
-    if (a_by > 1000000) {
-        if (b_by < a_by - a_by / 50)
+    /* CUMULATIVE totals must not be compared across stages -- they have
+     * different time origins. (a) starts at app_ts_record_start, (b) when the
+     * reader thread comes up some hundreds of ms later, and (c)/(d) a further
+     * buffer-depth behind. The first run flagged "GAP a->b" at 84.7% with
+     * senderr=0: 3.8MB, which is exactly the reader's head start, not loss.
+     *
+     * Compare the PER-INTERVAL deltas instead. Once every stage is running they
+     * share the same interval, and a stage that is genuinely shedding shows a
+     * lower RATE, which is the thing worth waking someone for. Only look at all
+     * once the chain has been up long enough for the startup skew to have left
+     * the window. */
+    if (elapsed > 3 * RIST_P8_CHAIN_REPORT_MS && d_a > 1000000) {
+        if (d_b < d_a - d_a / 50 && s_rist.senderr)
             RIST_LOG("p8chain   GAP a->b: the reader/sendto hop is shedding "
                      "(senderr=%llu). Check SO_SNDBUF above.\n",
                      (unsigned long long)s_rist.senderr);
-        else if (c_by && c_by < b_by - b_by / 50)
+        else if (d_c && d_c < d_b - d_b / 50)
             RIST_LOG("p8chain   GAP b->c: loss across the RIST pair on loopback.\n");
-        else if (d_by && d_by < c_by - c_by / 50)
+        else if (d_d && d_d < d_c - d_c / 50)
             RIST_LOG("p8chain   GAP c->d: dmx%d is refusing bytes "
                      "(inj_busy=%llu) -- demux back-pressure.\n",
                      s_rist.p8_dmx, (unsigned long long)s_rist.p8_inj_busy);
     }
+    /* Zero is not a gap, it is a dead stage, and it has one overwhelmingly
+     * likely cause on this box. */
+    if (elapsed > 2 * RIST_P8_CHAIN_REPORT_MS && d_b > 0 && c_by == 0)
+        RIST_LOG("p8chain   *** (c) IS ZERO: nothing is coming out of the "
+                 "receiver. Check whether the OOM killer took the sender "
+                 "(dmesg: 'Killed process ... stb_part8_recei') ***\n");
     if (a_bad)
         RIST_LOG("p8chain   *** badsync %llu at the CAPTURE -- the whole-TP read is "
                  "tearing; everything downstream is downstream of that ***\n",
@@ -1745,6 +1756,37 @@ static int _rist_p8_chain_start(void)
     rx_argv[3] = (char *)"-o";
     rx_argv[4] = recv_out;
     rx_argv[5] = NULL;
+
+    /* MEMORY BUDGET, logged before the children are spawned.
+     *
+     * This box reports managed:54472kB. The two RIST processes are ~11MB RSS
+     * EACH, the app is ~5MB, and the whole-TP DVR buffers are megabytes more.
+     * An earlier build raised four buffers at once, added ~17MB, and the OOM
+     * killer took stb_part8_receiver mid-run -- which presented as "chain up,
+     * no video" with rx=0 at the tail, three stages away from the cause.
+     * Print the headroom so that is visible before it happens rather than in a
+     * kernel backtrace afterwards. */
+    {
+        FILE *mi = fopen("/proc/meminfo", "r");
+        char line[128];
+        long free_kb = -1, avail_kb = -1;
+
+        if (mi) {
+            while (fgets(line, sizeof(line), mi)) {
+                if (strncmp(line, "MemFree:", 8) == 0)
+                    free_kb = strtol(line + 8, NULL, 10);
+                else if (strncmp(line, "MemAvailable:", 13) == 0)
+                    avail_kb = strtol(line + 13, NULL, 10);
+            }
+            fclose(mi);
+        }
+        RIST_LOG("p8: memory before spawn: MemFree=%ldkB MemAvailable=%ldkB "
+                 "(two RIST processes need ~22MB RSS between them)\n",
+                 free_kb, avail_kb);
+        if (free_kb >= 0 && free_kb < 8000)
+            RIST_LOG("p8:   *** UNDER 8MB FREE -- the OOM killer takes the "
+                     "SENDER first and the tail then sees rx=0 ***\n");
+    }
 
     RIST_T("p8: spawning children\n");
     s_rist.pid_watchdog = _rist_spawn(tx_argv, RIST_PID_P8_SENDER, "stb_part8_receiver");

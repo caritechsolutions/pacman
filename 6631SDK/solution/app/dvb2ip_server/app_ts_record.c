@@ -281,8 +281,18 @@ static int      s_ts_rec_allpass    = 0;
  * likely to need tuning against whatever memory this box actually has free, and
  * finding that out should not cost a reflash. A driver that cannot allocate
  * rejects the config, which falls back to src=DMX and says so. */
+/* The HARDWARE buffer is the one that mattered and it is kept: at 26ms
+ * dvr_v100_tsw_dealwith fired ~28 times a second with the driver reporting room
+ * for 3 packets of 19; at 208ms it fires about ONCE a second and misses by
+ * ~6KB. That is the fix, measured.
+ *
+ * The SOFTWARE buffer is cut back hard. It went to 12*188*1024 in the same
+ * change, and the OOM dump says why that was reckless: managed:54472kB,
+ * free:3060kB against min:3072kB, and the OOM killer took the sender. The
+ * hardware buffer is memhole; this one is not, and it was competing with the
+ * two ~11MB RIST processes for the same few megabytes. */
 #define FULLTP_HW_BUFFER_SIZE  (8 * 188 * 1024)    /* ~208ms at 59 Mb/s */
-#define FULLTP_SW_BUFFER_SIZE  (12 * 188 * 1024)   /* ~312ms */
+#define FULLTP_SW_BUFFER_SIZE  (5 * 188 * 1024)    /* ~130ms, was 12x */
 #define TS_REC_FULLTPBUF_FILE  "/tmp/ristfulltpbuf"
 static int s_ts_rec_fulltp_hw = FULLTP_HW_BUFFER_SIZE;
 static int      s_ts_rec_muxtest    = 0;
