@@ -185,6 +185,10 @@
  * for pdmx and timeshift, and feeds the SDRAM side itself. Consumers keep
  * their compiled-in dmx_id and never learn anything changed; slots and filters
  * sit downstream of the source selector, so they follow it. */
+/* Cutter on/off. Absent or 1 = PCR-boundary framing (the default and the only
+ * shape that can ever align with the headend); 0 = plain greedy-7, for isolating
+ * the cutter during a box-only bring-up. */
+#define RIST_P8_CUT_FILE        "/tmp/ristp8cut"
 #define RIST_P8_TAIL_FILE       "/tmp/ristp8tail"
 /* dmx0/dmx1 are the AV path, dmx2 is our capture, TS_REC_DEMUX_MOD_MAX is 4 --
  * so 3 is the one free demux instance on this chip. */
@@ -1674,8 +1678,38 @@ static int _rist_p8_chain_start(void)
         return -1;
     }
 
-    snprintf(in_url, sizeof(in_url), "udp://@127.0.0.1:%d?pcr_cut=%u",
-             RIST_P8_CAP_PORT, (unsigned)s_rist.prog.pcr_pid);
+    /* THE CUTTER, and whether to run it at all.
+     *
+     * /tmp/ristp8cut = 0 drops ?pcr_cut= from the input URL, so the sender
+     * packs plain greedy-7 with no anchor. It is a DIAGNOSTIC, not a mode: for
+     * a box-only bring-up there is no headend to align with, so removing the
+     * cutter removes a variable at zero cost.
+     *
+     * It is NOT the right steady state, and the reasoning that it might be does
+     * not survive the arithmetic. On whole-TP the cutter forces a boundary at
+     * every PCR on this service's PID -- ~102/s at 59 Mb/s, one every ~383
+     * packets. Between two anchors both ends pack greedy-7 from the SAME
+     * restart packet over the SAME interleaving, because both carry the
+     * identical multiplex; the 32 other services' packets in between are the
+     * same packets in the same order at each end. So the anchor rate is not
+     * "only 1.83% of payloads are aligned" -- it is "both ends re-agree 102
+     * times a second and everything between two agreements is aligned by
+     * construction".
+     *
+     * Take the cutter away and that is exactly what is lost. Two ends starting
+     * capture at different multiplex packets pack [N..N+6] and [M..M+6]; unless
+     * N-M is a multiple of 7 the boundaries never coincide and no sequence
+     * number indexes the same bytes. Whole-TP does not make alignment free --
+     * it makes the anchor cheaper to find, because every end has every PID. */
+    if (_rist_read_int_file(RIST_P8_CUT_FILE, 1) == 0) {
+        snprintf(in_url, sizeof(in_url), "udp://@127.0.0.1:%d", RIST_P8_CAP_PORT);
+        RIST_LOG("p8: CUTTER OFF (%s=0) -- plain greedy-7, no PCR anchor. "
+                 "Diagnostic only: box and headend payload boundaries cannot "
+                 "align without it.\n", RIST_P8_CUT_FILE);
+    } else {
+        snprintf(in_url, sizeof(in_url), "udp://@127.0.0.1:%d?pcr_cut=%u",
+                 RIST_P8_CAP_PORT, (unsigned)s_rist.prog.pcr_pid);
+    }
     snprintf(out_url, sizeof(out_url), "rist://@127.0.0.1:%d?buffer=%d",
              RIST_P8_LOCAL_PORT, bufms);
     snprintf(recv_in, sizeof(recv_in), "rist://127.0.0.1:%d?buffer=%d",
