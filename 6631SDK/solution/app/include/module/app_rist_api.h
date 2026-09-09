@@ -84,7 +84,11 @@ typedef struct _AppRistRecovery
      * and warn.
      *
      * Empty = the headend could not derive it (filterPids() refuses rather than
-     * guessing). Part 8 is then declined for this channel; see
+     * guessing), and Part 8 is then declined for this channel -- but ONLY when a
+     * record exists at all. Step 1 takes no API record on purpose (there is no
+     * recovery peer; the box cuts its own capture and decodes it on its own
+     * screen), and with no far end there is nothing to agree with, so the box
+     * derives the list from its own PMT instead. See the keep-list block in
      * app_rist_capture.c. */
     char part8_filter_pids[RIST_API_PIDS_LEN];
 } AppRistRecovery;

@@ -1823,26 +1823,82 @@ static int _rist_p8_chain_start(void)
      * bytes, and a list this box derived for itself could differ by a PID while
      * still looking entirely reasonable.
      *
-     * /tmp/ristp8pids overrides it, for a bench box with no headend to ask. Like
-     * every other knob here /tmp is tmpfs, so it cannot outlive a reboot. */
+     * /tmp/ristp8pids overrides it, for a box pointed at a headend that has not
+     * been switched over yet.
+     *
+     * AND WITH NO HEADEND IN THE LOOP AT ALL, WE DERIVE IT OURSELVES. Step 1
+     * takes no API record on purpose -- see the "PART 8 WINS" note in
+     * app_rist_play_change(): there is no recovery peer, the box cuts its own
+     * capture and decodes it on its own screen, and requiring an API entry would
+     * make a bench test depend on the headend for a step that does not involve
+     * the headend. The authority argument above is about AGREEING WITH A FAR
+     * END; with no far end there is nothing to disagree with, and refusing here
+     * would break the one configuration that needs no server. Our own PMT is
+     * then exactly the right source. The moment a record IS present, theirs wins
+     * again and an absent list is a refusal, because then the bytes have to
+     * match somebody. */
     pids[0] = '\0';
     if (_rist_read_str_file(RIST_P8_PIDS_FILE, pids, sizeof(pids)))
         pids_src = RIST_P8_PIDS_FILE;
     else if (s_rist.rec.part8_filter_pids[0]) {
         snprintf(pids, sizeof(pids), "%s", s_rist.rec.part8_filter_pids);
         pids_src = "headend part8_filter_pids";
+    } else if (s_rist.rec.part8) {
+        /* A headend record exists and says Part 8, but carries no list. That is
+         * a headend half way through a config change, and self-deriving would
+         * produce a stream that decodes here and can never align with theirs --
+         * a false pass for the thing Part 8 exists to do. */
+        RIST_LOG("p8: the headend advertises Part 8 for service %d but sent no "
+                 "part8_filter_pids. REFUSING rather than filtering to a set it "
+                 "did not choose: the repair needs both ends cutting identical "
+                 "bytes. Set %s to override. Staying on factory decode.\n",
+                 s_rist.prog.service_id, RIST_P8_PIDS_FILE);
+        return -1;
+    } else {
+        /* SELF-DERIVED, for the box-local loop. The seven PSI PIDs the headend
+         * also fixes, plus this service's PMT, PCR, video and audio. Duplicates
+         * are fine -- video and PCR are commonly the same PID and the parser
+         * dedups. */
+        int off = 0, n;
+
+        n = snprintf(pids, sizeof(pids), "0,1,16,17,18,19,20");
+        if (n > 0 && n < (int)sizeof(pids)) {
+            uint16_t own[4];
+            int i;
+
+            off = n;
+            own[0] = s_rist.prog.pmt_pid;
+            own[1] = s_rist.prog.pcr_pid;
+            own[2] = s_rist.prog.video_pid;
+            own[3] = s_rist.prog.cur_audio_pid;
+
+            for (i = 0; i < 4; i++) {
+                if (!VALID_MARKER_PID(own[i]))
+                    continue;
+                n = snprintf(pids + off, sizeof(pids) - off, ",%u",
+                             (unsigned)own[i]);
+                if (n < 0 || n >= (int)(sizeof(pids) - off))
+                    break;
+                off += n;
+            }
+        }
+        pids_src = "our own PMT (SELF-DERIVED, no headend record)";
     }
 
     if (!pids[0]) {
-        RIST_LOG("p8: NO PID KEEP-LIST -- the headend sent no part8_filter_pids "
-                 "for service %d and %s is not set. REFUSING to start: the "
-                 "capture is the whole transponder (~59 Mb/s) and putting that "
-                 "on the RIST hop exhausts this box's memory rather than "
-                 "degrading. Staying on factory decode.\n",
-                 s_rist.rec.service_id, RIST_P8_PIDS_FILE);
+        RIST_LOG("p8: NO PID KEEP-LIST for service %d and %s is not set. "
+                 "REFUSING to start: the capture is the whole transponder "
+                 "(~59 Mb/s) and putting that on the RIST hop exhausts this "
+                 "box's memory rather than degrading. Staying on factory "
+                 "decode.\n", s_rist.prog.service_id, RIST_P8_PIDS_FILE);
         return -1;
     }
     RIST_LOG("p8: keep-list from %s: %s\n", pids_src, pids);
+    RIST_LOG("p8:   (pmt=0x%04X pcr=0x%04X vid=0x%04X aud=0x%04X) -- paste into "
+             "%s to override\n",
+             s_rist.prog.pmt_pid, s_rist.prog.pcr_pid,
+             s_rist.prog.video_pid, s_rist.prog.cur_audio_pid,
+             RIST_P8_PIDS_FILE);
     s_rist.p8_filtering = 1;
 
     /* A list that does not name our own PCR PID cannot be cut on: the anchor
