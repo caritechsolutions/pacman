@@ -149,6 +149,11 @@
 /* /tmp/ristp8psi is GONE. Broadcast PSI is not a mode -- see the capture block
  * in _rist_capture_begin(). A knob here could only ever select "cut different
  * bytes from the headend", which is never a thing anyone wants. */
+/* Bench override for the Part 8 keep-list, as a comma-separated PID list. The
+ * production source is the headend's part8_filter_pids -- see the keep-list
+ * block in _rist_p8_chain_start() for why theirs is authoritative and this is
+ * only for a box with no headend to ask. */
+#define RIST_P8_PIDS_FILE       "/tmp/ristp8pids"
 #define RIST_P8_CAP_PORT        6300    /* capture -> p8 sender  (UDP)  */
 #define RIST_P8_LOCAL_PORT      6400    /* p8 sender -> receiver (RIST) */
 #define RIST_P8_OUT_PORT        6500    /* receiver -> player_av (UDP)  */
@@ -336,6 +341,12 @@ static struct {
     int                 chain_active;    /* kill switch ON *and* service has recovery */
     int                 chain_running;   /* children actually spawned */
     int                 p8_active;       /* Part 8 video path (Step 1) for this zap */
+    /* A PID keep-list went out on the sender's input URL this zap. The chain
+     * report needs to know: with the filter on, (b)->(c) SHRINKS by design --
+     * the whole transponder goes into the sender and one service comes out --
+     * and the gap check would otherwise call the thing working as intended a
+     * fault, every single interval. */
+    int                 p8_filtering;
 
     /* Part 8 Step 2: the dmx3 reinjection tail. Everything here is inert unless
      * /tmp/ristp8tail says dmx3. */
@@ -450,6 +461,73 @@ static int _rist_read_int_file(const char *path, int defval)
         fclose(f);
     }
     return v;
+}
+
+/* One line of a knob file into dst, trimmed. Returns 1 if something was read.
+ *
+ * Used for the Part 8 PID list, where a TRUNCATED read is worse than no read:
+ * a short keep-list filters out packets the headend kept, and every repair from
+ * then on splices the wrong bytes while the channel still looks alive. So a
+ * line that does not fit is refused outright rather than clipped. */
+static int _rist_read_str_file(const char *path, char *dst, int dstlen)
+{
+    FILE *f = fopen(path, "r");
+    int  n;
+
+    if (!f)
+        return 0;
+    dst[0] = '\0';
+    if (!fgets(dst, dstlen, f)) {
+        fclose(f);
+        return 0;
+    }
+    fclose(f);
+
+    n = (int)strlen(dst);
+    /* fgets fills the buffer exactly when the line was too long for it. */
+    if (n == dstlen - 1 && dst[n - 1] != '\n') {
+        RIST_LOG("knob %s: line longer than %d bytes -- ignoring it rather than "
+                 "using a truncated value\n", path, dstlen - 1);
+        dst[0] = '\0';
+        return 0;
+    }
+    while (n > 0 && (dst[n - 1] == '\n' || dst[n - 1] == '\r' || dst[n - 1] == ' '))
+        dst[--n] = '\0';
+
+    return dst[0] ? 1 : 0;
+}
+
+/* Is pid named in this comma/space separated keep-list?
+ *
+ * Parses the same shapes librist's rist_pcr_cut_set_filter() accepts, so a list
+ * this says is fine is one the sender will also accept. Deliberately does NOT
+ * validate the whole list: that is the sender's job and it has the one parser
+ * both ends of a repair share. This only answers the single question the box
+ * needs to ask before spawning anything. */
+static int _rist_pids_contains(const char *list, int pid)
+{
+    const char *p = list;
+
+    if (!list || pid < 0)
+        return 0;
+
+    while (*p) {
+        char *end;
+        long  v;
+
+        while (*p == ',' || *p == ' ' || *p == '\t')
+            p++;
+        if (!*p)
+            break;
+
+        v = strtol(p, &end, 0);
+        if (end == p)
+            return 0;               /* malformed; the sender will refuse it */
+        if (v == pid)
+            return 1;
+        p = end;
+    }
+    return 0;
 }
 
 /* Copy src to dst with any "<key>=..." query parameter removed.
@@ -1098,6 +1176,14 @@ static void _rist_p8_sec_report(uint32_t elapsed_ms)
  * one-off ~30) or genuine loopback loss. (c)->(d) is demux back-pressure, which
  * shows as inj_busy rather than loss.
  *
+ * ONE STAGE BOUNDARY IS NOT A LOSS BOUNDARY. The PID keep-list is applied inside
+ * the sender, so (a) and (b) carry the whole transponder and (c) carries one
+ * service. (b)->(c) is therefore MEANT to shrink, by roughly the share this
+ * service occupies, and the report says so rather than calling it a gap. The
+ * reading worth alarming on is the inverse -- a ratio near 100%, meaning the
+ * list did not take and the full 59 Mb/s is inside a RIST pair this box does
+ * not have the memory to hold.
+ *
  * Rates are per interval; totals are cumulative. A stage that is fine for a
  * minute and then sheds is the signature this exists to catch. */
 static int _rist_p8_chain_report_cb(void *arg)
@@ -1163,12 +1249,37 @@ static int _rist_p8_chain_report_cb(void *arg)
      * lower RATE, which is the thing worth waking someone for. Only look at all
      * once the chain has been up long enough for the startup skew to have left
      * the window. */
+    /* THE FILTER SITS BETWEEN (b) AND (c). (a) and (b) are both the whole
+     * transponder -- the app reads it and puts it on udp/6300 unchanged; the
+     * keep-list is applied inside the sender, downstream of that. So (b)->(c)
+     * shrinking is the filter WORKING, and the ratio is the measurement we
+     * wanted: it is the share of this multiplex that this service occupies.
+     *
+     * The dangerous reading is the opposite one. A ratio near 100% means the
+     * keep-list did not take -- and then the whole 59 Mb/s is inside the RIST
+     * pair, which this box does not have the memory for. That is worth a line
+     * of its own, because the failure it precedes (packets vanishing inside
+     * librist, a NACK storm, the OOM killer) surfaces nowhere near the cause. */
+    if (s_rist.p8_filtering && elapsed > 3 * RIST_P8_CHAIN_REPORT_MS && d_b > 100000) {
+        unsigned pct = (unsigned)((d_c * 100ULL) / d_b);
+
+        RIST_LOG("p8chain   filter: b->c kept %u%% (%llu -> %llu kb/s) -- this "
+                 "service's share of the transponder\n", pct,
+                 (unsigned long long)((d_b * 8ULL) / iv),
+                 (unsigned long long)((d_c * 8ULL) / iv));
+        if (pct > 90)
+            RIST_LOG("p8chain   *** FILTER NOT TAKING: %u%% of the transponder is "
+                     "crossing the RIST pair. Check the sender's '[START] PID "
+                     "filter' line -- unfiltered, this box runs out of memory "
+                     "before it runs out of bandwidth ***\n", pct);
+    }
+
     if (elapsed > 3 * RIST_P8_CHAIN_REPORT_MS && d_a > 1000000) {
         if (d_b < d_a - d_a / 50 && s_rist.senderr)
             RIST_LOG("p8chain   GAP a->b: the reader/sendto hop is shedding "
                      "(senderr=%llu). Check SO_SNDBUF above.\n",
                      (unsigned long long)s_rist.senderr);
-        else if (d_c && d_c < d_b - d_b / 50)
+        else if (!s_rist.p8_filtering && d_c && d_c < d_b - d_b / 50)
             RIST_LOG("p8chain   GAP b->c: loss across the RIST pair on loopback.\n");
         else if (d_d && d_d < d_c - d_c / 50)
             RIST_LOG("p8chain   GAP c->d: dmx%d is refusing bytes "
@@ -1663,7 +1774,11 @@ int app_rist_p8_dmx0_confirmed(void)
  */
 static int _rist_p8_chain_start(void)
 {
-    static char in_url[96], out_url[96], recv_in[128], recv_out[96];
+    /* in_url now carries the keep-list as well as the PCR PID, so it is sized
+     * for RIST_API_PIDS_LEN plus the rest rather than the old 96. */
+    static char in_url[320], out_url[96], recv_in[128], recv_out[96];
+    static char pids[RIST_API_PIDS_LEN];
+    const char *pids_src = NULL;
     char *tx_argv[8];
     char *rx_argv[6];
     int   bufms = _rist_read_int_file(RIST_BUFFER_FILE, RIST_P8_BUFFER_MS);
@@ -1689,18 +1804,92 @@ static int _rist_p8_chain_start(void)
         return -1;
     }
 
+    /* THE KEEP-LIST, and the refusal that goes with it.
+     *
+     * Part 8 captures the WHOLE transponder -- ~59 Mb/s, 201 PIDs -- because
+     * that is the only way this demux will surrender the broadcast PSI the
+     * repair needs. That stream must not reach the RIST hop unfiltered, and
+     * "must not" here is measured, not cautious: librist does two mallocs per
+     * packet and holds them for the buffer window, so at 59 Mb/s and 2000 ms it
+     * wants ~17 MB in the sender's retransmit queue and ~17 MB again in the
+     * receiver, against MemAvailable of ~25 MB on a box with 54 MB managed. It
+     * does not fail cleanly at that point: packets vanish inside the library,
+     * NACKs storm after them, and the run ends with the OOM killer taking the
+     * sender -- which presents three stages downstream as "chain up, no video".
+     *
+     * The headend's list is authoritative. It is derived there from the tuned
+     * service's PMT plus the fixed PSI set and shipped as part8_filter_pids, and
+     * it must be used verbatim: the repair works by both ends cutting IDENTICAL
+     * bytes, and a list this box derived for itself could differ by a PID while
+     * still looking entirely reasonable.
+     *
+     * /tmp/ristp8pids overrides it, for a bench box with no headend to ask. Like
+     * every other knob here /tmp is tmpfs, so it cannot outlive a reboot. */
+    pids[0] = '\0';
+    if (_rist_read_str_file(RIST_P8_PIDS_FILE, pids, sizeof(pids)))
+        pids_src = RIST_P8_PIDS_FILE;
+    else if (s_rist.rec.part8_filter_pids[0]) {
+        snprintf(pids, sizeof(pids), "%s", s_rist.rec.part8_filter_pids);
+        pids_src = "headend part8_filter_pids";
+    }
+
+    if (!pids[0]) {
+        RIST_LOG("p8: NO PID KEEP-LIST -- the headend sent no part8_filter_pids "
+                 "for service %d and %s is not set. REFUSING to start: the "
+                 "capture is the whole transponder (~59 Mb/s) and putting that "
+                 "on the RIST hop exhausts this box's memory rather than "
+                 "degrading. Staying on factory decode.\n",
+                 s_rist.rec.service_id, RIST_P8_PIDS_FILE);
+        return -1;
+    }
+    RIST_LOG("p8: keep-list from %s: %s\n", pids_src, pids);
+    s_rist.p8_filtering = 1;
+
+    /* A list that does not name our own PCR PID cannot be cut on: the anchor
+     * would be filtered away before the cutter ever saw it, every payload would
+     * be plain greedy-7, and nothing would align. That is a headend/box
+     * disagreement about which service this is, so refuse rather than run. */
+    if (!_rist_pids_contains(pids, (int)s_rist.prog.pcr_pid)) {
+        RIST_LOG("p8: keep-list does not contain our PCR PID 0x%04X (%u) -- "
+                 "the headend is filtering a different service than the one we "
+                 "are tuned to. REFUSING; staying on factory decode.\n",
+                 s_rist.prog.pcr_pid, (unsigned)s_rist.prog.pcr_pid);
+        return -1;
+    }
+
+    /* CROSS-CHECK, warn only -- the mirror of the part8_server_pcr_pid warning
+     * in _rist_chain_start(). Their list stays authoritative because identical
+     * bytes is the point, but a list missing the video or audio PID we are about
+     * to decode is a real disagreement about the service, and it is invisible in
+     * the stream: the chain comes up, the repair aligns, and the picture is
+     * simply absent. Say it once here rather than leaving it to be found on the
+     * screen. */
+    if (VALID_MARKER_PID(s_rist.prog.video_pid)
+        && !_rist_pids_contains(pids, (int)s_rist.prog.video_pid))
+        RIST_LOG("p8: WARNING keep-list omits our VIDEO PID 0x%04X -- the "
+                 "repaired stream will carry no picture for this service\n",
+                 s_rist.prog.video_pid);
+    if (VALID_MARKER_PID(s_rist.prog.cur_audio_pid)
+        && !_rist_pids_contains(pids, (int)s_rist.prog.cur_audio_pid))
+        RIST_LOG("p8: WARNING keep-list omits our AUDIO PID 0x%04X -- the "
+                 "repaired stream will carry no sound for this service\n",
+                 s_rist.prog.cur_audio_pid);
+
     /* THE CUTTER, and whether to run it at all.
      *
      * /tmp/ristp8cut = 0 drops ?pcr_cut= from the input URL, so the sender
      * packs plain greedy-7 with no anchor. It is a DIAGNOSTIC, not a mode: for
      * a box-only bring-up there is no headend to align with, so removing the
-     * cutter removes a variable at zero cost.
+     * cutter removes a variable at zero cost. The PID filter is NOT part of
+     * that trade and stays on either way -- it is what keeps the transponder
+     * off the RIST hop, and running without it does not remove a variable, it
+     * removes the box's memory.
      *
-     * It is NOT the right steady state, and the reasoning that it might be does
-     * not survive the arithmetic. On whole-TP the cutter forces a boundary at
-     * every PCR on this service's PID -- ~102/s at 59 Mb/s, one every ~383
-     * packets. Between two anchors both ends pack greedy-7 from the SAME
-     * restart packet over the SAME interleaving, because both carry the
+     * The cut is NOT the right thing to leave off, and the reasoning that it
+     * might be does not survive the arithmetic. On whole-TP the cutter forces a
+     * boundary at every PCR on this service's PID -- ~102/s at 59 Mb/s, one
+     * every ~383 packets. Between two anchors both ends pack greedy-7 from the
+     * SAME restart packet over the SAME interleaving, because both carry the
      * identical multiplex; the 32 other services' packets in between are the
      * same packets in the same order at each end. So the anchor rate is not
      * "only 1.83% of payloads are aligned" -- it is "both ends re-agree 102
@@ -1713,13 +1902,15 @@ static int _rist_p8_chain_start(void)
      * number indexes the same bytes. Whole-TP does not make alignment free --
      * it makes the anchor cheaper to find, because every end has every PID. */
     if (_rist_read_int_file(RIST_P8_CUT_FILE, 1) == 0) {
-        snprintf(in_url, sizeof(in_url), "udp://@127.0.0.1:%d", RIST_P8_CAP_PORT);
+        snprintf(in_url, sizeof(in_url), "udp://@127.0.0.1:%d?pids=%s",
+                 RIST_P8_CAP_PORT, pids);
         RIST_LOG("p8: CUTTER OFF (%s=0) -- plain greedy-7, no PCR anchor. "
                  "Diagnostic only: box and headend payload boundaries cannot "
-                 "align without it.\n", RIST_P8_CUT_FILE);
+                 "align without it. The PID filter stays ON regardless.\n",
+                 RIST_P8_CUT_FILE);
     } else {
-        snprintf(in_url, sizeof(in_url), "udp://@127.0.0.1:%d?pcr_cut=%u",
-                 RIST_P8_CAP_PORT, (unsigned)s_rist.prog.pcr_pid);
+        snprintf(in_url, sizeof(in_url), "udp://@127.0.0.1:%d?pcr_cut=%u&pids=%s",
+                 RIST_P8_CAP_PORT, (unsigned)s_rist.prog.pcr_pid, pids);
     }
     snprintf(out_url, sizeof(out_url), "rist://@127.0.0.1:%d?buffer=%d",
              RIST_P8_LOCAL_PORT, bufms);
@@ -2623,6 +2814,7 @@ int app_rist_play_change(GxBusPmDataProg *prog)
     memset(&s_rist.rec, 0, sizeof(s_rist.rec));
     s_rist.chain_active = 0;
     s_rist.p8_active    = 0;
+    s_rist.p8_filtering = 0;
     s_rist.p8_dmx0_want = 0;
 
     /* Clear the fallback latch as soon as a DIFFERENT service is selected, so
@@ -2711,6 +2903,7 @@ int app_rist_play_change(GxBusPmDataProg *prog)
              * fallback this branch exists to give. */
             s_rist.chain_active  = 0;
             s_rist.p8_active     = 0;
+            s_rist.p8_filtering  = 0;
             s_rist.p8_dmx0_want  = 0;
             RIST_T("chain start FAILED -> factory decode for this zap\n");
         } else {

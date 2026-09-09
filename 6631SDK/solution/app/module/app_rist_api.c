@@ -329,7 +329,7 @@ static int _api_parse(const char *body)
     for (i = 0; i < num && kept < RIST_API_MAX_CHANNELS; i++) {
         cJSON *c = cJSON_GetArrayItem(channels, i);
         cJSON *sid, *tsid, *mpid, *url, *name;
-        cJSON *p8, *p8url, *p8cut, *p8pcr;
+        cJSON *p8, *p8url, *p8cut, *p8pcr, *p8pids;
 
         if (!c)
             continue;
@@ -346,6 +346,7 @@ static int _api_parse(const char *body)
         p8url = cJSON_GetObjectItem(c, "part8_rist_url");
         p8cut = cJSON_GetObjectItem(c, "part8_pcr_cut");
         p8pcr = cJSON_GetObjectItem(c, "part8_server_pcr_pid");
+        p8pids = cJSON_GetObjectItem(c, "part8_filter_pids");
 
         /* A service id plus SOME peer to connect to is the minimum. It used to
          * be rist_url specifically; a Part 8 channel is a standalone record on
@@ -376,6 +377,43 @@ static int _api_parse(const char *body)
                      p8url->valuestring);
             s_chan[kept].part8_pcr_cut        = p8cut ? p8cut->valueint : 0;
             s_chan[kept].part8_server_pcr_pid = p8pcr ? p8pcr->valueint : 0;
+
+            /* THE KEEP-LIST, flattened to the CSV that librist's ?pids= wants.
+             *
+             * ALL OR NOTHING. Every failure below -- absent, not an array,
+             * empty, a value that is not a PID, or a list too long for the
+             * field -- leaves the string empty, and empty means Part 8 is
+             * declined for this channel. A PARTIAL list is the one outcome that
+             * must never happen: it filters to a short set, which looks like a
+             * working channel right up until the audio is missing and every
+             * repaired splice lands on the wrong bytes. */
+            s_chan[kept].part8_filter_pids[0] = '\0';
+            if (p8pids && p8pids->type == cJSON_Array) {
+                int np = cJSON_GetArraySize(p8pids);
+                int j, off = 0, ok = (np > 0);
+
+                for (j = 0; j < np; j++) {
+                    cJSON *e = cJSON_GetArrayItem(p8pids, j);
+                    int n, v;
+
+                    if (!e) { ok = 0; break; }
+                    v = e->valueint;
+                    if (v < 0 || v > 0x1FFF) { ok = 0; break; }
+
+                    n = snprintf(s_chan[kept].part8_filter_pids + off,
+                                 (size_t)(RIST_API_PIDS_LEN - off),
+                                 off ? ",%d" : "%d", v);
+                    if (n < 0 || n >= RIST_API_PIDS_LEN - off) { ok = 0; break; }
+                    off += n;
+                }
+                if (!ok) {
+                    s_chan[kept].part8_filter_pids[0] = '\0';
+                    API_LOG("svc_id=%d: part8_filter_pids unusable (%d entries) "
+                            "-- Part 8 will be declined for this channel rather "
+                            "than run on a partial PID set\n",
+                            s_chan[kept].service_id, np);
+                }
+            }
         }
         kept++;
     }
@@ -402,6 +440,11 @@ static void _api_dump(void)
             API_LOG("      PART 8: url=%s pcr_cut=%d server_pcr_pid=%d (0x%04X)\n",
                     s_chan[i].part8_rist_url, s_chan[i].part8_pcr_cut,
                     s_chan[i].part8_server_pcr_pid, s_chan[i].part8_server_pcr_pid);
+            if (s_chan[i].part8_filter_pids[0])
+                API_LOG("      PART 8: filter_pids=%s\n", s_chan[i].part8_filter_pids);
+            else
+                API_LOG("      PART 8: filter_pids ABSENT -- Part 8 will be declined "
+                        "(the headend could not derive the set)\n");
         }
     }
     if (s_chan_num == 0)

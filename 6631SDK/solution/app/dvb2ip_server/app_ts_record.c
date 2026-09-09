@@ -338,6 +338,27 @@ static uint64_t s_ht_t0, s_ht_last;
 static uint8_t  s_ht_cc[8192];
 static uint16_t s_ht_npid;
 
+/* PER-PID RATES, reset every interval so this is inherently a rate and needs no
+ * second snapshot array. 32 KB, which is not free on a 54 MB box -- it is here
+ * because two open questions can only be answered by measuring THIS
+ * transponder, and both of them decide architecture:
+ *
+ *   - What does the service actually cost once filtered? The whole chain now
+ *     depends on the filtered stream fitting in memory the whole-TP stream does
+ *     not, and an estimate is not good enough to commit to.
+ *
+ *   - Does this transponder carry anything in 0x02-0x0F or 0x15-0x1F? The
+ *     headend passes exactly seven PSI PIDs; librist's Part 6 filter passes all
+ *     of 0x00-0x1F. If the range is empty beyond those seven the two policies
+ *     agree on this multiplex and the headend's tsp stage could later be
+ *     replaced by the same filter the box runs. If it is not empty, they do not,
+ *     and that has to be known before anyone touches the server.
+ *
+ * The PSI range is reported PID by PID rather than summarised precisely because
+ * the question is which of those 32 are present, not how much they weigh. */
+#define TS_REC_PIDTOP   12
+static uint32_t s_ht_ppkt[8192];
+
 /* Stage (a) of the four-stage chain report, read by app_rist_capture so one line
  * can show capture -> sender -> receiver -> dmx0 and a gap can name its stage. */
 void app_ts_record_health_get(uint64_t *bytes, uint64_t *pkts,
@@ -1165,6 +1186,10 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                                 s_ht_pkts++;
                                 if(q[0] != 0x47) { s_ht_bad++; continue; }
                                 qpid = (uint16_t)(((q[1] & 0x1F) << 8) | q[2]);
+                                /* Counted BEFORE the CC-specific skips below:
+                                 * this is a rate, so null and payloadless
+                                 * packets are part of what the PID costs. */
+                                s_ht_ppkt[qpid]++;
                                 if(qpid == 0x1FFF) continue;
                                 if(q[1] & 0x80)    continue;   /* TEI: CC untrusted */
                                 if(!(q[3] & 0x10)) continue;   /* no payload: no bump */
@@ -1201,6 +1226,59 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                                 if(dbd)
                                     printf("[FULLTP]   BADSYNC IS NON-ZERO -- the capture is TEARING. "
                                            "Look for dvr_v100_isr_tsw_full / tsw_dealwith above.\n");
+
+                                /* PER-PID RATES for this interval. See s_ht_ppkt. */
+                                {
+                                    char     line[512];
+                                    int      used = 0, k, t;
+                                    uint16_t top[TS_REC_PIDTOP];
+                                    int      ntop = 0;
+
+                                    /* The PSI range, PID by PID, non-zero only. */
+                                    for(k = 0; k <= 0x1F; k++)
+                                    {
+                                        int n;
+                                        if(!s_ht_ppkt[k]) continue;
+                                        n = snprintf(line + used, sizeof(line) - used,
+                                                     " 0x%02X=%llu", (unsigned)k,
+                                                     (unsigned long long)
+                                                     ((uint64_t)s_ht_ppkt[k] * 188ULL * 8ULL / iv));
+                                        if(n < 0 || n >= (int)(sizeof(line) - used)) break;
+                                        used += n;
+                                    }
+                                    printf("[FULLTP] (a2) PSI 0x00-0x1F kbit/s:%s%s\n",
+                                           used ? line : " (none present)",
+                                           used ? "   <- headend keeps only 00,01,10,11,12,13,14" : "");
+
+                                    /* Top PIDs overall, insertion sort into a
+                                     * 12-slot descending list -- one pass over
+                                     * 8192 entries every 5s. */
+                                    for(k = 0; k < 8192; k++)
+                                    {
+                                        int j;
+                                        if(!s_ht_ppkt[k]) continue;
+                                        for(t = 0; t < ntop; t++)
+                                            if(s_ht_ppkt[k] > s_ht_ppkt[top[t]]) break;
+                                        if(t >= TS_REC_PIDTOP) continue;   /* too small to place */
+                                        if(ntop < TS_REC_PIDTOP) ntop++;
+                                        for(j = ntop - 1; j > t; j--)
+                                            top[j] = top[j - 1];
+                                        top[t] = (uint16_t)k;
+                                    }
+                                    used = 0;
+                                    for(t = 0; t < ntop; t++)
+                                    {
+                                        int n = snprintf(line + used, sizeof(line) - used,
+                                                         " 0x%04X=%llu", (unsigned)top[t],
+                                                         (unsigned long long)
+                                                         ((uint64_t)s_ht_ppkt[top[t]] * 188ULL * 8ULL / iv));
+                                        if(n < 0 || n >= (int)(sizeof(line) - used)) break;
+                                        used += n;
+                                    }
+                                    printf("[FULLTP] (a2) top pids kbit/s:%s\n", used ? line : " (none)");
+
+                                    memset(s_ht_ppkt, 0, sizeof(s_ht_ppkt));
+                                }
                                 s_ht_bytes_p = s_ht_bytes; s_ht_pkts_p = s_ht_pkts;
                                 s_ht_bad_p = s_ht_bad;     s_ht_ccerr_p = s_ht_ccerr;
                                 s_ht_last = now_ms;
@@ -2293,6 +2371,7 @@ static int32_t _ts_rec_prog_config(int32_t index, TsRecConfig *config)
     if(s_ts_rec_fulltp)
     {
         memset(s_ht_cc, 0xFF, sizeof(s_ht_cc));
+        memset(s_ht_ppkt, 0, sizeof(s_ht_ppkt));
         s_ht_bytes = s_ht_pkts = s_ht_bad = s_ht_ccerr = 0;
         s_ht_reads = s_ht_short = 0;
         s_ht_bytes_p = s_ht_pkts_p = s_ht_bad_p = s_ht_ccerr_p = 0;

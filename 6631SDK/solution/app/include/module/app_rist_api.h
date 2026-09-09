@@ -18,6 +18,13 @@
 #define RIST_API_MAX_CHANNELS   32
 #define RIST_API_URL_LEN        160
 #define RIST_API_NAME_LEN       64
+/* The Part 8 keep-list as a CSV. Seven fixed PSI PIDs plus a service's PMT, PCR
+ * and elementary streams is a dozen or so entries at up to 5 characters each;
+ * 192 leaves room for an unusually fat service without approaching librist's
+ * own 256-byte ?pids= field, which refuses a list too long to hold rather than
+ * truncating it. A truncated list filters to a SHORT set, and a short set looks
+ * like a working channel while dropping audio. */
+#define RIST_API_PIDS_LEN       192
 
 typedef struct _AppRistRecovery
 {
@@ -50,6 +57,36 @@ typedef struct _AppRistRecovery
      * channel that remaps, so the two agree today; keeping them separate means
      * a future remap breaks loudly here rather than silently misaligning. */
     int  part8_server_pcr_pid;
+
+    /* THE PID SET THE HEADEND FILTERS THIS CHANNEL DOWN TO, as a comma-separated
+     * list, straight from part8_filter_pids in the recovery record.
+     *
+     * The box captures the WHOLE transponder because that is the only way its
+     * demux will hand over the broadcast PSI (a demux slot takes one scalar PID
+     * and there are not enough slots). It must then filter to exactly this set
+     * before the RIST hop, for two independent reasons:
+     *
+     *   - MEMORY. librist holds two mallocs per packet for the whole buffer
+     *     window: at 59 Mb/s and 2000 ms that is ~17 MB in the sender's
+     *     retransmit queue and ~17 MB again in the receiver, on a box with
+     *     54 MB managed. It does not fit and the box wedges.
+     *
+     *   - ALIGNMENT. The repair works by both ends cutting IDENTICAL bytes
+     *     identically. The headend cuts what tsp -P filter --pid left it, so
+     *     the box must cut the same subset of the same multiplex.
+     *
+     * THE SERVER'S LIST IS AUTHORITATIVE, and note this is the OPPOSITE of the
+     * rule for part8_server_pcr_pid above. The PCR PID must be ours because it
+     * has to be the PID present in the bytes WE are cutting. The filter set must
+     * be theirs because byte-identity with them is the point -- a list we derive
+     * ourselves could differ by one PID and that misaligns every splice while
+     * still looking like a working channel. We derive our own only to compare
+     * and warn.
+     *
+     * Empty = the headend could not derive it (filterPids() refuses rather than
+     * guessing). Part 8 is then declined for this channel; see
+     * app_rist_capture.c. */
+    char part8_filter_pids[RIST_API_PIDS_LEN];
 } AppRistRecovery;
 
 /**
