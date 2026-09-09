@@ -953,16 +953,48 @@ fi
 # is invisible in every check above -- and a diagnostic that silently ran the OLD
 # app would produce a "result" that means nothing. Grep the built ELF for a string
 # only the current app has.
+#
+# The string has to be updated whenever it stops being unique to the CURRENT
+# change, which is the trap this guard sets for itself: MUXTEST was the marker
+# for the whole-TP diagnostic and is still in the tree, so it would now pass
+# against the PREVIOUS build as happily as this one and verify nothing.
 if [ -f "$SDK_ROOT/output/out.elf" ]; then
-    if strings "$SDK_ROOT/output/out.elf" | grep -q 'MUXTEST'; then
-        log "  OK: the built app carries the MUXTEST diagnostic"
+    if strings "$SDK_ROOT/output/out.elf" | grep -q 'NO PID KEEP-LIST'; then
+        log "  OK: the built app carries the Part 8 PID keep-list refusal"
     else
-        die "VERIFY FAILED: output/out.elf has no MUXTEST string, so the app that
-     would be flashed predates this change. A diagnostic run against a stale app
-     reports a number that answers nothing. Do not flash this build."
+        die "VERIFY FAILED: output/out.elf has no 'NO PID KEEP-LIST' string, so the
+     app that would be flashed predates the PID filter change. It would capture
+     the whole transponder and put all 59 Mb/s on the RIST hop, which is the
+     failure this build exists to fix. Do not flash this build."
     fi
 else
     log "  NOTE: output/out.elf not found -- app freshness NOT verified"
+fi
+
+# librist and the Part 8 sender have to carry the filter too. A stale librist
+# does not fail quietly -- rist-common.c rejects an unknown URL parameter, so the
+# sender would exit at startup with "Unknown or invalid parameter pids" and the
+# chain would fall back to factory decode. Loud, but a whole flash cycle to find
+# out, so check here instead.
+for _lib in "$LIBRIST_TREE"/librist.so.*; do
+    [ -f "$_lib" ] || continue
+    if strings "$_lib" | grep -q 'PID list too long'; then
+        log "  OK: $(basename "$_lib") carries the ?pids= parameter"
+    else
+        die "VERIFY FAILED: $_lib has no 'PID list too long' string, so librist
+     predates the ?pids= parameter. The Part 8 sender would reject its own input
+     URL at startup. Do not flash this build."
+    fi
+    break
+done
+if [ -f "$TMP/$STB_P8_NAME" ]; then
+    if strings "$TMP/$STB_P8_NAME" | grep -q 'PID filter ON'; then
+        log "  OK: $STB_P8_NAME carries the PID filter"
+    else
+        die "VERIFY FAILED: $STB_P8_NAME has no 'PID filter ON' string. It was
+     built from a stale stb_part8_receiver.c and would send the whole
+     transponder. Do not flash this build."
+    fi
 fi
 
 # The symlink chain has to still resolve, or every RIST binary fails to start
