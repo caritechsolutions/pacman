@@ -1260,7 +1260,26 @@ static int _rist_p8_chain_report_cb(void *arg)
      * pair, which this box does not have the memory for. That is worth a line
      * of its own, because the failure it precedes (packets vanishing inside
      * librist, a NACK storm, the OOM killer) surfaces nowhere near the cause. */
-    if (s_rist.p8_filtering && elapsed > 3 * RIST_P8_CHAIN_REPORT_MS && d_b > 100000) {
+    /* STAGES (c) AND (d) ONLY EXIST FOR A MEMORY-FED TAIL.
+     *
+     * p8_rx_bytes and p8_inj_bytes are counted by the dmx3/dmx0 reinjection
+     * reader. With tail=player_av the receiver's UDP output goes straight to
+     * player_av and this process never touches it, so both are legitimately
+     * zero -- and the "(c) IS ZERO ... check the OOM killer" alarm below fired
+     * on every interval of a run whose RIST hop was in fact perfect (quality
+     * 100, missing 0, rtt 1-3 ms). An alarm that cries wolf on the healthy path
+     * is worse than no alarm, so say plainly which stages are instrumented and
+     * point at the number that IS the truth for this tail: the sender's own
+     * [RUN] kept%. */
+    if (!s_rist.p8_tail_on) {
+        RIST_LOG("p8chain   (c)/(d) not instrumented for tail=player_av -- the "
+                 "receiver feeds player_av directly. Read the sender's [RUN] "
+                 "kept%% line and the receiver's quality/missing for those "
+                 "stages.\n");
+    }
+
+    if (s_rist.p8_tail_on
+        && s_rist.p8_filtering && elapsed > 3 * RIST_P8_CHAIN_REPORT_MS && d_b > 100000) {
         unsigned pct = (unsigned)((d_c * 100ULL) / d_b);
 
         RIST_LOG("p8chain   filter: b->c kept %u%% (%llu -> %llu kb/s) -- this "
@@ -1288,7 +1307,8 @@ static int _rist_p8_chain_report_cb(void *arg)
     }
     /* Zero is not a gap, it is a dead stage, and it has one overwhelmingly
      * likely cause on this box. */
-    if (elapsed > 2 * RIST_P8_CHAIN_REPORT_MS && d_b > 0 && c_by == 0)
+    if (s_rist.p8_tail_on
+        && elapsed > 2 * RIST_P8_CHAIN_REPORT_MS && d_b > 0 && c_by == 0)
         RIST_LOG("p8chain   *** (c) IS ZERO: nothing is coming out of the "
                  "receiver. Check whether the OOM killer took the sender "
                  "(dmesg: 'Killed process ... stb_part8_recei') ***\n");
@@ -2555,15 +2575,32 @@ static void _rist_reader(void *arg)
          * sync byte (0x47) on every packet plus 00-00-01 start codes means CLEAR
          * decodable TS. No framing => wrong demux instance (check /tmp/ristdmx). */
         if (first) {
-            int i, nsync = 0, npkt = 0, nsc = 0;
-            for (i = 0; i + 187 < n; i += 188) { npkt++; if (rbuf[i] == 0x47) nsync++; }
+            int i, nsync = 0, npkt = 0, nsc = 0, ph, phase = -1;
+
+            /* FIND THE PHASE FIRST. This used to start at offset 0 and reported
+             * "NOT 188-framed" on a stream that was perfectly framed four bytes
+             * along -- the DVR returns whole multiples of 188 but does not start
+             * a read on a packet boundary. The cutter downstream hunts for the
+             * sync byte and locked on immediately (badsync=4 in 769,078
+             * packets); this line said the opposite and sent us looking for a
+             * capture fault that was never there. */
+            for (ph = 0; ph < 188 && ph + 376 + 187 < n; ph++)
+                if (rbuf[ph] == 0x47 && rbuf[ph + 188] == 0x47 && rbuf[ph + 376] == 0x47)
+                { phase = ph; break; }
+
+            for (i = (phase < 0 ? 0 : phase); i + 187 < n; i += 188) {
+                npkt++;
+                if (rbuf[i] == 0x47) nsync++;
+            }
             for (i = 0; i + 2 < n; i++)
                 if (rbuf[i] == 0 && rbuf[i + 1] == 0 && rbuf[i + 2] == 1) nsc++;
-            RIST_LOG("DIAG first read len=%d  head: %02x %02x %02x %02x  sync47=%d/%d  startcodes=%d  -> %s\n",
-                     n, rbuf[0], rbuf[1], rbuf[2], rbuf[3], nsync, npkt, nsc,
+            RIST_LOG("DIAG first read len=%d  head: %02x %02x %02x %02x  phase=%d  "
+                     "sync47=%d/%d  startcodes=%d  -> %s\n",
+                     n, rbuf[0], rbuf[1], rbuf[2], rbuf[3], phase, nsync, npkt, nsc,
+                     (phase < 0)                        ? "NO 188 PHASE FOUND (check dmx2 / /tmp/ristdmx)" :
                      (npkt && nsync >= npkt && nsc > 0) ? "CLEAR TS (decodable)" :
                      (npkt && nsync >= npkt)            ? "188-framed, no start codes (PSI only so far)" :
-                                                          "NOT 188-framed (check dmx2 / /tmp/ristdmx)");
+                                                          "framing breaks up after the phase -- torn capture");
             first = 0;
         }
 

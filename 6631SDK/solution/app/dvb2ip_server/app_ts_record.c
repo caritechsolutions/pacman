@@ -333,6 +333,9 @@ static const char *s_ap_tag = "ALLPASS";
 #define TS_REC_HEALTH_MS   (5000)
 static int      s_ht_on    = 0;
 static uint64_t s_ht_bytes, s_ht_pkts, s_ht_bad, s_ht_ccerr, s_ht_reads, s_ht_short;
+/* Reads whose 188 phase was NOT zero, and reads with no phase at all. The first
+ * is the normal case on this DVR and is not an error; the second is. */
+static uint64_t s_ht_offphase, s_ht_noph;
 static uint64_t s_ht_bytes_p, s_ht_pkts_p, s_ht_bad_p, s_ht_ccerr_p;   /* previous report */
 static uint64_t s_ht_t0, s_ht_last;
 static uint8_t  s_ht_cc[8192];
@@ -1168,7 +1171,7 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                         if(s_ht_on)
                         {
                             uint64_t now_ms = _ts_rec_now_ms();
-                            int h;
+                            int h, h_start = 0;
 
                             if(s_ht_t0 == 0) { s_ht_t0 = now_ms; s_ht_last = now_ms; }
 
@@ -1177,7 +1180,54 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                                 s_ht_short++;   /* not a whole number of packets */
                             s_ht_bytes += (uint64_t)read_len;
 
-                            for(h = 0; h + 187 < read_len; h += 188)
+                            /* FIND THE 188 PHASE. DO NOT ASSUME IT IS ZERO.
+                             *
+                             * This walk used to start at offset 0 and report
+                             * badsync for everything when it was not, which is
+                             * exactly what happened: 99.5% badsync, PID counts
+                             * climbing past 500, and (a2) full of noise -- while
+                             * the SENDER, reading the identical bytes through
+                             * pcr_cut's resync, reported badsync=4 in 769,078
+                             * packets. Four bytes, skipped once, at the start.
+                             *
+                             * The DVR hands back whole multiples of 188 (short
+                             * is 0) but does not guarantee the first byte is a
+                             * packet boundary, and because every read is a whole
+                             * number of packets a phase that starts wrong STAYS
+                             * wrong forever. That also explains the MUXTEST runs
+                             * that disagreed: run 2 happened to land on phase 0,
+                             * run 1 did not, same code, same config.
+                             *
+                             * So hunt the phase per read, the way the cutter
+                             * does. Three 0x47s at 188 stride is 1-in-16M by
+                             * chance, and a read with no phase at all is counted
+                             * whole rather than walked as if aligned. */
+                            {
+                                int ph, found = -1;
+
+                                for(ph = 0; ph < 188 && ph + 376 + 187 < read_len; ph++)
+                                {
+                                    if(buffer[ph] == 0x47 && buffer[ph + 188] == 0x47
+                                       && buffer[ph + 376] == 0x47)
+                                    { found = ph; break; }
+                                }
+                                if(found < 0)
+                                {
+                                    /* Genuinely unframed. Count the packets the
+                                     * length implies as bad and skip the walk --
+                                     * walking noise is what produced the phantom
+                                     * PID counts. */
+                                    s_ht_pkts += (uint64_t)(read_len / 188);
+                                    s_ht_bad  += (uint64_t)(read_len / 188);
+                                    s_ht_noph++;
+                                    goto ht_report;
+                                }
+                                if(found != 0)
+                                    s_ht_offphase++;
+                                h_start = found;
+                            }
+
+                            for(h = h_start; h + 187 < read_len; h += 188)
                             {
                                 uint8_t *q = buffer + h;
                                 uint16_t qpid;
@@ -1203,6 +1253,7 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                                 s_ht_cc[qpid] = qcc;
                             }
 
+ht_report:
                             if(now_ms - s_ht_last >= (uint64_t)TS_REC_HEALTH_MS)
                             {
                                 uint64_t iv  = now_ms - s_ht_last;
@@ -1223,6 +1274,12 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                                        (unsigned long long)dcc, (unsigned long long)s_ht_ccerr,
                                        (unsigned long long)s_ht_reads,
                                        (unsigned long long)s_ht_short);
+                                printf("[FULLTP]   framing: reads=%llu off-phase=%llu no-phase=%llu"
+                                       "  (off-phase is normal -- the DVR does not start reads on a "
+                                       "packet boundary; no-phase is the one that means trouble)\n",
+                                       (unsigned long long)s_ht_reads,
+                                       (unsigned long long)s_ht_offphase,
+                                       (unsigned long long)s_ht_noph);
                                 if(dbd)
                                     printf("[FULLTP]   BADSYNC IS NON-ZERO -- the capture is TEARING. "
                                            "Look for dvr_v100_isr_tsw_full / tsw_dealwith above.\n");
@@ -2374,6 +2431,7 @@ static int32_t _ts_rec_prog_config(int32_t index, TsRecConfig *config)
         memset(s_ht_ppkt, 0, sizeof(s_ht_ppkt));
         s_ht_bytes = s_ht_pkts = s_ht_bad = s_ht_ccerr = 0;
         s_ht_reads = s_ht_short = 0;
+        s_ht_offphase = s_ht_noph = 0;
         s_ht_bytes_p = s_ht_pkts_p = s_ht_bad_p = s_ht_ccerr_p = 0;
         s_ht_npid = 0;
         s_ht_t0 = s_ht_last = 0;    /* stamped on the first read */
