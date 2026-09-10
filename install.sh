@@ -959,13 +959,13 @@ fi
 # for the whole-TP diagnostic and is still in the tree, so it would now pass
 # against the PREVIOUS build as happily as this one and verify nothing.
 if [ -f "$SDK_ROOT/output/out.elf" ]; then
-    if strings "$SDK_ROOT/output/out.elf" | grep -q 'NO PID KEEP-LIST'; then
-        log "  OK: the built app carries the Part 8 PID keep-list refusal"
+    if strings "$SDK_ROOT/output/out.elf" | grep -q 'recovery peer = '; then
+        log "  OK: the built app carries the Part 8 recovery peer"
     else
-        die "VERIFY FAILED: output/out.elf has no 'NO PID KEEP-LIST' string, so the
-     app that would be flashed predates the PID filter change. It would capture
-     the whole transponder and put all 59 Mb/s on the RIST hop, which is the
-     failure this build exists to fix. Do not flash this build."
+        die "VERIFY FAILED: output/out.elf has no 'recovery peer = ' string, so the
+     app that would be flashed predates the Part 8 recovery-peer change and could
+     never attach the headend, so no repair could ever happen. Do not flash
+     this build."
     fi
 else
     log "  NOTE: output/out.elf not found -- app freshness NOT verified"

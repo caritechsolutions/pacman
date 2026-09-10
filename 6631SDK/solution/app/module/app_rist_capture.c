@@ -347,6 +347,9 @@ static struct {
      * and the gap check would otherwise call the thing working as intended a
      * fault, every single interval. */
     int                 p8_filtering;
+    /* A weight=1000 headend peer is attached this zap, so a NACK has somewhere
+     * to go. Without it "retries=0 recovered=0" means nobody was asked. */
+    int                 p8_recovery;
 
     /* Part 8 Step 2: the dmx3 reinjection tail. Everything here is inert unless
      * /tmp/ristp8tail says dmx3. */
@@ -1277,6 +1280,13 @@ static int _rist_p8_chain_report_cb(void *arg)
                  "kept%% line and the receiver's quality/missing for those "
                  "stages.\n");
     }
+    /* Say once per report whether a repair was even possible, so nobody reads a
+     * clean "retries=0 recovered=0" as evidence the repair path works. */
+    RIST_LOG("p8chain   repair: %s\n",
+             s_rist.p8_recovery
+               ? "recovery peer ATTACHED -- retries/recovered in the receiver "
+                 "stats are real"
+               : "NO recovery peer -- retries/recovered can only ever be 0");
 
     if (s_rist.p8_tail_on
         && s_rist.p8_filtering && elapsed > 3 * RIST_P8_CHAIN_REPORT_MS && d_b > 100000) {
@@ -1312,10 +1322,12 @@ static int _rist_p8_chain_report_cb(void *arg)
         RIST_LOG("p8chain   *** (c) IS ZERO: nothing is coming out of the "
                  "receiver. Check whether the OOM killer took the sender "
                  "(dmesg: 'Killed process ... stb_part8_recei') ***\n");
-    if (a_bad)
-        RIST_LOG("p8chain   *** badsync %llu at the CAPTURE -- the whole-TP read is "
-                 "tearing; everything downstream is downstream of that ***\n",
-                 (unsigned long long)a_bad);
+    /* Rate, not presence -- same reason as the [FULLTP] alarm. This shouted
+     * "TEARING" on badsync=1 in 570,034 packets. */
+    if (a_pk && (a_bad * 1000ULL) > a_pk)
+        RIST_LOG("p8chain   *** badsync %llu/%llu at the CAPTURE -- the whole-TP read "
+                 "is tearing; everything downstream is downstream of that ***\n",
+                 (unsigned long long)a_bad, (unsigned long long)a_pk);
 
     s_rist.p8_cr_a = a_by; s_rist.p8_cr_b = b_by;
     s_rist.p8_cr_c = c_by; s_rist.p8_cr_d = d_by;
@@ -1796,7 +1808,10 @@ static int _rist_p8_chain_start(void)
 {
     /* in_url now carries the keep-list as well as the PCR PID, so it is sized
      * for RIST_API_PIDS_LEN plus the rest rather than the old 96. */
-    static char in_url[320], out_url[96], recv_in[128], recv_out[96];
+    /* recv_in now carries two peers with their parameters, as the Part 7 chain
+     * does -- 128 held one local peer and would silently clip the recovery
+     * peer's trailing weight/timing-mode. */
+    static char in_url[320], out_url[96], recv_in[512], recv_out[96];
     static char pids[RIST_API_PIDS_LEN];
     const char *pids_src = NULL;
     char *tx_argv[8];
@@ -1990,8 +2005,64 @@ static int _rist_p8_chain_start(void)
     }
     snprintf(out_url, sizeof(out_url), "rist://@127.0.0.1:%d?buffer=%d",
              RIST_P8_LOCAL_PORT, bufms);
-    snprintf(recv_in, sizeof(recv_in), "rist://127.0.0.1:%d?buffer=%d",
-             RIST_P8_LOCAL_PORT, bufms);
+    /* THE RECOVERY PEER.
+     *
+     * Step 1 ran one peer because there was nothing to attach: no headend record
+     * meant no address. With a Part 8 record in hand there is, and until the
+     * second peer exists nothing about the repair can be exercised at all -- no
+     * NACK has anywhere to go, and the run's "retries=0 recovered=0" means only
+     * that nobody was asked.
+     *
+     * Shape copied from the Part 7 chain deliberately, including the two things
+     * that cost runs to learn there:
+     *
+     *   - weight=1000 on the recovery peer. Without it librist classifies it as
+     *     a second SATELLITE peer and the FSR gate never opens.
+     *   - timing-mode=1 on BOTH. The receiver otherwise locks its clock to
+     *     whichever peer arrives first and calls the other's packets
+     *     out-of-order, which suppresses receiver_mark_missing() and freezes
+     *     last_seq_found -- NACKs stop entirely while lost climbs. Setting it on
+     *     one peer only is worse than neither.
+     *
+     * The API's URL carries its own buffer=; strip it so both peers agree and
+     * the flow buffer cannot depend on which peer created the flow. */
+    if (s_rist.rec.part8 && s_rist.rec.part8_rist_url[0]) {
+        char rec_url[RIST_API_URL_LEN];
+        int  need;
+
+        if (_rist_url_drop_param(rec_url, sizeof(rec_url),
+                                 s_rist.rec.part8_rist_url, "buffer") < 0) {
+            RIST_LOG("p8: could not rewrite buffer= in the recovery URL (too long)"
+                     " -- using it unchanged, buffer may differ between peers\n");
+            snprintf(rec_url, sizeof(rec_url), "%s", s_rist.rec.part8_rist_url);
+        }
+
+        need = snprintf(recv_in, sizeof(recv_in),
+                 "rist://127.0.0.1:%d?weight=0&buffer=%d&timing-mode=1,%s%sweight=1000&timing-mode=1&buffer=%d",
+                 RIST_P8_LOCAL_PORT, bufms,
+                 rec_url,
+                 strchr(rec_url, '?') ? "&" : "?",
+                 bufms);
+        /* A clipped URL loses the trailing weight/timing-mode silently and
+         * presents as "FSR never activates" or "every packet reordered". Refuse
+         * instead -- the box-local loop is not a safe fallback here, because it
+         * would look like a working Part 8 chain that can never repair. */
+        if (need < 0 || (size_t)need >= sizeof(recv_in)) {
+            RIST_LOG("p8: recovery URL too long (%d >= %d) -- NOT starting the "
+                     "chain\n", need, (int)sizeof(recv_in));
+            return -1;
+        }
+        s_rist.p8_recovery = 1;
+        RIST_LOG("p8: recovery peer = %s (weight=1000, timing-mode=1 on both)\n",
+                 s_rist.rec.part8_rist_url);
+    } else {
+        snprintf(recv_in, sizeof(recv_in), "rist://127.0.0.1:%d?buffer=%d",
+                 RIST_P8_LOCAL_PORT, bufms);
+        s_rist.p8_recovery = 0;
+        RIST_LOG("p8: NO recovery peer -- box-local loop only. Nothing can be "
+                 "repaired and 'retries=0 recovered=0' below will mean nobody "
+                 "was asked, not that nothing was lost.\n");
+    }
     snprintf(recv_out, sizeof(recv_out), "udp://127.0.0.1:%d", RIST_P8_OUT_PORT);
 
     {
@@ -2583,10 +2654,22 @@ static void _rist_reader(void *arg)
              * a read on a packet boundary. The cutter downstream hunts for the
              * sync byte and locked on immediately (badsync=4 in 769,078
              * packets); this line said the opposite and sent us looking for a
-             * capture fault that was never there. */
-            for (ph = 0; ph < 188 && ph + 376 + 187 < n; ph++)
-                if (rbuf[ph] == 0x47 && rbuf[ph + 188] == 0x47 && rbuf[ph + 376] == 0x47)
-                { phase = ph; break; }
+             * capture fault that was never there.
+             *
+             * CONFIRM WITH WHATEVER THE READ HOLDS. Demanding three syncs made
+             * this report "NO 188 PHASE FOUND" on the first read of a
+             * per-service capture, which is 376 bytes -- two packets, so the
+             * third check ran off the end and every phase failed. Two is enough
+             * to be worth printing (1-in-65536 by chance) and it is only a
+             * diagnostic line; the walk and the cutter still want three. */
+            for (ph = 0; ph < 188 && ph + 188 + 187 < n; ph++) {
+                if (rbuf[ph] != 0x47 || rbuf[ph + 188] != 0x47)
+                    continue;
+                if (ph + 376 + 187 < n && rbuf[ph + 376] != 0x47)
+                    continue;
+                phase = ph;
+                break;
+            }
 
             for (i = (phase < 0 ? 0 : phase); i + 187 < n; i += 188) {
                 npkt++;
@@ -2908,6 +2991,7 @@ int app_rist_play_change(GxBusPmDataProg *prog)
     s_rist.chain_active = 0;
     s_rist.p8_active    = 0;
     s_rist.p8_filtering = 0;
+    s_rist.p8_recovery  = 0;
     s_rist.p8_dmx0_want = 0;
 
     /* Clear the fallback latch as soon as a DIFFERENT service is selected, so
@@ -2946,6 +3030,34 @@ int app_rist_play_change(GxBusPmDataProg *prog)
         } else if (p8_on) {
             s_rist.p8_active    = 1;
             s_rist.chain_active = 1;     /* drives capture dest, screen, probe */
+
+            /* LOOK THE SERVICE UP, BUT DO NOT REQUIRE IT.
+             *
+             * "Part 8 takes no API record" above stays true in the sense that
+             * matters: a miss is not a refusal, and a bench box with no headend
+             * still runs the local loop off its own PMT. What a HIT buys is the
+             * two things only the headend can tell us -- the authoritative keep
+             * list, and the address of the recovery sender to attach as the
+             * second peer. Without this lookup the box was self-deriving a list
+             * while the cache held the headend's, and ignoring a
+             * part8_rist_url that was sitting right there.
+             *
+             * A hit on a Part 7-only record is not a Part 8 hit: rec.part8 stays
+             * 0, the keep-list falls through to self-derived, and no recovery
+             * peer is attached. */
+            if (app_rist_api_lookup(prog->service_id, &s_rist.rec) == 0
+                && s_rist.rec.part8) {
+                RIST_T("svc_id=%d IS a Part 8 channel (\"%s\") -- headend keep-list "
+                       "and recovery peer in play\n",
+                       prog->service_id, s_rist.rec.name);
+            } else {
+                /* Zero it: a Part 7 record left in place here would offer
+                 * rist_url to code that must never attach it on this path. */
+                memset(&s_rist.rec, 0, sizeof(s_rist.rec));
+                RIST_LOG("play_change: svc_id=%d has no Part 8 record (%d cached) "
+                         "-- box-local loop off our own PMT\n",
+                         prog->service_id, app_rist_api_count());
+            }
             /* Latched once here, not re-read from the knob later in the zap.
              * app_normal_play asks this straight after we return, to decide
              * what ts_src the SI consumers get; the tail itself opens later on
@@ -2997,6 +3109,7 @@ int app_rist_play_change(GxBusPmDataProg *prog)
             s_rist.chain_active  = 0;
             s_rist.p8_active     = 0;
             s_rist.p8_filtering  = 0;
+            s_rist.p8_recovery   = 0;
             s_rist.p8_dmx0_want  = 0;
             RIST_T("chain start FAILED -> factory decode for this zap\n");
         } else {

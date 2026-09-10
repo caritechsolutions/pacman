@@ -1280,9 +1280,22 @@ ht_report:
                                        (unsigned long long)s_ht_reads,
                                        (unsigned long long)s_ht_offphase,
                                        (unsigned long long)s_ht_noph);
-                                if(dbd)
-                                    printf("[FULLTP]   BADSYNC IS NON-ZERO -- the capture is TEARING. "
-                                           "Look for dvr_v100_isr_tsw_full / tsw_dealwith above.\n");
+                                /* RATE, NOT PRESENCE. This fired on badsync=1
+                                 * in 600,000 packets -- one read out of 2618
+                                 * that had no phase, which the walk charges as
+                                 * a whole read of bad packets. "TEARING" is a
+                                 * word for 99%, not 0.0002%, and an alarm that
+                                 * shouts on a healthy run stops being read. */
+                                if(dpk && (dbd * 1000ULL) > dpk)
+                                    printf("[FULLTP]   BADSYNC %llu/%llu (%llu.%llu%%) -- the capture is "
+                                           "TEARING. Look for dvr_v100_isr_tsw_full / tsw_dealwith above.\n",
+                                           (unsigned long long)dbd, (unsigned long long)dpk,
+                                           (unsigned long long)((dbd * 100ULL) / dpk),
+                                           (unsigned long long)(((dbd * 10000ULL) / dpk) % 100ULL));
+                                else if(dbd)
+                                    printf("[FULLTP]   badsync %llu/%llu this interval -- under 0.1%%, "
+                                           "consistent with the odd read that lands with no phase\n",
+                                           (unsigned long long)dbd, (unsigned long long)dpk);
 
                                 /* PER-PID RATES for this interval. See s_ht_ppkt. */
                                 {
