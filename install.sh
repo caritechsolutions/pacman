@@ -959,13 +959,13 @@ fi
 # for the whole-TP diagnostic and is still in the tree, so it would now pass
 # against the PREVIOUS build as happily as this one and verify nothing.
 if [ -f "$SDK_ROOT/output/out.elf" ]; then
-    if strings "$SDK_ROOT/output/out.elf" | grep -q 'recovery peer = '; then
-        log "  OK: the built app carries the Part 8 recovery peer"
+    if strings "$SDK_ROOT/output/out.elf" | grep -q 'flow_id %u (0x%08X) from the headend'; then
+        log "  OK: the built app carries the Part 8 flow id"
     else
-        die "VERIFY FAILED: output/out.elf has no 'recovery peer = ' string, so the
-     app that would be flashed predates the Part 8 recovery-peer change and could
-     never attach the headend, so no repair could ever happen. Do not flash
-     this build."
+        die "VERIFY FAILED: output/out.elf has no 'flow_id ... from the headend' string, so the
+     app that would be flashed predates the Part 8 flow-id change: its sender would
+     land in a separate receiver flow from the headend and no NACK could ever
+     be answered. Do not flash this build."
     fi
 else
     log "  NOTE: output/out.elf not found -- app freshness NOT verified"
@@ -988,12 +988,13 @@ for _lib in "$LIBRIST_TREE"/librist.so.*; do
     break
 done
 if [ -f "$TMP/$STB_P8_NAME" ]; then
-    if strings "$TMP/$STB_P8_NAME" | grep -q 'PID filter ON'; then
-        log "  OK: $STB_P8_NAME carries the PID filter"
+    if strings "$TMP/$STB_P8_NAME" | grep -q 'flow_id DID NOT TAKE'; then
+        log "  OK: $STB_P8_NAME carries the Part 8 flow id"
     else
-        die "VERIFY FAILED: $STB_P8_NAME has no 'PID filter ON' string. It was
-     built from a stale stb_part8_receiver.c and would send the whole
-     transponder. Do not flash this build."
+        die "VERIFY FAILED: $STB_P8_NAME was built from a stale
+     stb_part8_receiver.c: it does not set the flow id, so it would land in a
+     separate receiver flow from the headend and no NACK could be answered.
+     Do not flash this build."
     fi
 fi
 

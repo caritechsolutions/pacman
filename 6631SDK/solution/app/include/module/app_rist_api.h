@@ -91,6 +91,24 @@ typedef struct _AppRistRecovery
      * derives the list from its own PMT instead. See the keep-list block in
      * app_rist_capture.c. */
     char part8_filter_pids[RIST_API_PIDS_LEN];
+
+    /* THE FLOW ID (RTP SSRC) THE HEADEND'S RECOVERY SENDER ADVERTISES.
+     *
+     * Our local Part 8 sender must advertise the same value or librist puts the
+     * two in SEPARATE receiver flows -- observed on the first connected run as
+     * "FLOW #3464014936 created" for the headend and "FLOW #2860044066 created"
+     * for us, two stats blocks, and the recovery flow at received=0 forever. A
+     * NACK is only ever served by a peer in the same flow as the gap, so in that
+     * state the peer is connected and structurally unable to repair anything.
+     *
+     * This is Part 8's answer to what the Part 7 marker does for free: the
+     * marker carries the headend's SSRC and our sender adopts it. There is no
+     * marker here, so the number comes down the API instead.
+     *
+     * 0 = the headend did not send one. We then let librist invent ours, which
+     * is correct for a box-local loop and useless for repair; the chain report
+     * says so rather than leaving it to be discovered. */
+    unsigned int part8_flow_id;
 } AppRistRecovery;
 
 /**

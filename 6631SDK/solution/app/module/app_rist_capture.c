@@ -1826,6 +1826,7 @@ static int _rist_p8_chain_start(void)
      * peer's trailing weight/timing-mode. */
     static char in_url[320], out_url[96], recv_in[512], recv_out[96];
     static char pids[RIST_API_PIDS_LEN];
+    static char flowarg[32];
     const char *pids_src = NULL;
     char *tx_argv[8];
     char *rx_argv[6];
@@ -2005,16 +2006,44 @@ static int _rist_p8_chain_start(void)
      * N-M is a multiple of 7 the boundaries never coincide and no sequence
      * number indexes the same bytes. Whole-TP does not make alignment free --
      * it makes the anchor cheaper to find, because every end has every PID. */
+    /* THE FLOW ID GOES ON THE SAME URL.
+     *
+     * Our sender and the headend's must advertise the same RTP SSRC or librist
+     * files them under two different receiver flows, and a NACK is only served
+     * by a peer in the same flow as the gap. The first connected run showed
+     * exactly that: two "FLOW #... created" lines, two stats blocks, and the
+     * recovery flow at received=0 for its whole life.
+     *
+     * This is what the Part 7 marker does implicitly -- carry the headend's SSRC
+     * so our sender can adopt it. Part 8 has no marker, so the number comes down
+     * the API and is handed to the sender here.
+     *
+     * Absent, we pass nothing and librist invents one. That is right for the
+     * box-local loop and useless against a headend, which the log says plainly
+     * rather than leaving to be found. */
+    if (s_rist.rec.part8_flow_id) {
+        snprintf(flowarg, sizeof(flowarg), "&flow_id=%u", s_rist.rec.part8_flow_id);
+        RIST_LOG("p8: flow_id %u (0x%08X) from the headend -- our sender joins "
+                 "its flow so a NACK can be served\n",
+                 s_rist.rec.part8_flow_id, s_rist.rec.part8_flow_id);
+    } else {
+        flowarg[0] = '\0';
+        if (s_rist.rec.part8)
+            RIST_LOG("p8: the headend sent NO flow_id -- our sender will be in a "
+                     "SEPARATE flow from the recovery peer and no NACK can be "
+                     "answered. Repair is off; the video path still works.\n");
+    }
+
     if (_rist_read_int_file(RIST_P8_CUT_FILE, 1) == 0) {
-        snprintf(in_url, sizeof(in_url), "udp://@127.0.0.1:%d?pids=%s",
-                 RIST_P8_CAP_PORT, pids);
+        snprintf(in_url, sizeof(in_url), "udp://@127.0.0.1:%d?pids=%s%s",
+                 RIST_P8_CAP_PORT, pids, flowarg);
         RIST_LOG("p8: CUTTER OFF (%s=0) -- plain greedy-7, no PCR anchor. "
                  "Diagnostic only: box and headend payload boundaries cannot "
                  "align without it. The PID filter stays ON regardless.\n",
                  RIST_P8_CUT_FILE);
     } else {
-        snprintf(in_url, sizeof(in_url), "udp://@127.0.0.1:%d?pcr_cut=%u&pids=%s",
-                 RIST_P8_CAP_PORT, (unsigned)s_rist.prog.pcr_pid, pids);
+        snprintf(in_url, sizeof(in_url), "udp://@127.0.0.1:%d?pcr_cut=%u&pids=%s%s",
+                 RIST_P8_CAP_PORT, (unsigned)s_rist.prog.pcr_pid, pids, flowarg);
     }
     snprintf(out_url, sizeof(out_url), "rist://@127.0.0.1:%d?buffer=%d",
              RIST_P8_LOCAL_PORT, bufms);

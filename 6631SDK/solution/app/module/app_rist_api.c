@@ -329,7 +329,7 @@ static int _api_parse(const char *body)
     for (i = 0; i < num && kept < RIST_API_MAX_CHANNELS; i++) {
         cJSON *c = cJSON_GetArrayItem(channels, i);
         cJSON *sid, *tsid, *mpid, *url, *name;
-        cJSON *p8, *p8url, *p8cut, *p8pcr, *p8pids;
+        cJSON *p8, *p8url, *p8cut, *p8pcr, *p8pids, *p8flow;
 
         if (!c)
             continue;
@@ -347,6 +347,7 @@ static int _api_parse(const char *body)
         p8cut = cJSON_GetObjectItem(c, "part8_pcr_cut");
         p8pcr = cJSON_GetObjectItem(c, "part8_server_pcr_pid");
         p8pids = cJSON_GetObjectItem(c, "part8_filter_pids");
+        p8flow = cJSON_GetObjectItem(c, "part8_flow_id");
 
         /* A service id plus SOME peer to connect to is the minimum. It used to
          * be rist_url specifically; a Part 8 channel is a standalone record on
@@ -377,6 +378,25 @@ static int _api_parse(const char *body)
                      p8url->valuestring);
             s_chan[kept].part8_pcr_cut        = p8cut ? p8cut->valueint : 0;
             s_chan[kept].part8_server_pcr_pid = p8pcr ? p8pcr->valueint : 0;
+            /* cJSON's valueint is a signed int and this is a 32-bit SSRC that
+             * legitimately sets the top bit, so read valuedouble and range-check
+             * rather than truncating. Odd or zero is refused: librist reserves
+             * the low bit, and a value that does not take leaves the two senders
+             * in separate flows. */
+            s_chan[kept].part8_flow_id = 0;
+            if (p8flow) {
+                double fv = p8flow->valuedouble;
+                if (fv >= 2.0 && fv <= 4294967294.0) {
+                    unsigned int u = (unsigned int)fv;
+                    if ((u & 1u) == 0)
+                        s_chan[kept].part8_flow_id = u;
+                }
+                if (!s_chan[kept].part8_flow_id)
+                    API_LOG("svc_id=%d: part8_flow_id %.0f is not a non-zero even "
+                            "32-bit value -- ignoring it; our sender will be in a "
+                            "separate flow and no NACK can be answered\n",
+                            s_chan[kept].service_id, fv);
+            }
 
             /* THE KEEP-LIST, flattened to the CSV that librist's ?pids= wants.
              *
@@ -440,6 +460,12 @@ static void _api_dump(void)
             API_LOG("      PART 8: url=%s pcr_cut=%d server_pcr_pid=%d (0x%04X)\n",
                     s_chan[i].part8_rist_url, s_chan[i].part8_pcr_cut,
                     s_chan[i].part8_server_pcr_pid, s_chan[i].part8_server_pcr_pid);
+            if (s_chan[i].part8_flow_id)
+                API_LOG("      PART 8: flow_id=%u (0x%08X)\n",
+                        s_chan[i].part8_flow_id, s_chan[i].part8_flow_id);
+            else
+                API_LOG("      PART 8: flow_id ABSENT -- our sender cannot join "
+                        "the headend's flow, so no NACK can be answered\n");
             if (s_chan[i].part8_filter_pids[0])
                 API_LOG("      PART 8: filter_pids=%s\n", s_chan[i].part8_filter_pids);
             else
