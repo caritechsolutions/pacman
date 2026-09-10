@@ -341,6 +341,34 @@ static uint64_t s_ht_t0, s_ht_last;
 static uint8_t  s_ht_cc[8192];
 static uint16_t s_ht_npid;
 
+/* THE PARTIAL PACKET AT THE READ BOUNDARY.
+ *
+ * The DVR hands back whole multiples of 188 that do not start on a packet
+ * boundary, so a read of N packets' worth of bytes is really "the tail of one
+ * packet, N-1 whole ones, and the head of the next". Finding the phase and
+ * walking from there gets the whole ones right and DISCARDS the two halves --
+ * and a discarded packet is exactly what a CC discontinuity looks like, so the
+ * walk manufactured about one CC error per read. Measured: an aligned run
+ * reported off-phase=0 of 2618 reads and +3..+18 CC per interval; the very next
+ * run, same code, reported off-phase=8664 of 8668 and +753..+786.
+ *
+ * That is not a cosmetic problem. CC errors are the input to the hole-punching
+ * design -- a detector with a one-per-read false-positive rate would punch ~860
+ * spurious holes every five seconds and NACK-storm the headend.
+ *
+ * So carry the tail across, the way pcr_cut.c already does with n_partial: hold
+ * the trailing bytes, complete the packet from the head of the next read, and
+ * walk it in its proper place. In steady state the phase hunt then runs once, at
+ * the start, and off-phase stops climbing -- which is how to tell from the log
+ * that this is working. */
+static uint8_t  s_ht_carry[188];
+static int      s_ht_ncarry;
+/* Packets recovered from the boundary, and the times the carry did NOT line up
+ * with the next read and we had to hunt the phase again. Both should be flat
+ * after the first read; a climbing resync count means the stream really is
+ * tearing, which is the thing the walk exists to see. */
+static uint64_t s_ht_carried, s_ht_resync;
+
 /* PER-PID RATES, reset every interval so this is inherently a rate and needs no
  * second snapshot array. 32 KB, which is not free on a 54 MB box -- it is here
  * because two open questions can only be answered by measuring THIS
@@ -361,6 +389,33 @@ static uint16_t s_ht_npid;
  * the question is which of those 32 are present, not how much they weigh. */
 #define TS_REC_PIDTOP   12
 static uint32_t s_ht_ppkt[8192];
+
+/* One packet's worth of accounting, so the carried packet at the read boundary
+ * and the packets inside the read are counted by the same code rather than by
+ * two copies that can drift apart. */
+static void _ts_rec_ht_packet(const uint8_t *q)
+{
+    uint16_t qpid;
+    uint8_t  qcc;
+
+    s_ht_pkts++;
+    if(q[0] != 0x47) { s_ht_bad++; return; }
+    qpid = (uint16_t)(((q[1] & 0x1F) << 8) | q[2]);
+    /* Counted BEFORE the CC-specific skips below: this is a rate, so null and
+     * payloadless packets are part of what the PID costs. */
+    s_ht_ppkt[qpid]++;
+    if(qpid == 0x1FFF) return;
+    if(q[1] & 0x80)    return;   /* TEI: CC untrusted */
+    if(!(q[3] & 0x10)) return;   /* no payload: no bump */
+    qcc = (uint8_t)(q[3] & 0x0F);
+    if(s_ht_cc[qpid] == 0xFF)
+    {
+        if(s_ht_npid < 8192) s_ht_npid++;
+    }
+    else if(qcc != ((s_ht_cc[qpid] + 1) & 0x0F))
+        s_ht_ccerr++;
+    s_ht_cc[qpid] = qcc;
+}
 
 /* Stage (a) of the four-stage chain report, read by app_rist_capture so one line
  * can show capture -> sender -> receiver -> dmx0 and a gap can name its stage. */
@@ -1201,7 +1256,45 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                              * So hunt the phase per read, the way the cutter
                              * does. Three 0x47s at 188 stride is 1-in-16M by
                              * chance, and a read with no phase at all is counted
-                             * whole rather than walked as if aligned. */
+                             * whole rather than walked as if aligned.
+                             *
+                             * FIRST, though, try to finish the packet the last
+                             * read ended in the middle of. That both recovers a
+                             * packet the hunt would have thrown away and tells
+                             * us the phase without hunting: if the carried tail
+                             * plus the head of this read is a valid packet AND
+                             * the byte right after it is a sync byte, the phase
+                             * is known and the hunt is skipped entirely. */
+                            if(s_ht_ncarry > 0)
+                            {
+                                int need = 188 - s_ht_ncarry;
+
+                                if(read_len < need)
+                                {
+                                    /* Shorter than the missing piece. Keep
+                                     * accumulating; nothing to walk this time. */
+                                    memcpy(s_ht_carry + s_ht_ncarry, buffer, read_len);
+                                    s_ht_ncarry += read_len;
+                                    goto ht_report;
+                                }
+                                memcpy(s_ht_carry + s_ht_ncarry, buffer, need);
+                                s_ht_ncarry = 0;
+                                /* Accept the join only if it actually frames:
+                                 * the completed packet must start with 0x47 and
+                                 * the next packet must too. Anything else means
+                                 * bytes were lost between the reads, and then
+                                 * the carried bytes are the wrong bytes -- drop
+                                 * them and hunt rather than walk from a guess. */
+                                if(s_ht_carry[0] == 0x47
+                                   && (need >= read_len || buffer[need] == 0x47))
+                                {
+                                    _ts_rec_ht_packet(s_ht_carry);
+                                    s_ht_carried++;
+                                    h_start = need;
+                                    goto ht_walk;
+                                }
+                                s_ht_resync++;
+                            }
                             {
                                 int ph, found = -1;
 
@@ -1216,10 +1309,12 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                                     /* Genuinely unframed. Count the packets the
                                      * length implies as bad and skip the walk --
                                      * walking noise is what produced the phantom
-                                     * PID counts. */
+                                     * PID counts. Nothing here is worth carrying
+                                     * into the next read. */
                                     s_ht_pkts += (uint64_t)(read_len / 188);
                                     s_ht_bad  += (uint64_t)(read_len / 188);
                                     s_ht_noph++;
+                                    s_ht_ncarry = 0;
                                     goto ht_report;
                                 }
                                 if(found != 0)
@@ -1227,30 +1322,17 @@ static void ts_rec_dumpfilter_thread(void *usrdata)
                                 h_start = found;
                             }
 
+ht_walk:
                             for(h = h_start; h + 187 < read_len; h += 188)
-                            {
-                                uint8_t *q = buffer + h;
-                                uint16_t qpid;
-                                uint8_t  qcc;
+                                _ts_rec_ht_packet(buffer + h);
 
-                                s_ht_pkts++;
-                                if(q[0] != 0x47) { s_ht_bad++; continue; }
-                                qpid = (uint16_t)(((q[1] & 0x1F) << 8) | q[2]);
-                                /* Counted BEFORE the CC-specific skips below:
-                                 * this is a rate, so null and payloadless
-                                 * packets are part of what the PID costs. */
-                                s_ht_ppkt[qpid]++;
-                                if(qpid == 0x1FFF) continue;
-                                if(q[1] & 0x80)    continue;   /* TEI: CC untrusted */
-                                if(!(q[3] & 0x10)) continue;   /* no payload: no bump */
-                                qcc = (uint8_t)(q[3] & 0x0F);
-                                if(s_ht_cc[qpid] == 0xFF)
-                                {
-                                    if(s_ht_npid < 8192) s_ht_npid++;
-                                }
-                                else if(qcc != ((s_ht_cc[qpid] + 1) & 0x0F))
-                                    s_ht_ccerr++;
-                                s_ht_cc[qpid] = qcc;
+                            /* Hold the trailing fragment for the next read. h is
+                             * the offset of the first packet that did not fit,
+                             * so this is 0..187 bytes and always fits carry[]. */
+                            if(h < read_len)
+                            {
+                                s_ht_ncarry = read_len - h;
+                                memcpy(s_ht_carry, buffer + h, s_ht_ncarry);
                             }
 
 ht_report:
@@ -1274,12 +1356,22 @@ ht_report:
                                        (unsigned long long)dcc, (unsigned long long)s_ht_ccerr,
                                        (unsigned long long)s_ht_reads,
                                        (unsigned long long)s_ht_short);
-                                printf("[FULLTP]   framing: reads=%llu off-phase=%llu no-phase=%llu"
-                                       "  (off-phase is normal -- the DVR does not start reads on a "
-                                       "packet boundary; no-phase is the one that means trouble)\n",
+                                /* off-phase counts PHASE HUNTS, not off-phase
+                                 * reads: with the boundary packet carried across
+                                 * the phase is known from the join and the hunt
+                                 * only runs at the start or after a real break.
+                                 * So this should now sit at 1 and stay there --
+                                 * it climbing with reads means the carry is not
+                                 * lining up and CC is being inflated again. */
+                                printf("[FULLTP]   framing: reads=%llu hunts=%llu no-phase=%llu"
+                                       " carried=%llu resync=%llu"
+                                       "  (hunts should be ~1: the carried boundary packet gives "
+                                       "the phase for free; carried should track reads)\n",
                                        (unsigned long long)s_ht_reads,
                                        (unsigned long long)s_ht_offphase,
-                                       (unsigned long long)s_ht_noph);
+                                       (unsigned long long)s_ht_noph,
+                                       (unsigned long long)s_ht_carried,
+                                       (unsigned long long)s_ht_resync);
                                 /* RATE, NOT PRESENCE. This fired on badsync=1
                                  * in 600,000 packets -- one read out of 2618
                                  * that had no phase, which the walk charges as
@@ -2445,6 +2537,8 @@ static int32_t _ts_rec_prog_config(int32_t index, TsRecConfig *config)
         s_ht_bytes = s_ht_pkts = s_ht_bad = s_ht_ccerr = 0;
         s_ht_reads = s_ht_short = 0;
         s_ht_offphase = s_ht_noph = 0;
+        s_ht_carried = s_ht_resync = 0;
+        s_ht_ncarry = 0;
         s_ht_bytes_p = s_ht_pkts_p = s_ht_bad_p = s_ht_ccerr_p = 0;
         s_ht_npid = 0;
         s_ht_t0 = s_ht_last = 0;    /* stamped on the first read */

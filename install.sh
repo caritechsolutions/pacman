@@ -959,13 +959,15 @@ fi
 # for the whole-TP diagnostic and is still in the tree, so it would now pass
 # against the PREVIOUS build as happily as this one and verify nothing.
 if [ -f "$SDK_ROOT/output/out.elf" ]; then
-    if strings "$SDK_ROOT/output/out.elf" | grep -q 'flow_id %u (0x%08X) from the headend'; then
-        log "  OK: the built app carries the Part 8 flow id"
+    if strings "$SDK_ROOT/output/out.elf" | grep -q 'the carried boundary packet gives'; then
+        log "  OK: the built app carries the health walk boundary-packet carry"
     else
-        die "VERIFY FAILED: output/out.elf has no 'flow_id ... from the headend' string, so the
-     app that would be flashed predates the Part 8 flow-id change: its sender would
-     land in a separate receiver flow from the headend and no NACK could ever
-     be answered. Do not flash this build."
+        die "VERIFY FAILED: output/out.elf has no 'the carried boundary packet gives' string,
+     so the app that would be flashed predates the health-walk carry fix: its walk
+     discards the partial packet at every read boundary and manufactures roughly
+     one CC error per read (measured 753-786 per 5s interval against a true 3-18).
+     CC errors are the input to hole-punching, so the numbers this build reports
+     are not usable. Do not flash this build."
     fi
 else
     log "  NOTE: output/out.elf not found -- app freshness NOT verified"
@@ -978,12 +980,15 @@ fi
 # out, so check here instead.
 for _lib in "$LIBRIST_TREE"/librist.so.*; do
     [ -f "$_lib" ] || continue
-    if strings "$_lib" | grep -q 'PID list too long'; then
-        log "  OK: $(basename "$_lib") carries the ?pids= parameter"
+    if strings "$_lib" | grep -q 'the peer is up and the FEED is gone'; then
+        log "  OK: $(basename "$_lib") carries the FSR media-stall condition"
     else
-        die "VERIFY FAILED: $_lib has no 'PID list too long' string, so librist
-     predates the ?pids= parameter. The Part 8 sender would reject its own input
-     URL at startup. Do not flash this build."
+        die "VERIFY FAILED: $_lib has no 'the peer is up and the FEED is gone' string,
+     so librist predates the FSR media-stall condition. FSR would stay NO with the
+     RF cable out -- confirmed on hardware -- because every existing condition keys
+     on last_pkt_received or peer->dead and both are refreshed by RTCP keepalives.
+     The headend recovery server is FSR-gated and would stay silent. Do not flash
+     this build."
     fi
     break
 done
