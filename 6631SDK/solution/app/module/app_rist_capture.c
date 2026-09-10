@@ -1281,12 +1281,25 @@ static int _rist_p8_chain_report_cb(void *arg)
                  "stages.\n");
     }
     /* Say once per report whether a repair was even possible, so nobody reads a
-     * clean "retries=0 recovered=0" as evidence the repair path works. */
-    RIST_LOG("p8chain   repair: %s\n",
-             s_rist.p8_recovery
-               ? "recovery peer ATTACHED -- retries/recovered in the receiver "
-                 "stats are real"
-               : "NO recovery peer -- retries/recovered can only ever be 0");
+     * clean "retries=0 recovered=0" as evidence the repair path works.
+     *
+     * CONFIGURED IS NOT CONNECTED, and this line used to conflate them. The
+     * first run with a recovery peer had it configured correctly and the headend
+     * never answered: the receiver listed peers:[{id:1}] all run and FSR said
+     * "Found 1 satellite peers, 0 recovery peers ... Recovery agent is peer 2
+     * (rtcp, dead=NO, rtt=0 ms)". dead=NO means only that nothing has timed out
+     * yet; rtt=0 and absence from the data-peer list are what say it was never
+     * heard from. This process cannot see librist's peer state, so it must not
+     * claim the peer is up -- it points at the two lines that do know. */
+    if (s_rist.p8_recovery)
+        RIST_LOG("p8chain   repair: recovery peer CONFIGURED (%s). Whether it is "
+                 "CONNECTED is in the receiver's peers[] -- look for id 2 with "
+                 "a non-zero rtt, and FSR's \"N recovery peers\". Until then "
+                 "retries/recovered=0 means nobody was asked.\n",
+                 s_rist.rec.part8_rist_url);
+    else
+        RIST_LOG("p8chain   repair: NO recovery peer -- retries/recovered can "
+                 "only ever be 0\n");
 
     if (s_rist.p8_tail_on
         && s_rist.p8_filtering && elapsed > 3 * RIST_P8_CHAIN_REPORT_MS && d_b > 100000) {
